@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <title>Tecno Marema - Academia Cyberpunk</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+
+@font-face {
+  font-family: barber;
+  src: url(../static/fonts/BarberChop.otf);
+}
+
+@font-face {
+  font-family: qikober;
+  src: url(../static/fonts/Qikober.otf);
+}
+
+@font-face {
+  font-family: Region;
+  src: url(../static/fonts/Region.ttf);
+}
+
+@font-face {
+  font-family: Right;
+  src: url(../static/fonts/Right-Swipe-Sans.otf);
+}
+
+html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .resalte{
+      /* color:#cf30ff}; */
+      color:#12f693;
+      text-shadow: 0 0 8px #12f693;
+    }
+
+    /* .neon-green { color: #12f693; text-shadow: 0 0 8px #12f693; }
+    .neon-pink { color: #cf30ff; text-shadow: 0 0 6px #cf30ff; }
+    .neon-cyan { color: #00f7ff; text-shadow: 0 0 5px #00f7ff; } */
+    .btn-neon {
+      border: 2px solid #cf30ff;
+      color: #cf30ff;
+      background-color: transparent;
+      transition: 0.3s;
+    }
+    .btn-neon:hover {
+      background-color: #cf30ff;
+      color: #111;
+      box-shadow: 0 0 10px #cf30ff;
+    }
+    .section-title {
+      text-align: center;
+      color: #12f693;
+      margin-bottom: 40px;
+      text-shadow: 0 0 10px #12f693;
+    }
+    .course-card {
+      background-color: #1a1a1a;
+      border: 1px solid #12f693;
+      padding: 20px;
+      border-radius: 10px;
+      transition: transform 0.3s;
+    }
+    .course-card:hover {
+      transform: scale(1.05);
+      /* box-shadow: 0 0 12px #cf30ff; */
+      box-shadow: 0 0 12px #12f693;
+    }
+    .faq-item {
+      background-color: #1a1a1a;
+      border-left: 4px solid #12f693;
+      padding: 15px 20px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+    }
+
+
+    /*btn mas info  inicia*/
+    .btn-mas-info {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #12f693;
+      color: #000;
+      border: none;
+      border-radius: 7px;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 16px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-mas-info:hover {
+      background-color: #cf30ff;
+      color: #fff;
+    }
+
+    .btn-mas-info i {
+      margin-right: 8px;
+    }
+    /*btn mas info fin*/
+
+
+    footer {
+      background-color: #000;
+      color: #12f693;
+      padding: 20px;
+      text-align: center;
+      border-top: 2px solid #cf30ff;
+    }
+    .course-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .navbar{
+      font-size: 20px;
+    }
+
+    #inicio{
+      background-color: #111;
+      background-image: 
+    linear-gradient(
+      180deg,
+      rgba(34, 34, 34, 0.8),   /* tono oscuro semi */
+      rgba(17, 17, 17, 0.6) 50%,
+      rgba(17, 17, 17, 0) 100%
+    ),
+    radial-gradient(
+      250% 180% at 80% 20%,
+      rgba(18, 246, 147, 0.15) 0%,
+      rgba(18, 246, 147, 0.05) 40%,
+      rgba(17, 17, 17, 0) 100%
+    ),
+    radial-gradient(
+      300% 220% at 20% 80%,
+      rgba(18, 246, 147, 0.08) 0%,
+      rgba(17, 17, 17, 0.05) 60%,
+      rgba(17, 17, 17, 0) 100%
+    );
+  background-repeat: no-repeat;
+  background-size: cover;
+    }
+    .img-call{
+      height: 450px;
+      width: 50%;
+      /* border: 5px solid #12f693; */
+      border-radius: 10px;
+    }
+
+    .img-call img{
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border: 5px solid #12f693;
+      border-radius: 20px;
+      box-shadow:  2px 2px 15px 5px #12f693;
+      -webkit-perspective: 240px;
+      perspective: 240px;
+
+    }
+
+    h1{
+      font-family: barber, sans-serif;
+      text-align: left;
+      /* font-family: Region, sans-serif; */
+      /* font-family: Qikober, sans-serif; */
+      /* font-family: Right, sans-serif; */
+    }
+
+
+    /* testimonial inicia */
+
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .testimonial-card {
+      background-color: #111;
+      border: 1px solid #12f693;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(18, 246, 147, 0.2);
+      transition: transform 0.3s ease;
+    }
+
+    .testimonial-image-container {
+      overflow: hidden;
+      height: 250px;
+    }
+
+    .testimonial-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .testimonial-image-container img:hover {
+      transform: scale(1.1);
+    }
+
+    .testimonial-content {
+      padding: 20px;
+    }
+
+    .testimonial-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #12f693;
+      margin-bottom: 10px;
+    }
+
+    .testimonial-text {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    /* testimonial fin */
+
+
+    /* contador inicia */
+
+    /* Estilo del número contador */
+    .cont-numero {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #12f693;              /* Verde neón */
+      transition: transform 0.3s ease-in-out;
+    }
+
+    /* Título debajo del número */
+    .cont-title {
+      margin-top: 0.5rem;
+      font-size: 1.1rem;
+      color: #ccc;                 /* Gris claro */
+    }
+
+    /* Animación al activarse */
+    .cont-numero.animate {
+      animation: pop 0.6s ease-in-out;
+    }
+
+    /* Keyframes para animación tipo "pop" */
+    @keyframes pop {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* contador fin */
+
+
+    /* navbar inicio */
+
+
+        /* NAVBAR BASE */
+        .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    /* EFECTO NEÓN CYBERPUNK */
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .navbar::after {
+      background-size: 200% auto;
+    }
+
+    /* LOGO */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand span.white {
+      color: #fff;
+    }
+
+    .navbar-brand span.green {
+      color: #12f693;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    /* LINKS */
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #12f693 !important;
+    }
+
+/* eliminar borde outline del menu hamburguesa */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+    /* BOTÓN LOGIN */
+    .btn-login {
+      margin-left: 10px;
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    /* BOTÓN INSCRIPCIÓN */
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: #cf30ff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .navbar-toggler {
+      border-color: #12f693;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+    /* navbar fin */
+
+    /* footer inicia */
+
+
+    /* linea animada inicia */
+    .borde-animado {
+    width: 100%;
+    height: 4px; /* grosor del borde */
+    background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+    background-size: 600% 100%;
+    animation: animarBorde 4s linear infinite;
+  }
+
+  @keyframes animarBorde {
+    0% {
+      background-position: 0% 0;
+    }
+    100% {
+      background-position: 600% 0;
+    }
+  }
+    /* linea animada fin */
+
+
+    .text-magenta {
+      color: #cf30ff;
+    }
+
+    .newsletter-input::placeholder {
+      color: #ccc;
+      opacity: 1;
+    }
+
+    .newsletter-input:focus {
+      border-color: #12f693;
+      box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.99);
+      background-color: #111;
+      color: #fff;
+    }
+
+    .btn-suscribirme {
+      background-color: #cf30ff;
+      color: white;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+
+    .btn-suscribirme:hover {
+      background-color: #12f693;
+      color: black;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #cf30ff;
+    }
+
+    .footer-icon {
+      transition: color 0.3s ease;
+    }
+
+    .footer-icon:hover {
+      color: #cf30ff;
+    }
+
+    .bi-linkedin:hover {
+      color: #0e76a8;
+    }
+
+    .bi-facebook:hover {
+      color: #1877f2;
+    }
+
+    .bi-youtube:hover {
+      color: #ff0000;
+    }
+
+    .bi-instagram:hover {
+      color: #e1306c;
+    }
+
+    .bi-discord:hover {
+      color: #7289da;
+    }
+
+    footer {
+      border-top: 1px solid #444;
+    }
+
+    /* footer fin */
+  
+
+    /* subir inicia */
+
+    .subir {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #12f693;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(18, 246, 147, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-decoration: none;
+  color: black; /* color del ícono */
+  z-index: 9999;
+}
+
+.subir:hover {
+  background-color: #0ebf6f;
+  transform: scale(1.1);
+  color: black; /* si quieres que cambie el color del ícono también, cámbialo aquí */
+}
+
+    /* subir fin */
+
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <!-- <span class="navbar-toggler-icon"></span> -->
+      <!-- <i class="bi bi-three-dots" style="color: #12f693 !important;"></i> -->
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="#inicio">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="#cursos">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#info">Info</a></li>
+        <li class="nav-item"><a class="nav-link" href="#testimonios">Testimonios</a></li>
+        <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="#redes">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+        <li class="nav-item">
+          <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm"><i class="bi bi-pencil me-1"></i>Inscripción</a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'login' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Login</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  <!-- Hero -->
+  <section id="inicio" class="text-center py-5">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-6 text-start">
+          <!-- <h1 class="display-4 neon-green">Bienvenido a Tecno Marema</h1> -->
+          <!-- <h1 class="display-4 neon-green">Impulsa tu futuro en el mundo tecnológico.</h1> -->
+          <h1 class="display-4 neon-green">Da el primer paso o sube <span class="resalte">al siguiente nivel</span> en tecnomarema</h1>
+          <!-- <p class="lead text-white-50">Formate como programador full stack con JavaScript, Python e Inteligencia Artificial.</p> -->
+
+
+          <ul class="list-unstyled d-flex flex-column justify-content-center gap-4 fs-5">
+            <li class="d-flex align-items-center">
+              <i class="bi bi-laptop text-success me-2 fs-4"></i> Online, en vivo y flexible
+            </li>
+            <li class="d-flex align-items-center">
+              <i class="bi bi-tools text-success me-2 fs-4"></i> Aprendizaje práctico y real
+            </li>
+            <li class="d-flex align-items-center">
+              <i class="bi bi-person-check text-success me-2 fs-4"></i> Acompañamiento personalizado
+            </li>
+            <li class="d-flex align-items-center">
+              <i class="bi bi-unlock text-success me-2 fs-4"></i> Primera clase gratis
+            </li>
+          </ul>
+
+          <a href="#cursos" class="btn btn-neon btn-lg mt-3 fw-bold"><i class="bi bi-mortarboard"></i> Inicia hoy!</a>
+        </div>
+        <div class="img-call col-sm-6">
+          <img src="{% static 'img/hero02.jpg' %}" alt="imagen principal" class="course-image" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cursos -->
+  <section id="cursos" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Nuestros Cursos</h2>
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="course-card">
+            <img src="{% static 'img/desarrollo.jpg' %}" alt="Desarrollo Web" class="course-image" />
+            <h4 class="text-white">Desarrollo Web</h4>
+            <p>HTML, CSS, Git y Bootstrap para crear sitios desde cero.</p>
+            <a href="{% url 'desarrollo_web_compra' %}" class="btn-mas-info">
+              <i class="fas fa-circle-info"></i> Más info
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="course-card">
+            <img src="{% static 'img/IA.jpg' %}" alt="Inteligencia Artificial" class="course-image" />
+            <h4 class="text-white">Inteligencia Artificial</h4>
+            <p>Introducción a algoritmos y modelos de IA aplicados.</p>
+            <a href="#mas-info" class="btn-mas-info">
+              <i class="fas fa-circle-info"></i> Más info
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="course-card">
+            <img src="{% static 'img/python.png' %}" alt="Python" class="course-image" />
+            <h4 class="text-white">Python</h4>
+            <p>Automatización, data science y desarrollo backend.</p>
+            <a href="#mas-info" class="btn-mas-info">
+              <i class="fas fa-circle-info"></i> Más info
+            </a>
+          </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+          <div class="course-card">
+            <img src="{% static 'img/js5.jpeg' %}" alt="JavaScript" class="course-image" />
+            <h4 class="text-white">JavaScript</h4>
+            <p>DOM, lógica, animaciones y proyectos interactivos.</p>
+            <a href="#mas-info" class="btn-mas-info">
+              <i class="fas fa-circle-info"></i> Más info
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Beneficios -->
+  <section id="info" class="py-5 bg-black">
+    <div class="container">
+      <h2 class="section-title">¿Por qué elegirnos?</h2>
+      <div class="row text-white-50 text-center">
+        <div class="col-md-4">
+          <h5 class="text-white">🎯 100% práctico</h5>
+          <p>Proyectos reales desde el primer día.</p>
+        </div>
+        <div class="col-md-4">
+          <h5 class="text-white">🎮 Estética gamer</h5>
+          <p>Un entorno que te motiva a seguir aprendiendo.</p>
+        </div>
+        <div class="col-md-4">
+          <h5 class="text-white">🚀 Tecnología actual</h5>
+          <p>Herramientas y lenguajes usados en el mundo real.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+<!-- Plataforma inicia -->
+  <section class="container my-5">
+    <div class="row align-items-center">
+      <!-- Texto Izquierda -->
+      <div class="col-md-6">
+        <h2 class="mb-4" style="color: #12f693; font-weight: 700;">
+          Aprende con nuestra plataforma exclusiva y transforma tu futuro digital
+        </h2>
+        <p class="lead text-white">
+          Explorá contenidos de alto nivel, creados por profesionales apasionados, con acceso inmediato, dinámico y visualmente inmersivo. Empezá hoy tu camino en la tecnología, a tu ritmo y sin límites.
+        </p>
+      </div>
+  
+      <!-- Imagen Derecha -->
+      <div class="col-md-6 text-center">
+        <img src="{% static 'img/chico-gamer.jpg' %}" alt="Plataforma educativa" class="img-fluid rounded" style="border: 3px solid #12f693; box-shadow: 0 0 15px #12f693;">
+      </div>
+    </div>
+  </section>
+
+  <section class="container my-5">
+    <div class="row align-items-center">
+
+
+      <!-- Imagen Izquierda -->
+      <div class="col-md-6 text-center">
+        <img src="{% static 'img/plataforma-monitor.png' %}" alt="Plataforma educativa" class="img-fluid rounded" style="filter: drop-shadow( 0 0 15px #12f693)">
+      </div>
+
+      <!-- Texto Derecha -->
+      <div class="col-md-6">
+        <h2 class="mb-4" style="color: #12f693; font-weight: 700;">
+          Visualizá tu progreso desde cualquier dispositivo
+        </h2>
+        <p class="lead text-white">
+          Nuestra interfaz está diseñada para ofrecerte una experiencia clara, intuitiva y poderosa. Desde el primer clic, vas a sentir que estás en el lugar correcto para crecer, aprender y avanzar.
+        </p>
+      </div>
+  
+
+    </div>
+  </section>
+
+
+
+  <section class="container my-5">
+    <div class="row align-items-center">
+      <!-- Texto Izquierda -->
+      <div class="col-md-6">
+        <h2 class="mb-4" style="color: #12f693; font-weight: 700;">
+          Conectate, aprendé y crecé en tiempo real
+        </h2>
+        <p class="lead text-white">
+          Nuestras clases en vivo te permiten aprender junto a profesionales y otros estudiantes que comparten tu pasión. Cada encuentro es una oportunidad para preguntar, participar y avanzar acompañado. Sentí el ritmo de una clase real, con el apoyo que necesitás y la energía de una comunidad activa. Empezá hoy y viví la experiencia de aprender tecnología cara a cara, desde donde estés.
+        </p>
+      </div>
+  
+      <!-- Imagen Derecha -->
+      <div class="col-md-6 text-center">
+        <img src="{% static 'img/virtual1.png' %}" alt="Plataforma educativa" class="img-fluid rounded" style="filter: drop-shadow( 0 0 15px #12f693)">
+      </div>
+    </div>
+  </section>
+
+<!-- Plataforma fin -->
+
+
+  <!-- Metodología -->
+  <section class="py-5" style="background-color: #000;">
+    <div class="container text-white">
+      <h2 class="text-center mb-5" style="color: #12f693;">Nuestra Metodología</h2>
+      <div class="row">
+        <!-- Aprendizaje Activo -->
+        <div class="col-md-6 mb-4">
+          <div class="d-flex align-items-start">
+            <i class="bi bi-lightbulb-fill fs-1 me-3" style="color: #12f693;"></i>
+            <div>
+              <h4 class="mb-2" style="color: #12f693;">Aprendizaje Activo</h4>
+              <p>Clases interactivas con ejercicios prácticos y desafíos semanales.</p>
+            </div>
+          </div>
+        </div>
+  
+        <!-- Mentoría Personalizada -->
+        <div class="col-md-6 mb-4">
+          <div class="d-flex align-items-start">
+            <i class="bi bi-person-check-fill fs-1 me-3" style="color: #12f693;"></i>
+            <div>
+              <h4 class="mb-2" style="color: #12f693;">Mentoría Personalizada</h4>
+              <p>Seguimiento individual para potenciar tu desarrollo profesional.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+
+  <!-- Testimonios -->
+  <section id="testimonios" class="py-5">
+    <div class="container">
+      <h2 class="section-title">Lo que dicen nuestros alumnos</h2>
+
+
+      <div class="testimonial-grid">
+
+        <div class="testimonial-card">
+          <div class="testimonial-image-container">
+            <img src="{% static 'img/perfil04.avif' %}" alt="Testimonio Alumna">
+          </div>
+          <div class="testimonial-content">
+            <div class="testimonial-name">Lucía Gómez</div>
+            <div class="testimonial-text">
+              “Tecno Marema me cambió la vida. Aprendí desde cero y hoy ya tengo mi primera web publicada. ¡Increíble comunidad!”
+            </div>
+          </div>
+        </div>
+    
+        <div class="testimonial-card">
+          <div class="testimonial-image-container">
+            <img src="{% static 'img/perfil03.avif' %}" alt="Testimonio Alumno">
+          </div>
+          <div class="testimonial-content">
+            <div class="testimonial-name">Martín Reyes</div>
+            <div class="testimonial-text">
+              “Me encantó el curso. Todo súper claro, el profe tiene mucha onda, la plataforma es muy cómoda y el diseño es espectacular. ¡Re mil recomendable!”
+            </div>
+          </div>
+        </div>
+    
+        <div class="testimonial-card">
+          <div class="testimonial-image-container">
+            <img src="{% static 'img/perfil00.jpeg' %}" alt="Testimonio Alumna">
+          </div>
+          <div class="testimonial-content">
+            <div class="testimonial-name">Florencia Torres</div>
+            <div class="testimonial-text">
+              “Antes pensaba que la tecnología no era para mí. Hoy entiendo HTML, CSS y hago mis propios proyectos. ¡Gracias Tecno Marema!”
+            </div>
+          </div>
+        </div>
+    
+        <div class="testimonial-card">
+          <div class="testimonial-image-container">
+            <img src="{% static 'img/perfil01.jpeg' %}" alt="Testimonio Alumno">
+          </div>
+          <div class="testimonial-content">
+            <div class="testimonial-name">Ezequiel Fernández</div>
+            <div class="testimonial-text">
+              “Recomiendo el curso al 100%. El profe explica genial, la plataforma está buenísima y el estilo es único.”
+            </div>
+          </div>
+        </div>
+    
+      </div>
+
+    </div>
+  </section>
+
+
+
+<!-- contador inicia -->
+
+<!-- 🔢 Sección del contador -->
+<section id="contador" class="py-5 text-center text-white" style="background-color: #000;">
+  <div class="container">
+    <h2 class="mb-4">Nuestros logros</h2>
+    <div class="row justify-content-center">
+
+      <!-- Cada artículo representa una métrica -->
+      <article class="col-md-2 col-6 mb-4">
+        <div class="cont-numero" data-target="5000">+0</div>
+        <div class="cont-title">Alumnos</div>
+      </article>
+
+      <article class="col-md-2 col-6 mb-4">
+        <div class="cont-numero" data-target="60">+0</div>
+        <div class="cont-title">Cursos Dictados</div>
+      </article>
+
+      <article class="col-md-2 col-6 mb-4">
+        <div class="cont-numero" data-target="10">+0</div>
+        <div class="cont-title">Años de experiencia</div>
+      </article>
+
+      <article class="col-md-2 col-6 mb-4">
+        <div class="cont-numero" data-target="1500">+0</div>
+        <div class="cont-title">Horas de clases</div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- contador fin -->
+
+
+<!-- Preguntas Frecuentes -->
+<section id="faq" class="py-5 bg-black">
+  <div class="container">
+    <h2 class="section-title">Preguntas Frecuentes</h2>
+    <div class="faq-item text-white-50">
+      <h5 class="text-white">📅 ¿Cuánto duran los cursos?</h5>
+      <p>La duración depende de cada curso, pero todos incluyen entre 12 y 24 clases de 2 horas cada una.</p>
+    </div>
+    <div class="faq-item text-white-50">
+      <h5 class="text-white">💻 ¿Necesito conocimientos previos?</h5>
+      <p>No, nuestros cursos están diseñados para partir desde cero y acompañarte paso a paso.</p>
+    </div>
+    <div class="faq-item text-white-50">
+      <h5 class="text-white">📍 ¿Las clases son online o presenciales?</h5>
+      <p>100% online en vivo vía Jitsi Meet, con acceso a grabaciones y material complementario.</p>
+    </div>
+    <div class="faq-item text-white-50">
+      <h5 class="text-white">🎓 ¿Recibo certificado?</h5>
+      <p>Sí, al finalizar cada curso obtenés un certificado digital avalado por Tecno Marema.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+
+  <!-- FOOTER -->
+  <div class="borde-animado"></div>
+  <footer class="bg-black text-white py-5">
+    <div class="container">
+      <div class="row">
+
+        <!-- Mapa del sitio -->
+        <div class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
+          <ul class="list-unstyled">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#cursos">Cursos</a></li>
+            <li><a href="#info">Info</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#inscripcion">Inscripción</a></li>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+
+        <!-- Redes sociales -->
+        <div id="redes" class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
+          <div class="d-flex justify-content-center gap-3">
+            <a href="#" class="fs-4 footer-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="Discord"><i class="bi bi-discord"></i></a>
+          </div>
+        </div>
+
+        <!-- Contacto -->
+        <div id="contacto" class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
+          <p class="mb-1">
+            <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
+            <a href="mailto:contacto@tecnomarema.com">contacto@tecnomarema.com</a>
+          </p>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Newsletter</h5>
+          <p class="small">
+            Suscribite y mantenete al día con novedades, recursos y contenidos exclusivos en tu correo.
+          </p>
+          <form>
+            <input type="text" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+                   placeholder="Tu nombre" required />
+            <input type="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+                   placeholder="Tu email" required />
+            <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
+              <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Derechos y condiciones -->
+      <hr class="border-secondary" />
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+        <div class="mb-2 mb-md-0">
+          © 2025 Tecno Marema. Todos los derechos reservados.
+        </div>
+        <div>
+          <a href="#terminos">Términos y Condiciones</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+<!-- <footer>
+  <div class="container">
+    <p>&copy; 2025 <strong>Tecno Marema</strong> · Todos los derechos reservados</p>
+    <p class="small text-white-50">Academia gamer de programación y tecnología | contacto@tecnomarema.com</p>
+  </div>
+</footer> -->
+
+
+<!-- btn subir inicia -->
+<a href="#" class="subir" aria-label="Subir al inicio" id="btnSubir">
+  <i class="bi bi-chevron-up"></i>
+</a>
+<!-- btn subir fin -->
+
+<!-- scrpt subir inicia -->
+<script>
+    document.getElementById('btnSubir').addEventListener('click', function(event) {
+      event.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+</script>
+<!-- scrpt subir fin -->
+
+<!-- codigo contador inicia -->
+
+
+<script>
+  // Espera a que el DOM esté completamente cargado
+  document.addEventListener("DOMContentLoaded", () => {
+
+    // Selecciona todos los elementos con clase .cont-numero
+    const counters = document.querySelectorAll(".cont-numero");
+
+    // Función que anima el conteo de un número hasta su valor objetivo
+    const animateCount = (el, target) => {
+      let count = 0;
+      const speed = 50; // Cuanto menor, más rápido
+      const increment = Math.ceil(target / speed); // Incremento por frame
+
+      const update = () => {
+        count += increment;
+        if (count >= target) {
+          el.textContent = `+${target}`; // Finaliza con el número exacto
+        } else {
+          el.textContent = `+${count}`;  // Actualiza progresivamente
+          requestAnimationFrame(update); // Sigue el ciclo de animación
+        }
+      };
+
+      // Reinicia el contenido y la animación CSS
+      el.textContent = "+0";
+      el.classList.remove('animate');         // Quita clase para reiniciar
+      void el.offsetWidth;                    // Fuerza reflow del navegador
+      el.classList.add('animate');            // Vuelve a aplicar la animación
+
+      update(); // Comienza el conteo
+    };
+
+    // Observa cuando la sección del contador entra en pantalla
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Ejecuta la animación en cada número visible
+          counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            animateCount(counter, target);
+          });
+        }
+      });
+    }, { threshold: 0.6 }); // 60% del elemento visible para activarse
+
+    // Aplica el observer a la sección del contador
+    observer.observe(document.querySelector('#contador'));
+  });
+</script>
+
+
+<!-- codigo contador fin -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

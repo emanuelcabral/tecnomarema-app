@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <title>Participantes</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        h1 {
+            color: #12f693;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        h2 {
+            text-align: center;
+            color: #12f693cc;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        .count {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #aaa;
+            margin-bottom: 3rem;
+        }
+        section {
+            margin-bottom: 3rem;
+            border: 2px solid #12f693;
+            border-radius: 10px;
+            padding: 20px;
+        }
+        section h3 {
+            color: #12f693;
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #12f693;
+            padding-bottom: 0.3rem;
+            text-align: center;
+            /* max-width: max-content; */
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1.8rem;
+            justify-items: center;
+        }
+        .card {
+            background-color: #111;
+            border: 1px solid #12f69333;
+            border-radius: 15px;
+            padding: 1rem;
+            width: 140px;
+            text-align: center;
+            transition: border-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 0 6px #12f69322;
+            cursor: default;
+        }
+        .card:hover {
+            border-color: #12f693;
+            transform: scale(1.05);
+            box-shadow: 0 0 12px #12f693aa;
+        }
+        .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2.5px solid #12f693;
+            /* margin-bottom: 2px; */
+            background-color: #222;
+        }
+        .name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #e0ffe9;
+            word-break: break-word;
+            min-height: 2.4rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Participantes del curso</h1>
+    <h2>{{ curso.nombre_curso }} - {{ comision.numero_comision }}</h2>
+    <p class="count">
+        Cantidad total de alumnos: 
+        <strong style="color:#12f693;">{{ cantidad_alumnos }}</strong>
+    </p>
+
+    {% if profesores %}
+    <section>
+        <h3>Profesor/es</h3>
+        <div class="grid">
+            {% for profesor in profesores %}
+            <div class="card">
+                {% if profesor.foto %}
+                <img src="{{ profesor.foto.url }}" alt="Avatar de {{ profesor.nombre_usuario }}" class="avatar" />
+                {% else %}
+                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar" />
+                {% endif %}
+                <p class="name">
+                    {% with est=profesor.id_estudiante %}
+                        {% if est and est.nombre and est.apellido %}
+                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em> <br> <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
+
+                        {% else %}
+                            {{ profesor.nombre_usuario }}
+                        {% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% if tutores %}
+    <section>
+        <h3>Tutor/es</h3>
+        <div class="grid">
+            {% for tutor in tutores %}
+            <div class="card">
+                {% if tutor.foto %}
+                <img src="{{ tutor.foto.url }}" alt="Avatar de {{ tutor.nombre_usuario }}" class="avatar" />
+                {% else %}
+                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar" />
+                {% endif %}
+                <p class="name">
+                    {% with est=tutor.id_estudiante %}
+                        {% if est and est.nombre and est.apellido %}
+                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em><br> <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
+                        {% else %}
+                            {{ tutor.nombre_usuario }}
+                        {% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section>
+        <h3>Alumnos</h3>
+        <div class="grid">
+            {% for alumno in alumnos %}
+            <div class="card">
+                {% if alumno.foto %}
+                <img src="{{ alumno.foto.url }}" alt="Avatar de {{ alumno.nombre_usuario }}" class="avatar" />
+                {% else %}
+                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar" />
+                {% endif %}
+                <p class="name">
+                    {% with est=alumno.id_estudiante %}
+                        {% if est and est.nombre and est.apellido %}
+                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em><br> <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
+                        {% else %}
+                            {{ alumno.nombre_usuario }}
+                        {% endif %}
+                    {% endwith %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const edades = document.querySelectorAll(".age[data-fecha]");
+        edades.forEach(el => {
+            const fechaStr = el.dataset.fecha;
+            if (fechaStr) {
+                const fechaNac = new Date(fechaStr);
+                if (!isNaN(fechaNac)) {
+                    const hoy = new Date();
+                    let edad = hoy.getFullYear() - fechaNac.getFullYear();
+                    const m = hoy.getMonth() - fechaNac.getMonth();
+                    if (m < 0 || (m === 0 && hoy.getDate() < fechaNac.getDate())) {
+                        edad--;
+                    }
+                    el.textContent = `Edad: ${edad} años`;
+                } else {
+                    el.textContent = "Edad: desconocida";
+                }
+            } else {
+                el.textContent = "Edad: no disponible";
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

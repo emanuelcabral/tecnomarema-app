@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Preguntas Frecuentes | Tecno Marema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #f1f1f1;
+            font-family: 'Segoe UI', sans-serif;
+            /* padding: 3rem 1rem; */
+        }
+
+
+        /* navbar inicio */
+
+
+        /* NAVBAR BASE */
+        .navbar {
+            background-color: #111;
+            position: relative;
+            z-index: 10;
+            border-bottom: 3px solid transparent;
+            font-size: 1.2rem;
+        }
+
+        /* EFECTO NEÓN CYBERPUNK */
+        .navbar::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+            animation: neonGlow 4s linear infinite;
+        }
+
+        @keyframes neonGlow {
+            0% {
+                background-position: 0%
+            }
+
+            100% {
+                background-position: 100%
+            }
+        }
+
+        .navbar::after {
+            background-size: 200% auto;
+        }
+
+        /* LOGO */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .navbar-brand span.white {
+            color: #fff;
+        }
+
+        .navbar-brand span.green {
+            color: #12f693;
+        }
+
+        .navbar-brand img {
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        /* LINKS */
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            transition: 0.3s;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #12f693 !important;
+        }
+
+        /* eliminar borde outline del menu hamburguesa */
+        .navbar-toggler:focus,
+        .navbar-toggler:active,
+        .navbar-toggler.collapsed:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* BOTÓN LOGIN */
+        .btn-login {
+            margin-left: 10px;
+            background-color: #12f693;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            transition: 0.3s;
+            font-size: 1.3rem;
+        }
+
+        .btn-login:hover {
+            background-color: #0cd680;
+            color: #000;
+        }
+
+        /* BOTÓN INSCRIPCIÓN */
+        .btn-inscripcion {
+            margin-left: 10px;
+            background-color: #cf30ff;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            transition: 0.3s;
+            font-size: 1.3rem;
+        }
+
+        .btn-inscripcion:hover {
+            background-color: #a120cc;
+            color: #fff;
+        }
+
+        /* BOTÓN HAMBURGUESA */
+        .navbar-toggler {
+            border-color: #12f693;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        .barra-bienvenida {
+            background-color: #121212;
+            color: #12f693;
+            text-align: center;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #12f693;
+            position: relative;
+            z-index: 99;
+        }
+
+        /* navbar fin */
+
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1.faq-title {
+            color: #12f693;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 0.3rem;
+            margin-top: 2rem;
+        }
+
+        p.faq-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #bbb;
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            color: #ffffff;
+            font-size: 1.5rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: #12f693;
+        }
+
+        .accordion-item {
+            background-color: #111;
+            border: 1px solid #222;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .accordion-button {
+            background-color: #111;
+            color: #12f693;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+
+        .accordion-button:not(.collapsed) {
+            background-color: #12f693;
+            color: #000;
+        }
+
+        .accordion-body {
+            background-color: #1a1a1a;
+            color: #ddd;
+            border-top: 1px solid #12f693;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        hr.section-divider {
+            border-top: 1px solid #444;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    
+    <!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+          <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+                       <form action="{% url 'logout' %}" method="post" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-login btn-sm">
+        <i class="bi bi-person-badge"></i>
+        Cerrar sesión
+    </button>
+</form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="barra-bienvenida">
+        Bienvenido {{ nombre_usuario }} a <strong>TecnoMarema 🚀</strong>
+    </div>
+
+    <div class="container">
+        <h1 class="faq-title">Preguntas Frecuentes</h1>
+        <p class="faq-subtitle">Todo lo que necesitás saber para comenzar tu experiencia en Tecno Marema</p>
+
+        <!-- GENERAL -->
+        <div class="section-title"><i class="bi bi-question-circle"></i> General</div>
+        <div class="accordion" id="faqGeneral">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="gen1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#g1"
+                        aria-expanded="false" aria-controls="g1">
+                        ¿Qué es Tecno Marema?
+                    </button>
+                </h2>
+                <div id="g1" class="accordion-collapse collapse" aria-labelledby="gen1" data-bs-parent="#faqGeneral">
+                    <div class="accordion-body">
+                        Tecno Marema es una academia online enfocada en el aprendizaje intensivo de programación y
+                        tecnología. Ofrecemos cursos en vivo, clases grabadas, y material interactivo para llevarte
+                        desde cero a pro.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ACCESO -->
+        <div class="section-title"><i class="bi bi-unlock"></i> Acceso y Registro</div>
+        <div class="accordion" id="faqAcceso">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="acc1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a1"
+                        aria-expanded="false" aria-controls="a1">
+                        ¿Cómo me registro en un curso?
+                    </button>
+                </h2>
+                <div id="a1" class="accordion-collapse collapse" aria-labelledby="acc1" data-bs-parent="#faqAcceso">
+                    <div class="accordion-body">
+                        Completá el formulario de inscripción en la sección "Cursos". Una vez recibido, te enviaremos un
+                        correo con la confirmación y acceso al contenido inicial gratuito.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="acc2">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#a2"
+                        aria-expanded="false" aria-controls="a2">
+                        ¿Necesito una cuenta para acceder?
+                    </button>
+                </h2>
+                <div id="a2" class="accordion-collapse collapse" aria-labelledby="acc2" data-bs-parent="#faqAcceso">
+                    <div class="accordion-body">
+                        Sí, es necesario tener una cuenta para acceder al panel de estudiante y a los contenidos
+                        exclusivos. El registro es gratuito y solo toma unos minutos.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CLASES Y TECNOLOGÍA -->
+        <div class="section-title"><i class="bi bi-laptop"></i> Clases y Tecnología</div>
+        <div class="accordion" id="faqTech">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="tech1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#t1"
+                        aria-expanded="false" aria-controls="t1">
+                        ¿Qué necesito para las clases?
+                    </button>
+                </h2>
+                <div id="t1" class="accordion-collapse collapse" aria-labelledby="tech1" data-bs-parent="#faqTech">
+                    <div class="accordion-body">
+                        Necesitás una computadora con acceso a internet, navegador actualizado y auriculares si es
+                        posible. No hace falta software previo: todo lo instalamos en clase.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="tech2">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#t2"
+                        aria-expanded="false" aria-controls="t2">
+                        ¿Dónde se dictan las clases?
+                    </button>
+                </h2>
+                <div id="t2" class="accordion-collapse collapse" aria-labelledby="tech2" data-bs-parent="#faqTech">
+                    <div class="accordion-body">
+                        Las clases en vivo se dictan a través de Jitsi Meet. El enlace se publica en tu panel 15 minutos
+                        antes del comienzo de la clase.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGOS -->
+        <div class="section-title"><i class="bi bi-credit-card"></i> Pagos y Certificados</div>
+        <div class="accordion" id="faqPagos">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="pago1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#p1"
+                        aria-expanded="false" aria-controls="p1">
+                        ¿Cuáles son los métodos de pago?
+                    </button>
+                </h2>
+                <div id="p1" class="accordion-collapse collapse" aria-labelledby="pago1" data-bs-parent="#faqPagos">
+                    <div class="accordion-body">
+                        Aceptamos transferencias bancarias, tarjetas a través de Mercado Pago y criptomonedas
+                        seleccionadas. Una vez procesado el pago, el acceso se habilita en menos de 24h.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="pago2">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#p2"
+                        aria-expanded="false" aria-controls="p2">
+                        ¿Recibo certificado?
+                    </button>
+                </h2>
+                <div id="p2" class="accordion-collapse collapse" aria-labelledby="pago2" data-bs-parent="#faqPagos">
+                    <div class="accordion-body">
+                        Sí. Al finalizar el curso y cumplir con el 80% de asistencia y ejercicios aprobados, recibirás
+                        un certificado digital personalizado.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="section-divider">
+
+        <p class="text-center mt-5" style="color: #ccc;">¿Todavía tenés dudas? Contactanos por WhatsApp o en nuestras redes.</p>
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</body>
+
+</html>

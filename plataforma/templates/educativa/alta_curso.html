@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    {% load widget_tweaks %}
+    <meta charset="UTF-8">
+    <title>Alta de Curso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <!-- Bootstrap + estilo cyberpunk -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .form-control {
+            background-color: #1a1a1a;
+            border: 1px solid #12f693;
+            color: white;
+        }
+        .form-control:focus {
+            border-color: #12f693;
+            box-shadow: 0 0 10px #12f69344;
+        }
+        label {
+            color: #12f693;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #12f693;
+            border: none;
+            color: #000;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #0df284;
+        }
+        .card {
+            background-color: #151515;
+            border: 1px solid #12f69333;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px #12f69311;
+        }
+        .title {
+            text-align: center;
+            color: #12f693;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1 class="title">Alta de Curso</h1>
+        <form  method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_curso">ID del Curso</label>
+                <input type="text" class="form-control" id="id_curso" value="{{ id_generado }}" readonly>
+            </div>
+
+            <div class="mb-3">
+                {{ form.nombre_curso.label_tag }}
+                {{ form.nombre_curso|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.estado_curso.label_tag }}
+                {{ form.estado_curso|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.descripcion.label_tag }}
+                {{ form.descripcion|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.duracion.label_tag }}
+                {{ form.duracion|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono01.label_tag }}
+                {{ form.icono01|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono02.label_tag }}
+                {{ form.icono02|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono03.label_tag }}
+                {{ form.icono03|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono04.label_tag }}
+                {{ form.icono04|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono05.label_tag }}
+                {{ form.icono05|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono06.label_tag }}
+                {{ form.icono06|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono07.label_tag }}
+                {{ form.icono07|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono08.label_tag }}
+                {{ form.icono08|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono09.label_tag }}
+                {{ form.icono09|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono010.label_tag }}
+                {{ form.icono010|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono011.label_tag }}
+                {{ form.icono011|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.icono012.label_tag }}
+                {{ form.icono012|add_class:"form-control" }}
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-4">Guardar Curso</button>
+        </form>
+    </div>
+</div>
+
+<!-- ventana modal inicia -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalExitoLabel">¡Curso guardado!</h5>
+            </div>
+            <div class="modal-body text-center">
+                ✅ El curso fue registrado con éxito.
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'alta_curso' %}" class="btn btn-success">Cargar otro</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-success">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ventana modal fin -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% if guardado_exitoso %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = new bootstrap.Modal(document.getElementById('modalExito'));
+        modal.show();
+    });
+</script>
+{% endif %}
+
+</body>
+</html>

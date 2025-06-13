@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{% static 'css/perfil_alumno.css' %}">
+    <title>Perfil de Alumno</title>
+
+    <style>
+        .barra-bienvenida {
+            background-color: #121212;
+            color: #12f693;
+            text-align: center;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #12f693;
+            position: relative;
+            z-index: 99;
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark px-3">
+        <div class="container-fluid">
+            <!-- LOGO -->
+            <a class="navbar-brand" href="#">
+                <span class="white">Tecno</span><span class="green">Marema</span>
+                <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+            </a>
+
+            <!-- HAMBURGUESA -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido"
+                style="border: none !important;">
+                <!-- <span class="navbar-toggler-icon"></span> -->
+                <!-- <i class="bi bi-three-dots" style="color: #12f693 !important;"></i> -->
+                <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+            </button>
+
+            <!-- MENÚ -->
+            <div class="collapse navbar-collapse" id="navbarContenido">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#">Mi perfil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="btn btn-login btn-sm"><i
+                                class="bi bi-person-badge"></i>Cerrar sesión</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="barra-bienvenida">
+        Bienvenido {{ nombre_usuario }} a <strong>TecnoMarema 🚀</strong>
+    </div>
+
+    <!-- Título -->
+    <div class="container mt-5">
+        <h2 class="text-white mb-4">Mi perfil</h2>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Datos personales -->
+            <div class="col-md-6">
+                <div class="card p-4 rounded-4">
+                    <h4 class="text-success mb-4">Datos personales</h4>
+                    <form method="POST" action="{% url 'editar_perfil' %}">
+                        {% csrf_token %}
+                        <div class="row mb-3">
+                            <div class="col"><input class="form-control" name="nombre" placeholder="Nombre"
+                                    value="{{ usuario.id_estudiante.nombre }}"></div>
+                            <div class="col"><input class="form-control" name="apellido" placeholder="Apellido"
+                                    value="{{ usuario.id_estudiante.apellido }}"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col"><input class="form-control" name="nombre_usuario"
+                                    placeholder="Nombre de usuario" value="{{ usuario.nombre_usuario }}"></div>
+                            <div class="col"><input class="form-control" name="correo" placeholder="Correo electrónico"
+                                    value="{{ usuario.email }}"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col"><input class="form-control" name="fecha_nacimiento" type="date"
+                                    placeholder="Fecha de nacimiento"
+                                    value="{{ usuario.id_estudiante.fecha_nacimiento|date:'Y-m-d' }}"></div>
+                            <div class="col"><input class="form-control" name="pais" placeholder="País"
+                                    value="{{ usuario.id_estudiante.pais }}">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col"><input class="form-control" name="provincia" placeholder="Provincia"
+                                    value="{{ usuario.id_estudiante.provincia }}"></div>
+                            <div class="col"><input class="form-control" name="telefono" placeholder="Teléfono"
+                                    value="{{ usuario.id_estudiante.telefono }}"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <!-- <div class="col"><input class="form-control" placeholder="Género"></div> -->
+                            <div class="col">
+                                <select class="form-control" name="genero" id="genero">
+                                    <option value="" disabled
+                                        {% if not usuario.id_estudiante.genero %}selected{% endif %}>Género</option>
+                                    <option value="femenino"
+                                        {% if usuario.id_estudiante.genero == "femenino" %}selected{% endif %}>
+                                        Femenino</option>
+                                    <option value="masculino"
+                                        {% if usuario.id_estudiante.genero == "masculino" %}selected{% endif %}>
+                                        Masculino</option>
+                                    <option value="otro"
+                                        {% if usuario.id_estudiante.genero == "otro" %}selected{% endif %}>Otro</option>
+
+                                </select>
+                            </div>
+                            <div class="col"><input class="form-control" name="dni" placeholder="DNI"
+                                    value="{{ usuario.id_estudiante.dni }}">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <textarea class="form-control" rows="2" name="biografia" placeholder="Biografía..."
+                                value="{{ usuario.id_estudiante.biografia }}">{{ usuario.id_estudiante.biografia }}</textarea>
+                        </div>
+                        <!-- Botón para guardar cambios -->
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-green">Guardar cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Imagen y configuración -->
+            <!-- <div class="col-md-6">
+        <div class="card p-4 rounded-4 text-center mb-4">
+          <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" class="profile-img mb-3" alt="Avatar de usuario" />
+          <div class="d-flex justify-content-center gap-3">
+            <button class="btn btn-green">Cambiar foto</button>
+            <button class="btn btn-purple">Eliminar foto</button>
+          </div>
+        </div> -->
+
+
+            <!-- <div class="col-md-6">
+                <div class="card p-4 rounded-4 text-center mb-4">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" class="profile-img mb-3" alt="Avatar de usuario" />
+                    <div class="d-flex justify-content-center gap-3">
+                        <button class="btn btn-green">Cambiar foto</button>
+                        <button class="btn btn-purple">Eliminar foto</button>
+                    </div>
+                </div> -->
+
+            <div class="col-md-6">
+
+                <form method="POST" action="{% url 'cambiar_foto' %}" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="card p-4 rounded-4 text-center mb-4">
+                        {% if usuario.foto %}
+                            <img src="{{ usuario.foto.url }}?v={{ timestamp }}" alt="Foto de perfil"
+                                 class="profile-img mb-3" width="120" style="border-radius: 10px;">
+                        {% else %}
+                            <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
+                                 alt="Foto por defecto" class="profile-img mb-3" width="120"
+                                 style="border-radius: 10px;">
+                        {% endif %}
+                        <input type="file" name="foto" class="form-control mb-3" accept="image/*" required>
+                        <div class="d-flex justify-content-center gap-3">
+                            <!-- <button type="submit" class="btn btn-green">Cambiar foto</button> -->
+                            <button type="submit" name="formulario" value="foto" class="btn btn-green">Cambiar foto</button>
+                            <a href="{% url 'eliminar_foto' %}" class="btn btn-purple">Eliminar foto</a>
+                        </div>
+                        <p class="mt-3" style="color: #12f693;">Limite maximo de 1024kb - Formatos admitidos ( jpg png gif webp )</p>
+
+                        {% if messages %}
+  <div class="container mt-3">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+
+                    </div>
+                </form>
+
+
+
+                <div class="card p-4 rounded-4">
+                    <h5 class="text-success">Seguridad y configuración</h5>
+                    <ul class="list-unstyled mt-3">
+                        <li><a href="{% url 'password_reset' %}" class="nav-link">Cambiar contraseña</a></li>
+                        <li><a href="{% url 'logout_all' %}" class="nav-link">Cerrar sesión en todos los
+                                dispositivos</a></li>
+                        <li><a href="#" class="nav-link">Eliminar cuenta</a></li>
+                    </ul>
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+        </div>
+    </div>
+    </div>
+
+
+
+
+
+    <!-- Modal de éxito -->
+    <!-- Modal limpio y centrado estilo Tecno Marema -->
+    <div class="modal fade" id="modalGuardado" tabindex="-1" aria-labelledby="modalGuardadoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background-color: #111; border: 2px solid #12f693; border-radius: 1rem;">
+                <div class="modal-header" style="border-bottom: none; justify-content: center;">
+                    <h5 class="modal-title text-white text-center w-100" id="modalGuardadoLabel">✅ Perfil actualizado
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3"
+                        data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-white text-center" style="font-size: 1.2rem;">
+                    🎉 ¡Datos guardados! Seguimos construyendo juntos esta aventura tech. 🚀🎉
+                </div>
+                <div class="modal-footer" style="border-top: none; justify-content: center;">
+                    <button type="button" class="btn"
+                        style="background-color: #12f693; color: #000; font-weight: bold; min-width: 120px;"
+                        data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get("guardado") === "1") {
+                const modal = new bootstrap.Modal(document.getElementById('modalGuardado'));
+                modal.show();
+                // Limpiar la URL sin recargar
+                window.history.replaceState({}, document.title, window.location.pathname);
+            }
+        });
+    </script>
+    <!-- Antes de </body> -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

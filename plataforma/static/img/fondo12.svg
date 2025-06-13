@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 2000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <!-- Gradientes radiales más suaves con transiciones graduales -->
+    <radialGradient id="greenGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#12f693" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#12f693" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="purpleGlow" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+      <stop offset="0%" stop-color="#cf30ff" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#cf30ff" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Filtro blur con una mayor suavidad -->
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="100"/>
+    </filter>
+  </defs>
+
+  <!-- Círculos con glow verde animados -->
+  <circle r="600" cx="250" cy="250" fill="url(#greenGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="250;1200" dur="35s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="250;1500" dur="35s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="500" cx="1600" cy="400" fill="url(#greenGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="1600;700" dur="45s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="400;1200" dur="45s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="450" cx="1000" cy="1700" fill="url(#greenGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="1000;500" dur="40s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="1700;500" dur="40s" repeatCount="indefinite" />
+  </circle>
+
+  <!-- Círculos con glow púrpura animados -->
+  <circle r="500" cx="1500" cy="1600" fill="url(#purpleGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="1500;1800" dur="50s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="1600;500" dur="50s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="400" cx="600" cy="1300" fill="url(#purpleGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="600;700" dur="55s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="1300;700" dur="55s" repeatCount="indefinite" />
+  </circle>
+</svg>

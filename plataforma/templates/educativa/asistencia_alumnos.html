@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Asistencia - Desarrollo Web</title>
+
+  <style>
+    body {
+      background-color: #000;
+      background-image: url("{% static 'img/fondo2negro.svg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar {
+      background-color: #111;
+    }
+
+    .nav-link {
+      color: #12f693 !important;
+    }
+
+    .nav-link.active {
+      border-bottom: 2px solid #12f693;
+    }
+
+    .titulo-principal {
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 500;
+      text-align: left;
+      margin-top: 4rem;
+      margin-bottom: 2rem;
+    }
+
+    .subtitulo {
+      color: #12f693;
+      font-size: 1.5rem;
+    }
+
+    .comision {
+      background-color: #cf30ff !important;
+      border-radius: 5px;
+      padding: 5px 10px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .card-info {
+      background-color: #111;
+      padding: 20px;
+      border-radius: 20px;
+      border-left: 4px solid #12f693;
+      margin-bottom: 30px;
+    }
+
+    .asistencia-card {
+      background-color: #111;
+      padding: 20px;
+      border-radius: 20px;
+      border-left: 4px solid #12f693;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .bloques-fecha-dia {
+      display: flex;
+      flex-direction: row;
+      overflow: hidden;
+      border-radius: 5px;
+      width: 240px;
+    }
+
+    .bloque {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 120px;
+      height: 80px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      text-align: center;
+      padding: 0;
+      margin: 0;
+    }
+
+    .bloque.fecha .mes,
+    .bloque.fecha .dia-num,
+    .bloque.dia .dia-texto,
+    .bloque.dia .hora-texto {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      padding: 0;
+      height: 50%;
+    }
+
+    .bloque.fecha .mes {
+      background-color: #12f693;
+      color: #000;
+      font-size: 1rem;
+    }
+
+    .bloque.fecha .dia-num {
+      background-color: #222;
+      color: #12f693;
+      font-size: 1.5rem;
+    }
+
+    .bloque.dia .dia-texto {
+      background-color: #cf30ff;
+      color: #fff;
+      font-size: 1rem;
+    }
+
+    .bloque.dia .hora-texto {
+      background-color: #222;
+      color: #cf30ff;
+      font-size: 1.5rem;
+    }
+
+    .info-clase {
+      flex: 1;
+      padding-left: 25px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .btn-marcar {
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 10px 20px;
+      white-space: nowrap;
+    }
+
+    h5 {
+      color: #fff;
+      margin: 0;
+    }
+
+    @media (max-width: 768px) {
+      .asistencia-card {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+      }
+
+      .info-clase {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-left: 0;
+      }
+
+      .btn-marcar {
+        width: 100%;
+      }
+    }
+
+
+
+    .btn-marcar {
+    background-color: transparent;
+    border: 2px solid #12f693;
+    color: #12f693;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 5px #12f693;
+  }
+
+  .btn-marcar:hover {
+    background-color: #12f693;
+    color: #000;
+    box-shadow: 0 0 15px #12f693, 0 0 25px #12f693, 0 0 35px #12f693;
+    transform: scale(1.05);
+  }
+
+
+
+  .asistencia-card {
+    background-color: #111;
+    padding: 20px;
+    border-radius: 20px;
+    border-left: 4px solid #12f693;
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    transition: all 0.3s ease; /* Para transiciones suaves */
+    box-shadow: 0 0 5px #12f69320; /* Glow leve inicial */
+  }
+
+  .asistencia-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 10px #12f693, 0 0 20px #12f693, 0 0 30px #12f693;
+    border-left: 4px solid #cf30ff; /* Cambia también a color violeta al hacer hover */
+  }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark px-4 py-3">
+    <span class="navbar-brand fw-bold text-white">Asistencia</span>
+    <div>
+      <a class="nav-link d-inline-block mx-3 active" href="#">Inicio</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Clases</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Perfil</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Cerrar sesión</a>
+    </div>
+  </nav>
+
+  <!-- Contenido -->
+  <div class="container">
+
+    <!-- Título principal -->
+    <div class="row">
+      <div class="col-12">
+        <h2 class="titulo-principal">Registro de asistencia</h2>
+      </div>
+    </div>
+
+    <!-- Card de información general -->
+    <div class="card-info">
+      <h4 class="subtitulo">Curso de Desarrollo Web</h4>
+      <span class="comision"><strong>Comisión:</strong> 101</span>
+      <p class="mt-2">Por favor, marcá tu asistencia durante el horario correspondiente a cada clase.</p>
+    </div>
+
+    <!-- Bloque de clases -->
+    <div class="row gy-4">
+      <div class="col-12">
+
+        <!-- Clase 0 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Abril</div>
+              <div class="dia-num">23</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 0 - Presentación del Curso</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 1 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Abril</div>
+              <div class="dia-num">30</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 1 - Conociendo a HTML</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 2 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Mayo</div>
+              <div class="dia-num">7</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 2 - Introducción a HTML</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 3 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Mayo</div>
+              <div class="dia-num">14</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 3 - Presentando a CSS</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 4 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Mayo</div>
+              <div class="dia-num">21</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 4 - Primeros pasos con CSS</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 5 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Mayo</div>
+              <div class="dia-num">28</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 5 - Modelo de cajas</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 6 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Junio</div>
+              <div class="dia-num">4</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 6 - Flexbox</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 7 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Junio</div>
+              <div class="dia-num">11</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 7 - Introducción a Grids</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 8 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Junio</div>
+              <div class="dia-num">18</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 8 - Sitios Responsivos (media + grid + flex)</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 9 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Junio</div>
+              <div class="dia-num">25</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 9 - Pseudoclases y Pseudoelementos + BEM</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 10 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Julio</div>
+              <div class="dia-num">2</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 10 - Animaciones 1</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 11 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Julio</div>
+              <div class="dia-num">9</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 11 - Animaciones 2</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 12 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Julio</div>
+              <div class="dia-num">16</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 12 - Frameworks, librerías y Bootstrap</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 13 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Julio</div>
+              <div class="dia-num">23</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 13 - Maquetando con Bootstrap</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 14 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Julio</div>
+              <div class="dia-num">30</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 14 - Git</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 15 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Agosto</div>
+              <div class="dia-num">6</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 15 - GitHub</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 16 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Agosto</div>
+              <div class="dia-num">13</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 16 - SASS I</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 17 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Agosto</div>
+              <div class="dia-num">20</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 17 - SASS II</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 18 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Agosto</div>
+              <div class="dia-num">27</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 18 - SEO</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 19 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Septiembre</div>
+              <div class="dia-num">3</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 19 - Servidores</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+        <!-- Clase 20 -->
+        <div class="asistencia-card">
+          <div class="bloques-fecha-dia">
+            <div class="bloque fecha">
+              <div class="mes">Septiembre</div>
+              <div class="dia-num">10</div>
+            </div>
+            <div class="bloque dia">
+              <div class="dia-texto">Martes</div>
+              <div class="hora-texto">19 a 21hs</div>
+            </div>
+          </div>
+          <div class="info-clase">
+            <h5>Clase 20 - Final del curso</h5>
+            <button class="btn btn-marcar">Marcar presente</button>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

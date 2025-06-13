@@ -1,0 +1,185 @@
+body {
+    background-color: #000;
+    background-image: url(../img/fondo2negro.svg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .card .nav-link {
+    color: #12f693 !important;
+  }
+  .card .nav-link.active {
+    border-bottom: 2px solid #12f693;
+  }
+  .form-control, .form-select {
+    background-color: #111;
+    color: #fff;
+    border: 1px solid #333;
+  }
+  ::placeholder {
+    color: #aaa;
+  }
+  .form-control:focus, .form-select:focus {
+    border-color: #12f693;
+    box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.25);
+  }
+  .btn-green {
+    background-color: #12f693;
+    color: #000;
+  }
+  .btn-purple {
+    background-color: #cf30ff;
+    color: #fff;
+  }
+
+
+  .btn-purple:hover {
+    background-color: #f00 !important;
+    /* color: #000 !important; */
+  }
+
+  .profile-img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 4px solid #12f693;
+    background-color: #ccc;
+  }
+  .card {
+    background-color: #111;
+  }
+
+  button.btn:hover{
+    background-color: #cf30ff !important;
+    color: #fff !important;
+  }
+
+  .card ul li a:hover{
+    color: #cf30ff !important;
+  }
+  /* .navbar{
+    background-color: #111 !important;
+  } */
+
+  ::placeholder{
+    color: #ccc !important;
+  }
+
+
+/* navbar inicio */
+
+
+        /* NAVBAR BASE */
+        .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    /* EFECTO NEÓN CYBERPUNK */
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .navbar::after {
+      background-size: 200% auto;
+    }
+
+    /* LOGO */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand span.white {
+      color: #fff;
+    }
+
+    .navbar-brand span.green {
+      color: #12f693;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    /* LINKS */
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #12f693 !important;
+    }
+
+/* eliminar borde outline del menu hamburguesa */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+    /* BOTÓN LOGIN */
+    .btn-login {
+      margin-left: 10px;
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    /* BOTÓN INSCRIPCIÓN */
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: #cf30ff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .navbar-toggler {
+      border-color: #12f693;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+    /* navbar fin */

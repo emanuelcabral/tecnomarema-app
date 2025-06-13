@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <title>Cursos</title>
+    <style>
+        body {
+            background-color: #000;
+            background-image: url("{% static 'img/fondo1.svg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .navbar {
+            background-color: #111;
+        }
+
+        .nav-link {
+            color: #12f693 !important;
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid #12f693;
+        }
+
+        .curso-card {
+            background-color: #111;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .curso-img {
+            width: 250px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .badge-proximamente {
+            background-color: #cf30ff;
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .icono-tec {
+            width: 30px;
+            margin-right: 10px;
+        }
+
+        .btn-comprar {
+            background-color: #12f693;
+            color: #000;
+        }
+
+
+
+
+
+    /* navbar inicio */
+
+
+        /* NAVBAR BASE */
+        .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    /* EFECTO NEÓN CYBERPUNK */
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .navbar::after {
+      background-size: 200% auto;
+    }
+
+    /* LOGO */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand span.white {
+      color: #fff;
+    }
+
+    .navbar-brand span.green {
+      color: #12f693;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    /* LINKS */
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #12f693 !important;
+    }
+
+
+    /* eliminar borde outline del menu hamburguesa */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+
+    /* BOTÓN LOGIN */
+    .btn-login {
+      margin-left: 10px;
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    /* BOTÓN INSCRIPCIÓN */
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: #cf30ff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .navbar-toggler {
+      border-color: #12f693;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+    /* navbar fin */
+
+    /* footer inicia */
+
+
+    /* linea animada inicia */
+    .borde-animado {
+    width: 100%;
+    height: 4px; /* grosor del borde */
+    background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+    background-size: 600% 100%;
+    animation: animarBorde 4s linear infinite;
+  }
+
+  @keyframes animarBorde {
+    0% {
+      background-position: 0% 0;
+    }
+    100% {
+      background-position: 600% 0;
+    }
+  }
+    /* linea animada fin */
+
+
+    .text-magenta {
+      color: #cf30ff;
+    }
+
+    .newsletter-input::placeholder {
+      color: #ccc;
+      opacity: 1;
+    }
+
+    .newsletter-input:focus {
+      border-color: #12f693;
+      box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.99);
+      background-color: #111;
+      color: #fff;
+    }
+
+    .btn-suscribirme {
+      background-color: #cf30ff;
+      color: white;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+
+    .btn-suscribirme:hover {
+      background-color: #12f693;
+      color: black;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #cf30ff;
+    }
+
+    .footer-icon {
+      transition: color 0.3s ease;
+    }
+
+    .footer-icon:hover {
+      color: #cf30ff;
+    }
+
+    .bi-linkedin:hover {
+      color: #0e76a8;
+    }
+
+    .bi-facebook:hover {
+      color: #1877f2;
+    }
+
+    .bi-youtube:hover {
+      color: #ff0000;
+    }
+
+    .bi-instagram:hover {
+      color: #e1306c;
+    }
+
+    .bi-discord:hover {
+      color: #7289da;
+    }
+
+    footer {
+      border-top: 1px solid #444;
+    }
+
+    /* footer fin */
+  
+
+    /* subir inicia */
+
+    .subir {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #12f693;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(18, 246, 147, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-decoration: none;
+  color: black; /* color del ícono */
+  z-index: 9999;
+}
+
+.subir:hover {
+  background-color: #0ebf6f;
+  transform: scale(1.1);
+  color: black; /* si quieres que cambie el color del ícono también, cámbialo aquí */
+}
+
+    /* subir fin */
+
+
+
+    </style>
+</head>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+    <div class="container-fluid">
+      <!-- LOGO -->
+      <a class="navbar-brand" href="#">
+        <span class="white">Tecno</span><span class="green">Marema</span>
+        <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+      </a>
+  
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <!-- <span class="navbar-toggler-icon"></span> -->
+      <!-- <i class="bi bi-three-dots" style="color: #12f693 !important;"></i> -->
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+  
+      <!-- MENÚ -->
+      <div class="collapse navbar-collapse" id="navbarContenido">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#info">Info</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#testimonios">Testimonios</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+          <li class="nav-item">
+            <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm"><i class="bi bi-pencil me-1"></i>Inscripción</a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'login' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Login</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+    <!-- Título -->
+    <div class="container mt-5">
+        <h2 class="text-white mb-4">Cursos disponibles</h2>
+
+        <!-- Curso: Desarrollo Web -->
+        <div class="curso-card">
+            <img src="{% static 'img/desarrollo.jpg' %}" class="curso-img" alt="Desarrollo Web">
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-1">Desarrollo Web</h4>
+                    <span class="badge-proximamente">Próximamente</span>
+                </div>
+                <p>Aprendé HTML, CSS, Sass, Git y Bootstrap para crear sitios web modernos y responsivos.</p>
+                <p><strong>Precio:</strong> $92.900</p>
+                <p><strong>Clases:</strong> 20</p>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" class="icono-tec" alt="HTML">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" class="icono-tec" alt="CSS">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" class="icono-tec" alt="Sass">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" class="icono-tec" alt="Bootstrap">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" class="icono-tec" alt="Git">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" class="icono-tec" alt="GitHub">
+                </div>
+                <!-- <button class="btn btn-comprar">Comprar</button> -->
+                <a href="{% url 'desarrollo_web_compra' %}" class="btn btn-comprar">Comprar</a>
+            </div>
+        </div>
+
+        <!-- Curso: JavaScript -->
+        <div class="curso-card">
+            <img src="{% static 'img/js5.jpeg' %}" class="curso-img" alt="JavaScript">
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-1">JavaScript</h4>
+                    <span class="badge-proximamente">Próximamente</span>
+                </div>
+                <p>Aprendé programación en el navegador y desarrollo de aplicaciones interactivas.</p>
+                <p><strong>Precio:</strong> No disponible</p>
+                <p><strong>Clases:</strong> 18</p>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" class="icono-tec" alt="JavaScript">
+                </div>
+                <button class="btn btn-comprar disabled">Comprar</button>
+            </div>
+        </div>
+
+        <!-- Curso: Python -->
+        <div class="curso-card">
+            <img src="{% static 'img/python.png' %}" class="curso-img" alt="Python">
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-1">Python</h4>
+                    <span class="badge-proximamente">Próximamente</span>
+                </div>
+                <p>Descubrí Python desde cero para automatización, análisis de datos y más.</p>
+                <p><strong>Precio:</strong> No disponible</p>
+                <p><strong>Clases:</strong> 22</p>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" class="icono-tec" alt="Python">
+                </div>
+                <button class="btn btn-comprar disabled">Comprar</button>
+            </div>
+        </div>
+
+        <!-- Curso: Inteligencia Artificial -->
+        <div class="curso-card">
+            <img src="{% static 'img/IA.jpg' %}" class="curso-img" alt="Inteligencia Artificial">
+            <div class="flex-grow-1">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-1">Inteligencia Artificial</h4>
+                    <span class="badge-proximamente">Próximamente</span>
+                </div>
+                <p>Introducción práctica a IA con aplicaciones reales en distintos sectores.</p>
+                <p><strong>Precio:</strong> No diponible</p>
+                <p><strong>Clases:</strong> 10</p>
+                <div class="d-flex align-items-center mb-3">
+                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" class="icono-tec" alt="IA">
+                </div>
+                <button class="btn btn-comprar disabled">Comprar</button>
+            </div>
+        </div>
+
+    </div>
+
+
+
+
+
+<!-- Footer -->
+
+  <!-- FOOTER -->
+  <div class="borde-animado"></div>
+  <footer class="bg-black text-white py-5">
+    <div class="container">
+      <div class="row">
+
+        <!-- Mapa del sitio -->
+        <div class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
+          <ul class="list-unstyled">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#cursos">Cursos</a></li>
+            <li><a href="#info">Info</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#inscripcion">Inscripción</a></li>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
+          <div class="d-flex justify-content-start gap-3">
+            <a href="#" class="fs-4 footer-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="#" class="fs-4 footer-icon" aria-label="Discord"><i class="bi bi-discord"></i></a>
+          </div>
+        </div>
+
+        <!-- Contacto -->
+        <div class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
+          <p class="mb-1">
+            <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
+            <a href="mailto:contacto@tecnomarema.com">contacto@tecnomarema.com</a>
+          </p>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="col-md-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Newsletter</h5>
+          <p class="small">
+            Suscribite y mantenete al día con novedades, recursos y contenidos exclusivos en tu correo.
+          </p>
+          <form>
+            <input type="text" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+                   placeholder="Tu nombre" required />
+            <input type="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+                   placeholder="Tu email" required />
+            <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
+              <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Derechos y condiciones -->
+      <hr class="border-secondary" />
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+        <div class="mb-2 mb-md-0">
+          © 2025 Tecno Marema. Todos los derechos reservados.
+        </div>
+        <div>
+          <a href="#terminos">Términos y Condiciones</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- btn subir inicia -->
+<a href="#" class="subir" aria-label="Subir al inicio" id="btnSubir">
+    <i class="bi bi-chevron-up"></i>
+  </a>
+  <!-- btn subir fin -->
+  
+  <!-- script subir inicia -->
+  <script>
+      document.getElementById('btnSubir').addEventListener('click', function(event) {
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+  
+  </script>
+  <!-- script subir fin -->
+
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
+

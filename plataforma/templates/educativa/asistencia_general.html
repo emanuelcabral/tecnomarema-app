@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <title>Asistencias - Curso de Desarrollo Web</title>
+
+  <style>
+    body {
+      background-color: #000;
+      background-image: url("{% static 'img/fondo2negro.svg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar {
+      background-color: #111;
+    }
+
+    .nav-link {
+      color: #12f693 !important;
+    }
+
+    .nav-link.active {
+      border-bottom: 2px solid #12f693;
+    }
+
+    .titulo-principal {
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 500;
+      margin: 3rem 0 2rem 0;
+    }
+
+    table {
+      width: 100%;
+      background-color: #111;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 0 15px #12f69330;
+    }
+
+    th,
+    td {
+      text-align: center;
+      padding: 10px;
+      border: 1px solid #222;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background-color: #12f693;
+      color: #000;
+    }
+
+    tbody tr:hover {
+      background-color: #222;
+      transition: 0.3s;
+    }
+
+    .presente {
+      color: #12f693;
+      font-weight: bold;
+    }
+
+    .ausente {
+      color: #cf30ff;
+      font-weight: bold;
+    }
+
+    .scroll-tabla {
+      overflow-x: auto;
+    }
+
+    .total-col {
+      font-weight: bold;
+      background-color: #333;
+    }
+
+    .table-dark{
+        --bs-table-bg: #12f693;
+        --bs-table-color: #000;
+        /* --bs-table-striped-bg: #222; */
+        /* --bs-table-bg-type: #55016f; */
+    }
+
+    
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-bg-type: #55016f;
+}
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark px-4 py-3">
+    <span class="navbar-brand fw-bold text-white">Asistencias</span>
+    <div>
+      <a class="nav-link d-inline-block mx-3 active" href="#">Inicio</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Mis cursos</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Perfil</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Cerrar sesión</a>
+    </div>
+  </nav>
+
+  <!-- Contenido -->
+  <div class="container">
+
+    <!-- Título -->
+    <div class="row">
+      <div class="col-12">
+        <h2 class="titulo-principal">Asistencias del Curso de Desarrollo Web</h2>
+      </div>
+    </div>
+
+    <!-- Tabla de Asistencias -->
+    <div class="scroll-tabla">
+        <table class="table table-dark table-bordered align-middle table-striped" id="tabla-asistencias">
+        <thead>
+          <tr>
+            <th>Listado de Estudiantes</th>
+            <!-- Clases -->
+            <th>Clase 0</th>
+            <th>Clase 1</th>
+            <th>Clase 2</th>
+            <th>Clase 3</th>
+            <th>Clase 4</th>
+            <th>Clase 5</th>
+            <th>Clase 6</th>
+            <th>Clase 7</th>
+            <th>Clase 8</th>
+            <th>Clase 9</th>
+            <th>Clase 10</th>
+            <th>Clase 11</th>
+            <th>Clase 12</th>
+            <th>Clase 13</th>
+            <th>Clase 14</th>
+            <th>Clase 15</th>
+            <th>Clase 16</th>
+            <th>Clase 17</th>
+            <th>Clase 18</th>
+            <th>Clase 19</th>
+            <th>Clase 20</th>
+            <th>Total Presentes</th> <!-- Nueva columna -->
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Fila Alumno 1 -->
+          <tr>
+            <td>Juan Pérez</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="total-col">16</td> <!-- Total presentes -->
+          </tr>
+
+          <!-- Fila Alumno 2 -->
+          <tr>
+            <td>María García</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="total-col">19</td> <!-- Total presentes -->
+          </tr>
+
+          <!-- Fila Alumno 3 -->
+          <tr>
+            <td>Carlos López</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="total-col">16</td> <!-- Total presentes -->
+          </tr>
+
+          <!-- Fila Alumno 4 -->
+          <tr>
+            <td>Ana Torres</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="total-col">19</td> <!-- Total presentes -->
+          </tr>
+
+
+          <!-- Fila Alumno 5 -->
+          <tr>
+            <td>Diego Maxwell</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="ausente">❌</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="presente">✅</td>
+            <td class="total-col">19</td> <!-- Total presentes -->
+          </tr>
+
+          <!-- Agrega más filas aquí siguiendo el patrón -->
+
+          <!-- Fila Final de Totales -->
+          <tr>
+            <td class="total-col">Totales por Clase</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">2</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">2</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+            <td class="total-col">2</td>
+            <td class="total-col">3</td>
+            <td class="total-col">2</td>
+            <td class="total-col">3</td>
+            <td class="total-col">3</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+
+    <!-- Script JavaScript para calcular totales -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const tabla = document.getElementById('tabla-asistencias');
+          const filas = tabla.getElementsByTagName('tr');
+    
+          // Calcular total de presentes por fila
+          for (let i = 1; i < filas.length - 1; i++) { // Ignoramos la cabecera y la fila de totales
+            const celdas = filas[i].getElementsByTagName('td');
+            let totalPresentes = 0;
+    
+            for (let j = 1; j < celdas.length - 1; j++) { // Ignoramos el nombre y la columna de totales
+              if (celdas[j].classList.contains('presente')) {
+                totalPresentes++;
+              }
+            }
+    
+            celdas[celdas.length - 1].innerText = totalPresentes; // Insertar el total de presentes
+          }
+    
+          // Calcular totales por clase
+          const totalesClase = Array(21).fill(0); // Array para contar los presentes por cada clase
+          for (let i = 1; i < filas.length - 1; i++) {
+            const celdas = filas[i].getElementsByTagName('td');
+            for (let j = 1; j < celdas.length - 1; j++) {
+              if (celdas[j].classList.contains('presente')) {
+                totalesClase[j]++;
+              }
+            }
+          }
+    
+          const filaTotales = filas[filas.length - 1].getElementsByTagName('td');
+          for (let i = 1; i < filaTotales.length - 1; i++) {
+            filaTotales[i].innerText = totalesClase[i]; // Insertar los totales de cada clase
+          }
+        });
+      </script>
+
+</body>
+
+</html>

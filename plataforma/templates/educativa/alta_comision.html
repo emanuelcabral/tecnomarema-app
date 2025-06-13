@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Alta de Comisión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <!-- Bootstrap y estilos base -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .form-control, .form-select {
+            background-color: #1a1a1a;
+            border: 1px solid #12f693;
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #12f693;
+            box-shadow: 0 0 10px #12f69344;
+        }
+        label {
+            color: #12f693;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #12f693;
+            border: none;
+            color: #000;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #0df284;
+        }
+        .card {
+            background-color: #151515;
+            border: 1px solid #12f69333;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px #12f69311;
+        }
+        .title {
+            text-align: center;
+            color: #12f693;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1 class="title">Alta de Comisión</h1>
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="id_comision">ID Comisión</label>
+                <!-- <input type="text" name="id_comision" id="id_comision" class="form-control" maxlength="6" required> -->
+                <input type="text" name="id_comision" id="id_comision" class="form-control" value="{{ form.id_comision.value }}" readonly>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_curso">Curso</label>
+                <select name="id_curso" id="id_curso" class="form-select" required>
+                    {% for curso in cursos %}
+                        <option value="{{ curso.id_curso }}">{{ curso.nombre_curso }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="numero_comision">Número de Comisión</label>
+                <input type="number" name="numero_comision" id="numero_comision" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="fecha_inicio">Fecha de Inicio</label>
+                <input type="date" name="fecha_inicio" id="fecha_inicio" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="fecha_fin">Fecha de Fin</label>
+                <input type="date" name="fecha_fin" id="fecha_fin" class="form-control" required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="dia1">Día 1</label>
+                    <!-- <input type="text" name="dia1" id="dia1" class="form-control"> -->
+                    <select name="dia1" id="dia1" class="form-select">
+                        <option value="">---------</option>
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                        <option value="Domingo">Domingo</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="horario1">Horario 1</label>
+                    <input type="text" name="horario1" id="horario1" class="form-control">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="dia2">Día 2</label>
+                    <!-- <input type="text" name="dia2" id="dia2" class="form-control"> -->
+                    <select name="dia2" id="dia2" class="form-select">
+                        <option value="">---------</option>
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                        <option value="Domingo">Domingo</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="horario2">Horario 2</label>
+                    <input type="text" name="horario2" id="horario2" class="form-control">
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="dia3">Día 3</label>
+                    <!-- <input type="text" name="dia3" id="dia3" class="form-control"> -->
+                    <select name="dia3" id="dia3" class="form-select">
+                        <option value="">---------</option>
+                        <option value="Lunes">Lunes</option>
+                        <option value="Martes">Martes</option>
+                        <option value="Miércoles">Miércoles</option>
+                        <option value="Jueves">Jueves</option>
+                        <option value="Viernes">Viernes</option>
+                        <option value="Sábado">Sábado</option>
+                        <option value="Domingo">Domingo</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="horario3">Horario 3</label>
+                    <input type="text" name="horario3" id="horario3" class="form-control">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="estado_comision">Estado de la Comisión</label>
+                <input type="text" name="estado_comision" id="estado_comision" class="form-control" value="Próxima" placeholder="Proxima" required>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-4">Guardar Comisión</button>
+        </form>
+    </div>
+</div>
+
+<!-- ventana modal inicia -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalExitoLabel">¡Comisión guardada!</h5>
+            </div>
+            <div class="modal-body text-center">
+                ✅ La comisión fue registrada con éxito.
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'alta_comision' %}" class="btn btn-success">Cargar otra</a>
+                <a href="{% url 'login' %}" class="btn btn-outline-success">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- ventana modal fin -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% if guardado_exitoso %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = new bootstrap.Modal(document.getElementById('modalExito'));
+        modal.show();
+    });
+</script>
+{% endif %}
+
+</body>
+</html>

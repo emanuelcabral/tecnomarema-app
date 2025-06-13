@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <!-- BS 5.1 inicia -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- BS 5.1 fin -->
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <style>
+        div:where(.swal2-container).swal2-center>.swal2-popup{
+            box-shadow: 0 0 5px 5px #12f693 !important;
+        }
+
+        .swal2-title{
+            text-shadow: none !important;
+            color: #000 !important;
+        }
+
+        div:where(.swal2-container) button:where(.swal2-styled):where(.swal2-confirm){
+            background-color: #12f693 !important;
+            color: black !important;
+            border: 2px solid #000 !important;
+        }
+    </style>
+    <title>Ingreso a la plataforma</title>
+</head>
+<body id="b-login" class="d-flex justify-content-center align-items-center min-vh-100">
+    
+    <div class="container card-login">
+
+        <div class="login col-6">
+            <h1><img src="{% static 'img/logo-marema.png' %}" alt="logo marema" height="70px">Tecno Marema</h1>
+            <h2>Ingresa a la plataforma</h2>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="
+                        {% if 'success' in message.tags %}alert alert-success
+                        {% elif 'warning' in message.tags %}alert alert-warning
+                        {% elif 'error' in message.tags or 'danger' in message.tags %}alert alert-danger
+                        {% else %}alert alert-info
+                        {% endif %}
+                    ">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+                <div class="login-user">
+                    <span>👤</span>
+                    <label for="login-usuario">| Usuario: </label>
+                    <input type="text" placeholder="Ingresa tu usuario" required id="login-usuario" name="username">
+                </div>
+                <div class="login-pass">
+                    <span>🔒</span>
+                    <label for="login-password">| Contraseña: </label>
+                    <input type="password" placeholder="Ingresa tu contraseña" name="password" id="login-password" required>
+                </div>
+                <input type="checkbox" name="remember_me" id="recordar"><label for="recordar">Recordar Usuario</label>
+                <button type="submit" id="btn-ingreso">Ingresa</button>
+                <p>¿Olvidaste tu contraseña? Recuperala <a href="{% url 'password_reset' %}">aquí</a>.</p>
+
+                <!-- botón de google -->
+                <a id="btn-google" href="" class="google-btn">
+                    <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="height:20px; vertical-align:middle; margin-right:8px;">
+                    Ingresar con Google
+                </a>
+                <p class="text-center">*-- Proximamente ingreso con google ! --*</p>
+            </form>
+
+            <!-- Incluye SweetAlert2 -->
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+            {% if login_exitoso %}
+            <script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Bienvenido a Tecno Marema',
+                    text: 'Hola {{ nombre_usuario }}!',
+                    confirmButtonText: 'Entrar'
+                }).then(() => {
+                    window.location.href = "{% url 'mis_cursos' %}";
+                });
+            </script>
+            {% endif %}
+        </div>
+        <img src="{% static 'img/login2.jpg' %}" alt="login image" class="login-img col-6">
+
+    </div>
+
+    <a href="{% url 'home' %}" class="volver">Volver al inicio</a>
+
+
+    <!-- recordar contraseña inicia -->
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    const savedUser = localStorage.getItem('savedUser');
+    const savedPass = localStorage.getItem('savedPass');
+    if (savedUser) {
+      document.getElementById('login-usuario').value = savedUser;
+    }
+    if (savedPass) {
+      document.getElementById('login-password').value = savedPass;
+    }
+
+    if (savedUser || savedPass) {
+      document.getElementById('recordar').checked = true;
+    }
+  });
+
+  document.querySelector('form').addEventListener('submit', () => {
+    const recordar = document.getElementById('recordar').checked;
+    const username = document.getElementById('login-usuario').value;
+    const password = document.getElementById('login-password').value;
+
+    if (recordar) {
+      localStorage.setItem('savedUser', username);
+      localStorage.setItem('savedPass', password);
+    } else {
+      localStorage.removeItem('savedUser');
+      localStorage.removeItem('savedPass');
+    }
+  });
+</script>
+
+
+    <!-- recordar contraseña fin -->
+
+    <!-- BS 5.1 inicia -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
+    <!-- BS 5.1 fin -->
+</body>
+</html>

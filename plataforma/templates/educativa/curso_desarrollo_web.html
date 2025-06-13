@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <title>Desarrollo Web</title>
+  <style>
+    body {
+      background-color: #000;
+      background-image: url("{% static 'img/fondo1.svg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+  
+    /* Navbar */
+    .navbar {
+      background-color: #111;
+    }
+  
+    .nav-link {
+      color: #12f693 !important;
+    }
+  
+    .nav-link.active {
+      border-bottom: 2px solid #12f693;
+    }
+  
+    /* Imágenes */
+    .curso-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+  
+    /* Badges */
+    .badge-marema,
+    .badge-horario {
+      background-color: #12f693;
+      color: #000;
+      font-weight: 600;
+    }
+  
+    .badge-comision {
+      background-color: #cf30ff;
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+  
+    .badge-fecha {
+      background-color: #444;
+      color: #fff;
+      margin-left: 5px;
+    }
+  
+    .badge-horario {
+      margin-left: 5px;
+    }
+  
+    /* Cards */
+    .card,
+    .card-tech {
+      background-color: #111;
+      color: #fff;
+      border: none;
+      border-radius: 1rem;
+      height: 100%;
+    }
+  
+    .card-body {
+      padding: 20px;
+    }
+  
+    /* Tecnologías */
+    .icono-tec {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin-right: 10px;
+    }
+  
+    /* Clases */
+    .clase-item {
+      padding: 10px 15px;
+      margin-bottom: 5px;
+      background-color: #111;
+      color: #fff;
+      border-left: 5px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    .clase-item:hover {
+      background-color: #1a1a1a;
+    }
+  
+    .clase-item.active {
+      background-color: #12f693;
+      color: #000;
+      border-left: 5px solid #0bd68f;
+    }
+  
+    .contenido-clase {
+      background-color: #222;
+      border-radius: 12px;
+      padding: 20px;
+    }
+  
+
+
+    .btn-valorar {
+      background-color: #cf30ff;  /* Fucsia por defecto */
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(207, 48, 255, 0.3);
+      transition: background-color 0.3s ease, transform 0.2s ease;
+      margin-top: 1rem;
+      display: block;
+    }
+
+    .btn-valorar:hover {
+      background-color: #111; /* Verde al hacer hover */
+      color: #12f693;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 12px rgba(18, 246, 147, 0.4);
+    }
+
+
+    /* navbar inicio */
+
+
+        /* NAVBAR BASE */
+        .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    /* EFECTO NEÓN CYBERPUNK */
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .navbar::after {
+      background-size: 200% auto;
+    }
+
+    /* LOGO */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand span.white {
+      color: #fff;
+    }
+
+    .navbar-brand span.green {
+      color: #12f693;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    /* LINKS */
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #12f693 !important;
+    }
+
+/* eliminar borde outline del menu hamburguesa */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+    /* BOTÓN LOGIN */
+    .btn-login {
+      margin-left: 10px;
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    /* BOTÓN INSCRIPCIÓN */
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: #cf30ff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .navbar-toggler {
+      border-color: #12f693;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+        .barra-bienvenida {
+    background-color: #121212;
+    color: #12f693;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #12f693;
+    position: relative;
+    z-index: 99;
+  }
+
+    /* navbar fin */
+
+    /* intento de personalizr el google slides inicia */
+    .docs-icon-img-container, .docs-icon-img, .docs-icon-slides-logo-24, .punch-viewer-navbar-logo-text, .punch-viewer-navbar-logo,
+.docs-icon, .goog-inline-block, .docs-icon-24{
+  display: none !important;
+  color: orange !important;
+  opacity:0 !important;
+  visibility:hidden;
+}
+
+.punch-viewer-navbar-fixed,  .punch-viewer-navbar{
+  background: #bd1515 !important;
+  background-color: #12f693 !important;
+}
+    /* intento de personalizr el google slides fin */
+    
+  </style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+        <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+            </button>
+        </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀 </strong>
+</div>
+
+<div class="container mt-5">
+  <h2 class="text-white mb-4">Curso: {{ comision.id_curso.nombre_curso }} <span class="badge-comision">Comisión #{{ comision.numero_comision }}</span></h2>
+  <img src="{% static 'img/' %}{{ comision.id_curso.nombre_curso }}.jpg" alt="Desarrollo Web" class="curso-img mb-4">
+  <p>{{ comision.id_curso.descripcion }}</p>
+
+  <div class="container my-5">
+    <div class="row g-4">
+    <!-- Card Info del curso -->
+      <div class="col-md-6">
+        <div class="card card-tech h-100 p-4">
+          <h5 class="card-title text-uppercase text-success mb-4">Información del curso</h5>
+
+          <p class="card-text mb-3">
+              <span class="badge badge-marema me-2">Inicio</span> {{ comision.fecha_inicio|date:"j F Y" }}
+          </p>
+
+          <p class="card-text mb-3">
+            <span class="badge badge-marema me-2">Fin</span> {{ comision.fecha_fin|date:"j F Y" }}
+          </p>
+
+          <p class="card-text mb-3">
+            <span class="badge badge-marema me-2">Días y horarios</span> {{ comision.dia1 }} {{ comision.horario1 }} y {{ comision.dia2 }} {{ comision.horario2 }}
+          </p>
+
+          <p class="card-text mb-0">
+            <span class="badge badge-marema me-2">Duración</span> {{ curso.duracion }} por clase
+          </p>
+        </div>
+      </div>
+
+      <!-- Card Tecnologías -->
+      <div class="col-md-6 d-flex">
+        <div class="card card-tech p-4 w-100 text-center">
+          <h5 class="card-title text-uppercase text-success mb-4">Tecnologías</h5>
+          <div class="d-flex justify-content-around flex-wrap gap-4">
+          <!-- iconos de las tecnologias inicia -->
+            {% if comision.id_curso.iconos_cargados %}
+            <div class="d-flex align-items-start mb-3" style="gap: 30px;">
+              {% for icono in comision.id_curso.iconos_cargados %}
+              <div class="text-center">
+                <img src="{{ icono.url }}?v={{ timestamp }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}" style="height: 50px;">
+                <p class="mt-2 mb-0">{{ icono.name|cut:"iconos_cursos/"|cut:".png"|cut:".webp"|cut:".svg"|title }}</p>
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          <!-- iconos de las tecnologias fin -->
+          </div>
+        </div>
+      </div>
+        
+    </div>
+  </div>
+
+  <!-- Layout de clases y contenido -->
+  <div class="row mt-5">
+  <!-- Lista de clases a la izquierda -->
+  <div class="col-md-4">
+    <div id="lista-clases">
+      {% for clase in clases %}
+        <div class="clase-item {% if forloop.first %}active{% endif %}" onclick="mostrarClase({{ forloop.counter0 }})">
+          Clase {{ clase.numero_clase }} - {{ clase.nombre_clase }}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+    <!-- Contenido dinámico a la derecha inicia -->
+    <div class="col-md-8">
+      <div id="contenido-clase" class="contenido-clase">
+        <h4>Clase 0 - Presentación del Curso</h4>
+        <span class="badge-fecha">30 Junio 2025</span>
+        <span class="badge-horario">Lunes 20 a 22 hs</span>
+        <a href="{% url 'valoracion_alumno' %}" class="btn-valorar" style="text-decoration: none; text-align: center;">Valorar clase ⭐</a>
+        <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
+        <a href="https://meet.jit.si/Tecnomarema-Desarrolloweb-Comision-11790-Clase-00-QWERTY" target="_blank" class="btn-valorar" style="text-decoration: none; text-align: center;">
+          <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
+        </a>
+        <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
+        <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000" frameborder="0" width="100%" height="450px" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+        <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
+        <iframe width="100%" height="400px" src="https://www.youtube.com/embed/t68gf9wJlPk?si=56jJ5JzmspyL9PEN" title="Clase grabada" frameborder="0" allowfullscreen></iframe>
+        <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
+        <ul>
+          <li><a href="#" target="_blank">Documento guía HTML</a></li>
+          <li><a href="#" target="_blank">Ejercicios recomendados</a></li>
+        </ul>
+      </div>
+    </div>
+    <!-- Contenido dinámico a la derecha fin -->
+  </div>
+</div>
+
+<script>
+  const clases = [
+    {
+      titulo: "Clase 0 - Presentación del Curso",
+      fecha: "30 Junio 2025",
+      horario: " Lunes 20 a 22 hs",
+      link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-00-QWERTY",
+      ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000",
+      video: ""
+    },
+    // Resto de clases sin material cargado aún
+      {
+    titulo: "Clase 1 - Conociendo a HTML",
+    fecha: "2 Julio 2025",
+    horario: "Miercoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-01-ASDFGH",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSWQTmHXS7JokOI65QHsFKL5r6W9VmC1m1HQOPzDUVYPXRomW376WXNPKy3zMclkw/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 2 - Introducción a HTML",
+    fecha: "9 Julio 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-02-ZXCVBN",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vRQ9pKTowW3lsLHVixPgdFYJA0gBsWGdWywo-_drqUxbrf85jXbjigu2ADEOPox5A/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 3 - Presentando a CSS",
+    fecha: "14 Julio 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-03-PLMOKN",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vT4kwrbYVQ6ILG0OqcPhoA-CpsVSMig5Qc_K-NmpNcgPbyiQxr6kKhkR5DRxoZppQ/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 4 - Primeros pasos con CSS",
+    fecha: "16 Julio 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-04-JHGFDS",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSAbWbdkGlH2uvETvAsPmhtJNsJvMZaNv-ZNTB6S9Xk6Wv4PV_Qz8vQJNPmakgXSg/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 5 - Modelo de cajas",
+    fecha: "21 Julio 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-05-NBVCXZ",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTR9bFkJuesdAi7th1xuBRiOnKJElR9mdi8AN-wNwSrLTUMPlL8yCd1sXp2f-_DVg/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 6 - Flexbox",
+    fecha: "23 Julio 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-06-QAZWSX",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vRpRuH4cPHbAkd3JTnjrixSo0HKO_akfbliPFxaD_MUZVa7lWuKx5megTtsNFUUIg/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 7 - Introducción a Grids",
+    fecha: "28 Julio 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-07-EDCRFV",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vR3qA80MkCNCFnBeBQpkGDV1GL-YnBUvGj-dVXgMywinlfCte-GfXr7Yub1rTpyyA/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 8 - Sitios Responsivos (media + grid + flex)",
+    fecha: "30 Julio 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-08-TGBYHN",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQW3SHQVf03MWOBDeXpqPSjcQ_r4YPvc_equhr6YqdxKggrDAicCUI_mgUv599YcA/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 9 - Pseudoclases y Pseudoelementos + BEM",
+    fecha: "4 Agosto 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-09-UJMIKO",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQtohoYN5OZLSn0DVRvNzGgXDBpbyMCFrJ_pY64xAwo3mpMziTq230uWvlGQBKhog/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 10 - Animaciones 1",
+    fecha: "6 Agosto 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-10-POLKJI",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTEHHui9kPKbBq_Bx9OMxk5q5J35Wyr_UyzZCqgLykrDOllLejOXCp-iVGPVuywmA/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 11 - Animaciones 2",
+    fecha: "11 Agosto 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-11-MNBVCX",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTabRZUrveyHlY3W2k4xH4JsQxG8k2U-maYUuJnJKiPuwfaO23Zr59cnJlQHMySlg/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 12 - Frameworks, librerías y Bootstrap",
+    fecha: "13 Agosto 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-12-LKJHGF",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTnOMUAzqnCV37DKIvaj6vDBAy5U5KpjIg23bGgO8_Ol8pveMuPFSNV2IwYOQMaSg/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 13 - Maquetando con Bootstrap",
+    fecha: "18 Agosto 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-13-DSAMNB",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSjBQyDCNwTE9F4QqfZUEBtG0qTkc3IBUzuAqMHBJq2qlsyxUQfyb3yEz9IF2_W2A/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 14 - Git",
+    fecha: "20 Agosto 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-14-QWASZX",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSAtHgiRwg1n2fQJ4UDUib1-zXPh6O6_Q15by17pw9WqdZ9SO53SwFVGuTHpEO6lA/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 15 - GitHub",
+    fecha: "25 Agosto 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-15-EDXCVB",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQvR4qsWb7MJmqmP3hFtI-XWHd9290mDUNCd4EaH-tsumEbKeYoeIPqptyx02qSNg/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 16 - SASS",
+    fecha: "27 Agosto 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-16-RFVTGB",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQrVOPh2zyrCNS92FEfM1YGg-uPjwOgBfsvwwdI8I6YD7nCtDiDnSOh9jLRcV6Dhw/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 17 - SASS parte 2",
+    fecha: "1 Septiembre 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-17-YHNJMK",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQQdZ-hRUiZTJlkFvp_ClH9OfoNccieD2lDfCFH9Z4Ema4EJiAq00L1IavoUkk7BQ/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 18 - SEO",
+    fecha: "3 Septiembre 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-18-UJMIOL",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vRy4o74lrWrLlbdt3h6CXR1Spds7OmRRVZHFsSxN0KsNSAkhUROXNJOzXXqe2FBng/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 19 - Servidores",
+    fecha: "8 Septiembre 2025",
+    horario: "Miércoles 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-19-POKLNB",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSsUbBu0wz_EZSxEVeiHbGOARcwMzSFDDsbOyXScT65uP21yQuxcd6TKMb5E_hc0A/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+  {
+    titulo: "Clase 20 - Final del curso",
+    fecha: "10 Septiembre 2025",
+    horario: "Lunes 20 a 22 hs",
+    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-20-MZXCAS",
+    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQh4l7DpLAjQYgT6LPGZSpGhL7oYty1_0mAjJUp7IkefKDK8palVS8B7ctx-uJuoQ/pubembed?start=false&loop=false&delayms=3000",
+    video: ""
+  },
+    // Resto de clases sin material cargado aún
+    ...Array.from({ length: 20 }, (_, i) => ({
+      titulo: `Clase ${i + 1}`,
+      fecha: "",
+      horario: "",
+      link: "",
+      ppt: "",
+      video: ""
+    }))
+  ];
+
+  function mostrarClase(index) {
+    const clase = clases[index];
+    const contenido = document.getElementById("contenido-clase");
+    const items = document.querySelectorAll(".clase-item");
+    items.forEach((item, i) => {
+      item.classList.toggle("active", i === index);
+    });
+
+    contenido.innerHTML = `
+      <h4>${clase.titulo}</h4>
+      <span class="badge-fecha p-1 rounded">${clase.fecha || 'Fecha por definir'}</span>
+      <span class="badge-horario p-1 rounded">${clase.horario || 'Horario por definir'}</span>
+      <a href="{% url 'valoracion_alumno' %}" class="btn-valorar" style="text-decoration: none; text-align: center;">Valorar clase ⭐</a>
+
+    <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
+      ${
+        clase.link
+        ? `<a href="https://meet.jit.si/${clase.link}" target="_blank" class="btn-valorar" style="text-decoration: none; text-align:center;">
+          <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
+        </a>`
+          : "<p>Clase en vivo aún no disponible</p>"
+} 
+      <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
+      ${
+        clase.ppt
+          ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>`
+          : "<p>Material aún no disponible</p>"
+      }
+      <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
+      ${
+        clase.video
+          ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>`
+          : "<p>Clase grabada aún no disponible</p>"
+      }
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
+      <ul>
+        <li><a href="#" target="_blank">Documento guía</a></li>
+        <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
+      </ul>
+    `;
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+
+</html>

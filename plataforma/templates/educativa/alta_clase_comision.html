@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Alta / Edición de Clase Comisión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 700px;
+        }
+        .form-control, .form-select {
+            background-color: #1a1a1a;
+            border: 1px solid #12f693;
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #12f693;
+            box-shadow: 0 0 10px #12f69344;
+            outline: none;
+        }
+        label {
+            color: #12f693;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #12f693;
+            border: none;
+            color: #000;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #0df284;
+        }
+        .card {
+            background-color: #151515;
+            border: 1px solid #12f69333;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px #12f69311;
+        }
+        .title {
+            text-align: center;
+            color: #12f693;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+        small.text-info {
+            color: #12f693 !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1 class="title">Alta / Edición de Clase Comisión</h1>
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_comision">Comisión</label>
+                <select name="comision" id="id_comision" class="form-select" required>
+                    {% for comision in comisiones %}
+                        <option value="{{ comision.id_comision }}" 
+                            {% if comision.id_comision|stringformat:"s" == form.comision.value|stringformat:"s" %}selected{% endif %}>
+                            {{ comision }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="mb-3">
+                <label for="id_clase">Clase</label>
+                <select name="clase" id="id_clase" class="form-select" required>
+                    {% for clase in clases %}
+                        <option value="{{ clase.id }}" 
+                            {% if clase.id|stringformat:"s" == form.clase.value|stringformat:"s" %}selected{% endif %}>
+                            {{ clase.nombre_clase }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_fecha">Fecha</label>
+                <input type="date" name="fecha" id="id_fecha" class="form-control"
+                       value="{{ form.fecha.value|stringformat:'s' }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_horario">Horario</label>
+                <input type="time" name="horario" id="id_horario" class="form-control" step="60"
+                       value="{{ form.horario.value|stringformat:'s' }}" required>
+                <small class="text-info">Ingrese hora y minuto (sin segundos)</small>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_link">Link a la clase (Jitsi, Zoom, etc.)</label>
+                <input type="url" name="link" id="id_link" class="form-control"
+                       placeholder="https://..." value="{{ form.link.value|stringformat:'s' }}" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="id_video">URL del video grabado</label>
+                <input type="url" name="video" id="id_video" class="form-control"
+                       placeholder="https://..." value="{{ form.video.value|stringformat:'s' }}">
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mt-4" name="guardar_clase_comision">Guardar Clase Comisión</button>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de éxito -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalExitoLabel">¡Formulario guardado!</h5>
+            </div>
+            <div class="modal-body text-center fs-5">
+                ✅ La clase - comisión fue registrada con éxito.
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'alta_clase_comision' %}" class="btn btn-success">Cargar otra</a>
+                <a href="{% url 'home' %}" class="btn btn-outline-success">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% if guardado_exitoso %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const modal = new bootstrap.Modal(document.getElementById('modalExito'));
+        modal.show();
+    });
+</script>
+{% endif %}
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+<svg viewBox="0 0 2000 2000" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <radialGradient id="greenGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#12f693" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#12f693" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="purpleGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#cf30ff" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#cf30ff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="blur" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="120"/>
+    </filter>
+  </defs>
+
+  <!-- Círculos animados -->
+  <circle r="400" cx="300" cy="300" fill="url(#greenGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="300;1300" dur="20s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="300;700" dur="20s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="350" cx="1600" cy="400" fill="url(#greenGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="1600;1000" dur="22s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="400;1200" dur="22s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="300" cx="800" cy="1600" fill="url(#greenGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="800;400" dur="18s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="1600;600" dur="18s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="400" cx="1500" cy="1600" fill="url(#purpleGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="1500;1800" dur="25s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="1600;300" dur="25s" repeatCount="indefinite" />
+  </circle>
+
+  <circle r="400" cx="400" cy="1400" fill="url(#purpleGlow)" filter="url(#blur)">
+    <animate attributeName="cx" values="400;100" dur="28s" repeatCount="indefinite" />
+    <animate attributeName="cy" values="1400;800" dur="28s" repeatCount="indefinite" />
+  </circle>
+</svg>

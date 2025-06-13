@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Alta de Alumno - Tecno Marema</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'Roboto Mono', monospace;
+            /* font-family: 'Orbitron', sans-serif; */
+        }
+        h2, h4 {
+            color: #12f693;
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+        label {
+            color: #12f693;
+        }
+        input, select, textarea {
+            background-color: #111;
+            border: 1px solid #12f693;
+            color: white;
+            width: 100%;
+        }
+        input:focus, select:focus, textarea:focus {
+            background-color: #111;
+            color: white;
+            border-color: #12f693;
+            box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.25);
+        }
+        .btn-success {
+            background-color: #12f693;
+            border: none;
+            color: black;
+            font-weight: bold;
+        }
+        .btn-success:hover {
+            background-color: #0fd381;
+        }
+        textarea {
+            min-height: 150px;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <h2>Alta Manual de Alumno</h2>
+    <form method="post" id="form-alta-alumno" >
+        {% csrf_token %}
+
+        <!-- DATOS PERSONALES -->
+        <h4>Datos Personales</h4>
+        <div class="row">
+            {% for field in form %}
+                {% if field.name in "id_estudiante nombre apellido dni correo fecha_nacimiento pais provincia telefono genero" %}
+                    <div class="mb-3 col-md-6">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- INFORMACIÓN ADICIONAL -->
+        <h4>Información Adicional</h4>
+        <div class="row">
+            {% for field in form %}
+                {% if field.name == "biografia" or field.name == "descripcion" %}
+                    <div class="mb-3 col-md-12">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <!-- CURSOS -->
+        <h4>Cursos</h4>
+        <div class="row">
+            {% for field in form %}
+                {% if field.name in "cursando1 cursando2 cursando3 cursando4 cursando5 cursando6 cursando7 cursando8 cursando9" %}
+                    <div class="mb-3 col-md-12">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+<!-- DATOS DE USUARIO --> 
+<h4>Datos de Usuario</h4>
+<div class="row">
+    {% for field in form %}
+        {% if field.name in "username password" %}
+            <div class="mb-3 col-md-6">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.name == "username" %}
+                    <span id="estado_nombre_usuario" class="form-text"></span>
+                {% endif %}
+                {% if field.help_text %}
+                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<button type="submit" class="btn btn-success mt-3">Dar de Alta</button>
+
+    </form>
+</div>
+
+
+
+<!-- Modal de error -->
+<div class="modal fade" id="modalErrorUsuario" tabindex="-1" aria-labelledby="modalErrorLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalErrorLabel">Nombre de usuario no válido</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        Este nombre de usuario ya está en uso. Por favor, elegí otro distinto antes de continuar.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- fin del modal -->
+
+
+
+  <!-- Script de validación -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const form = document.getElementById("form-alta-alumno");
+      const input = document.getElementById("id_username");
+      const feedback = document.getElementById("estado_nombre_usuario");
+
+      // Validación en tiempo real
+      input.addEventListener("input", function () {
+        const nombreUsuario = input.value;
+
+        if (nombreUsuario.length < 3) {
+          feedback.textContent = "Debe tener al menos 3 caracteres";
+          feedback.style.color = "orange";
+          return;
+        }
+
+        fetch(`/verificar-nombre-usuario/?nombre_usuario=${encodeURIComponent(nombreUsuario)}`)
+          .then(response => response.json())
+          .then(data => {
+            if (data.disponible) {
+              feedback.textContent = "Nombre de usuario disponible ✔";
+              feedback.style.color = "green";
+            } else {
+              feedback.textContent = "Nombre de usuario no disponible ✖";
+              feedback.style.color = "red";
+            }
+          });
+      });
+
+      // Validación al enviar
+      form.addEventListener("submit", function (e) {
+        const mensaje = feedback.textContent.trim();
+        console.log("Intentando enviar formulario. Mensaje del username:", mensaje);
+
+        if (mensaje === "Nombre de usuario no disponible ✖") {
+          e.preventDefault();
+          console.log("Formulario bloqueado por nombre de usuario en uso.");
+          const modal = new bootstrap.Modal(document.getElementById("modalErrorUsuario"));
+          modal.show();
+        }
+      });
+    });
+  </script>
+
+
+ <!-- Bootstrap JS y dependencias -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

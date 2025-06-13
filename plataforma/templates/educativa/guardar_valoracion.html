@@ -1,0 +1,99 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guardar Valoración - Clase {{ clase.nombre }}</title>
+  <style>
+    body {
+      background-color: #000;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 15px;
+      background-color: #12f693;
+      border: none;
+      color: #000;
+      padding: 10px 20px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Valoración de la clase: {{ clase.nombre }}</h1>
+  <form id="formValoracion" method="POST" action="{% url 'guardar_valoracion' %}">
+    {% csrf_token %}
+
+    <!-- Aquí van las preguntas o inputs visibles -->
+    <label for="preferencia_clase">¿Qué te pareció la clase?</label>
+    <select name="preferencia_clase" id="preferencia_clase" required>
+      <option value="" disabled selected>Selecciona una opción</option>
+      <option value="me_gusto">Me gustó</option>
+      <option value="mas_o_menos">Más o menos</option>
+      <option value="no_me_gusto">No me gustó</option>
+    </select>
+
+    <label for="rol_profe">¿Cómo calificás al profesor?</label>
+    <select name="rol_profe" id="rol_profe" required>
+      <option value="" disabled selected>Selecciona una opción</option>
+      <option value="excelente">Excelente</option>
+      <option value="bueno">Bueno</option>
+      <option value="regular">Regular</option>
+      <option value="malo">Malo</option>
+    </select>
+
+    <label for="contenido">¿Qué te pareció el contenido?</label>
+    <select name="contenido" id="contenido" required>
+      <option value="" disabled selected>Selecciona una opción</option>
+      <option value="muy_bueno">Muy bueno</option>
+      <option value="bueno">Bueno</option>
+      <option value="regular">Regular</option>
+      <option value="malo">Malo</option>
+    </select>
+
+    <label for="plataforma">¿Cómo fue la plataforma usada?</label>
+    <select name="plataforma" id="plataforma" required>
+      <option value="" disabled selected>Selecciona una opción</option>
+      <option value="excelente">Excelente</option>
+      <option value="buena">Buena</option>
+      <option value="regular">Regular</option>
+      <option value="mala">Mala</option>
+    </select>
+
+    <label for="streaming">¿Qué te pareció el streaming?</label>
+    <select name="streaming" id="streaming" required>
+      <option value="" disabled selected>Selecciona una opción</option>
+      <option value="muy_bueno">Muy bueno</option>
+      <option value="bueno">Bueno</option>
+      <option value="regular">Regular</option>
+      <option value="malo">Malo</option>
+    </select>
+
+    <label for="comentarios">Comentarios adicionales</label>
+    <textarea name="comentarios" id="comentarios" placeholder="Escribe aquí tus comentarios (opcional)"></textarea>
+
+    <!-- Campos ocultos que envían datos del usuario y clase -->
+    <input type="hidden" name="id_estudiante" value="{{ id_estudiante }}">
+    <input type="hidden" name="id_usuario" value="{{ id_usuario }}">
+    <input type="hidden" name="nombre_usuario" value="{{ nombre_usuario }}">
+    <input type="hidden" name="clase_id" value="{{ clase.id }}">
+
+    <button type="submit">Enviar valoración</button>
+  </form>
+</body>
+</html>

@@ -1,0 +1,155 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Valoraciones del curso</title>
+  <link rel="stylesheet" href="{% static 'css/tu-estilo.css' %}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body style="background-color: #000; color: #fff; font-family: sans-serif;">
+  <!-- Barra de navegación -->
+  <nav class="navbar navbar-dark px-4 py-3 mb-4">
+    <span class="navbar-brand fw-bold text-white">Cursos</span>
+    <div>
+      <a class="nav-link d-inline-block mx-3" href="#">Mis cursos</a>
+      <a class="nav-link d-inline-block mx-3 active" href="#">Cursos</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Perfil</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Cerrar sesión</a>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4">
+    <h2 class="text-white mb-4">Valoraciones del curso</h2>
+
+    <div class="rate-header d-flex justify-content-between align-items-center mb-4">
+      <select class="form-select bg-dark text-white" style="width: 200px;">
+        <option>General del curso</option>
+        {% for clase in clases %}
+        <option>Clase {{ clase }}</option>
+        {% endfor %}
+      </select>
+      <div class="rate-score fs-4">{{ puntuacion_promedio }} / 5.0</div>
+    </div>
+
+    <div class="faces d-flex gap-4 mb-5">
+      <div class="face green text-center flex-fill">
+        <div style="font-size: 2rem;">😊</div>
+        <h3>Me gustó</h3>
+        <div>{{ porcentaje_positivas }}%</div>
+        <div class="bar green" style="width: {{ porcentaje_positivas }}%;"></div>
+        <div>{{ cantidad_positivas }} votos</div>
+      </div>
+      <div class="face cyan text-center flex-fill">
+        <div style="font-size: 2rem;">😐</div>
+        <h3>Más o menos</h3>
+        <div>{{ porcentaje_neutras }}%</div>
+        <div class="bar cyan" style="width: {{ porcentaje_neutras }}%;"></div>
+        <div>{{ cantidad_neutras }} votos</div>
+      </div>
+      <div class="face purple text-center flex-fill">
+        <div style="font-size: 2rem;">😠</div>
+        <h3>No me gustó</h3>
+        <div>{{ porcentaje_negativas }}%</div>
+        <div class="bar purple" style="width: {{ porcentaje_negativas }}%;"></div>
+        <div>{{ cantidad_negativas }} votos</div>
+      </div>
+    </div>
+    <!-- Gráfico de balance -->
+    <div class="card bg-dark text-white p-4 mb-5 rounded-4">
+      <h3 class="mb-3">Balance general</h3>
+      <canvas id="graficoBalance"></canvas>
+    </div>
+
+    <!-- Gráfico de alumnos que valoran -->
+    <div class="card bg-dark text-white p-4 mb-5 rounded-4">
+      <h3 class="mb-3">Participación</h3>
+      <canvas id="graficoParticipacion"></canvas>
+      <p class="mt-2 text-center">{{ porcentaje_alumnos_que_valoran }}% de los alumnos valoraron al menos una clase</p>
+    </div>
+
+    <!-- Gráfico de puntuaciones por clase -->
+    <div class="card bg-dark text-white p-4 mb-5 rounded-4">
+      <h3 class="mb-3">Puntuaciones promedio por clase</h3>
+      <canvas id="graficoPuntuacionPorClase"></canvas>
+    </div>
+
+    <!-- Comentarios -->
+    <div class="card bg-dark text-white p-4 mb-5 rounded-4">
+      <h3 class="mb-4">Comentarios de estudiantes</h3>
+      {% for comentario in comentarios %}
+        <div class="d-flex align-items-start mb-4 border-bottom border-secondary pb-3">
+          <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+               style="width: 50px; height: 50px; background-color: {{ comentario.color }}; color: #000;">
+            <strong>{{ comentario.inicial }}</strong>
+          </div>
+          <div>
+            <div class="fw-bold">{{ comentario.usuario }}</div>
+            <div class="text-muted" style="font-size: 0.9rem;">{{ comentario.fecha }}</div>
+            <p class="mt-1">{{ comentario.texto }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <script>
+    const graficoBalance = new Chart(document.getElementById('graficoBalance'), {
+      type: 'bar',
+      data: {
+        labels: ['Ideal', 'Obtenida'],
+        datasets: [{
+          label: 'Puntuación',
+          data: [5, {{ puntuacion_promedio|floatformat:1 }}],
+          backgroundColor: ['#12f693', '#00f7ff']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, max: 5 }
+        }
+      }
+    });
+
+    const graficoParticipacion = new Chart(document.getElementById('graficoParticipacion'), {
+      type: 'bar',
+      data: {
+        labels: ['Alumnos', 'Valoraron'],
+        datasets: [{
+          label: 'Cantidad',
+          data: [{{ alumnos_curso }}, {{ votos_totales }}],
+          backgroundColor: ['#cf30ff', '#12f693']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+
+    const graficoPuntuacionPorClase = new Chart(document.getElementById('graficoPuntuacionPorClase'), {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: 22 }, (_, i) => 'Clase ' + i),
+        datasets: [{
+          label: 'Promedio',
+          data: {{ puntuaciones_por_clase|safe }},
+          borderColor: '#00f7ff',
+          backgroundColor: 'rgba(0, 247, 255, 0.2)',
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true, max: 5 }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <title>Desarrollo Web</title>
+  <style>
+    body {
+      background-color: #000;
+      background-image: url("{% static 'img/fondo1.svg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+  
+    /* Navbar */
+    .navbar {
+      background-color: #111;
+    }
+  
+    .nav-link {
+      color: #12f693 !important;
+    }
+  
+    .nav-link.active {
+      border-bottom: 2px solid #12f693;
+    }
+  
+    /* Imágenes */
+    .curso-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+  
+    /* Badges */
+    .badge-marema,
+    .badge-horario {
+      background-color: #12f693;
+      color: #000;
+      font-weight: 600;
+    }
+  
+    .badge-comision {
+      background-color: #cf30ff;
+      color: #fff;
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+  
+    .badge-fecha {
+      background-color: #444;
+      color: #fff;
+      margin-left: 5px;
+    }
+  
+    .badge-horario {
+      margin-left: 5px;
+    }
+  
+    /* Cards */
+    .card,
+    .card-tech {
+      background-color: #111;
+      color: #fff;
+      border: none;
+      border-radius: 1rem;
+      height: 100%;
+    }
+  
+    .card-body {
+      padding: 20px;
+    }
+  
+    /* Tecnologías */
+    .icono-tec {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+      margin-right: 10px;
+    }
+  
+    /* Clases */
+    .clase-item {
+      padding: 10px 15px;
+      margin-bottom: 5px;
+      background-color: #111;
+      color: #fff;
+      border-left: 5px solid transparent;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    .clase-item:hover {
+      background-color: #1a1a1a;
+    }
+  
+    .clase-item.active {
+      background-color: #12f693;
+      color: #000;
+      border-left: 5px solid #0bd68f;
+    }
+  
+    .contenido-clase {
+      background-color: #222;
+      border-radius: 12px;
+      padding: 20px;
+    }
+  
+
+  </style>
+  
+</head>
+
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark px-4 py-3">
+    <span class="navbar-brand fw-bold text-white">Tecno Marema</span>
+    <div>
+      <a class="nav-link d-inline-block mx-3 active" href="#">Mis cursos</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Cursos</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Asistencia</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Profesores</a>
+      <a class="nav-link d-inline-block mx-3" href="#">Cerrar sesión</a>
+    </div>
+  </nav>
+
+  <div class="container mt-5">
+    <h2 class="text-white mb-4">Desarrollo Web <span class="badge-comision">Videos</span></h2>
+    <img src="{% static 'img/hero1.jpg' %}" alt="Desarrollo Web" class="curso-img mb-4">
+    <p>Aprendé a crear sitios web modernos con HTML, CSS, Bootstrap, Git, GitHub y más. Curso práctico desde cero.</p>
+
+    <div class="container my-5">
+      <div class="row g-4">
+        <!-- Card Info del curso -->
+        <div class="col-md-3">
+          <div class="card card-tech h-100 w-100 p-4">
+            <h5 class="card-title text-uppercase text-success mb-4">Profe del curso</h5>
+            <img src="{% static 'img/perfil01.png' %}" alt="perfil" style="border-radius: 50%;transform: scale(0.7); padding: 0;margin: 0; border: 5px solid #0bd68f;">
+          </div>
+        </div>
+
+        <!-- Card Tecnologías -->
+        <div class="col-md-9 d-flex">
+          <div class="card card-tech p-4 w-100 text-center">
+            <!-- <h4 class="mb-4">Tecnologías que vamos a usar</h4> -->
+            <h5 class="card-title text-uppercase text-success mb-4">Tecnologías</h5>
+            <div class="d-flex justify-content-around flex-wrap gap-4">
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/html5.svg' %}" alt="HTML" class="icono-tec mb-2">
+                <span>HTML</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/css3.svg' %}" alt="CSS" class="icono-tec mb-2">
+                <span>CSS</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/sass.svg' %}" alt="SASS" class="icono-tec mb-2">
+                <span>SASS</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/bootstrap.svg' %}" alt="Bootstrap" class="icono-tec mb-2">
+                <span>Bootstrap</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/git.svg' %}" alt="Git" class="icono-tec mb-2">
+                <span>Git</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/github.svg' %}" alt="GitHub" class="icono-tec mb-2">
+                <span>GitHub</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Layout de clases y contenido -->
+<div class="row mt-5">
+  <!-- Lista de clases a la izquierda -->
+  <div class="col-md-4">
+    <div id="lista-clases">
+      <div class="clase-item active" onclick="mostrarClase(0)">Clase 0 - Presentación del Curso</div>
+      <div class="clase-item" onclick="mostrarClase(1)">Clase 1 - Conociendo a HTML</div>
+      <div class="clase-item" onclick="mostrarClase(2)">Clase 2 - Introducción a HTML</div>
+      <div class="clase-item" onclick="mostrarClase(3)">Clase 3 - Presentando a CSS</div>
+      <div class="clase-item" onclick="mostrarClase(4)">Clase 4 - Primeros pasos con CSS</div>
+      <div class="clase-item" onclick="mostrarClase(5)">Clase 5 - Modelo de cajas</div>
+      <div class="clase-item" onclick="mostrarClase(6)">Clase 6 - Flexbox</div>
+      <div class="clase-item" onclick="mostrarClase(7)">Clase 7 - Introducción a Grids</div>
+      <div class="clase-item" onclick="mostrarClase(8)">Clase 8 - Sitios Responsivos (media + grid + flex)</div>
+      <div class="clase-item" onclick="mostrarClase(9)">Clase 9 - Pseudoclases y Pseudoelementos + BEM</div>
+      <div class="clase-item" onclick="mostrarClase(10)">Clase 10 - Animaciones 1</div>
+      <div class="clase-item" onclick="mostrarClase(11)">Clase 11 - Animaciones 2</div>
+      <div class="clase-item" onclick="mostrarClase(12)">Clase 12 - Frameworks, librerías y Bootstrap</div>
+      <div class="clase-item" onclick="mostrarClase(13)">Clase 13 - Maquetando con Bootstrap</div>
+      <div class="clase-item" onclick="mostrarClase(14)">Clase 14 - Git</div>
+      <div class="clase-item" onclick="mostrarClase(15)">Clase 15 - GitHub</div>
+      <div class="clase-item" onclick="mostrarClase(16)">Clase 16 - SASS</div>
+      <div class="clase-item" onclick="mostrarClase(17)">Clase 17 - SASS parte 2</div>
+      <div class="clase-item" onclick="mostrarClase(18)">Clase 18 - SEO</div>
+      <div class="clase-item" onclick="mostrarClase(19)">Clase 19 - Servidores</div>
+      <div class="clase-item" onclick="mostrarClase(20)">Clase 20 - Final del curso</div>
+    </div>
+  </div>
+
+  <!-- Contenido dinámico a la derecha -->
+  <div class="col-md-8">
+    <div id="contenido-clase" class="contenido-clase">
+      <h4>Clase 0 - Presentación del Curso</h4>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Presentación:</strong></p>
+      <iframe width="100%" height="400px" src="https://www.youtube.com/embed/t68gf9wJlPk?si=56jJ5JzmspyL9PEN" title="Clase grabada" frameborder="0" allowfullscreen></iframe>
+
+      <!-- <p class="mt-4"><strong class="badge badge-marema me-2">Instalación de VSC:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/Yqwmz71If_Y?si=94o9iEAjV1uudbQn" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Instalación de Sublime Text:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/L6rYxMI8ZYw?si=DG8cFanHDMGOQrFh" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Instalación de Brackets:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/qr8CE7aZHjY?si=O2fdGp1hML-iaCxd" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Instalación de Balsamiq:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/bM9hBw36hn8?si=nfA7Wt2uFdmH3in4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Extensiones para VSC:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/5IHsi9eVLmQ?si=eoXNSvXLwnFmUBDz" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Extensiones para Sublime Text:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/xnU-Ae1HMng?si=hdljhug7QLSiaPB4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Extensiones para Brackets:</strong></p>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/Z5-E7BIpyv8?si=JYsH-ZoTzIKuTRJ6" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe> -->
+
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+  // Datos de las clases y videos
+  const clases = [
+    {
+      titulo: "Clase 0 - Configuración Inicial",
+      video: [
+        { titulo: "Presentación", url: "https://www.youtube.com/embed/t68gf9wJlPk?si=56jJ5JzmspyL9PEN" },
+        { titulo: "Instalación de VSC", url: "https://www.youtube.com/embed/Yqwmz71If_Y?si=94o9iEAjV1uudbQn" },
+        { titulo: "Instalación de Sublime Text", url: "https://www.youtube.com/embed/L6rYxMI8ZYw?si=DG8cFanHDMGOQrFh" },
+        { titulo: "Instalación de Brackets", url: "https://www.youtube.com/embed/qr8CE7aZHjY?si=O2fdGp1hML-iaCxd" },
+        { titulo: "Instalación de Balsamiq", url: "https://www.youtube.com/embed/bM9hBw36hn8?si=nfA7Wt2uFdmH3in4" },
+        { titulo: "Extensiones para VSC", url: "https://www.youtube.com/embed/5IHsi9eVLmQ?si=eoXNSvXLwnFmUBDz" },
+        { titulo: "Extensiones para Sublime Text", url: "https://www.youtube.com/embed/xnU-Ae1HMng?si=hdljhug7QLSiaPB4" },
+        { titulo: "Extensiones para Brackets", url: "https://www.youtube.com/embed/Z5-E7BIpyv8?si=JYsH-ZoTzIKuTRJ6" }
+      ]
+    },
+    {
+      titulo: "Clase 1 - Introducción a HTML",
+      video: [
+        { titulo: "¿Que es HTML?", url: "" },
+        { titulo: "Estructura básica de HTML", url: "https://www.youtube.com/embed/rCuGq2U81GM?si=yMHo8bDAF_gnoWFr" },
+        { titulo: "Div y Span en HTML", url: "" },
+        { titulo: "Etiquetas Semanticas en HTML", url: "" },
+        { titulo: "Br y Hr en HTML", url: "" },
+        { titulo: "Strong y Em en HTML", url: "" },
+        { titulo: "Comentarios en HTML", url: "" },
+        { titulo: "Encabezados de HTML", url: "https://www.youtube.com/embed/0Z1A6-msgvk?si=uGsbKVu5libez7YS" },
+        { titulo: "Listas en HTML", url: "https://www.youtube.com/embed/WFFpIT-hLhw?si=_IDWcMj0IJRnhFeh" }
+      ]
+    },
+
+    {
+    titulo: "Clase 2 - Introducción a HTML",
+    video: [
+      { titulo: "Tablas en HTML", url: "https://www.youtube.com/embed/ORnpRwmKOQA?si=ASI9wx463IVoRnSc" },
+      { titulo: "Enlaces en HTML", url: "https://www.youtube.com/embed/lQSsR87Eo04?si=-ldS06uDRSTsJNYh" },
+      { titulo: "Multimedia en HTML", url: "https://www.youtube.com/embed/iIo1mn1L3BQ?si=QKoAGErZaPxdYjXl" },
+      { titulo: "Formularios en HTML", url: "https://www.youtube.com/embed/D3B7Z3v0yA4?si=uOxPh09Jo7aHUxqT" },
+      { titulo: "Diferentes inputs en HTML", url: "https://www.youtube.com/embed/T8DvHTiTq00?si=3hwdQ3ZD955IpPHN" },
+    ]
+  },
+  {
+    titulo: "Clase 3 - Presentando a CSS",
+    video: [
+      { titulo: "¿Que es CSS?", url: "" },
+      { titulo: "3 formas de implementar en CSS", url: "https://www.youtube.com/embed/q1RNF4G1J9U?si=9KN2JcchJJyN_-FV" },
+      { titulo: "Selectores en CSS", url: "https://www.youtube.com/embed/_kDQFK7oNH0?si=WZiXY2bR9DA2fmiA" },
+      { titulo: "Nomenclaturas en CSS", url: "https://www.youtube.com/embed/RDTkXgLCyY4?si=KoolQpmPhEj6yTgq" },
+      { titulo: "Herencia en CSS", url: "https://www.youtube.com/embed/oc_p8CHT7Sw?si=bWRdDnrtLHQAZFZy" },
+      { titulo: "Jerarquía de selectores en CSS - Cascada en CSS - !important en CSS", url: "https://www.youtube.com/embed/qELF7WdFlqQ?si=DE1cEXnbFy7F1MpL" },
+      { titulo: "Reseteo en CSS", url: "https://www.youtube.com/embed/bQ_uIa2Mx8g?si=fCXSIaKHlCeJq5Jm" },
+      { titulo: "Comentarios en CSS", url: "" }
+    ]
+  },
+  {
+    titulo: "Clase 4 - Primeros pasos con CSS",
+    video: [
+      { titulo: "Height y Width en CSS", url: "https://www.youtube.com/embed/fsNrDFXDJb0?si=sIYizzncb6eAFr8R" },
+      { titulo: "Míninimos y Máximos para Height y Width en CSS", url: "" },
+      { titulo: "Line-Height en CSS", url: "" },
+      { titulo: "Unidades de medida en CSS", url: "https://www.youtube.com/embed/ajpkXXPI034?si=TI1Y2PiwUAkkp_30" },
+      { titulo: "Colores en CSS", url: "https://www.youtube.com/embed/8xSfl4Uwv7o?si=jHYWACFRzB2MVW7K" },
+      { titulo: "Degradados en CSS", url: "" },
+      { titulo: "Opacity en CSS", url: "" },
+      { titulo: "Visibiity en CSS", url: "" },
+      { titulo: "Background en CSS", url: "https://www.youtube.com/embed/MGE74YFoksw?si=ObILuHRT0f9liWhf" },
+      { titulo: "Font en CSS", url: "https://www.youtube.com/embed/yvB5vrdXg8c?si=HdAc6_eLbsnKo9Wa" },
+    ]
+  },
+  {
+    titulo: "Clase 5 - Modelo de cajas",
+    video: [
+      { titulo: "Text en CSS", url: "https://www.youtube.com/embed/y6eWiMwau3s?si=pV0QoFWxgvLdyLmI" },
+      { titulo: "Fuentes remotas y locales en CSS", url: "https://www.youtube.com/embed/VeOKQtdmweM?si=ohC-Uy5zt4voO2Ae" },
+      { titulo: "Letter y Word Spacing en CSS", url: "" },
+      { titulo: "Word-wrap en CSS", url: "" },
+      { titulo: "Estilos para listas en CSS", url: "" },
+      { titulo: "Estilos para tablas en CSS", url: "" },
+      { titulo: "Overflow en CSS", url: "https://www.youtube.com/embed/AhMoS1GvUxQ?si=6p_qm89ZRuIEhTCK" },
+      { titulo: "Box Model en CSS", url: "https://www.youtube.com/embed/VeOKQtdmweM?si=uH9C9B-N4Oag3It6" },
+      { titulo: "Border-radius en CSS", url: "" },
+      { titulo: "Box-shadows en CSS", url: "" },
+      { titulo: "Elementos de linea y bloque en HTML", url: "https://www.youtube.com/embed/UOejKEwuc04?si=KsJizvwLvi0--em5" },
+      { titulo: "Float en CSS", url: "" },
+      { titulo: "Display en CSS", url: "https://www.youtube.com/embed/AItKCcvcWxs?si=_jYijLVZI7JJZGjF" },
+      { titulo: "Position en CSS", url: "https://www.youtube.com/embed/Uu7bcM6Nzeg?si=dkbMU1QaDqpJ-T7T" },
+      { titulo: "Z-index en CSS", url: "https://www.youtube.com/embed/9hPpwlhuls0?si=FF6sTqG6EfyjIEja" }
+    ]
+  },
+  {
+    titulo: "Clase 6 - Flexbox",
+    video: [
+      { titulo: "Flexbox", url: "https://www.youtube.com/embed/_O5x7BPDgzw?si=YnTWc3xdT_9Ni8LP" }
+    ]
+  },
+  {
+    titulo: "Clase 7 - Introducción a Grids",
+    video: [
+      { titulo: "Grid CSS parte 1", url: "https://www.youtube.com/embed/FTnJ-qVjiws?si=9E7BdIBgZYhca_b9" },
+      { titulo: "Grid CSS parte 2", url: "https://www.youtube.com/embed/2gbiTYLqWJY?si=Wh-_j53WqvUk7eFq" },
+      { titulo: "Place-items CSS", url: "https://www.youtube.com/embed/NIWaTqnICaI?si=6JAP-_LPDB8Q0TCj" },
+      { titulo: "Grid CSS parte 3", url: "https://www.youtube.com/embed/mvP2muP1yY4?si=exV7Yy1g8qcrNEPG" }
+    ]
+  },
+  {
+    titulo: "Clase 8 - Sitios Responsivos (media + grid + flex)",
+    video: [
+      { titulo: "Media queries parte 1", url: "https://www.youtube.com/embed/_RHeLQ6cbDc?si=a6izq5xOJFPAxy57" },
+      { titulo: "Media queries parte 2", url: "https://www.youtube.com/embed/NgUmUQjymyw?si=GpOokYAf8f2Z-OPh" },
+      { titulo: "Media queries parte 3", url: "https://www.youtube.com/embed/VLI_xvZoS0Y?si=FH3nEYh0V4QxKhoR" }
+    ]
+  },
+  {
+    titulo: "Clase 9 - Pseudoclases y Pseudoelementos + BEM",
+    video: [
+      { titulo: "Pseudoclases y Pseudoelementos", url: "https://www.youtube.com/embed/Eo5CFj7ziCU?si=IlaqS7bLI0qX0Psk" },
+      { titulo: "BEM", url: "https://www.youtube.com/embed/A_TKQwSrPXk?si=ausHj1f2zfj04i5Q" }
+    ]
+  },
+  {
+    titulo: "Clase 10 - Animaciones 1",
+    video: [
+      { titulo: "Transiciones en CSS", url: "" },
+      { titulo: "Transformaciones en CSS", url: "" },
+      { titulo: "Animaciones en CSS", url: "" },
+      { titulo: "Filtros en CSS", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 11 - Animaciones 2",
+    video: [
+      { titulo: "Clip-path", url: "" },
+      { titulo: "Shape-outside", url: "" },
+      { titulo: "Writing-mode", url: "" },
+      { titulo: "line-clamp", url: "" },
+      { titulo: "Backdrop-filter", url: "" },
+      { titulo: "Li ::marker", url: "" },
+      { titulo: "Columns", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 12 - Frameworks, librerías y Bootstrap",
+    video: [
+      { titulo: "¿Que es un Framework y Libreria?", url: "" },
+      { titulo: "¿Que es Bootstrap?", url: "" },
+      { titulo: "¿Como utilizar Bootstrap?", url: "" },
+      { titulo: "Grid system de Bootstrap", url: "" },
+      { titulo: "Versiones de Bootstrap", url: "" },
+      { titulo: "Textos en Bootstrap 5", url: "" },
+      { titulo: "Tablas en Bootstrap 5", url: "" },
+      { titulo: "Imagenes en Bootstrap 5", url: "" },
+      { titulo: "Botones en Bootstrap 5", url: "" },
+      { titulo: "Listas en Bootstrap 5", url: "" },
+      { titulo: "Navbars en Bootstrap 5", url: "" },
+      { titulo: "Sliders en Bootstrap 5", url: "" },
+      { titulo: "Formularios en Bootstrap 5", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 13 - Maquetando con Bootstrap",
+    video: [
+      { titulo: "Maquetando con BS", url: "" }
+    ]
+  },
+  {
+    titulo: "Clase 14 - Git",
+    video: [
+      { titulo: "Instalacion de Git", url: "" },
+      { titulo: "Git", url: "" }
+    ]
+  },
+  {
+    titulo: "Clase 15 - GitHub",
+    video: [
+      { titulo: "Github", url: "" },
+      { titulo: "Creación de cuenta de Github", url: "" },
+      { titulo: "Creación de repositorio en Github", url: "" },
+      { titulo: "Configuración de Github Pages", url: "" }
+    ]
+  },
+  {
+    titulo: "Clase 16 - SASS",
+    video: [
+      { titulo: "Que son los preprocesadores?", url: "" },
+      { titulo: "Que es SASS?", url: "" },
+      { titulo: "Instalación de Node js", url: "" },
+      { titulo: "Como utilizar SASS", url: "" },
+      { titulo: "Sintaxis de SASS y SCSS", url: "" },
+      { titulo: "Anidación de SASS y SCSS", url: "" },
+      { titulo: "Variables en SASS", url: "" },
+      { titulo: "Operadores en SASS", url: "" },
+      { titulo: "La regla @import", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 17 - SASS parte 2",
+    video: [
+      { titulo: "Los condicionales en sass", url: "" },
+      { titulo: "@for", url: "" },
+      { titulo: "@for", url: "" },
+      { titulo: "@each", url: "" },
+      { titulo: "Maps", url: "" },
+      { titulo: "@while", url: "" },
+      { titulo: "Mixins", url: "" },
+      { titulo: "Extends", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 18 - SEO",
+    video: [
+      { titulo: "¿Qué es el SEO?", url: "" },
+      { titulo: "Etiquetas Meta", url: "" },
+      { titulo: "Sitemap", url: "" },
+      { titulo: "Lighthouse", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 19 - Servidores",
+    video: [
+      { titulo: "Dominio", url: "" },
+      { titulo: "Servidores", url: "" },
+      { titulo: "Modelo Cliente - Servidor", url: "" },
+      { titulo: "Certificado SSL", url: "" },
+      { titulo: "Creacion y configuracion de un servidor", url: "" },
+      { titulo: "FTP", url: "" },
+      { titulo: "Conectando al servidor desde Filezilla", url: "" },
+    ]
+  },
+  {
+    titulo: "Clase 20 - Final del curso",
+    video: [
+      { titulo: "Video de cierre", url: "https://www.youtube.com/embed/Lr5DNWibJCM" }
+    ]
+  },
+
+
+
+    // Clases vacías hasta la clase 19
+    ...Array.from({ length: 18 }, (_, i) => ({
+      titulo: `Clase ${i + 2}`,
+      video: []
+    }))
+  ];
+
+  // Función para mostrar el contenido de una clase
+  function mostrarClase(index) {
+    const clase = clases[index];
+    const contenido = document.getElementById("contenido-clase");
+    const items = document.querySelectorAll(".clase-item");
+
+    // Resalta la clase activa
+    items.forEach((item, i) => {
+      item.classList.toggle("active", i === index);
+    });
+
+    // Construye el HTML del contenido
+    contenido.innerHTML = `
+      <h4>${clase.titulo}</h4>
+      ${
+        clase.video.length > 0
+          ? clase.video.map(video =>
+              `<div class="mb-4">
+                <p>
+                  <span class="badge badge-marema d-inline-block mb-2" style="font-size: 1rem;">
+                    ${video.titulo}
+                  </span>
+                </p>
+                <iframe width="100%" height="400px"
+                        src="${video.url}"
+                        frameborder="0"
+                        allowfullscreen
+                        sandbox="allow-same-origin allow-scripts allow-presentation allow-popups">
+                </iframe>
+              </div>`
+            ).join("")
+          : "<p>Video aún no disponible</p>"
+      }
+    `;
+  }
+</script>
+
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
