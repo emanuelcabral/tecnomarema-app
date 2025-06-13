@@ -330,16 +330,17 @@
 {% endif %}
 
 {% if comision.id_curso.nombre_curso == "Desarrollo web" %}
-  <a href="{% url 'curso_detalle' id_curso=comision.id_curso.id_curso %}" class="btn btn-acceder">Acceder</a>
+  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% elif comision.id_curso.nombre_curso == "Inteligencia Artificial" %}
-  <a href="{% url 'curso_detalle' id_curso=comision.id_curso.id_curso %}" class="btn btn-acceder">Acceder</a>
+  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% elif comision.id_curso.nombre_curso == "Python" %}
-  <a href="{% url 'curso_detalle' id_curso=comision.id_curso.id_curso %}" class="btn btn-acceder">Acceder</a>
+  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% elif comision.id_curso.nombre_curso|lower == "javascript" %}
-  <a href="{% url 'curso_detalle' id_curso=comision.id_curso.id_curso %}" class="btn btn-acceder">Acceder</a>
+  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% else %}
   <a href="#" class="btn btn-secondary disabled">Curso no disponible</a>
 {% endif %}
+
 
         </div>
     </div>

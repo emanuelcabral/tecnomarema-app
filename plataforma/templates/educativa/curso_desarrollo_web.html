@@ -280,6 +280,32 @@
   background-color: #12f693 !important;
 }
     /* intento de personalizr el google slides fin */
+
+
+  .sub-menu{
+    /* border: 10px solid #000; */
+    border-radius: 10px;
+    background-color: #111;
+    min-height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    gap: 10px;
+  }
+  .sub-menu a{
+    color:#12f693;
+    text-decoration: none;
+    text-align: center;
+    background-color: #111;
+    padding: 10px 30px;
+    border-radius: 10px;
+    border: 1px solid #12f693;
+  }
+
+  .sub-menu a:hover{
+    box-shadow: 0 0 5px 5px #12f693;
+  }
     
   </style>
 </head>
@@ -381,6 +407,15 @@
       </div>
         
     </div>
+  </div>
+
+  <div class="col-md-12 sub-menu">
+    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
+    Ver participantes
+    </a>
+    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
+    Asistencias
+    </a>
   </div>
 
   <!-- Layout de clases y contenido -->

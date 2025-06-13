@@ -4,6 +4,7 @@
     {% load static %}
     <meta charset="UTF-8" />
     <title>Participantes</title>
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
     <style>
         body {
             background-color: #000;
@@ -41,6 +42,7 @@
             border: 2px solid #12f693;
             border-radius: 10px;
             padding: 20px;
+            background-color: #111;
         }
         section h3 {
             color: #12f693;
@@ -131,7 +133,7 @@
 
     {% if tutores %}
     <section>
-        <h3>Tutor/es</h3>
+        <h3>Tutor/a</h3>
         <div class="grid">
             {% for tutor in tutores %}
             <div class="card">

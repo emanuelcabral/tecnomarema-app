@@ -117,7 +117,8 @@ urlpatterns = [
     #  path('mis-cursos/', views.mis_cursos_view, name='mis_cursos'), #con este path no me anda el login
 
     # path('<str:id_curso>/', el_curso_view, name='curso_detalle'),
-    path('<str:id_curso>/', curso_detalle_view, name='curso_detalle'),
+    # path('<str:id_curso>/', curso_detalle_view, name='curso_detalle'),
+    path('curso/<str:id_comision>/', curso_detalle_view, name='curso_detalle'),
 
 
     # path('curso/desarrollo-web/', views.curso_desarrollo_web_view, name='curso_desarrollo_web'),
@@ -126,6 +127,9 @@ urlpatterns = [
     path('participantes/', views.participantes_view, name='participantes'), #http://127.0.0.1:8000/participantes/
     # path('participantes/curso/<int:curso_id>/', views.participantes_view, name='participantes'), #http://127.0.0.1:8000/participantes/curso/02/
     path('participantes/curso/<str:curso_id>/', views.participantes_view, name='participantes'),  #http://127.0.0.1:8000/participantes/curso/01/
+
+    path('participantes/<int:numero_comision>/<str:id_curso>/', views.participantes_view, name='participantes'),
+
 
     path('usuarios/', views.listar_usuarios_view, name='listar_usuarios'), 
 

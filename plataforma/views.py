@@ -678,7 +678,7 @@ def guardar_valoracion(request):
         clase_id = request.POST.get('clase_id')
 
         if not id_estudiante or not nombre_usuario or not clase_id:
-            return redirect('login')
+            return redirect('mis_cursos')
 
         clase = get_object_or_404(Clase, id=clase_id)
 
@@ -1079,17 +1079,17 @@ def cursos_alumno(request):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import PerfilUsuario, Curso, Clase, ClaseComision
+from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision
 from .decorators import session_required
 
 @session_required
-def curso_detalle_view(request, id_curso):
-    # Obtengo el nombre de usuario logueado de la sesión
+def curso_detalle_view(request, id_comision):
+    # 1. Verificar sesión
     nombre_usuario = request.session.get('usuario_logueado')
     if not nombre_usuario:
         return redirect('login')
 
-    # Obtengo el objeto PerfilUsuario con su relación a id_estudiante
+    # 2. Obtener usuario y estudiante
     try:
         usuario = PerfilUsuario.objects.select_related('id_estudiante').get(nombre_usuario=nombre_usuario)
         estudiante = usuario.id_estudiante
@@ -1097,45 +1097,31 @@ def curso_detalle_view(request, id_curso):
         messages.error(request, 'Usuario no encontrado.')
         return redirect('login')
 
-    # Busco el curso según el id_curso que llega por URL
-    curso = get_object_or_404(Curso, id_curso=id_curso)
+    # 3. Obtener comisión y curso correspondiente
+    comision = get_object_or_404(Comision, id_comision=id_comision)
+    curso = comision.id_curso
 
-    # Obtengo las comisiones que cursa el estudiante (pueden ser None)
-    comisiones_estudiante = [
-        estudiante.cursando1,
-        estudiante.cursando2,
-        estudiante.cursando3,
-        estudiante.cursando4,
-        estudiante.cursando5,
-        estudiante.cursando6,
-        estudiante.cursando7,
-        estudiante.cursando8,
-        estudiante.cursando9,
-    ]
-
-    # Busco la comisión actual que corresponde al curso
-    comision_actual = next(
-        (com for com in comisiones_estudiante if com and com.id_curso == curso),
-        None
-    )
-
-    if not comision_actual:
-        messages.error(request, 'No estás inscripto a ninguna comisión de este curso.')
+    # 4. Verificar que el estudiante esté inscripto en esa comisión
+    if comision not in [
+        estudiante.cursando1, estudiante.cursando2, estudiante.cursando3,
+        estudiante.cursando4, estudiante.cursando5, estudiante.cursando6,
+        estudiante.cursando7, estudiante.cursando8, estudiante.cursando9,
+    ]:
+        messages.error(request, 'No estás inscripto en esta comisión.')
         return redirect('mis_cursos')
 
-    # Obtengo todas las clases activas del curso
+    # 5. Obtener clases activas del curso
     clases_del_curso = curso.clases.filter(estado_clase='Activo').order_by('numero_clase')
 
-    # Obtengo las instancias de ClaseComision para esta comisión
+    # 6. Obtener las instancias de ClaseComision para esta comisión
     clases_comisionadas = ClaseComision.objects.filter(
-        comision=comision_actual,
+        comision=comision,
         clase__in=clases_del_curso
     ).select_related('clase')
 
-    # Creo un diccionario para acceder rápido a los datos de clasecomision por ID de clase
     clasecomision_dict = {cc.clase_id: cc for cc in clases_comisionadas}
 
-    # Determinar qué template usar según el curso
+    # 7. Determinar template según el curso
     nombre_normalizado = curso.nombre_curso.strip().lower()
     templates_por_curso = {
         "desarrollo web": "educativa/curso_desarrollo_web.html",
@@ -1146,11 +1132,12 @@ def curso_detalle_view(request, id_curso):
 
     template_a_usar = templates_por_curso.get(nombre_normalizado, "educativa/curso_detalle.html")
 
+    # 8. Renderizar
     contexto = {
         'usuario': usuario,
         'estudiante': estudiante,
         'curso': curso,
-        'comision': comision_actual,
+        'comision': comision,
         'nombre_usuario': nombre_usuario,
         'es_autenticado': True,
         'clases': clases_del_curso,
@@ -1158,6 +1145,7 @@ def curso_detalle_view(request, id_curso):
     }
 
     return render(request, template_a_usar, contexto)
+
 
 
 #######################################################################
@@ -1361,22 +1349,26 @@ from django.shortcuts import render, get_object_or_404
 from .models import PerfilUsuario, Curso, Comision, DatosDeEstudiantes
 from django.db.models import Q
 
-def participantes_view(request, curso_id):
-    curso = get_object_or_404(Curso, id_curso=curso_id)
+from django.shortcuts import render, get_object_or_404
+from .models import PerfilUsuario, Curso, Comision, DatosDeEstudiantes
+from django.db.models import Q
 
-    # Corregido aquí: usar id_curso en lugar de curso
-    comisiones = Comision.objects.filter(id_curso=curso)
+def participantes_view(request, numero_comision, id_curso):
+    # Buscar el curso y la comisión específica
+    curso = get_object_or_404(Curso, id_curso=id_curso)
+    comision = get_object_or_404(Comision, numero_comision=numero_comision, id_curso=curso)
 
+    # Buscar estudiantes cursando esa comisión en cualquiera de los campos cursando1-9
     estudiantes = DatosDeEstudiantes.objects.filter(
-        Q(cursando1__in=comisiones) |
-        Q(cursando2__in=comisiones) |
-        Q(cursando3__in=comisiones) |
-        Q(cursando4__in=comisiones) |
-        Q(cursando5__in=comisiones) |
-        Q(cursando6__in=comisiones) |
-        Q(cursando7__in=comisiones) |
-        Q(cursando8__in=comisiones) |
-        Q(cursando9__in=comisiones)
+        Q(cursando1=comision) |
+        Q(cursando2=comision) |
+        Q(cursando3=comision) |
+        Q(cursando4=comision) |
+        Q(cursando5=comision) |
+        Q(cursando6=comision) |
+        Q(cursando7=comision) |
+        Q(cursando8=comision) |
+        Q(cursando9=comision)
     )
 
     profesores = PerfilUsuario.objects.filter(rol='profesor', id_estudiante__in=estudiantes)
@@ -1385,12 +1377,16 @@ def participantes_view(request, curso_id):
 
     context = {
         'curso': curso,
+        'comision': comision,
         'profesores': profesores,
         'tutores': tutores,
         'alumnos': alumnos,
         'cantidad_alumnos': alumnos.count(),
     }
+
     return render(request, 'educativa/participantes.html', context)
+
+
 
 #####################################################################################################################################
 #  La vista listar_usuarios_view obtiene todos los usuarios desde el modelo PerfilUsuario junto con sus datos relacionados
