@@ -1081,6 +1081,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision
 from .decorators import session_required
+from .models import AsistenciaClase
 
 @session_required
 def curso_detalle_view(request, id_comision):
@@ -1132,6 +1133,10 @@ def curso_detalle_view(request, id_comision):
 
     template_a_usar = templates_por_curso.get(nombre_normalizado, "educativa/curso_detalle.html")
 
+    # Obtener asistencias del estudiante
+    asistencias = AsistenciaClase.objects.filter(estudiante=estudiante)
+    clases_presentes_ids = list(asistencias.values_list('clase_id', flat=True))
+
     # 8. Renderizar
     contexto = {
         'usuario': usuario,
@@ -1142,6 +1147,7 @@ def curso_detalle_view(request, id_comision):
         'es_autenticado': True,
         'clases': clases_del_curso,
         'clasescomision': clasecomision_dict,
+        'clases_presentes_ids': clases_presentes_ids,  # ✅ AHORA SÍ
     }
 
     return render(request, template_a_usar, contexto)
@@ -1404,8 +1410,46 @@ def listar_usuarios_view(request):
 ###---------------------marcar el presente-------------------------####
 #######################################################################
 
-from .models import AsistenciaClase, Clase, DatosDeEstudiantes
+from .models import Clase, DatosDeEstudiantes, AsistenciaClase
 from django.utils import timezone
+from django.shortcuts import redirect
+from urllib.parse import urlencode, urlparse, parse_qs, urlunparse
+from plataforma.decorators import session_required
+
+from .models import Clase, DatosDeEstudiantes, AsistenciaClase
+from django.shortcuts import redirect
+from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
+from plataforma.decorators import session_required
+
+def agregar_parametro(url, clave, valor):
+    partes = urlparse(url)
+    query = dict(parse_qsl(partes.query))
+    query[clave] = valor
+    nueva_query = urlencode(query)
+    return urlunparse(partes._replace(query=nueva_query))
+
+# @session_required
+# def marcar_presente(request, clase_id):
+#     estudiante_id = request.session.get('usuario_id')
+#     if not estudiante_id:
+#         return redirect('login')
+
+#     clase = Clase.objects.get(id=clase_id)
+#     estudiante = DatosDeEstudiantes.objects.get(id_estudiante=estudiante_id)
+
+#     ya_registrada = AsistenciaClase.objects.filter(estudiante=estudiante, clase=clase).exists()
+
+#     if ya_registrada:
+#         referer = request.META.get('HTTP_REFERER', '/')
+#         return redirect(agregar_parametro(referer, 'presente', '1'))
+
+#     asistencia = AsistenciaClase(estudiante=estudiante, clase=clase)
+#     asistencia.guardar_detalles()
+#     asistencia.save()
+
+#     return redirect(request.META.get('HTTP_REFERER', 'mis_cursos'))
+
+from django.http import JsonResponse
 
 @session_required
 def marcar_presente(request, clase_id):
@@ -1416,7 +1460,12 @@ def marcar_presente(request, clase_id):
     clase = Clase.objects.get(id=clase_id)
     estudiante = DatosDeEstudiantes.objects.get(id_estudiante=estudiante_id)
 
-    # Registrar si no existe
-    asistencia, creada = AsistenciaClase.objects.get_or_create(estudiante=estudiante, clase=clase)
+    if AsistenciaClase.objects.filter(estudiante=estudiante, clase=clase).exists():
+        if request.headers.get("x-requested-with") == "XMLHttpRequest":
+            return JsonResponse({"ya_presente": True})
+        return redirect(f"{request.META.get('HTTP_REFERER', 'mis_cursos')}?presente=1")
 
+    asistencia = AsistenciaClase(estudiante=estudiante, clase=clase)
+    asistencia.guardar_detalles()
+    asistencia.save()
     return redirect(request.META.get('HTTP_REFERER', 'mis_cursos'))

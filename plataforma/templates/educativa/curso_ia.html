@@ -312,6 +312,43 @@
   }
   
   /* submenu fin */
+
+
+
+  .asistencia-badge {
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 10px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.asistencia-presente {
+  background-color: #12f693 !important;
+  color: #000 !important;
+}
+
+.asistencia-btn {
+  background-color: #12f693;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(18, 246, 147, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.asistencia-btn:hover {
+  background-color: #0cd680;
+  transform: translateY(-2px);
+}
+
     
   </style>
 </head>
@@ -461,26 +498,84 @@
         <!-- ASISTENCIA -->
 {% now "Y-m-d H:i" as ahora %}
 {% with hoy=ahora|slice:":10" hora_actual=ahora|slice:"11:" %}
+  {% with id_string=clase.id|stringformat:"s" %}
+    {% with fecha_clase=cc.fecha|date:"Y-m-d" hora_inicio=cc.horario|stringformat:"s" hora_fin=cc.hora_fin|stringformat:"s" %}
+    
+      {% if id_string in clases_presentes_ids %}
+        <span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>
 
-  {% if clase.id in clases_presentes_ids %}
-    <span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>
+      {% elif cc.fecha and hora_inicio and hora_fin %}
+        {% if fecha_clase < hoy %}
+          <span class="badge ms-2" style="background-color:#cf30ff;">Ausentessssssss</span>
 
-  {% else %}
-    {% if cc.fecha and cc.horario and cc.hora_fin %}
-      {% if cc.fecha|date:"Y-m-d" == hoy and cc.horario <= hora_actual <= cc.hora_fin %}
-        <form method="post" action="{% url 'marcar_presente' clase.id %}" class="d-inline ms-2">
-          {% csrf_token %}
-          <button class="btn btn-success btn-sm" type="submit">Marcar presente</button>
-        </form>
+        {% elif fecha_clase == hoy %}
+          {% if hora_actual > hora_fin %}
+            <span class="badge ms-2" style="background-color:#cf30ff;">Ausentesss</span>
+
+          {% elif hora_inicio <= hora_actual and hora_actual <= hora_fin %}
+            <form method="post" action="{% url 'marcar_presente' clase.id %}" class="d-inline ms-2">
+              {% csrf_token %}
+              <button class="btn btn-success btn-sm" type="submit" id="btn-marcar-presente">Marcar presente</button>
+            </form>
+
+          {% else %}
+            <span class="badge ms-2" style="background-color:#cf30ff;">Ausentes</span>
+          {% endif %}
+        {% else %}
+          <span class="badge ms-2" style="background-color:#cf30ff;">Ausentess</span>
+        {% endif %}
+
       {% else %}
-        <span class="badge ms-2" style="background-color:#cf30ff;">Ausente</span>
+        <span class="badge ms-2" style="background-color:#999;">Horario indefinido</span>
       {% endif %}
-    {% else %}
-      <span class="badge ms-2" style="background-color:#999;">Horario indefinido</span>
-    {% endif %}
-  {% endif %}
 
+    {% endwith %}
+  {% endwith %}
 {% endwith %}
+
+
+
+
+
+
+
+<!-- 👇 AGREGADO: Script para interceptar botón y mostrar modal antes de enviar -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.querySelector('form[action*="marcar_presente"]');
+  if (form) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const csrf = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      fetch(form.action, {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrf,
+          "X-Requested-With": "XMLHttpRequest"
+        }
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ya_presente) {
+          const modal = new bootstrap.Modal(document.getElementById('modalPresente'));
+          modal.show();
+          // No recargar la página
+        } else {
+          // Esperamos 2 segundos antes de recargar
+          setTimeout(() => {
+            location.reload();
+          }, 2000);
+        }
+      })
+      .catch(err => {
+        console.error("Error marcando asistencia:", err);
+      });
+    });
+  }
+});
+</script>
+
 
 
         <a href="{% url 'valoracion_alumno' %}" class="btn-valorar mt-2">Valorar clase ⭐</a>
@@ -539,6 +634,8 @@
   const csrfToken = "{{ csrf_token }}";
 </script>
 
+
+<!-- reemplaza tu bloque JS con este completamente funcional -->
 <script>
   const clasesData = [
     {% for clase in clases %}
@@ -580,13 +677,20 @@
     let dentroFranja = false;
     let fueraFranja = false;
 
-    if (clase.fecha_raw === hoy && inicioMin !== null && finMin !== null) {
-      if (inicioMin <= ahoraMin && ahoraMin <= finMin) {
-        dentroFranja = true;
-      } else if (ahoraMin > finMin) {
-        fueraFranja = true;
-      }
-    }
+if (clase.fecha_raw && inicioMin !== null && finMin !== null) {
+  const fechaClase = new Date(clase.fecha_raw);
+  const hoyDate = new Date();
+  const claseYaPaso =
+    fechaClase < hoyDate ||
+    (clase.fecha_raw === hoy && ahoraMin > finMin);
+
+  if (clase.fecha_raw === hoy && inicioMin <= ahoraMin && ahoraMin <= finMin) {
+    dentroFranja = true;
+  } else if (claseYaPaso) {
+    fueraFranja = true;
+  }
+}
+
 
     let asistenciaHTML = "";
 
@@ -640,14 +744,33 @@
 </script>
 
 
+
 <script>
   function soloFecha(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
+  // Parseamos manualmente sin UTC
+  const fechaInicioStr = "{{ comision.fecha_inicio|date:'Y-m-d' }}";
+  const fechaFinStr = "{{ comision.fecha_fin|date:'Y-m-d' }}";
+
+  const fechaInicioParts = fechaInicioStr.split("-");
+  const fechaFinParts = fechaFinStr.split("-");
+
+  // Creamos las fechas en horario local (no UTC)
+  const fechaInicio = soloFecha(new Date(
+    parseInt(fechaInicioParts[0]),
+    parseInt(fechaInicioParts[1]) - 1,
+    parseInt(fechaInicioParts[2])
+  ));
+
+  const fechaFin = soloFecha(new Date(
+    parseInt(fechaFinParts[0]),
+    parseInt(fechaFinParts[1]) - 1,
+    parseInt(fechaFinParts[2])
+  ));
+
   const hoy = soloFecha(new Date());
-  const fechaInicio = soloFecha(new Date("{{ comision.fecha_inicio|date:'Y-m-d' }}"));
-  const fechaFin = soloFecha(new Date("{{ comision.fecha_fin|date:'Y-m-d' }}"));
 
   let mensaje = "";
 
@@ -671,6 +794,37 @@
 </script>
 
 
+<!-- modal marcar presente inicia -->
+
+<!-- MODAL DE ASISTENCIA YA REGISTRADA -->
+<div class="modal fade" id="modalPresente" tabindex="-1" aria-labelledby="modalPresenteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background-color: #111; border: 2px solid #12f693; color: #fff;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPresenteLabel">Asistencia ya registrada</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        Ya habías marcado presente para esta clase. ¡Gracias por tu compromiso! 🟢
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get("presente") === "1") {
+    const modal = new bootstrap.Modal(document.getElementById('modalPresente'));
+    modal.show();
+  }
+</script>
+
+
+<!-- modal marcar presente fin -->
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

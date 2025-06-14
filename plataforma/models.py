@@ -268,7 +268,7 @@ class AsistenciaClase(models.Model):
     clase = models.ForeignKey('Clase', on_delete=models.CASCADE)
     fecha_marcada = models.DateTimeField(auto_now_add=True)
 
-    # Nuevos campos para simplificar visualización
+    # Nuevos campos
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     nombre_usuario = models.CharField(max_length=150)
@@ -285,29 +285,29 @@ class AsistenciaClase(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido} - Clase {self.nombre_clase} - Presente"
 
-def guardar_detalles(self):
-    self.nombre = self.estudiante.nombre
-    self.apellido = self.estudiante.apellido
-    self.nombre_usuario = getattr(self.estudiante.perfilusuario, "nombre_usuario", "-")
-    self.curso = self.clase.curso.nombre_curso if self.clase.curso else "-"
-    self.nombre_clase = self.clase.nombre_clase
+    def guardar_detalles(self):
+        self.nombre = self.estudiante.nombre
+        self.apellido = self.estudiante.apellido
+        self.nombre_usuario = getattr(self.estudiante.perfilusuario, "nombre_usuario", "-")
+        self.curso = self.clase.curso.nombre_curso if self.clase.curso else "-"
+        self.nombre_clase = self.clase.nombre_clase
 
-    from plataforma.models import ClaseComision  # ← evitamos import circular
-    cc = ClaseComision.objects.filter(clase=self.clase).first()
-
-    if cc:
-        self.comision = str(cc.comision.numero_comision) if cc.comision else "-"
-        self.fecha_clase = cc.fecha
-        self.horario_inicio = cc.horario
-        self.horario_fin = cc.hora_fin
-    else:
-        self.comision = "-"
-        self.fecha_clase = None
-        self.horario_inicio = None
-        self.horario_fin = None
-
+        from plataforma.models import ClaseComision
+        cc = ClaseComision.objects.filter(clase=self.clase).first()
+        if cc:
+            self.comision = str(cc.comision.numero_comision) if cc.comision else "-"
+            self.fecha_clase = cc.fecha
+            self.horario_inicio = cc.horario
+            self.horario_fin = cc.hora_fin
+        else:
+            self.comision = "-"
+            self.fecha_clase = timezone.now().date()
+            self.horario_inicio = timezone.now().time()
+            self.horario_fin = timezone.now().time()
 
     def save(self, *args, **kwargs):
         self.guardar_detalles()
         super().save(*args, **kwargs)
+
+
 # fin del codigo 
