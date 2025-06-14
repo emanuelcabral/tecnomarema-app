@@ -133,6 +133,9 @@ urlpatterns = [
 
     path('usuarios/', views.listar_usuarios_view, name='listar_usuarios'), 
 
+    path('marcar_presente/<int:clase_id>/', views.marcar_presente, name='marcar_presente'),
+
+
 
 ]
 

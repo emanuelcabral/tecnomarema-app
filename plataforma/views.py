@@ -1398,3 +1398,25 @@ from .models import PerfilUsuario
 def listar_usuarios_view(request):
     usuarios = PerfilUsuario.objects.select_related('id_estudiante').all()
     return render(request, 'participantes.html', {'usuarios': usuarios})
+
+
+#######################################################################
+###---------------------marcar el presente-------------------------####
+#######################################################################
+
+from .models import AsistenciaClase, Clase, DatosDeEstudiantes
+from django.utils import timezone
+
+@session_required
+def marcar_presente(request, clase_id):
+    estudiante_id = request.session.get('usuario_id')
+    if not estudiante_id:
+        return redirect('login')
+
+    clase = Clase.objects.get(id=clase_id)
+    estudiante = DatosDeEstudiantes.objects.get(id_estudiante=estudiante_id)
+
+    # Registrar si no existe
+    asistencia, creada = AsistenciaClase.objects.get_or_create(estudiante=estudiante, clase=clase)
+
+    return redirect(request.META.get('HTTP_REFERER', 'mis_cursos'))

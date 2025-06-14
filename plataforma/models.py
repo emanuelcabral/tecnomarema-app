@@ -250,8 +250,64 @@ class ClaseComision(models.Model):
     ### Info personalizada por comisión y clase ###
     fecha = models.DateField(null=True, blank=True)
     horario = models.TimeField(null=True, blank=True)  # Solo hora y minuto, segundos siempre 00
+    hora_fin = models.TimeField(null=True, blank=True)
     link = models.URLField(blank=True, null=True)     # Link a plataforma (Jitsi, Zoom, etc.)
     video = models.URLField(blank=True, null=True)    # Grabación posterior a la clase
 
     def __str__(self):
         return f"{self.clase.nombre_clase} - {self.comision} - {self.fecha} {self.horario.strftime('%H:%M') if self.horario else 'Horario no definido'}"
+    
+####################################################################################################################
+#----------------------------------------modelo de asistencias generales-------------------------------------------#
+####################################################################################################################
+from django.db import models
+from django.utils import timezone
+
+class AsistenciaClase(models.Model):
+    estudiante = models.ForeignKey('DatosDeEstudiantes', on_delete=models.CASCADE)
+    clase = models.ForeignKey('Clase', on_delete=models.CASCADE)
+    fecha_marcada = models.DateTimeField(auto_now_add=True)
+
+    # Nuevos campos para simplificar visualización
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    nombre_usuario = models.CharField(max_length=150)
+    curso = models.CharField(max_length=200)
+    comision = models.CharField(max_length=10)
+    nombre_clase = models.CharField(max_length=200)
+    fecha_clase = models.DateField()
+    horario_inicio = models.TimeField()
+    horario_fin = models.TimeField()
+
+    class Meta:
+        unique_together = ('estudiante', 'clase')
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido} - Clase {self.nombre_clase} - Presente"
+
+def guardar_detalles(self):
+    self.nombre = self.estudiante.nombre
+    self.apellido = self.estudiante.apellido
+    self.nombre_usuario = getattr(self.estudiante.perfilusuario, "nombre_usuario", "-")
+    self.curso = self.clase.curso.nombre_curso if self.clase.curso else "-"
+    self.nombre_clase = self.clase.nombre_clase
+
+    from plataforma.models import ClaseComision  # ← evitamos import circular
+    cc = ClaseComision.objects.filter(clase=self.clase).first()
+
+    if cc:
+        self.comision = str(cc.comision.numero_comision) if cc.comision else "-"
+        self.fecha_clase = cc.fecha
+        self.horario_inicio = cc.horario
+        self.horario_fin = cc.hora_fin
+    else:
+        self.comision = "-"
+        self.fecha_clase = None
+        self.horario_inicio = None
+        self.horario_fin = None
+
+
+    def save(self, *args, **kwargs):
+        self.guardar_detalles()
+        super().save(*args, **kwargs)
+# fin del codigo 
