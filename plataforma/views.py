@@ -1450,6 +1450,9 @@ def agregar_parametro(url, clave, valor):
 #     return redirect(request.META.get('HTTP_REFERER', 'mis_cursos'))
 
 from django.http import JsonResponse
+from django.shortcuts import redirect
+from .models import Clase, DatosDeEstudiantes, AsistenciaClase
+from .decorators import session_required
 
 @session_required
 def marcar_presente(request, clase_id):
@@ -1461,6 +1464,7 @@ def marcar_presente(request, clase_id):
     estudiante = DatosDeEstudiantes.objects.get(id_estudiante=estudiante_id)
 
     if AsistenciaClase.objects.filter(estudiante=estudiante, clase=clase).exists():
+        # Si ya marcó presente, mostramos el modal después de recargar
         if request.headers.get("x-requested-with") == "XMLHttpRequest":
             return JsonResponse({"ya_presente": True})
         return redirect(f"{request.META.get('HTTP_REFERER', 'mis_cursos')}?presente=1")
@@ -1468,4 +1472,6 @@ def marcar_presente(request, clase_id):
     asistencia = AsistenciaClase(estudiante=estudiante, clase=clase)
     asistencia.guardar_detalles()
     asistencia.save()
-    return redirect(request.META.get('HTTP_REFERER', 'mis_cursos'))
+
+    # ✅ Redirecciona con `?presente=1` para mostrar el modal
+    return redirect(f"{request.META.get('HTTP_REFERER', 'mis_cursos')}?presente=1")
