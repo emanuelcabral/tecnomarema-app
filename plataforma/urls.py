@@ -46,7 +46,7 @@ urlpatterns = [
     path('asistencia_alumnos/', views.asistencia_alumnos, name='asistencia_alumnos'),  # Asistencia de alumnos - http://127.0.0.1:8000/asistencia_alumnos/
     path('asistencia_general/', views.asistencia_general, name='asistencia_general'),  # Asistencia general - http://127.0.0.1:8000/asistencia_general/
     path('valoraciones/', views.valoraciones, name='valoraciones'),  # Valoraciones de cursos - http://127.0.0.1:8000/valoraciones/
-    path('valoracion_alumno/', views.valoracion_alumno, name='valoracion_alumno'),  # Valoración individual - http://127.0.0.1:8000/valoracion_alumno/<int:clase_id>
+    # path('valoracion_alumno/', views.valoracion_alumno, name='valoracion_alumno'),  # Valoración individual - http://127.0.0.1:8000/valoracion_alumno/<int:clase_id>
     path('valoracion_alumno/<int:clase_id>/', views.mostrar_formulario_valoracion, name='valoracion_alumno'), # Valoración individual - http://127.0.0.1:8000/valoracion_alumno/<int:clase_id>
 
     path('estadisticas/', views.estadisticas, name='estadisticas'),  # Estadísticas - http://127.0.0.1:8000/estadisticas/
@@ -135,7 +135,7 @@ urlpatterns = [
 
     path('marcar_presente/<int:clase_id>/', views.marcar_presente, name='marcar_presente'),
 
-
+    path('agradecimiento/', views.agradecimiento, name='agradecimiento'),
 
 ]
 

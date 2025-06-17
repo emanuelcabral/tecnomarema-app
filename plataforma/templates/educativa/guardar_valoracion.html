@@ -1,99 +1,324 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Guardar Valoración - Clase {{ clase.nombre }}</title>
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Valoración de Clase</title>
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
       background-color: #000;
       color: #fff;
-      font-family: Arial, sans-serif;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
     }
-    label {
+    .slide {
+      display: none;
+      transition: opacity 0.5s ease-in-out;
+    }
+    .slide.active {
       display: block;
-      margin-top: 10px;
+    }
+    .faces {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .face {
+      background-color: #222;
+      color: #fff;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      flex: 1;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .face:hover {
+      transform: scale(1.05);
+    }
+    .face h3 {
+      margin: 1rem 0;
+    }
+    .green { background-color: #12f693; color: #000; }
+    .cyan { background-color: #00f7ff; color: #000; }
+    .purple { background-color: #cf30ff; color: #fff; }
+    .emoji { font-size: 3rem; }
+    .question-title { font-size: 1.5rem; margin-bottom: 1rem; }
+    .rating-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .rating-number {
+      background-color: #222;
+      border: 1px solid #12f693;
+      color: #12f693;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s ease;
+    }
+    .rating-number:hover {
+      background-color: #12f693;
+      color: #000;
+    }
+    .rating-number.selected {
+      background-color: #12f693;
+      color: #000;
       font-weight: bold;
     }
     textarea {
+      background-color: #111;
+      color: #fff;
+      border: 1px solid #12f693;
+      resize: none;
+      border-radius: 0.5rem;
       width: 100%;
-      height: 100px;
-      margin-top: 5px;
     }
-    button {
-      margin-top: 15px;
-      background-color: #12f693;
-      border: none;
-      color: #000;
-      padding: 10px 20px;
-      font-weight: bold;
-      cursor: pointer;
-      border-radius: 5px;
+    .thank-you {
+      font-size: 1.8rem;
+      color: #12f693;
+    }
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 1.5rem;
+    }
+    .btn-nav {
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
     }
   </style>
 </head>
 <body>
-  <h1>Valoración de la clase: {{ clase.nombre }}</h1>
-  <form id="formValoracion" method="POST" action="{% url 'guardar_valoracion' %}">
-    {% csrf_token %}
 
-    <!-- Aquí van las preguntas o inputs visibles -->
-    <label for="preferencia_clase">¿Qué te pareció la clase?</label>
-    <select name="preferencia_clase" id="preferencia_clase" required>
-      <option value="" disabled selected>Selecciona una opción</option>
-      <option value="me_gusto">Me gustó</option>
-      <option value="mas_o_menos">Más o menos</option>
-      <option value="no_me_gusto">No me gustó</option>
-    </select>
+  <h2 class="text-white text-center p-4">Valoración de la clase</h2>
 
-    <label for="rol_profe">¿Cómo calificás al profesor?</label>
-    <select name="rol_profe" id="rol_profe" required>
-      <option value="" disabled selected>Selecciona una opción</option>
-      <option value="excelente">Excelente</option>
-      <option value="bueno">Bueno</option>
-      <option value="regular">Regular</option>
-      <option value="malo">Malo</option>
-    </select>
+  <!-- <p>Clase id: {{ clase.id }}</p>
+  <p>usuarioo: {{ nombre_usuario|capfirst }}</p>
+  <p>usuarioo: {{ id_estudiante }}</p>
+  <p>usuarioo: {{ id_usuario }}</p> -->
+  
 
-    <label for="contenido">¿Qué te pareció el contenido?</label>
-    <select name="contenido" id="contenido" required>
-      <option value="" disabled selected>Selecciona una opción</option>
-      <option value="muy_bueno">Muy bueno</option>
-      <option value="bueno">Bueno</option>
-      <option value="regular">Regular</option>
-      <option value="malo">Malo</option>
-    </select>
+  <!-- AUDIO ELEMENTS -->
+  <audio id="sound-positivo" src="{% static 'sounds/positivo.mp3' %}"></audio>
+  <audio id="sound-neutral" src="{% static 'sounds/neutral.mp3' %}"></audio>
+  <audio id="sound-negativo" src="{% static 'sounds/negativo.mp3' %}"></audio>
 
-    <label for="plataforma">¿Cómo fue la plataforma usada?</label>
-    <select name="plataforma" id="plataforma" required>
-      <option value="" disabled selected>Selecciona una opción</option>
-      <option value="excelente">Excelente</option>
-      <option value="buena">Buena</option>
-      <option value="regular">Regular</option>
-      <option value="mala">Mala</option>
-    </select>
+  <div class="container py-5">
+    <div id="slider">
+      <!-- Slide 1 -->
+      <div class="slide active">
+        <div class="text-center question-title">¿Te gustó la clase?</div>
+        <div class="faces">
+          <!-- <div class="face green" onclick="playSound('positivo'); nextSlide();"> -->
+          <div class="face green" onclick="seleccionarPreferencia(this); playSound('positivo'); nextSlide();">
+            <div class="emoji">😊</div>
+            <h3>Me gustó</h3>
+          </div>
+          <!-- <div class="face cyan" onclick="playSound('neutral'); nextSlide();"> -->
+          <div class="face cyan" onclick="seleccionarPreferencia(this); playSound('neutral'); nextSlide();">
+            <div class="emoji">😐</div>
+            <h3>Más o menos</h3>
+          </div>
+          <!-- <div class="face purple" onclick="playSound('negativo'); nextSlide();"> -->
+          <div class="face purple" onclick="seleccionarPreferencia(this); playSound('negativo'); nextSlide();">
+            <div class="emoji">😠</div>
+            <h3>No me gustó</h3>
+          </div>
+        </div>
+      </div>
 
-    <label for="streaming">¿Qué te pareció el streaming?</label>
-    <select name="streaming" id="streaming" required>
-      <option value="" disabled selected>Selecciona una opción</option>
-      <option value="muy_bueno">Muy bueno</option>
-      <option value="bueno">Bueno</option>
-      <option value="regular">Regular</option>
-      <option value="malo">Malo</option>
-    </select>
+      <!-- Slides 2-5 -->
+      <script>
+        const preguntas = [
+          "¿Cómo valorás el rol del profe?",
+          "¿Cómo valorás el contenido de la clase?",
+          "¿Cómo funcionó la plataforma?",
+          "¿Cómo fue la conexión del streaming?"
+        ];
+        preguntas.forEach((texto, index) => {
+          document.write(`
+            <div class="slide">
+              <div class="text-center question-title">${texto}</div>
+              <div class="rating-group" data-index="${index}">
+                ${Array.from({ length: 10 }, (_, i) => `
+                  <div class="rating-number" onclick="selectRating(this, ${index})">${i + 1}</div>
+                `).join('')}
+              </div>
+              <div class="nav-buttons">
+                <button class="btn btn-warning btn-nav" onclick="prevSlide()">Atrás</button>
+                <button class="btn btn-warning btn-nav" onclick="nextSlideWithValidation(${index})">Siguiente</button>
+              </div>
+            </div>
+          `);
+        });
+      </script>
 
-    <label for="comentarios">Comentarios adicionales</label>
-    <textarea name="comentarios" id="comentarios" placeholder="Escribe aquí tus comentarios (opcional)"></textarea>
+      <!-- Slide 6: Comentario -->
+      <div class="slide">
+        <div class="text-center question-title">Tus comentarios nos ayudan a mejorar tu experiencia en Tecno Marema</div>
+        <div class="mb-3">
+          <textarea class="p-4" id="comentario" rows="5" maxlength="1000" placeholder="Escribe aquí..."></textarea>
+          <div class="text-end mt-1" style="font-size: 0.9rem;">
+            <span id="charCount">0</span>/1000 caracteres
+          </div>
+        </div>
+        <div class="nav-buttons">
+          <button class="btn btn-warning btn-nav" onclick="prevSlide()">Atrás</button>
+          <button class="btn btn-success btn-nav" onclick="enviarComentario()">Enviar</button>
+        </div>
+      </div>
 
-    <!-- Campos ocultos que envían datos del usuario y clase -->
-    <input type="hidden" name="id_estudiante" value="{{ id_estudiante }}">
-    <input type="hidden" name="id_usuario" value="{{ id_usuario }}">
-    <input type="hidden" name="nombre_usuario" value="{{ nombre_usuario }}">
-    <input type="hidden" name="clase_id" value="{{ clase.id }}">
+      <!-- Slide 7: Agradecimiento -->
+      <div class="slide text-center">
+        <span style="font-size: 80px;">😃</span>
+        <div class="thank-you">¡Muchas gracias por valorar la clase!</div>
+      </div>
+    </div>
+  </div>
 
-    <button type="submit">Enviar valoración</button>
-  </form>
+  <script>
+    let current = 0;
+    const slides = document.querySelectorAll('.slide');
+    const textarea = document.getElementById('comentario');
+    const charCount = document.getElementById('charCount');
+    let respuestas = [false, false, false, false]; // control por pregunta
+
+    function showSlide(index) {
+      slides[current].classList.remove('active');
+      current = index;
+      slides[current].classList.add('active');
+    }
+
+    function nextSlide() {
+      if (current < slides.length - 1) {
+        showSlide(current + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (current > 0) {
+        showSlide(current - 1);
+      }
+    }
+
+    function selectRating(el, index) {
+      const grupo = el.parentNode;
+      const opciones = grupo.querySelectorAll('.rating-number');
+      opciones.forEach(op => op.classList.remove('selected'));
+      el.classList.add('selected');
+      respuestas[index] = true;
+    }
+
+    function nextSlideWithValidation(index) {
+      if (respuestas[index]) {
+        nextSlide();
+      } else {
+        alert("Por favor seleccioná una puntuación antes de continuar.");
+      }
+    }
+
+    if (textarea) {
+      textarea.addEventListener('input', () => {
+        charCount.textContent = textarea.value.length;
+      });
+    }
+//**** ingreso los cambio aqui abajo**************
+    // function enviarComentario() {
+    //   const texto = textarea.value.trim();
+    //   if (texto.length === 0) {
+    //     alert("Por favor, escribí un comentario antes de continuar.");
+    //   } else {
+    //     nextSlide();
+    //   }
+    // }
+
+    function enviarComentario() {
+  const comentario = textarea.value.trim();
+  if (comentario.length === 0) {
+    alert("Por favor, escribí un comentario antes de continuar.");
+    return;
+  }
+
+  // Obtener los datos de la valoración
+  document.getElementById('inputComentarios').value = comentario;
+
+  const preferencia = document.querySelector('.face.green.selected') ? 'me_gusto'
+                    : document.querySelector('.face.cyan.selected') ? 'mas_o_menos'
+                    : 'no_me_gusto';
+  document.getElementById('inputPreferencia').value = preferencia;
+
+  const ratings = document.querySelectorAll('.rating-group');
+  document.getElementById('inputRol').value        = ratings[0].querySelector('.selected')?.innerText || 0;
+  document.getElementById('inputContenido').value  = ratings[1].querySelector('.selected')?.innerText || 0;
+  document.getElementById('inputPlataforma').value = ratings[2].querySelector('.selected')?.innerText || 0;
+  document.getElementById('inputStreaming').value  = ratings[3].querySelector('.selected')?.innerText || 0;
+
+
+//esto va por mi cuenta para testear
+
+  console.log("Formulario listo para enviar:");
+  console.log("Preferencia:", document.getElementById('inputPreferencia').value);
+  console.log("Rol:", document.getElementById('inputRol').value);
+  console.log("Contenido:", document.getElementById('inputContenido').value);
+  console.log("Plataforma:", document.getElementById('inputPlataforma').value);
+  console.log("Streaming:", document.getElementById('inputStreaming').value);
+  console.log("Comentarios:", document.getElementById('inputComentarios').value);
+
+
+
+
+  // Enviar el formulario
+  document.getElementById('formValoracion').submit();
+}
+
+// agrego otro codigo mas
+function seleccionarPreferencia(el) {
+  document.querySelectorAll('.face').forEach(f => f.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+//*******************fin de los cambios*********************************************************************************************
+
+    function playSound(tipo) {
+      const audios = {
+        positivo: document.getElementById('sound-positivo'),
+        neutral: document.getElementById('sound-neutral'),
+        negativo: document.getElementById('sound-negativo')
+      };
+      Object.values(audios).forEach(audio => {
+        audio.pause();
+        audio.currentTime = 0;
+      });
+      if (audios[tipo]) audios[tipo].play();
+    }
+  </script>
+
+  <!-- pasar los datos de la valoracion inicia -->
+<form id="formValoracion" method="POST" action="{% url 'guardar_valoracion' %}">
+  {% csrf_token %}
+  <input type="hidden" name="preferencia_clase" id="inputPreferencia">
+  <input type="hidden" name="rol_profe" id="inputRol">
+  <input type="hidden" name="contenido" id="inputContenido">
+  <input type="hidden" name="plataforma" id="inputPlataforma">
+  <input type="hidden" name="streaming" id="inputStreaming">
+  <input type="hidden" name="comentarios" id="inputComentarios">
+
+  <!-- Podés usar campos ocultos o pasar estos en la vista -->
+  <input type="hidden" name="id_estudiante" value="{{ id_estudiante }}">
+  <input type="hidden" name="id_usuario" value="{{ id_usuario }}">
+  <input type="hidden" name="nombre_usuario" value="{{ nombre_usuario }}">
+  <input type="hidden" name="clase_id" value="{{ clase.id }}">
+  <!-- <input type="hidden" name="numero_clase" value="{{ clase.numero_clase }}"> -->
+</form>
+  <!-- pasar los datos de la valoracion fin -->
+
 </body>
 </html>
+
+<!-- <div class="face green" onclick="playSound('positivo'); seleccionarPreferencia(this); nextSlide();"></div> -->

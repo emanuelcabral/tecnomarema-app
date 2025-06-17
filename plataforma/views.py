@@ -673,14 +673,38 @@ from django.utils import timezone
 
 def guardar_valoracion(request):
     if request.method == 'POST':
-        id_estudiante = request.session.get('usuario_id')
-        nombre_usuario = request.session.get('usuario_logueado')
+        # id_estudiante = request.session.get('usuario_id')
+        # nombre_usuario = request.session.get('usuario_logueado')
+
+        # id_estudiante = request.POST.get('id_estudiante')
+        # nombre_usuario = request.POST.get('nombre_usuario')
+        # clase_id = request.POST.get('clase_id')
+
+        id_estudiante = request.POST.get('id_estudiante')
+        id_usuario = request.POST.get('id_usuario')
+        nombre_usuario = request.POST.get('nombre_usuario')
         clase_id = request.POST.get('clase_id')
+
+        print("VALORES POST crudos:")
+        print("id_estudiante:", id_estudiante)
+        print("id_usuario:", id_usuario)
+        print("nombre_usuario:", nombre_usuario)
+        print("clase_id:", clase_id)
 
         if not id_estudiante or not nombre_usuario or not clase_id:
             return redirect('mis_cursos')
 
         clase = get_object_or_404(Clase, id=clase_id)
+
+
+                # 🟢 DEBUG: imprimir datos antes de guardar
+        print("Guardando valoración de:", nombre_usuario, "para clase:", clase_id)
+        print("Preferencia:", request.POST.get('preferencia_clase', ''))
+        print("Rol:", request.POST.get('rol_profe', ''))
+        print("Contenido:", request.POST.get('contenido', ''))
+        print("Plataforma:", request.POST.get('plataforma', ''))
+        print("Streaming:", request.POST.get('streaming', ''))
+        print("Comentarios:", request.POST.get('comentarios', ''))
 
         ValoracionAlumno.objects.create(
             id_estudiante=id_estudiante,
@@ -1475,3 +1499,13 @@ def marcar_presente(request, clase_id):
 
     # ✅ Redirecciona con `?presente=1` para mostrar el modal
     return redirect(f"{request.META.get('HTTP_REFERER', 'mis_cursos')}?presente=1")
+
+
+################################################################################################
+###-----------------mensaje de agradecimiento por la valoracion de la clase------------------###
+################################################################################################
+
+from django.shortcuts import render
+
+def agradecimiento(request):
+    return render(request, 'educativa/agradecimiento.html')
