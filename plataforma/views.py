@@ -1479,7 +1479,13 @@ def agradecimiento(request):
 ################################################################################################
 
 from django.shortcuts import render, get_object_or_404
-from .models import Curso, Clase, Comision, DatosDeEstudiantes
+from .models import Curso, Clase, Comision, DatosDeEstudiantes, PuntajeQuiz
+from plataforma.models import Pregunta
+from plataforma.decorators import session_required
+
+# ----------------------------
+# Vista del HUB de quizzes
+# ----------------------------
 
 def hub_de_quizzes(request, nombre_curso):
     estudiante_id = request.session.get('usuario_id')
@@ -1492,31 +1498,68 @@ def hub_de_quizzes(request, nombre_curso):
     comision = Comision.objects.filter(id_curso=curso).first()
     clases = Clase.objects.filter(curso=curso).order_by("numero_clase")
 
+    # 📊 Cargar puntajes por clase del estudiante
+    puntajes_dict = {}
+    for clase in clases:
+        puntaje = PuntajeQuiz.objects.filter(estudiante=estudiante, clase=clase).first()
+        puntajes_dict[clase.id] = {
+            "inicial": puntaje.puntaje_inicial if puntaje else "-",
+            "maximo": puntaje.puntaje_maximo if puntaje else "-"
+        }
+
     return render(request, "educativa/hub_de_quizzes.html", {
         "curso": curso,
         "comision": comision,
         "clases": clases,
-        "estudiante": estudiante
+        "estudiante": estudiante,
+        "puntajes_dict": puntajes_dict,  # Este dict se usa en el template
     })
 
-from plataforma.models import Clase, Pregunta
-from django.shortcuts import render, get_object_or_404
-from plataforma.decorators import session_required
+# ----------------------------
+# Vista del Quiz por Clase
+# ----------------------------
 
 @session_required
 def quiz_por_clase(request, clase_id):
+    estudiante_id = request.session.get("usuario_id")
+    estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=estudiante_id)
+
     clase = get_object_or_404(Clase, id=clase_id)
     preguntas = Pregunta.objects.filter(clase=clase).order_by('id')
 
     total = preguntas.count()
     n = int(request.GET.get("n", 0))
+    clave_puntaje = f"puntaje_clase_{clase_id}"
 
+    # ✅ Si hay respuesta anterior, se evalúa
+    respuesta_usuario = request.GET.get("respuesta")
+    if respuesta_usuario and n > 0:
+        pregunta_anterior = preguntas[n - 1]
+        if respuesta_usuario.lower() == pregunta_anterior.respuesta_correcta.lower():
+            request.session[clave_puntaje] = request.session.get(clave_puntaje, 0) + 1
+
+    # 🏁 Si terminó el quiz
     if n >= total:
+        puntaje = request.session.get(clave_puntaje, 0)
+
+        # 🧠 Guardar o actualizar puntaje en BD
+        puntaje_obj, created = PuntajeQuiz.objects.get_or_create(estudiante=estudiante, clase=clase)
+        if created:
+            puntaje_obj.puntaje_inicial = puntaje
+        # Usar max con seguridad si el campo está en None
+        puntaje_obj.puntaje_maximo = max(puntaje, puntaje_obj.puntaje_maximo or 0)
+        puntaje_obj.save()
+
+        # 🔄 Limpiar sesión para próximos intentos
+        request.session.pop(clave_puntaje, None)
+
         return render(request, "educativa/quiz_finalizado.html", {
             "clase": clase,
-            "total": total
+            "total": total,
+            "puntaje": puntaje,
         })
 
+    # Pregunta actual
     pregunta = preguntas[n]
 
     return render(request, 'educativa/quiz_por_clase.html', {

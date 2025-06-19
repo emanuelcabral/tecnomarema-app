@@ -1,20 +1,24 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
   <title>Quiz - {{ clase.nombre_clase }}</title>
   <style>
     body {
       background-color: #111;
+      background-image: url("{% static 'img/fondo1.svg' %}");
+      background-size: cover;
+      background-position: center;
       color: white;
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
 
-    h1{
-        text-align: center;
-    }
+    h1 { text-align: center; }
 
     .quiz-container {
       background-color: #222;
@@ -79,10 +83,10 @@
       color: #000;
     }
 
-    .opcion.a { background-color: #ff5959; }
-    .opcion.b { background-color: #f9c74f; }
-    .opcion.c { background-color: #43aa8b; }
-    .opcion.d { background-color: #577590; }
+    .opcion.a { background-color: #8A1C7C; }
+    .opcion.b { background-color: #C49000; }
+    .opcion.c { background-color: #00AC79; }
+    .opcion.d { background-color: #FE5A0F; }
 
     .footer-info {
       text-align: center;
@@ -90,121 +94,159 @@
       font-size: 14px;
       color: #888;
     }
+
+    .audio-control {
+      text-align: center;
+      margin: 20px auto 0;
+    }
+
+    .audio-control button {
+      background-color: #12f693;
+      color: #000;
+      padding: 8px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .audio-control input[type="range"] {
+      width: 200px;
+      margin-left: 10px;
+      vertical-align: middle;
+      accent-color: #12f693;
+    }
   </style>
 </head>
 <body>
 
-    <h1>Tecno quizzes</h1>
+<h1>Tecno Marema Quizzes</h1>
 
-  <div class="quiz-container">
-    <div class="titulo-clase">
-      {{ clase.nombre_clase }}
-    </div>
+<!-- 🎵 AUDIO de fondo -->
+<audio id="audioFondo" src="{% static 'sounds/quizzie.mp3' %}" autoplay loop></audio>
 
-    <div class="temporizador">
-      ⏳ Tiempo restante: <span id="tiempo">30</span> segundos
-    </div>
+<!-- ✅ Sonidos para acierto y error -->
+<audio id="audioPositivo" src="{% static 'sounds/positivo.mp3' %}"></audio>
+<audio id="audioNegativo" src="{% static 'sounds/negativo.mp3' %}"></audio>
 
-    <div class="pregunta">
-      {{ pregunta.texto }}
-    </div>
+<!-- Controles de volumen -->
+<div class="audio-control">
+  <button id="toggleMute">🔈 Silenciar</button>
+  <input id="volumenControl" type="range" min="0" max="1" step="0.01">
+</div>
 
-    <!-- {% if pregunta.imagen %} -->
-      <!-- <img src="{{ pregunta.imagen.url }}" alt="Imagen de la pregunta" class="imagen-pregunta"> -->
-    <!-- {% endif %} -->
-      <img class="imagen-pregunta" src="https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://media.easy-peasy.ai/d6546a37-4ba1-4a5d-87b1-a698c3960c20/00197615-9cf9-4af9-8661-f62f68512331.png" alt="">
+<div class="quiz-container">
+  <div class="titulo-clase">{{ clase.nombre_clase }}</div>
+  <div class="temporizador">⏳ Tiempo restante: <span id="tiempo">30</span> segundos</div>
+  <div class="pregunta">{{ pregunta.texto }}</div>
 
-    <div class="opciones">
-      <button class="opcion a">A - {{ pregunta.opcion_a }}</button>
-      <button class="opcion b">B - {{ pregunta.opcion_b }}</button>
-      <button class="opcion c">C - {{ pregunta.opcion_c }}</button>
-      <button class="opcion d">D - {{ pregunta.opcion_d }}</button>
-    </div>
+  <img class="imagen-pregunta" src="https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://media.easy-peasy.ai/d6546a37-4ba1-4af9-8661-f62f68512331.png" alt="">
+
+  <div class="opciones">
+    <button class="opcion a">A - {{ pregunta.opcion_a }}</button>
+    <button class="opcion b">B - {{ pregunta.opcion_b }}</button>
+    <button class="opcion c">C - {{ pregunta.opcion_c }}</button>
+    <button class="opcion d">D - {{ pregunta.opcion_d }}</button>
   </div>
+</div>
 
-  <div class="footer-info">
-    Plataforma TecnoMarema ©
-  </div>
+<div class="footer-info">Plataforma TecnoMarema ©</div>
 
+<!-- Quiz JS -->
 <script>
-  // Tiempo inicial en segundos
   let tiempoRestante = 30;
-
-  // Referencia al span donde se muestra el tiempo
   const spanTiempo = document.getElementById('tiempo');
-
-  // Referencias a todos los botones de opciones
   const botones = document.querySelectorAll('.opcion');
-
-  // Estado para evitar múltiples respuestas
   let respondido = false;
 
-  // Inicia el temporizador que cuenta hacia atrás cada segundo
   const intervalo = setInterval(() => {
     tiempoRestante--;
     spanTiempo.textContent = tiempoRestante;
-
-    // Si se acaba el tiempo y no se respondió, se muestra resultado como "no respondido"
     if (tiempoRestante <= 0 && !respondido) {
       respondido = true;
-      mostrarResultado(null); // null indica que no se hizo click en ninguna opción
+      mostrarResultado(null);
     }
   }, 1000);
 
-  // Agrega evento de click a cada opción
   botones.forEach(boton => {
     boton.addEventListener('click', () => {
       if (!respondido) {
         respondido = true;
-        clearInterval(intervalo);  // Detiene el temporizador
-        mostrarResultado(boton);  // Procesa la respuesta
+        clearInterval(intervalo);
+        mostrarResultado(boton);
       }
     });
   });
 
-  // Función que evalúa si la respuesta fue correcta y prepara redirección
   function mostrarResultado(boton) {
-    const correcta = "{{ pregunta.respuesta_correcta|lower }}";  // Respuesta correcta desde Django
+    const correcta = "{{ pregunta.respuesta_correcta|lower }}";
+    const audioCorrecto = document.getElementById("audioPositivo");
+    const audioIncorrecto = document.getElementById("audioNegativo");
 
-    // Deshabilita todos los botones para evitar más clicks
     botones.forEach(b => b.disabled = true);
+    let seleccion = null;
 
     if (boton) {
-      // Detecta qué opción fue seleccionada (a, b, c o d)
-      const seleccion = boton.classList.contains("a") ? "a" :
-                        boton.classList.contains("b") ? "b" :
-                        boton.classList.contains("c") ? "c" : "d";
+      seleccion = boton.classList.contains("a") ? "a" :
+                  boton.classList.contains("b") ? "b" :
+                  boton.classList.contains("c") ? "c" : "d";
 
-      // Marca el botón según si fue correcto o no
       if (seleccion === correcta) {
-        boton.style.border = "3px solid #12f693";  // borde verde
+        boton.style.border = "3px solid #12f693";
         boton.innerHTML += " ✅";
         boton.style.backgroundColor = "#12f693";
         boton.style.color = "#000";
+        audioCorrecto.play();
       } else {
-        boton.style.border = "3px solid red";      // borde rojo
+        boton.style.border = "3px solid red";
         boton.innerHTML += " ❌";
         boton.style.backgroundColor = "#ff5959";
+        audioIncorrecto.play();
       }
     }
 
-    // Marca también la respuesta correcta si fue fallada o no respondida
     const correcto = document.querySelector(`.opcion.${correcta}`);
-    if (correcto) {
+    if (correcto && (!seleccion || seleccion !== correcta)) {
       correcto.style.border = "3px solid #12f693";
       correcto.innerHTML += " ✅";
     }
 
-    // Espera 2 segundos y redirige a la siguiente pregunta (basado en query param ?n=)
     setTimeout(() => {
       const url = new URL(window.location.href);
       const nActual = parseInt(url.searchParams.get("n")) || 0;
+      if (seleccion) url.searchParams.set("respuesta", seleccion);
       url.searchParams.set("n", nActual + 1);
       window.location.href = url.toString();
     }, 2000);
   }
 </script>
 
+<!-- 🎵 Volumen persistente -->
+<script>
+  const audio = document.getElementById("audioFondo");
+  const toggleMute = document.getElementById("toggleMute");
+  const volumenControl = document.getElementById("volumenControl");
+
+  const storedMuted = localStorage.getItem("audioMute") === "true";
+  const storedVolume = parseFloat(localStorage.getItem("audioVolume")) || 0.5;
+
+  audio.muted = storedMuted;
+  audio.volume = storedVolume;
+  volumenControl.value = storedVolume;
+  toggleMute.textContent = storedMuted ? "🔇 Reanudar" : "🔈 Silenciar";
+
+  toggleMute.addEventListener("click", () => {
+    audio.muted = !audio.muted;
+    localStorage.setItem("audioMute", audio.muted);
+    toggleMute.textContent = audio.muted ? "🔇 Reanudar" : "🔈 Silenciar";
+  });
+
+  volumenControl.addEventListener("input", () => {
+    const vol = parseFloat(volumenControl.value);
+    audio.volume = vol;
+    localStorage.setItem("audioVolume", vol);
+  });
+</script>
 
 </body>
 </html>

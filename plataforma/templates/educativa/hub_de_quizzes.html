@@ -1,11 +1,13 @@
 {% block content %}
-
+  {% load static %}
+    {% load util_filtros %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Centro de Quizzes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
 
   <style>
 
@@ -73,6 +75,7 @@ body{
   flex-direction: column;
   justify-content: space-between;
   min-height: 200px;
+  position: relative;
 }
 .hub-card:hover {
   transform: scale(1.05);
@@ -86,6 +89,24 @@ body{
 }
 .hub-card-body p {
   font-size: 1rem;
+}
+
+/* Puntajes en la tarjeta */
+.hub-score {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #000;
+}
+.hub-score .inicial {
+  font-weight: bold;
+  color: #000;
+}
+.hub-score .maximo {
+  font-size: 0.8rem;
+  color: #333;
 }
 
 /* Botón */
@@ -130,16 +151,30 @@ body{
     <section class="hub-info">
       <p><strong>Curso:</strong> {{ curso.nombre_curso }}</p>
       <p><strong>Comisión:</strong> {{ comision.numero_comision }}</p>
-      <p><strong>Alumno:</strong> {{ estudiante.nombre }}</p>
+      <p><strong>Alumno:</strong> {{ estudiante.nombre }} {{ estudiante.apellido }}</p>
     </section>
+
+    <!-- 🔙 BOTÓN VOLVER AL CURSO -->
+    <div style="text-align: center; margin-bottom: 30px;">
+      <a href="{% url 'curso_detalle' comision.id_comision %}" class="hub-button" style="background-color: #12f693; color: #000;">
+        ← Volver al Curso
+      </a>
+    </div>
 
     <!-- GRILLA DE CLASES -->
     <section class="hub-grid">
       {% for clase in clases %}
         <article class="hub-card" data-clase-id="{{ clase.id }}">
-          <div class="hub-card-header">
-            <h2>Clase {{ clase.numero_clase }}</h2>
+        <div class="hub-card-header" style="position: relative;">
+          <h2>Clase {{ clase.numero_clase }}</h2>
+          <div style="position: absolute; top: 0; right: 0; text-align: right;">
+            {% with puntajes_dict|get_item:clase.id as datos_puntaje %}
+              <small>🎯 Inicial: {{ datos_puntaje|get_item:"inicial" }}</small><br>
+              <small>🏆 Máximo: {{ datos_puntaje|get_item:"maximo" }}</small>
+            {% endwith %}
           </div>
+        </div>
+
           <div class="hub-card-body">
             <p>{{ clase.nombre_clase }}</p>
           </div>

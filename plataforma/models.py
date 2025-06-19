@@ -336,3 +336,15 @@ class Pregunta(models.Model):
 
     def __str__(self):
         return f"[Clase {self.clase.numero_clase}] {self.texto[:50]}"
+
+#------------------------------------------------------------------------
+from django.db import models
+
+class PuntajeQuiz(models.Model):
+    estudiante = models.ForeignKey('DatosDeEstudiantes', on_delete=models.CASCADE)
+    clase = models.ForeignKey('Clase', on_delete=models.CASCADE)
+    puntaje_inicial = models.IntegerField(default=0)
+    puntaje_maximo = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ('estudiante', 'clase')
