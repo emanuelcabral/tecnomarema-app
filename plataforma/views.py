@@ -1101,11 +1101,13 @@ def cursos_alumno(request):
 
 #     return render(request, template_a_usar, contexto)
 
+from datetime import datetime, timedelta
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
-from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision
+from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision, AsistenciaClase
 from .decorators import session_required
-from .models import AsistenciaClase
+
 
 @session_required
 def curso_detalle_view(request, id_comision):
@@ -1126,7 +1128,7 @@ def curso_detalle_view(request, id_comision):
     comision = get_object_or_404(Comision, id_comision=id_comision)
     curso = comision.id_curso
 
-    # 4. Verificar que el estudiante esté inscripto en esa comisión
+    # 4. Verificar inscripción
     if comision not in [
         estudiante.cursando1, estudiante.cursando2, estudiante.cursando3,
         estudiante.cursando4, estudiante.cursando5, estudiante.cursando6,
@@ -1135,10 +1137,10 @@ def curso_detalle_view(request, id_comision):
         messages.error(request, 'No estás inscripto en esta comisión.')
         return redirect('mis_cursos')
 
-    # 5. Obtener clases activas del curso
+    # 5. Obtener clases activas
     clases_del_curso = curso.clases.filter(estado_clase='Activo').order_by('numero_clase')
 
-    # 6. Obtener las instancias de ClaseComision para esta comisión
+    # 6. Obtener ClaseComision asociadas
     clases_comisionadas = ClaseComision.objects.filter(
         comision=comision,
         clase__in=clases_del_curso
@@ -1146,7 +1148,31 @@ def curso_detalle_view(request, id_comision):
 
     clasecomision_dict = {cc.clase_id: cc for cc in clases_comisionadas}
 
-    # 7. Determinar template según el curso
+    # 7. Obtener asistencias
+    asistencias = AsistenciaClase.objects.filter(estudiante=estudiante)
+    clases_presentes_ids = list(asistencias.values_list('clase_id', flat=True))
+
+
+    # 7.5. Obtener clases ya valoradas
+    valoradas = ValoracionAlumno.objects.filter(
+        id_estudiante=estudiante, clase__in=clases_del_curso
+    ).values_list('clase_id', flat=True)
+    clases_valoradas_ids = list(valoradas)
+
+    # 8. Calcular posibilidad de valorar
+    ahora = timezone.now()
+    valoraciones_disponibles = {}
+
+    for cc in clases_comisionadas:
+        if cc.fecha and cc.hora_fin:
+            fin_clase = datetime.combine(cc.fecha, cc.hora_fin)
+            fin_clase = timezone.make_aware(fin_clase)
+            limite = fin_clase + timedelta(days=3)
+            valoraciones_disponibles[cc.clase.id] = fin_clase <= ahora <= limite
+        else:
+            valoraciones_disponibles[cc.clase.id] = False  # Si falta info, no se puede valorar
+
+    # 9. Selección de template
     nombre_normalizado = curso.nombre_curso.strip().lower()
     templates_por_curso = {
         "desarrollo web": "educativa/curso_desarrollo_web.html",
@@ -1154,14 +1180,9 @@ def curso_detalle_view(request, id_comision):
         "python": "educativa/curso_python.html",
         "javascript": "educativa/curso_javascript.html",
     }
-
     template_a_usar = templates_por_curso.get(nombre_normalizado, "educativa/curso_detalle.html")
 
-    # Obtener asistencias del estudiante
-    asistencias = AsistenciaClase.objects.filter(estudiante=estudiante)
-    clases_presentes_ids = list(asistencias.values_list('clase_id', flat=True))
-
-    # 8. Renderizar
+    # 10. Render
     contexto = {
         'usuario': usuario,
         'estudiante': estudiante,
@@ -1171,10 +1192,12 @@ def curso_detalle_view(request, id_comision):
         'es_autenticado': True,
         'clases': clases_del_curso,
         'clasescomision': clasecomision_dict,
-        'clases_presentes_ids': clases_presentes_ids,  # ✅ AHORA SÍ
+        'clases_presentes_ids': clases_presentes_ids,
+        'valoraciones_disponibles': valoraciones_disponibles,  # ✅ nuevo diccionario
     }
 
     return render(request, template_a_usar, contexto)
+
 
 
 
@@ -1316,65 +1339,6 @@ def detalle_comision_view(request, comision_id):
 #-----------------------------------------------------------------------#
 ##############################################################################
 
-# def participantes_view(request, curso_id):
-#     # Aquí el código que maneja el curso con id=curso_id
-#     curso = Curso.objects.get(id=curso_id)
-#     # luego filtras profesores, tutores y alumnos por curso
-#     profesores = PerfilUsuario.objects.filter(rol='profesor', curso=curso)
-#     tutores = PerfilUsuario.objects.filter(rol='tutor', curso=curso)
-#     alumnos = PerfilUsuario.objects.filter(rol='alumno', curso=curso)
-
-#     return render(request, 'educativa/participantes.html', {
-#         'profesores': profesores,
-#         'tutores': tutores,
-#         'alumnos': alumnos,
-#         'cantidad_alumnos': alumnos.count(),
-#         'curso': curso,
-#     })
-
-
-# from django.shortcuts import render, get_object_or_404
-# from plataforma.models import Curso, PerfilUsuario
-
-# def participantes_view(request, curso_id):
-#     curso = get_object_or_404(Curso, id_curso=curso_id)
-
-#     # Ajusta esto al campo real de tu modelo PerfilUsuario que relacione al curso
-#     profesores = PerfilUsuario.objects.filter(rol='profesor', curso_asignado=curso)
-#     tutores = PerfilUsuario.objects.filter(rol='tutor', curso_asignado=curso)
-#     # alumnos = PerfilUsuario.objects.filter(rol='alumno', curso_asignado=curso)
-#     alumnos = PerfilUsuario.objects.filter(rol='alumno', id_estudiante__curso_asignado=curso_id)
-
-
-#     contexto = {
-#         'curso': curso,
-#         'profesores': profesores,
-#         'tutores': tutores,
-#         'alumnos': alumnos,
-#         'cantidad_alumnos': alumnos.count(),
-#     }
-#     return render(request, 'educativa/participantes.html', contexto)
-
-
-# from django.shortcuts import render, get_object_or_404
-# from .models import PerfilUsuario, Curso
-
-# def participantes_view(request, curso_id):
-#     curso = get_object_or_404(Curso, id_curso=curso_id)
-
-#     profesores = PerfilUsuario.objects.filter(rol='profesor', id_estudiante__curso_asignado=curso_id)
-#     tutores = PerfilUsuario.objects.filter(rol='tutor', id_estudiante__curso_asignado=curso_id)
-#     alumnos = PerfilUsuario.objects.filter(rol='alumno', id_estudiante__curso_asignado=curso_id)
-
-#     context = {
-#         'curso': curso,
-#         'profesores': profesores,
-#         'tutores': tutores,
-#         'alumnos': alumnos,
-#         'cantidad_alumnos': alumnos.count(),
-#     }
-#     return render(request, 'educativa/participantes.html', context)
-
 from django.shortcuts import render, get_object_or_404
 from .models import PerfilUsuario, Curso, Comision, DatosDeEstudiantes
 from django.db.models import Q
@@ -1509,3 +1473,55 @@ from django.shortcuts import render
 
 def agradecimiento(request):
     return render(request, 'educativa/agradecimiento.html')
+
+################################################################################################
+###---------------------------------------quizzes--------------------------------------------###
+################################################################################################
+
+from django.shortcuts import render, get_object_or_404
+from .models import Curso, Clase, Comision, DatosDeEstudiantes
+
+def hub_de_quizzes(request, nombre_curso):
+    estudiante_id = request.session.get('usuario_id')
+    estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=estudiante_id)
+
+    curso = Curso.objects.filter(nombre_curso=nombre_curso).first()
+    if not curso:
+        return render(request, "error.html", {"mensaje": "Curso no encontrado"})
+
+    comision = Comision.objects.filter(id_curso=curso).first()
+    clases = Clase.objects.filter(curso=curso).order_by("numero_clase")
+
+    return render(request, "educativa/hub_de_quizzes.html", {
+        "curso": curso,
+        "comision": comision,
+        "clases": clases,
+        "estudiante": estudiante
+    })
+
+from plataforma.models import Clase, Pregunta
+from django.shortcuts import render, get_object_or_404
+from plataforma.decorators import session_required
+
+@session_required
+def quiz_por_clase(request, clase_id):
+    clase = get_object_or_404(Clase, id=clase_id)
+    preguntas = Pregunta.objects.filter(clase=clase).order_by('id')
+
+    total = preguntas.count()
+    n = int(request.GET.get("n", 0))
+
+    if n >= total:
+        return render(request, "educativa/quiz_finalizado.html", {
+            "clase": clase,
+            "total": total
+        })
+
+    pregunta = preguntas[n]
+
+    return render(request, 'educativa/quiz_por_clase.html', {
+        'clase': clase,
+        'pregunta': pregunta,
+        'n': n,
+        'total': total,
+    })

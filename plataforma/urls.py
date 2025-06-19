@@ -96,8 +96,6 @@ urlpatterns = [
 
 
 
-
-
     path("guardar_datos_inscripcion/", views.guardar_datos_inscripcion, name="guardar_datos"),
     path("enviar_confirmacion/", views.enviar_confirmacion, name="enviar_confirmacion"),
 
@@ -136,6 +134,10 @@ urlpatterns = [
     path('marcar_presente/<int:clase_id>/', views.marcar_presente, name='marcar_presente'),
 
     path('agradecimiento/', views.agradecimiento, name='agradecimiento'),
+
+
+    path('curso/<str:nombre_curso>/quizzes/', views.hub_de_quizzes, name='hub_de_quizzes'), #http://127.0.0.1:8000/hub_de_quizzes
+    path('quiz/<int:clase_id>/', views.quiz_por_clase, name='quiz_por_clase'), 
 
 ]
 

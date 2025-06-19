@@ -1,0 +1,165 @@
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Centro de Quizzes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+
+body{
+    background-color: #111;
+}
+
+/* Contenedor principal */
+.hub-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #222;
+  border-radius: 10px;
+}
+
+/* Encabezado */
+.hub-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.hub-title {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #12f693;
+}
+.hub-subtitle {
+  font-size: 1.2rem;
+  color: #ddd;
+  margin-top: 10px;
+}
+
+/* Info curso y alumno */
+.hub-info {
+  text-align: center;
+  font-size: 1rem;
+  color: #fff;
+  margin-bottom: 30px;
+}
+.hub-info p {
+  margin: 0.3em 0;
+}
+
+.hub-info p strong {
+  color: #12f693;
+}
+
+/* Grilla de clases */
+.hub-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 25px;
+}
+
+/* Tarjeta de clase */
+.hub-card {
+  background: linear-gradient(135deg, #12f693, #0bd68f);
+  color: #111;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 200px;
+}
+.hub-card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.3);
+}
+
+/* Header y body de la tarjeta */
+.hub-card-header h2 {
+  font-size: 1.5rem;
+  margin: 0 0 10px 0;
+}
+.hub-card-body p {
+  font-size: 1rem;
+}
+
+/* Botón */
+.hub-button {
+  background-color: #fff;
+  color: #111;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 50px;
+  margin-top: 10px;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.hub-button:hover {
+  background-color: #f1f1f1;
+  transform: scale(1.05);
+}
+
+/* Footer */
+.hub-footer {
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 50px;
+  color: #888;
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- Contenedor principal -->
+  <div class="hub-container">
+
+    <!-- ENCABEZADO -->
+    <header class="hub-header">
+      <h1 class="hub-title">🎮 Centro de Quizzes por Clase</h1>
+      <p class="hub-subtitle">Explora cada clase y juega su quiz de 10 preguntas. ¡Pon a prueba tus conocimientos!</p>
+    </header>
+
+    <!-- INFORMACIÓN DEL CURSO Y USUARIO -->
+    <section class="hub-info">
+      <p><strong>Curso:</strong> {{ curso.nombre_curso }}</p>
+      <p><strong>Comisión:</strong> {{ comision.numero_comision }}</p>
+      <p><strong>Alumno:</strong> {{ estudiante.nombre }}</p>
+    </section>
+
+    <!-- GRILLA DE CLASES -->
+    <section class="hub-grid">
+      {% for clase in clases %}
+        <article class="hub-card" data-clase-id="{{ clase.id }}">
+          <div class="hub-card-header">
+            <h2>Clase {{ clase.numero_clase }}</h2>
+          </div>
+          <div class="hub-card-body">
+            <p>{{ clase.nombre_clase }}</p>
+          </div>
+          <div class="hub-card-footer">
+            <a href="{% url 'quiz_por_clase' clase.id %}" class="hub-button">Jugar Quiz</a>
+          </div>
+        </article>
+      {% empty %}
+        <p>No hay clases disponibles para este curso aún.</p>
+      {% endfor %}
+    </section>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="hub-footer">
+      <p>Desarrollado por Emanuel Cabral para Tecno Marema © {{ now|date:"Y" }}</p>
+    </footer>
+
+  </div>
+
+</body>
+</html>
+
+{% endblock %}

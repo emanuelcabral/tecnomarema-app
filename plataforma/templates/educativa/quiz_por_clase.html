@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz - {{ clase.nombre_clase }}</title>
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1{
+        text-align: center;
+    }
+
+    .quiz-container {
+      background-color: #222;
+      padding: 40px 30px;
+      max-width: 900px;
+      margin: 50px auto;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #12f693;
+    }
+
+    .titulo-clase {
+      font-size: 30px;
+      font-weight: bold;
+      text-align: center;
+      color: #12f693;
+      margin-bottom: 10px;
+    }
+
+    .temporizador {
+      text-align: center;
+      font-size: 24px;
+      color: white;
+      margin-bottom: 30px;
+    }
+
+    .pregunta {
+      font-size: 22px;
+      color: #12f693;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .imagen-pregunta {
+      width: 100%;
+      max-height: 300px;
+      object-fit: contain;
+      border-radius: 10px;
+      margin-bottom: 25px;
+    }
+
+    .opciones {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .opcion {
+      background-color: #333;
+      border: none;
+      padding: 20px;
+      font-size: 18px;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      text-align: center;
+    }
+
+    .opcion:hover {
+      background-color: #12f693;
+      color: #000;
+    }
+
+    .opcion.a { background-color: #ff5959; }
+    .opcion.b { background-color: #f9c74f; }
+    .opcion.c { background-color: #43aa8b; }
+    .opcion.d { background-color: #577590; }
+
+    .footer-info {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+
+    <h1>Tecno quizzes</h1>
+
+  <div class="quiz-container">
+    <div class="titulo-clase">
+      {{ clase.nombre_clase }}
+    </div>
+
+    <div class="temporizador">
+      ⏳ Tiempo restante: <span id="tiempo">30</span> segundos
+    </div>
+
+    <div class="pregunta">
+      {{ pregunta.texto }}
+    </div>
+
+    <!-- {% if pregunta.imagen %} -->
+      <!-- <img src="{{ pregunta.imagen.url }}" alt="Imagen de la pregunta" class="imagen-pregunta"> -->
+    <!-- {% endif %} -->
+      <img class="imagen-pregunta" src="https://easy-peasy.ai/cdn-cgi/image/quality=80,format=auto,width=700/https://media.easy-peasy.ai/d6546a37-4ba1-4a5d-87b1-a698c3960c20/00197615-9cf9-4af9-8661-f62f68512331.png" alt="">
+
+    <div class="opciones">
+      <button class="opcion a">A - {{ pregunta.opcion_a }}</button>
+      <button class="opcion b">B - {{ pregunta.opcion_b }}</button>
+      <button class="opcion c">C - {{ pregunta.opcion_c }}</button>
+      <button class="opcion d">D - {{ pregunta.opcion_d }}</button>
+    </div>
+  </div>
+
+  <div class="footer-info">
+    Plataforma TecnoMarema ©
+  </div>
+
+<script>
+  // Tiempo inicial en segundos
+  let tiempoRestante = 30;
+
+  // Referencia al span donde se muestra el tiempo
+  const spanTiempo = document.getElementById('tiempo');
+
+  // Referencias a todos los botones de opciones
+  const botones = document.querySelectorAll('.opcion');
+
+  // Estado para evitar múltiples respuestas
+  let respondido = false;
+
+  // Inicia el temporizador que cuenta hacia atrás cada segundo
+  const intervalo = setInterval(() => {
+    tiempoRestante--;
+    spanTiempo.textContent = tiempoRestante;
+
+    // Si se acaba el tiempo y no se respondió, se muestra resultado como "no respondido"
+    if (tiempoRestante <= 0 && !respondido) {
+      respondido = true;
+      mostrarResultado(null); // null indica que no se hizo click en ninguna opción
+    }
+  }, 1000);
+
+  // Agrega evento de click a cada opción
+  botones.forEach(boton => {
+    boton.addEventListener('click', () => {
+      if (!respondido) {
+        respondido = true;
+        clearInterval(intervalo);  // Detiene el temporizador
+        mostrarResultado(boton);  // Procesa la respuesta
+      }
+    });
+  });
+
+  // Función que evalúa si la respuesta fue correcta y prepara redirección
+  function mostrarResultado(boton) {
+    const correcta = "{{ pregunta.respuesta_correcta|lower }}";  // Respuesta correcta desde Django
+
+    // Deshabilita todos los botones para evitar más clicks
+    botones.forEach(b => b.disabled = true);
+
+    if (boton) {
+      // Detecta qué opción fue seleccionada (a, b, c o d)
+      const seleccion = boton.classList.contains("a") ? "a" :
+                        boton.classList.contains("b") ? "b" :
+                        boton.classList.contains("c") ? "c" : "d";
+
+      // Marca el botón según si fue correcto o no
+      if (seleccion === correcta) {
+        boton.style.border = "3px solid #12f693";  // borde verde
+        boton.innerHTML += " ✅";
+        boton.style.backgroundColor = "#12f693";
+        boton.style.color = "#000";
+      } else {
+        boton.style.border = "3px solid red";      // borde rojo
+        boton.innerHTML += " ❌";
+        boton.style.backgroundColor = "#ff5959";
+      }
+    }
+
+    // Marca también la respuesta correcta si fue fallada o no respondida
+    const correcto = document.querySelector(`.opcion.${correcta}`);
+    if (correcto) {
+      correcto.style.border = "3px solid #12f693";
+      correcto.innerHTML += " ✅";
+    }
+
+    // Espera 2 segundos y redirige a la siguiente pregunta (basado en query param ?n=)
+    setTimeout(() => {
+      const url = new URL(window.location.href);
+      const nActual = parseInt(url.searchParams.get("n")) || 0;
+      url.searchParams.set("n", nActual + 1);
+      window.location.href = url.toString();
+    }, 2000);
+  }
+</script>
+
+
+</body>
+</html>

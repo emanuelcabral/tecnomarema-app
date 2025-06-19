@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz finalizado</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background-color: #222;
+      padding: 50px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px #12f693;
+      max-width: 600px;
+    }
+
+    h1 {
+      color: #12f693;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    p {
+      font-size: 20px;
+      margin-bottom: 30px;
+    }
+
+    .btn-volver {
+      background-color: #12f693;
+      color: #000;
+      padding: 12px 24px;
+      font-size: 18px;
+      text-decoration: none;
+      border-radius: 10px;
+      transition: background-color 0.3s;
+    }
+
+    .btn-volver:hover {
+      background-color: #0fd682;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🎉 ¡Quiz completado!</h1>
+    <p>Has respondido todas las preguntas de esta clase. ¡Buen trabajo!</p>
+    <a href="/curso/{{ clase.curso.nombre_curso|urlencode }}/quizzes/" class="btn-volver">Volver al hub de quizzes</a>
+  </div>
+
+</body>
+</html>

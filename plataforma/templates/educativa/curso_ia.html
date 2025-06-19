@@ -366,11 +366,57 @@
     transform: scale(1.05);
   }
 
+
+  /* info de porcentaje de asistencia - inicio */
+
+.asistencia-box {
+  width: 100px;
+  height: 100px;
+  background-color: #222;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 0px 8px #12f693;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden; /* Esto evita que el fondo del título se vea recortado */
+}
+
+.asistencia-box .titulo {
+  font-size: 16px;
+  font-weight: bold;
+  height: 30%;
+  width: 100%; /* Asegura que ocupe todo el ancho */
+  background-color: #cf30ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asistencia-box .porcentaje {
+  font-size: 25px;
+  font-weight: bold;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #12f693;
+}
+
+
+  /* info de porcentaje de asistencia - fin */
+
     
   </style>
 </head>
 
 <body>
+
+<script>
+  const cursoID = "{{ comision.id_curso.nombre_curso }}";
+</script>
+
+<!-- <p style="color: yellow;">{{ comision.id_curso.id }}</p> -->
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark px-3">
@@ -478,12 +524,28 @@
 
     <!-- sub-menu inicia -->
     <div class="col-md-4 sub-menu atencion">
-      <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
+      <!-- <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
       Ver participantes
-      </a>
-      <a href="{% url 'asistencia_alumnos' %}">
+      </a> -->
+      <!-- <a href="{% url 'asistencia_alumnos' %}">
       Asistencias
-      </a>
+      </a> -->
+
+      <div class="asistencia-box">
+        <div class="titulo">Asistencia</div>
+        <div class="porcentaje">75%</div>
+      </div>
+
+      <div class="asistencia-box">
+        <div class="titulo">Quizzes</div>
+        <div class="porcentaje">85%</div>
+      </div>
+
+      <div class="asistencia-box">
+        <div class="titulo">Nota Final</div>
+        <div class="porcentaje">9</div>
+      </div>
+
     </div>
     <!-- sub-menu fin -->
 
@@ -539,11 +601,23 @@
           <p>Clase grabada aún no disponible</p>
         {% endif %}
 
+
+        <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
+
+        {% if curso and curso.id %}
+          <a href="/curso/{{ comision.id_curso.nombre_curso|urlencode }}/quizzes/" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
+        {% else %}
+          <p class="text-danger">Error: curso no definido o sin ID válido.</p>
+        {% endif %}
+
+
         <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
         <ul>
           <li><a href="#" target="_blank">Documento guía</a></li>
           <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
         </ul>
+
+
       {% endwith %}
     {% endwith %}
   </div>
@@ -569,6 +643,8 @@
 <script>
   const csrfToken = "{{ csrf_token }}";
 </script>
+
+
 
 <script>
   const clasesData = [
@@ -664,6 +740,9 @@ function mostrarClase(index) {
 
       <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
       ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
+      <a href="/curso/${cursoID}/quizzes/" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
 
       <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
       <ul>

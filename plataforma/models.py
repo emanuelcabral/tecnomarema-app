@@ -311,3 +311,28 @@ class AsistenciaClase(models.Model):
 
 
 # fin del codigo 
+
+
+######################################################################################################
+###----------------------------------preguntas del quizze------------------------------------------###
+######################################################################################################
+
+from django.db import models
+from .models import Clase  # Asegurate de tener importado Clase
+
+class Pregunta(models.Model):
+    clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
+    texto = models.TextField()
+    opcion_a = models.CharField(max_length=255)
+    opcion_b = models.CharField(max_length=255)
+    opcion_c = models.CharField(max_length=255)
+    opcion_d = models.CharField(max_length=255)
+    respuesta_correcta = models.CharField(max_length=1, choices=[
+        ('a', 'Opción A'),
+        ('b', 'Opción B'),
+        ('c', 'Opción C'),
+        ('d', 'Opción D')
+    ])
+
+    def __str__(self):
+        return f"[Clase {self.clase.numero_clase}] {self.texto[:50]}"
