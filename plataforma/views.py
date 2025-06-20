@@ -1596,7 +1596,8 @@ def entrega_proyecto_view(request, comision_id):
 
             entrega.save()
             messages.success(request, "Entrega enviada correctamente.")
-            return redirect('curso_detalle', id_comision=comision_id)
+            # return redirect('curso_detalle', id_comision=comision_id)
+            return redirect(f"{request.path}?entregado=1")
     else:
         form = EntregaProyectoForm(instance=entrega_existente)
 
