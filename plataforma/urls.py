@@ -139,6 +139,13 @@ urlpatterns = [
     path('curso/<str:nombre_curso>/quizzes/', views.hub_de_quizzes, name='hub_de_quizzes'), #http://127.0.0.1:8000/hub_de_quizzes
     path('quiz/<int:clase_id>/', views.quiz_por_clase, name='quiz_por_clase'), 
 
+
+    # path('entrega-proyecto/<int:comision_id>/', views.entrega_proyecto_view, name='entrega_proyecto'),
+
+    path('entrega-proyecto/<str:comision_id>/', views.entrega_proyecto_view, name='entrega_proyecto'),
+
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

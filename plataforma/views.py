@@ -1036,77 +1036,13 @@ def cursos_alumno(request):
 #---------------------------------el curso view---------------------------------------------------#
 ###################################################################################################
 
-# @session_required
-# def curso_detalle_view(request, id_curso):
-#     # Obtengo el nombre de usuario logueado de la sesión
-#     nombre_usuario = request.session.get('usuario_logueado')
-#     if not nombre_usuario:
-#         return redirect('login')
-
-#     # Obtengo el objeto PerfilUsuario con su relación a id_estudiante
-#     try:
-#         usuario = PerfilUsuario.objects.select_related('id_estudiante').get(nombre_usuario=nombre_usuario)
-#         estudiante = usuario.id_estudiante
-#     except PerfilUsuario.DoesNotExist:
-#         messages.error(request, 'Usuario no encontrado.')
-#         return redirect('login')
-
-#     # Busco el curso según el id_curso que llega por URL
-#     curso = get_object_or_404(Curso, id_curso=id_curso)
-
-#     # Obtengo las comisiones que cursa el estudiante (pueden ser None)
-#     comisiones_estudiante = [
-#         estudiante.cursando1,
-#         estudiante.cursando2,
-#         estudiante.cursando3,
-#         estudiante.cursando4,
-#         estudiante.cursando5,
-#         estudiante.cursando6,
-#         estudiante.cursando7,
-#         estudiante.cursando8,
-#         estudiante.cursando9,
-#     ]
-
-#     # Busco la comisión actual que corresponde al curso
-#     comision_actual = next(
-#         (com for com in comisiones_estudiante if com and com.id_curso == curso),
-#         None
-#     )
-
-#     # Obtengo todas las clases del curso ordenadas por número de clase
-#     clases_del_curso = curso.clases.filter(estado_clase='Activo').order_by('numero_clase')
-
-#     # Normalizo nombre del curso para elegir el template correcto
-#     nombre_normalizado = curso.nombre_curso.strip().lower()
-
-#     templates_por_curso = {
-#         "desarrollo web": "educativa/curso_desarrollo_web.html",
-#         "inteligencia artificial": "educativa/curso_ia.html",
-#         "python": "educativa/curso_python.html",
-#         "javascript": "educativa/curso_javascript.html",
-#     }
-
-#     template_a_usar = templates_por_curso.get(nombre_normalizado, "educativa/curso_detalle.html")
-
-#     contexto = {
-#         'usuario': usuario,
-#         'estudiante': estudiante,
-#         'curso': curso,
-#         'comision': comision_actual,
-#         'nombre_usuario': nombre_usuario,
-#         'es_autenticado': True,
-#         'clases': clases_del_curso,  # <-- Aquí le paso las clases al template
-        
-#     }
-
-#     return render(request, template_a_usar, contexto)
-
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision, AsistenciaClase
 from .decorators import session_required
+from plataforma.models import EntregaProyecto
 
 
 @session_required
@@ -1182,6 +1118,12 @@ def curso_detalle_view(request, id_comision):
     }
     template_a_usar = templates_por_curso.get(nombre_normalizado, "educativa/curso_detalle.html")
 
+    # 9.5. Buscar si el estudiante ya entregó el proyecto en esta comisión
+    entrega_existente = EntregaProyecto.objects.filter(
+        estudiante=estudiante,
+        comision=comision
+    ).first()
+
     # 10. Render
     contexto = {
         'usuario': usuario,
@@ -1194,7 +1136,53 @@ def curso_detalle_view(request, id_comision):
         'clasescomision': clasecomision_dict,
         'clases_presentes_ids': clases_presentes_ids,
         'valoraciones_disponibles': valoraciones_disponibles,  # ✅ nuevo diccionario
+        "entrega_existente": entrega_existente,  # 👈 se está pasando
     }
+
+    from django.db.models import Sum
+    from plataforma.models import PuntajeQuiz
+
+    # --- Estadísticas de quizzes ---
+    clases_curso = curso.clases.all()  # Todas las clases del curso
+    total_quizzes = clases_curso.count()
+
+    # Total de quizzes hechos por el estudiante
+    quizzes_realizados = PuntajeQuiz.objects.filter(
+        estudiante=estudiante,
+        clase__curso=curso
+    ).count()
+
+    # Puntaje acumulado por el estudiante
+    puntaje_total = PuntajeQuiz.objects.filter(
+        estudiante=estudiante,
+        clase__curso=curso
+    ).aggregate(Sum("puntaje_inicial"))["puntaje_inicial__sum"] or 0
+
+    # Puntaje máximo posible (10 puntos por clase)
+    puntaje_maximo_posible = total_quizzes * 10
+
+    # Agregar al contexto
+    contexto["quizzes_realizados"] = quizzes_realizados
+    contexto["quizzes_totales"] = total_quizzes
+    contexto["puntaje_total_quiz"] = puntaje_total
+    contexto["puntaje_maximo_posible"] = puntaje_maximo_posible
+
+
+
+        # 🔢 Total de clases activas de la comisión
+    total_clases_comision = clases_comisionadas.count()
+
+    # ✅ Asistencias del estudiante en esta comisión
+    asistencias_en_comision = AsistenciaClase.objects.filter(
+        estudiante=estudiante,
+        clase__in=[cc.clase for cc in clases_comisionadas]
+    ).count()
+
+    # 👉 Guardar en el contexto
+    contexto["asistencias_en_comision"] = asistencias_en_comision
+    contexto["total_clases_comision"] = total_clases_comision
+
+
 
     return render(request, template_a_usar, contexto)
 
@@ -1567,4 +1555,60 @@ def quiz_por_clase(request, clase_id):
         'pregunta': pregunta,
         'n': n,
         'total': total,
+    })
+
+#####################################################################################
+####-----------------------Entrega del Proyecto Final----------------------------####
+#####################################################################################
+
+from datetime import timedelta
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .forms import EntregaProyectoForm
+from .models import EntregaProyecto, Comision, DatosDeEstudiantes
+from plataforma.decorators import session_required
+
+
+@session_required
+def entrega_proyecto_view(request, comision_id):
+    estudiante_id = request.session.get('usuario_id')
+    estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=estudiante_id)
+    comision = get_object_or_404(Comision, id_comision=comision_id)
+    curso = comision.id_curso
+
+    entrega_existente = EntregaProyecto.objects.filter(estudiante=estudiante, comision=comision).first()
+
+    # 🟡 Guardar nota y feedback previos por separado
+    nota_anterior = entrega_existente.nota if entrega_existente else None
+    feedback_anterior = entrega_existente.feedback if entrega_existente else None
+
+    if request.method == 'POST':
+        form = EntregaProyectoForm(request.POST, request.FILES, instance=entrega_existente)
+        if form.is_valid():
+            entrega = form.save(commit=False)
+
+            # ✅ Reasignar campos preservados
+            entrega.estudiante = estudiante
+            entrega.comision = comision
+            entrega.curso = curso
+            entrega.nota = nota_anterior
+            entrega.feedback = feedback_anterior
+
+            entrega.save()
+            messages.success(request, "Entrega enviada correctamente.")
+            return redirect('curso_detalle', id_comision=comision_id)
+    else:
+        form = EntregaProyectoForm(instance=entrega_existente)
+
+    # 📆 Calcular límite de entrega
+    fecha_fin = comision.fecha_fin
+    fecha_limite = fecha_fin + timedelta(days=14)
+
+    return render(request, 'educativa/entrega_proyecto.html', {
+        'form': form,
+        'comision': comision,
+        'curso': curso,
+        'estudiante': estudiante,
+        'entrega_existente': entrega_existente,
+        'fecha_limite': fecha_limite,
     })

@@ -1,0 +1,215 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Entrega de Proyecto Final</title>
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <style>
+    body {
+      background-color: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #222;
+      padding: 40px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px #12f693;
+    }
+
+    h1 {
+      text-align: center;
+      color: #12f693;
+      margin-bottom: 30px;
+    }
+
+    .badge-marema{
+        font-size: 20px;
+    }
+
+    label {
+      font-weight: bold;
+      margin-top: 20px;
+      display: block;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="file"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 8px;
+      background-color: #333;
+      color: white;
+      border: none;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+
+    .boton-submit {
+      background-color: #12f693;
+      color: black;
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 30px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    .boton-submit:hover {
+      background-color: #0bd68f;
+    }
+
+    fieldset {
+      margin-top: 30px;
+      border: 1px solid #555;
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    legend , strong {
+      font-weight: bold;
+      color: #12f693;
+      padding: 0 10px;
+    }
+
+    .errorlist {
+      color: #ff5959;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Entrega de Proyecto Final</h1>
+
+<!-- CONSIGNA -->
+<section class="mb-4 p-4" style="background-color: #333; border-radius: 12px;">
+  <h2 style="color: #12f693;">📌 Consigna del Proyecto</h2>
+  <p style="padding: 20px;">
+    {{ comision.id_curso.consigna_proyecto|default:"Aún no se cargó la consigna." }}
+  </p>
+  <p style="background-color: #cf30ff; border-radius: 12px;">
+    <strong style="color: rgb(0, 0, 0);">📌 ATENCION A LA FECHA DE ENTREGA!!! ⚠</strong><br>
+    <span class="badge badge-marema me-2">📆 Inicio de entrega:</span> {{ comision.fecha_fin|date:"j F Y" }}<br>
+    <span class="badge badge-marema me-2">⏳ Cierre de entrega:</span> {{ fecha_limite|date:"j F Y" }} a las 23:59 hs
+  </p>
+
+</section>
+
+<!-- INFORMACIÓN Y EVALUACIÓN -->
+<div class="row">
+  <!-- IZQUIERDA: Info alumno y nota -->
+  <div class="col-md-6">
+    <div class="p-4" style="background-color: #333; border-radius: 12px;">
+      <p>🎓<strong style="color: #12f693;">Curso:</strong> {{ curso.nombre_curso }}</p>
+      <p>🧾<strong style="color: #12f693;">Comisión:</strong> {{ comision.numero_comision }}</p>
+      <p>👨‍🎓<strong style="color: #12f693;">Alumno:</strong> {{ estudiante.nombre }} {{ estudiante.apellido }}</p>
+      <p>📅<strong style="color: #12f693;">Entregado:</strong> {{ entrega_existente.fecha_entrega|date:"d/m/Y H:i" }}</p>
+      {% if entrega_existente.nota %}
+        <p>📝<strong style="color: #12f693;">Nota:</strong> {{ entrega_existente.nota }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- DERECHA: Feedback -->
+  <div class="col-md-6">
+    <div class="p-4" style="background-color: #333; border-radius: 12px;">
+      <h5 style="color: #12f693;">💬 Feedback del Profesor</h5>
+      {% if entrega_existente.feedback %}
+        <p>{{ entrega_existente.feedback }}</p>
+      {% else %}
+        <p>No se ha cargado feedback aún.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    {{ form.non_field_errors }}
+
+    <label for="{{ form.titulo.id_for_label }}">Título del Proyecto</label>
+    {{ form.titulo.errors }}
+    {{ form.titulo }}
+
+    <label for="{{ form.descripcion.id_for_label }}">Descripción</label>
+    {{ form.descripcion.errors }}
+    {{ form.descripcion }}
+
+    <fieldset>
+      <legend>🔗 Enlaces</legend>
+      <label for="{{ form.link_github.id_for_label }}">Link GitHub</label>
+      {{ form.link_github.errors }}
+      {{ form.link_github }}
+
+      <label for="{{ form.link_pages.id_for_label }}">Link GitHub Pages</label>
+      {{ form.link_pages.errors }}
+      {{ form.link_pages }}
+
+      <label for="{{ form.link_servidor.id_for_label }}">Link del Servidor</label>
+      {{ form.link_servidor.errors }}
+      {{ form.link_servidor }}
+
+      <label for="{{ form.link_adicional.id_for_label }}">Otro Enlace (Drive, etc.)</label>
+      {{ form.link_adicional.errors }}
+      {{ form.link_adicional }}
+    </fieldset>
+
+    <fieldset>
+      <legend>📎 Archivos</legend>
+      <label for="{{ form.archivo_1.id_for_label }}">Archivo Adicional 1</label>
+      {{ form.archivo_1.errors }}
+      {{ form.archivo_1 }}
+
+      <label for="{{ form.archivo_2.id_for_label }}">Archivo Adicional 2</label>
+      {{ form.archivo_2.errors }}
+      {{ form.archivo_2 }}
+
+      <label for="{{ form.archivo_3.id_for_label }}">Archivo Adicional 3</label>
+      {{ form.archivo_3.errors }}
+      {{ form.archivo_3 }}
+    </fieldset>
+
+    <fieldset>
+      <legend>📷 Multimedia</legend>
+      <label for="{{ form.imagen.id_for_label }}">Imagen del Proyecto</label>
+      {{ form.imagen.errors }}
+      {{ form.imagen }}
+
+      <label for="{{ form.video.id_for_label }}">Video del Proyecto</label>
+      {{ form.video.errors }}
+      {{ form.video }}
+
+      <label for="{{ form.audio.id_for_label }}">Audio del Proyecto</label>
+      {{ form.audio.errors }}
+      {{ form.audio }}
+    </fieldset>
+
+    <label for="{{ form.comentarios_adicionales.id_for_label }}">📝 Comentarios Adicionales</label>
+    {{ form.comentarios_adicionales.errors }}
+    {{ form.comentarios_adicionales }}
+
+    <button type="submit" class="boton-submit">📤 Enviar Entrega</button>
+  </form>
+</div>
+
+</body>
+</html>

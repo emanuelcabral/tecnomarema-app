@@ -198,3 +198,25 @@ class ClaseComisionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['link'].required = False
         self.fields['video'].required = False
+
+#--------------------------------------------------------------------------------------#
+##------------------------entrega de proyecto------------------------------------------#
+#--------------------------------------------------------------------------------------#
+
+from django import forms
+from .models import EntregaProyecto
+
+class EntregaProyectoForm(forms.ModelForm):
+    class Meta:
+        model = EntregaProyecto
+        exclude = ['estudiante', 'curso', 'comision', 'fecha_entrega']
+
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Título del proyecto'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'link_github': forms.URLInput(attrs={'class': 'form-control'}),
+            'link_pages': forms.URLInput(attrs={'class': 'form-control'}),
+            'link_servidor': forms.URLInput(attrs={'class': 'form-control'}),
+            'link_adicional': forms.URLInput(attrs={'class': 'form-control'}),
+            'comentarios_adicionales': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+        }

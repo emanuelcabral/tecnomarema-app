@@ -221,32 +221,44 @@
   }
 </script>
 
-<!-- 🎵 Volumen persistente -->
+<!-- 🎵 Volumen persistente y control compartido -->
 <script>
-  const audio = document.getElementById("audioFondo");
+  const audioFondo = document.getElementById("audioFondo");
+  const audioPositivo = document.getElementById("audioPositivo");
+  const audioNegativo = document.getElementById("audioNegativo");
+
   const toggleMute = document.getElementById("toggleMute");
   const volumenControl = document.getElementById("volumenControl");
 
+  // Cargar configuración guardada
   const storedMuted = localStorage.getItem("audioMute") === "true";
   const storedVolume = parseFloat(localStorage.getItem("audioVolume")) || 0.5;
 
-  audio.muted = storedMuted;
-  audio.volume = storedVolume;
+  // Aplicar a todos los audios
+  [audioFondo, audioPositivo, audioNegativo].forEach(audio => {
+    audio.muted = storedMuted;
+    audio.volume = storedVolume;
+  });
+
   volumenControl.value = storedVolume;
   toggleMute.textContent = storedMuted ? "🔇 Reanudar" : "🔈 Silenciar";
 
+  // Botón mute
   toggleMute.addEventListener("click", () => {
-    audio.muted = !audio.muted;
-    localStorage.setItem("audioMute", audio.muted);
-    toggleMute.textContent = audio.muted ? "🔇 Reanudar" : "🔈 Silenciar";
+    const muted = !audioFondo.muted;
+    [audioFondo, audioPositivo, audioNegativo].forEach(audio => audio.muted = muted);
+    localStorage.setItem("audioMute", muted);
+    toggleMute.textContent = muted ? "🔇 Reanudar" : "🔈 Silenciar";
   });
 
+  // Rango de volumen
   volumenControl.addEventListener("input", () => {
     const vol = parseFloat(volumenControl.value);
-    audio.volume = vol;
+    [audioFondo, audioPositivo, audioNegativo].forEach(audio => audio.volume = vol);
     localStorage.setItem("audioVolume", vol);
   });
 </script>
+
 
 </body>
 </html>

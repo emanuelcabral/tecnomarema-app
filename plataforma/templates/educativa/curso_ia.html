@@ -537,37 +537,53 @@
 
   <div class="container d-flex atencion">
 
-    <div class="col-md-8 atencion">
+    <div class="col-md-6 atencion">
       <p id="mensaje-curso" class="mt-3" style="color: #12f693; border: 1px solid #12f693; padding: 20px;border-radius: 10px;background-color: #222222;"></p>
     </div>
 
 
     <!-- sub-menu inicia -->
     <div class="col-md-4 sub-menu atencion">
-      <!-- <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
-      Ver participantes
-      </a> -->
-      <!-- <a href="{% url 'asistencia_alumnos' %}">
-      Asistencias
-      </a> -->
 
-      <div class="asistencia-box">
-        <div class="titulo">Asistencia</div>
-        <div class="porcentaje">75%</div>
+    <div class="asistencia-box">
+      <div class="titulo">Asistencia</div>
+      <div class="porcentaje">
+        {{ asistencias_en_comision }}/{{ total_clases_comision }}
       </div>
+    </div>
+
+      <!-- <div class="asistencia-box">
+        <div class="titulo">Quizzes</div>
+        <div class="porcentaje">85%</div>
+      </div> -->
 
       <div class="asistencia-box">
         <div class="titulo">Quizzes</div>
-        <div class="porcentaje">85%</div>
+        <div class="porcentaje">
+          {{ puntaje_total_quiz }} pts
+        </div>
       </div>
 
       <div class="asistencia-box">
         <div class="titulo">Nota Final</div>
-        <div class="porcentaje">9</div>
+        <div class="porcentaje">
+          {{ entrega_existente.nota|default:"–" }}
+        </div>
       </div>
 
     </div>
     <!-- sub-menu fin -->
+
+  </div>
+
+  <div class="container d-flex atencion mt-3">
+
+    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">Ver participantes</a>
+    <!-- <a href="{% url 'asistencia_alumnos' %}">Asistencias</a> -->
+    <!-- <a href="{% url 'entrega_proyecto' comision.numero_comision %}">Entrega Final</a> -->
+    <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a>
+
+
 
   </div>
 

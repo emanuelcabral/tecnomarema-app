@@ -83,6 +83,7 @@ class Curso(models.Model):
     # fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_creacion = models.DateTimeField()
     descripcion = models.TextField()
+    consigna_proyecto = models.TextField(blank=True, null=True)
     # duracion = models.CharField(blank=True, null=True)
     duracion = models.CharField(max_length=20, choices=[
         ('0.5hs', '0.5 hs'),
@@ -348,3 +349,48 @@ class PuntajeQuiz(models.Model):
 
     class Meta:
         unique_together = ('estudiante', 'clase')
+
+
+#####################################################################################
+####-----------------------Entrega del Proyecto Final----------------------------####
+#####################################################################################
+
+from django.db import models
+from django.utils import timezone
+
+class EntregaProyecto(models.Model):
+    estudiante = models.ForeignKey("DatosDeEstudiantes", on_delete=models.CASCADE)
+    curso = models.ForeignKey("Curso", on_delete=models.CASCADE)
+    comision = models.ForeignKey("Comision", on_delete=models.CASCADE)
+
+    titulo = models.CharField(max_length=100)
+    descripcion = models.TextField(blank=True, null=True)
+
+    # Enlaces
+    link_github = models.URLField(blank=True, null=True)
+    link_pages = models.URLField(blank=True, null=True)
+    link_servidor = models.URLField(blank=True, null=True)
+    link_adicional = models.URLField(blank=True, null=True)
+
+    # Archivos opcionales
+    archivo_1 = models.FileField(upload_to='entregas/', blank=True, null=True)
+    archivo_2 = models.FileField(upload_to='entregas/', blank=True, null=True)
+    archivo_3 = models.FileField(upload_to='entregas/', blank=True, null=True)
+
+    # Multimedia
+    imagen = models.ImageField(upload_to='entregas/imagenes/', blank=True, null=True)
+    video = models.FileField(upload_to='entregas/videos/', blank=True, null=True)
+    audio = models.FileField(upload_to='entregas/audios/', blank=True, null=True)
+
+    comentarios_adicionales = models.TextField(blank=True, null=True)
+
+    fecha_entrega = models.DateTimeField(default=timezone.now)
+
+    nota = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    feedback = models.TextField(blank=True, null=True)
+
+    class Meta:
+        unique_together = ('estudiante', 'comision')  # ✅ No se puede repetir la entrega por alumno y comisión
+
+    def __str__(self):
+        return f"{self.estudiante} - {self.curso.nombre_curso} - Proyecto"
