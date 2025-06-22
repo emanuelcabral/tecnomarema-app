@@ -93,6 +93,18 @@ class Curso(models.Model):
         ('2.5hs', '2.5 hs'),
         ('3hs', '3 hs'),
     ], default='2hs')
+
+    # Nuevos campos
+    precio_original = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    precio_final = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    modalidad = models.CharField(max_length=50, choices=[
+        ('online_vivo', 'Online en vivo'),
+        ('online_grabado', 'Online grabado'),
+        ('presencial', 'Presencial'),
+        ('hibrido', 'Híbrido'),
+    ], default='online_vivo')
+
+
     # 🔽 Campo nuevo para la icono del curso
     icono01 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
     icono02 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)

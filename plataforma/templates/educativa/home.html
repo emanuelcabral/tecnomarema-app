@@ -7,7 +7,6 @@
   <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
   <title>Tecno Marema - Academia Cyberpunk</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
 
@@ -508,6 +507,15 @@ html {
   color: black; /* si quieres que cambie el color del ícono también, cámbialo aquí */
 }
 
+
+.btn-disabled{
+  background-color: #555;
+}
+
+.btn-disabled:hover{
+  background-color: #555;
+}
+
     /* subir fin */
 
   </style>
@@ -606,8 +614,8 @@ html {
             <img src="{% static 'img/IA.jpg' %}" alt="Inteligencia Artificial" class="course-image" />
             <h4 class="text-white">Inteligencia Artificial</h4>
             <p>Introducción a algoritmos y modelos de IA aplicados.</p>
-            <a href="#mas-info" class="btn-mas-info">
-              <i class="fas fa-circle-info"></i> Más info
+            <a href="#mas-info" class="btn-mas-info btn-disabled" >
+              <i class="fas fa-circle-info"></i>Proximamente
             </a>
           </div>
         </div>
@@ -616,8 +624,8 @@ html {
             <img src="{% static 'img/python.png' %}" alt="Python" class="course-image" />
             <h4 class="text-white">Python</h4>
             <p>Automatización, data science y desarrollo backend.</p>
-            <a href="#mas-info" class="btn-mas-info">
-              <i class="fas fa-circle-info"></i> Más info
+            <a href="#mas-info" class="btn-mas-info btn-disabled">
+              <i class="fas fa-circle-info"></i>Proximamente
             </a>
           </div>
         </div>
@@ -626,8 +634,8 @@ html {
             <img src="{% static 'img/js5.jpeg' %}" alt="JavaScript" class="course-image" />
             <h4 class="text-white">JavaScript</h4>
             <p>DOM, lógica, animaciones y proyectos interactivos.</p>
-            <a href="#mas-info" class="btn-mas-info">
-              <i class="fas fa-circle-info"></i> Más info
+            <a href="#mas-info" class="btn-mas-info btn-disabled">
+              <i class="fas fa-circle-info"></i>Proximamente
             </a>
           </div>
         </div>
@@ -861,7 +869,7 @@ html {
     <h2 class="section-title">Preguntas Frecuentes</h2>
     <div class="faq-item text-white-50">
       <h5 class="text-white">📅 ¿Cuánto duran los cursos?</h5>
-      <p>La duración depende de cada curso, pero todos incluyen entre 12 y 24 clases de 2 horas cada una.</p>
+      <p>La duración depende de cada curso, pero todos incluyen entre 6 y 24 clases de 2 horas cada una.</p>
     </div>
     <div class="faq-item text-white-50">
       <h5 class="text-white">💻 ¿Necesito conocimientos previos?</h5>

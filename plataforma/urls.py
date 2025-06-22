@@ -141,8 +141,15 @@ urlpatterns = [
 
 
     # path('entrega-proyecto/<int:comision_id>/', views.entrega_proyecto_view, name='entrega_proyecto'),
-
     path('entrega-proyecto/<str:comision_id>/', views.entrega_proyecto_view, name='entrega_proyecto'),
+
+
+    path("procesar_pago_mercado/", views.procesar_pago_mercado, name="procesar_pago_mercado"),
+
+    path('proximas_comisiones/', views.proximas_comisiones_desarrollo_web, name='proximas_comisiones'),
+
+    path('mi_certificado/', views.mi_certificado_redirect, name='mi_certificado_redirect'),
+    path('mi_certificado/<str:id_estudiante>/<str:id_comision>/', views.mi_certificado, name='mi_certificado'),
 
 
 

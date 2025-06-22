@@ -68,8 +68,31 @@ def cursos_view(request):
 def desarrollo_web_compra(request):
     return render(request, 'educativa/desarrollo_web_compra.html')
 
+# def inscripcion(request):
+#     return render(request, 'educativa/inscripcion.html')
+
+from django.shortcuts import render
+from .models import Curso
+
+from django.db.models import Prefetch
+from .models import Curso, Comision
+
 def inscripcion(request):
-    return render(request, 'educativa/inscripcion.html')
+    cursos = Curso.objects.filter(estado_curso='próximo').order_by('nombre_curso')
+    for curso in cursos:
+        curso.comisiones = curso.comision_set.filter(estado_comision='próximo').only(
+            'numero_comision',
+            'fecha_inicio',
+            'fecha_fin',
+            'dia1', 'dia2', 'dia3',
+            'horario1', 'horario2', 'horario3',
+            'estado_comision'
+        )
+    return render(request, 'educativa/inscripcion.html', {
+        'cursos': cursos
+    })
+
+#-----------------------------------------------------------------
 
 def terminos_y_condiciones(request):
     return render(request, 'educativa/terminos_y_condiciones.html')
@@ -1613,3 +1636,203 @@ def entrega_proyecto_view(request, comision_id):
         'entrega_existente': entrega_existente,
         'fecha_limite': fecha_limite,
     })
+
+################################################################################
+#--------------------------------inscripcion-----------------------------------#
+################################################################################
+
+# views.py
+import mercadopago
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+
+@csrf_exempt
+def procesar_pago_mercado(request):
+    if request.method == "POST":
+        sdk = mercadopago.SDK("TU_ACCESS_TOKEN_AQUI")
+        datos = json.loads(request.body)
+
+        pago = {
+            "transaction_amount": float(datos["transaction_amount"]),
+            "token": datos["token"],
+            "description": "Pago inscripción TecnoMarema",
+            "installments": int(datos["installments"]),
+            "payment_method_id": datos["payment_method_id"],
+            "issuer_id": datos["issuer_id"],
+            "payer": {
+                "email": datos["payer"]["email"],
+                "identification": datos["payer"]["identification"]
+            }
+        }
+
+        resultado = sdk.payment().create(pago)
+        return JsonResponse(resultado["response"])
+    
+    return JsonResponse({"status": "error"}, status=400)
+
+
+#############################################################################
+##------------------------proximas comisiones------------------------------##
+#############################################################################
+
+from django.shortcuts import render
+from .models import Curso, Comision
+
+def proximas_comisiones_desarrollo_web(request):
+    try:
+        desarrollo_web = Curso.objects.get(nombre_curso__iexact="Desarrollo Web")
+    except Curso.DoesNotExist:
+        comisiones = []
+    else:
+        comisiones = Comision.objects.filter(
+            id_curso=desarrollo_web,
+            estado_comision='próximo'
+        ).order_by('fecha_inicio')
+
+    return render(request, 'educativa/proximas_comisiones.html', {
+        'comisiones': comisiones
+    })
+
+
+####################################################################################
+
+
+# from django.shortcuts import render
+# from django.utils import timezone
+# from django.contrib.auth.decorators import login_required
+# from plataforma.models import EntregaProyecto, AsistenciaClase, ClaseComision
+
+# @session_required
+# def mi_certificado(request):
+#     usuario = request.user  # PerfilUsuario
+#     estudiante = usuario.id_estudiante
+
+#     if not estudiante:
+#         return render(request, 'mi_certificado.html', {
+#             'error': 'No se encontró un estudiante vinculado al usuario.'
+#         })
+
+#     # Obtener la comisión actual (ejemplo: la cursando1)
+#     comision = estudiante.cursando1  # ajustá si querés usar cursando2, etc.
+
+#     if not comision:
+#         return render(request, 'mi_certificado.html', {
+#             'error': 'No estás inscripto en ninguna comisión.'
+#         })
+
+#     curso = comision.id_curso
+
+#     # Total de clases para esa comisión
+#     total_clases_comision = ClaseComision.objects.filter(comision=comision).count()
+
+#     # Total de asistencias con estado "presente"
+#     asistencias_en_comision = AsistenciaClase.objects.filter(
+#         estudiante=estudiante,
+#         comision=str(comision.numero_comision)  # guardás la comision como texto
+#     ).count()
+
+#     # Cálculo de porcentaje de asistencia
+#     porcentaje_asistencia = (asistencias_en_comision / total_clases_comision * 100) if total_clases_comision > 0 else 0
+
+#     # Buscar entrega del proyecto final (EntregaProyecto)
+#     entrega_existente = EntregaProyecto.objects.filter(
+#         estudiante=estudiante,
+#         curso=curso,
+#         comision=comision
+#     ).first()
+
+#     nota_final = entrega_existente.nota if entrega_existente and entrega_existente.nota is not None else 0
+
+#     # Requisitos: asistencia ≥ 70% y nota ≥ 7
+#     cumple_requisitos = porcentaje_asistencia >= 70 and nota_final >= 7
+
+#     context = {
+#         'usuario': usuario,
+#         'estudiante': estudiante,
+#         'curso': curso,
+#         'comision': comision,
+#         'entrega_existente': entrega_existente,
+#         'nota_final': nota_final,
+#         'asistencia': round(porcentaje_asistencia, 1),
+#         'asistencias_en_comision': asistencias_en_comision,
+#         'total_clases_comision': total_clases_comision,
+#         'cumple_requisitos': cumple_requisitos,
+#         'fecha_actual': timezone.now(),
+#         'url_certificado': request.build_absolute_uri(),
+#     }
+
+#     return render(request, 'mi_certificado.html', context)
+
+
+# views.py
+from django.shortcuts import redirect
+
+@session_required
+def mi_certificado_redirect(request):
+    usuario = request.user
+    estudiante = usuario.id_estudiante
+    comision = estudiante.cursando1  # o la que uses
+
+    return redirect('mi_certificado', id_estudiante=estudiante.id_estudiante, id_comision=comision.id_comision)
+
+
+# def desarrollo_web_compra(request):
+#     desarrollo_web = Curso.objects.filter(nombre_curso__icontains="desarrollo web").first()
+
+#     if desarrollo_web:
+#         comisiones = Comision.objects.filter(
+#             id_curso=desarrollo_web,
+#             estado_comision='proximo'
+#         ).order_by('fecha_inicio')
+#     else:
+#         comisiones = []
+
+#     return render(request, 'educativa/desarrollo_web_compra.html', {
+#         'comisiones': comisiones
+#     })
+
+
+@session_required
+def mi_certificado(request, id_estudiante, id_comision):
+    from plataforma.models import DatosDeEstudiantes, Comision, EntregaProyecto, AsistenciaClase, ClaseComision
+
+    estudiante = DatosDeEstudiantes.objects.get(id_estudiante=id_estudiante)
+    comision = Comision.objects.get(id_comision=id_comision)
+    curso = comision.id_curso
+
+    total_clases_comision = ClaseComision.objects.filter(comision=comision).count()
+    asistencias_en_comision = AsistenciaClase.objects.filter(
+        estudiante=estudiante,
+        comision=str(comision.numero_comision)
+    ).count()
+
+    porcentaje_asistencia = (asistencias_en_comision / total_clases_comision * 100) if total_clases_comision > 0 else 0
+
+    entrega_existente = EntregaProyecto.objects.filter(
+        estudiante=estudiante,
+        curso=curso,
+        comision=comision
+    ).first()
+
+    nota_final = entrega_existente.nota if entrega_existente and entrega_existente.nota is not None else 0
+    cumple_requisitos = porcentaje_asistencia >= 70 and nota_final >= 7
+
+    context = {
+        'usuario': request.user,
+        'estudiante': estudiante,
+        'curso': curso,
+        'comision': comision,
+        'entrega_existente': entrega_existente,
+        'nota_final': nota_final,
+        'asistencia': round(porcentaje_asistencia, 1),
+        'asistencias_en_comision': asistencias_en_comision,
+        'total_clases_comision': total_clases_comision,
+        'cumple_requisitos': cumple_requisitos,
+    }
+
+    return render(request, 'educativa/mi_certificado.html', context)
+
+
+
+###########################################################################
