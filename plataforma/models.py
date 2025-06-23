@@ -140,6 +140,7 @@ class Comision(models.Model):
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
 
+
     dia1 = models.CharField(max_length=20, blank=True, null=True)
     dia2 = models.CharField(max_length=20, blank=True, null=True)
     dia3 = models.CharField(max_length=20, blank=True, null=True)
@@ -147,6 +148,20 @@ class Comision(models.Model):
     horario1 = models.CharField(max_length=20, blank=True, null=True)
     horario2 = models.CharField(max_length=20, blank=True, null=True)
     horario3 = models.CharField(max_length=20, blank=True, null=True)
+
+    duracion_clase = models.CharField(
+        max_length=20,
+        choices=[
+            ('0.5hs', '0.5 hs'),
+            ('1hs', '1 hs'),
+            ('1.5hs', '1.5 hs'),
+            ('2hs', '2 hs'),
+            ('2.5hs', '2.5 hs'),
+            ('3hs', '3 hs'),
+        ],
+        default='2hs',
+        help_text="Duración estimada de cada clase"
+    )
 
     estado_comision = models.CharField(max_length=20, choices=[
         ('proximo', 'Próximo'),
@@ -406,3 +421,37 @@ class EntregaProyecto(models.Model):
 
     def __str__(self):
         return f"{self.estudiante} - {self.curso.nombre_curso} - Proyecto"
+    
+
+# ############################################################################################
+# ############################################################################################
+# ############################################################################################
+# ############################################################################################
+
+from django.db import models
+from django.conf import settings
+
+class Chat(models.Model):
+    TIPO_CHAT = [
+        ('general', 'Chat General'),
+        ('comision', 'Chat Comisión'),
+        ('privado', 'Chat Privado'),
+    ]
+    tipo = models.CharField(max_length=10, choices=TIPO_CHAT)
+    comision = models.ForeignKey('Comision', null=True, blank=True, on_delete=models.CASCADE)
+    participantes = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.get_tipo_display()}"
+
+class Mensaje(models.Model):
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='mensajes')
+    remitente = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    texto = models.TextField(blank=True)
+    archivo = models.FileField(upload_to='chat_archivos/', blank=True, null=True)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.remitente} - {self.creado.strftime('%d/%m %H:%M')}"
+

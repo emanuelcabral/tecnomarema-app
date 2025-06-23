@@ -1697,74 +1697,6 @@ def proximas_comisiones_desarrollo_web(request):
 
 ####################################################################################
 
-
-# from django.shortcuts import render
-# from django.utils import timezone
-# from django.contrib.auth.decorators import login_required
-# from plataforma.models import EntregaProyecto, AsistenciaClase, ClaseComision
-
-# @session_required
-# def mi_certificado(request):
-#     usuario = request.user  # PerfilUsuario
-#     estudiante = usuario.id_estudiante
-
-#     if not estudiante:
-#         return render(request, 'mi_certificado.html', {
-#             'error': 'No se encontró un estudiante vinculado al usuario.'
-#         })
-
-#     # Obtener la comisión actual (ejemplo: la cursando1)
-#     comision = estudiante.cursando1  # ajustá si querés usar cursando2, etc.
-
-#     if not comision:
-#         return render(request, 'mi_certificado.html', {
-#             'error': 'No estás inscripto en ninguna comisión.'
-#         })
-
-#     curso = comision.id_curso
-
-#     # Total de clases para esa comisión
-#     total_clases_comision = ClaseComision.objects.filter(comision=comision).count()
-
-#     # Total de asistencias con estado "presente"
-#     asistencias_en_comision = AsistenciaClase.objects.filter(
-#         estudiante=estudiante,
-#         comision=str(comision.numero_comision)  # guardás la comision como texto
-#     ).count()
-
-#     # Cálculo de porcentaje de asistencia
-#     porcentaje_asistencia = (asistencias_en_comision / total_clases_comision * 100) if total_clases_comision > 0 else 0
-
-#     # Buscar entrega del proyecto final (EntregaProyecto)
-#     entrega_existente = EntregaProyecto.objects.filter(
-#         estudiante=estudiante,
-#         curso=curso,
-#         comision=comision
-#     ).first()
-
-#     nota_final = entrega_existente.nota if entrega_existente and entrega_existente.nota is not None else 0
-
-#     # Requisitos: asistencia ≥ 70% y nota ≥ 7
-#     cumple_requisitos = porcentaje_asistencia >= 70 and nota_final >= 7
-
-#     context = {
-#         'usuario': usuario,
-#         'estudiante': estudiante,
-#         'curso': curso,
-#         'comision': comision,
-#         'entrega_existente': entrega_existente,
-#         'nota_final': nota_final,
-#         'asistencia': round(porcentaje_asistencia, 1),
-#         'asistencias_en_comision': asistencias_en_comision,
-#         'total_clases_comision': total_clases_comision,
-#         'cumple_requisitos': cumple_requisitos,
-#         'fecha_actual': timezone.now(),
-#         'url_certificado': request.build_absolute_uri(),
-#     }
-
-#     return render(request, 'mi_certificado.html', context)
-
-
 # views.py
 from django.shortcuts import redirect
 
@@ -1834,5 +1766,34 @@ def mi_certificado(request, id_estudiante, id_comision):
     return render(request, 'educativa/mi_certificado.html', context)
 
 
-
 ###########################################################################
+###------------------------chat-general---------------------------------###
+###########################################################################
+
+from django.shortcuts import render, redirect
+from .models import Chat, Mensaje
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def chat_general(request):
+    chat_general, creado = Chat.objects.get_or_create(tipo='general')
+
+    usuario = User.objects.first()
+
+    if request.method == 'POST' and usuario:
+        texto = request.POST.get('mensaje')
+        if texto:
+            Mensaje.objects.create(
+                chat=chat_general,
+                remitente=usuario,
+                texto=texto
+            )
+        return redirect('chat_general')  # Usar nombre de url aquí
+
+    mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
+
+    return render(request, 'educativa/chat.html', {  # Ruta correcta al template
+        'chat': chat_general,
+        'mensajes': mensajes,
+    })

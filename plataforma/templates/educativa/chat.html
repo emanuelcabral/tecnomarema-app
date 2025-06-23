@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Chat Interno</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{% static 'css/chat.css' %}">
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .chat-container {
+      height: 90vh;
+      display: flex;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+    }
+
+    .sidebar {
+      width: 280px;
+      background-color: #1a1a1a;
+      padding: 1rem;
+      overflow-y: auto;
+    }
+
+    .sidebar h5 {
+      color: #12f693;
+      margin-bottom: 1rem;
+    }
+
+    .chat-list button {
+      background: none;
+      border: none;
+      width: 100%;
+      color: #ccc;
+      text-align: left;
+      padding: 0.5rem;
+      border-bottom: 1px solid #333;
+    }
+
+    .chat-list button.active,
+    .chat-list button:hover {
+      color: #fff;
+      background-color: #222;
+    }
+
+    .chat-area {
+      flex: 1;
+      background-color: #222;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .messages {
+      padding: 1rem;
+      overflow-y: auto;
+      flex-grow: 1;
+    }
+
+    .message {
+      max-width: 70%;
+      margin-bottom: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 15px;
+      word-wrap: break-word;
+    }
+
+    .from-me {
+      background-color: #0bd68f;
+      color: #000;
+      align-self: flex-end;
+    }
+
+    .from-other {
+      background-color: #444;
+      color: #fff;
+      align-self: flex-start;
+    }
+
+    .message-input {
+      border-top: 1px solid #333;
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    .message-input textarea {
+      background: #333;
+      color: #fff;
+      border: none;
+      resize: none;
+      height: 45px;
+      border-radius: 10px;
+      padding: 0.5rem;
+      flex: 1;
+      margin-right: 0.5rem;
+    }
+
+    .message-input textarea:focus {
+      outline: none;
+    }
+
+    .message-input button {
+      background-color: #12f693;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 10px;
+      color: #000;
+    }
+
+    .message-input .file-btn {
+      background: none;
+      color: #ccc;
+      font-size: 1.3rem;
+      margin-right: 10px;
+      border: none;
+    }
+
+    .message-input .file-btn:hover {
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid py-3">
+    <div class="chat-container">
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <h5>Chats</h5>
+        <div class="chat-list">
+          <button class="active"># General</button>
+          <button># Comisión 20735</button>
+          <button>@ Emanuel Cabral</button>
+        </div>
+      </div>
+
+      <!-- Chat area -->
+      <div class="chat-area d-flex flex-column">
+        <!-- Messages -->
+        <!-- <div class="messages d-flex flex-column" id="message-list"> -->
+        <div class="messages d-flex flex-column" id="message-list">
+        {% for mensaje in mensajes %}
+            <div class="message {% if mensaje.remitente == request.user %}from-me{% else %}from-other{% endif %}">
+            <strong>{{ mensaje.remitente.nombre_usuario }}</strong><br>
+            {{ mensaje.texto }}
+            <div class="small text-muted">{{ mensaje.creado|date:"d/m H:i" }}</div>
+            </div>
+        {% empty %}
+            <p class="text-center text-muted">Aún no hay mensajes en este chat.</p>
+        {% endfor %}
+        </div>
+          <!-- Ejemplo de mensaje -->
+          <!-- <div class="message from-other">
+            ¡Hola! ¿Ya viste el nuevo módulo de IA?
+          </div>
+          <div class="message from-me">
+            ¡Sí! Me pareció genial cómo explican redes neuronales.
+          </div> -->
+    </div>
+
+        <!-- Input -->
+        <!-- <form class="message-input" id="message-form">
+          <button type="button" class="file-btn" title="Adjuntar archivo">
+            📎
+          </button>
+          <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
+          <button type="submit">Enviar</button>
+        </form> -->
+        
+        
+        
+    </div>
+    <form class="message-input" id="message-form" method="POST">
+    {% csrf_token %}
+    <button type="button" class="file-btn" title="Adjuntar archivo">
+        📎
+    </button>
+    <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
+    <button type="submit">Enviar</button>
+    </form>
+    </div>
+  </div>
+
+  <script>
+    // Scroll automático al último mensaje
+    const messages = document.getElementById('message-list');
+    messages.scrollTop = messages.scrollHeight;
+  </script>
+</body>
+</html>

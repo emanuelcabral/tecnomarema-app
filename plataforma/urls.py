@@ -152,6 +152,9 @@ urlpatterns = [
     path('mi_certificado/<str:id_estudiante>/<str:id_comision>/', views.mi_certificado, name='mi_certificado'),
 
 
+    path('chat_general/', views.chat_general, name='chat_general'),
+
+
 
 ]
 

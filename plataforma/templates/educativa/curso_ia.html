@@ -506,7 +506,7 @@
           </p>
 
           <p class="card-text mb-0">
-            <span class="badge badge-marema me-2">Duración</span> {{ curso.duracion }} por clase
+            <span class="badge badge-marema me-2">Duración</span> {{ comision.duracion_clase }} por clase
           </p>
         </div>
       </div>
@@ -584,6 +584,8 @@
     <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a>
 
     <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}">Mi Certificado</a>
+
+    <a href="{% url 'chat_general' %}">chat</a>
 
 
 

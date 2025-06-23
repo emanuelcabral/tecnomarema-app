@@ -318,7 +318,8 @@
               <strong>Fin:</strong> {{ comision.fecha_fin|date:"d/m/Y" }}
             </p>
 
-            <p><strong>Duración por clase:</strong> {{ comision.id_curso.duracion }}</p>
+            {% comment %} <p><strong>Duración por clase:</strong> {{ comision.id_curso.duracion }}</p> {% endcomment %}
+            <p><strong>Duración por clase:</strong> {{ comision.duracion_clase }}</p>
 
 
 {% if comision.id_curso.iconos_cargados %}
