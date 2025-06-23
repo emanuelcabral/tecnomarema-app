@@ -1771,17 +1771,25 @@ def mi_certificado(request, id_estudiante, id_comision):
 ###########################################################################
 
 from django.shortcuts import render, redirect
-from .models import Chat, Mensaje
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from .models import Chat, Mensaje, PerfilUsuario  # Asegurate que esté PerfilUsuario
 
 def chat_general(request):
+    # Obtener nombre de usuario desde la sesión
+    nombre_usuario = request.session.get('usuario_logueado')
+    if not nombre_usuario:
+        return redirect('login')  # Si no hay usuario, redirige
+
+    # Obtener el objeto del usuario
+    try:
+        usuario = PerfilUsuario.objects.get(nombre_usuario=nombre_usuario)
+    except PerfilUsuario.DoesNotExist:
+        return redirect('login')  # Usuario inválido
+
+    # Crear o recuperar chat general
     chat_general, creado = Chat.objects.get_or_create(tipo='general')
 
-    usuario = User.objects.first()
-
-    if request.method == 'POST' and usuario:
+    # Si se envió un mensaje
+    if request.method == 'POST':
         texto = request.POST.get('mensaje')
         if texto:
             Mensaje.objects.create(
@@ -1789,11 +1797,13 @@ def chat_general(request):
                 remitente=usuario,
                 texto=texto
             )
-        return redirect('chat_general')  # Usar nombre de url aquí
+        return redirect('chat_general')
 
+    # Mostrar mensajes
     mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
 
-    return render(request, 'educativa/chat.html', {  # Ruta correcta al template
+    return render(request, 'educativa/chat.html', {
         'chat': chat_general,
         'mensajes': mensajes,
+        'usuario': usuario,
     })

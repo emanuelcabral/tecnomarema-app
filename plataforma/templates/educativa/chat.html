@@ -147,9 +147,9 @@
         <div class="messages d-flex flex-column" id="message-list">
         {% for mensaje in mensajes %}
             <div class="message {% if mensaje.remitente == request.user %}from-me{% else %}from-other{% endif %}">
-            <strong>{{ mensaje.remitente.nombre_usuario }}</strong><br>
+            <strong style="color: #12f693;">{{ mensaje.remitente.nombre_usuario }}</strong><br>
             {{ mensaje.texto }}
-            <div class="small text-muted">{{ mensaje.creado|date:"d/m H:i" }}</div>
+            <div class="small" style="color: #000">{{ mensaje.creado|date:"d/m H:i" }}</div>
             </div>
         {% empty %}
             <p class="text-center text-muted">Aún no hay mensajes en este chat.</p>
