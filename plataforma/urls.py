@@ -1,6 +1,4 @@
 # # plataforma/urls.py
-
-
 from django.urls import path
 from django.contrib.auth.views import (
     LogoutView,
@@ -153,8 +151,13 @@ urlpatterns = [
 
 
     path('chat_general/', views.chat_general, name='chat_general'),
+    path('chat_general/mensajes/', views.obtener_mensajes, name='obtener_mensajes'),
 
+    path('chat_general/escribiendo/', views.obtener_typing, name='obtener_typing'),
+    path('chat_general/marcar_escribiendo/', views.marcar_escribiendo, name='marcar_escribiendo'),
 
+    path('editar_mensaje/', views.editar_mensaje, name='editar_mensaje'),
+    path('borrar_mensaje/', views.borrar_mensaje, name='borrar_mensaje'),
 
 ]
 

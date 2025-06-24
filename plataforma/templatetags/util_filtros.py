@@ -39,3 +39,12 @@ def agrupar_por(lista, n):
         return []
     n = int(n)
     return [lista[i:i + n] for i in range(0, len(lista), n)]
+
+#######################################################################
+####---------filtros para formatos de archivos en el chat---------#####
+#######################################################################
+
+@register.filter
+def endswith(value, suffix):
+    """Devuelve True si el valor termina con el sufijo dado (ignorando mayúsculas/minúsculas)"""
+    return str(value).lower().endswith(suffix.lower())

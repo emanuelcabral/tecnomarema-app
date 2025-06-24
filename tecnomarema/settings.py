@@ -14,7 +14,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Seguridad
 SECRET_KEY = 'django-insecure-y_9!qw9gm#r@)#v!liba3@37%1pjyldyad2ae-vwxd$!%kqcy@'
 DEBUG = True
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '891a-148-222-130-44.ngrok-free.app']
+
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://tu-dominio1.com',
+    'https://891a-148-222-130-44.ngrok-free.app',
+]
+
+
 
 # Aplicaciones instaladas
 INSTALLED_APPS = [
@@ -92,6 +101,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internacionalización
 LANGUAGE_CODE = 'es'
 TIME_ZONE = 'UTC'
+# TIME_ZONE = 'America/Argentina/Buenos_Aires'
 USE_I18N = True
 USE_TZ = True
 

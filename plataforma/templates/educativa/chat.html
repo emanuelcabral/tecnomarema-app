@@ -1,9 +1,12 @@
 {% load static %}
+{% load util_filtros %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <title>Chat Interno</title>
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="{% static 'css/chat.css' %}">
   <style>
@@ -125,6 +128,79 @@
     .message-input .file-btn:hover {
       color: #fff;
     }
+
+    #nuevo-badge{
+        display:none;
+        position: sticky;
+        top: 0;
+        background-color: #fff000;
+        color: #111;
+        padding: 5px 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        z-index: 10;
+        margin-bottom: 4px;
+    }
+
+
+    .badge-pill {
+        background-color: #0bd68f; 
+        color: #fff;               
+        font-weight: bold;
+        font-size: 0.8rem;
+        padding: 2px 8px;
+        border-radius: 12px;
+        vertical-align: middle;
+        margin-left: 6px;
+        user-select: none;
+}
+
+
+
+.boton-chat{
+  background-color: transparent;
+  border: none;
+  font-size: 13px;
+  color: #ffffff !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.boton-chat:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* sutil fondo al pasar el mouse */
+  color: #111 !important;
+}
+
+.boton-chat i {
+  color: inherit;  /* hereda el color del texto */
+  font-size: 14px;
+  transition: color 0.3s ease;
+}
+
+/* mensaje destacado */
+.borde-animado {
+  border: 2px solid transparent;
+  background-image: linear-gradient(#222, #222), linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+  background-origin: border-box;
+  background-clip: content-box, border-box;
+  animation: animarBorde 4s linear infinite;
+  border-radius: 8px;
+}
+
+@keyframes animarBorde {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+
+/* mensaje destacado */
+
   </style>
 </head>
 <body>
@@ -134,56 +210,95 @@
       <div class="sidebar">
         <h5>Chats</h5>
         <div class="chat-list">
-          <button class="active"># General</button>
+          <!-- <button id="btn-general" class="active"># General<span id="pill-nuevos" class="badge-pill">0</span></button> -->
+          <button id="btn-general" class="active"># General <span id="pill-nuevos" class="badge-pill" style="display:none;">0</span></button>
+
           <button># Comisión 20735</button>
           <button>@ Emanuel Cabral</button>
         </div>
       </div>
 
-      <!-- Chat area -->
-      <div class="chat-area d-flex flex-column">
-        <!-- Messages -->
-        <!-- <div class="messages d-flex flex-column" id="message-list"> -->
-        <div class="messages d-flex flex-column" id="message-list">
-        {% for mensaje in mensajes %}
-            <div class="message {% if mensaje.remitente == request.user %}from-me{% else %}from-other{% endif %}">
-            <strong style="color: #12f693;">{{ mensaje.remitente.nombre_usuario }}</strong><br>
-            {{ mensaje.texto }}
-            <div class="small" style="color: #000">{{ mensaje.creado|date:"d/m H:i" }}</div>
-            </div>
-        {% empty %}
-            <p class="text-center text-muted">Aún no hay mensajes en este chat.</p>
-        {% endfor %}
-        </div>
-          <!-- Ejemplo de mensaje -->
-          <!-- <div class="message from-other">
-            ¡Hola! ¿Ya viste el nuevo módulo de IA?
-          </div>
-          <div class="message from-me">
-            ¡Sí! Me pareció genial cómo explican redes neuronales.
-          </div> -->
-    </div>
 
-        <!-- Input -->
-        <!-- <form class="message-input" id="message-form">
-          <button type="button" class="file-btn" title="Adjuntar archivo">
-            📎
-          </button>
-          <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
-          <button type="submit">Enviar</button>
-        </form> -->
-        
-        
+
+
+<!-- Chat area -->
+<div class="chat-area d-flex flex-column">
+
+  <!-- destacados -->
+<div id="destacados-info" style="color: #fff; margin-bottom: 10px; background-color: #cf30ff; padding: 10px 40px;">
+  <span id="contador-destacados">0 mensajes destacados</span>
+  <button class="btn btn-outline-info btn-sm" onclick="mostrarDestacados()">👁 Ver destacados</button>
+  <button class="btn btn-outline-secondary btn-sm" onclick="mostrarTodos()">🔁 Ver todos</button>
+</div>
+<!-- destacados -->
+
+  <!-- Messages -->
+  <div class="messages d-flex flex-column" id="message-list">
+    {% for mensaje in mensajes %}
+      <div class="message {% if mensaje.remitente == request.user %}from-me{% else %}from-other{% endif %}">
+        <strong style="color: #12f693;">{{ mensaje.remitente.nombre_usuario }}</strong><br>
+        {{ mensaje.texto|linebreaksbr }}
+
+        {% if mensaje.archivo %}
+          {% with archivo=mensaje.archivo.url|lower %}
+            {% if archivo|endswith:".jpg" or archivo|endswith:".jpeg" or archivo|endswith:".png" or archivo|endswith:".webp" %}
+              <img src="{{ mensaje.archivo.url }}" alt="imagen" style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+
+            {% elif archivo|endswith:".mp4" or archivo|endswith:".webm" %}
+              <video controls style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+                <source src="{{ mensaje.archivo.url }}">
+                Tu navegador no soporta video.
+              </video>
+
+            {% elif archivo|endswith:".mp3" or archivo|endswith:".wav" %}
+              <audio controls style="margin-top: 5px;">
+                <source src="{{ mensaje.archivo.url }}">
+                Tu navegador no soporta audio.
+              </audio>
+
+            {% else %}
+              <a href="{{ mensaje.archivo.url }}" download style="display: block; margin-top: 5px; color: #fff000;">
+                📎 Descargar archivo ({{ mensaje.archivo.name|cut:"chat_archivos/" }})
+              </a>
+            {% endif %}
+          {% endwith %}
+        {% endif %}
+
+        <div class="small" style="color: #000">{{ mensaje.creado|date:"d/m H:i" }}</div>
+      </div>
+    {% empty %}
+      <p class="text-center text-muted">Aún no hay mensajes en este chat.</p>
+    {% endfor %}
+  </div>
+
+  <div id="nuevo-badge">Mensajes nuevos ↓</div>
+  <div id="typing-box" class="text-muted small px-3" style="color: #12f693 !important;"></div>
+
+  <!-- Formulario para enviar mensajes con archivo -->
+  <form class="message-input" id="message-form" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    
+    <!-- Input oculto para archivo -->
+    <input type="file" name="archivo" id="file-input" style="display: none;"
+      accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.zip,.rar">
+
+    <!-- Botón de adjuntar -->
+    <button type="button" class="file-btn" title="Adjuntar archivo"
+      onclick="document.getElementById('file-input').click();">
+      <i class="bi bi-paperclip"></i>
+    </button>
+
+    <!-- Área de texto -->
+    <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
+
+    <!-- Botón enviar -->
+    <button type="submit"><i class="bi bi-send"></i> Enviar</button><br>
+  </form>
+</div>
+
+
         
     </div>
-    <form class="message-input" id="message-form" method="POST">
-    {% csrf_token %}
-    <button type="button" class="file-btn" title="Adjuntar archivo">
-        📎
-    </button>
-    <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
-    <button type="submit">Enviar</button>
-    </form>
     </div>
   </div>
 
@@ -192,5 +307,455 @@
     const messages = document.getElementById('message-list');
     messages.scrollTop = messages.scrollHeight;
   </script>
+
+<script>
+  let ultimoMensajeId = null;
+  let badgeVisibleManualmente = false;
+  let contadorMensajesNuevos = 0;
+  let mensajesCargados = [];  // Se usará para almacenar todos los mensajes cargados
+
+  const usuarioLogueado = "{{ request.session.usuario_logueado }}"; // usuario actual para comparación
+
+  function reemplazarYoutubeLinks(texto) {
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/g;
+    return texto.replace(youtubeRegex, (match, videoId) => {
+      return `<br><iframe width="320" height="180" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="margin-top: 5px; border-radius: 8px;"></iframe><br>`;
+    });
+  }
+
+  function crearContenidoMensaje(m) {
+    let contenido = `<strong style="color: #fff000;">${m.usuario}</strong><br>`;
+
+    if(m.texto) {
+      let textoSeguro = m.texto
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      textoSeguro = reemplazarYoutubeLinks(textoSeguro);
+      textoSeguro = textoSeguro.replace(/\n/g, "<br>");
+      contenido += `<div class="texto-mensaje">${textoSeguro}</div><br>`;
+    }
+
+    if(m.archivo_url) {
+      const url = m.archivo_url.toLowerCase();
+      let nombreArchivo = m.archivo_nombre || 'Archivo adjunto';
+
+      try {
+        if(url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif')) {
+          contenido += `<img src="${m.archivo_url}" alt="imagen" style="max-width: 100%; margin-top: 5px; border-radius: 8px;"><br>`;
+        }
+        else if(url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg')) {
+          contenido += `<video controls style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+                          <source src="${m.archivo_url}">
+                          Tu navegador no soporta video.
+                        </video><br>`;
+        }
+        else if(url.endsWith('.mp3') || url.endsWith('.wav') || url.endsWith('.oga')) {
+          contenido += `<audio controls style="margin-top: 5px;">
+                          <source src="${m.archivo_url}">
+                          Tu navegador no soporta audio.
+                        </audio><br>`;
+        }
+        else if(url.endsWith('.pdf') ||
+                url.endsWith('.doc') || url.endsWith('.docx') ||
+                url.endsWith('.xls') || url.endsWith('.xlsx') ||
+                url.endsWith('.ppt') || url.endsWith('.pptx')) {
+          contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
+                          📎 Descargar archivo (${nombreArchivo})
+                        </a><br>`;
+        }
+        else {
+          contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
+                          📎 Descargar archivo (${nombreArchivo})
+                        </a><br>`;
+        }
+      } catch (error) {
+        console.error('Error mostrando preview archivo:', error);
+        contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
+                        📎 Descargar archivo (${nombreArchivo})
+                      </a><br>`;
+      }
+    }
+
+    contenido += `<div class="small" style="color: #000">${m.hora}</div>`;
+
+    // Solo el usuario propietario puede editar o borrar:
+    if (m.usuario === usuarioLogueado) {
+      contenido += `
+        <button class="boton-chat btn-editar" data-id="{{ mensaje.id }}">
+          <i class="bi bi-pencil"></i> Editar
+        </button>
+        <button class="boton-chat btn-borrar" data-id="{{ mensaje.id }}">
+          <i class="bi bi-trash"></i> Borrar
+        </button>
+        <button class="boton-chat btn-destacar" data-id="{{ mensaje.id }}">
+          <i class="bi bi-highlighter"></i> Destacar
+        </button>
+
+      `;
+    }
+
+    return contenido;
+  }
+
+  // aca ingreso el contenido para destacar
+
+  function renderMensaje(m) {
+  const lista = document.getElementById('message-list');
+  const div = document.createElement('div');
+  div.classList.add('message');
+  div.setAttribute('data-id', m.id);
+  div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
+
+  // Contenido general
+  div.innerHTML = crearContenidoMensaje(m);
+
+  // ✅ Botón Destacar
+  const btnDestacar = document.createElement('button');
+  btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
+  btnDestacar.className = 'btn btn-sm btn-warning';
+  btnDestacar.style.marginTop = '5px';
+
+  btnDestacar.addEventListener('click', () => {
+    fetch('/chat/toggle_destacar/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+      body: JSON.stringify({ id: m.id })
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.destacado) {
+        div.classList.add('borde-animado');
+        btnDestacar.innerHTML = '⭐ No destacar';
+      } else {
+        div.classList.remove('borde-animado');
+        btnDestacar.innerHTML = '⭐ Destacar';
+      }
+
+      // Actualizar contador en tiempo real
+      const destacados = mensajesCargados.filter(m => m.destacado);
+      document.getElementById('contador-destacados').textContent = `${destacados.length} mensajes destacados`;
+    });
+  });
+
+  div.appendChild(btnDestacar);
+
+  // ✅ Si ya estaba destacado al cargar
+  if (m.destacado) {
+    div.classList.add('borde-animado');
+  }
+
+  lista.appendChild(div);
+}
+// fin del destaque
+
+  function actualizarMensajes() {
+    fetch("{% url 'obtener_mensajes' %}")
+      .then(response => response.json())
+      .then(data => {
+        const lista = document.getElementById('message-list');
+        const badge = document.getElementById('nuevo-badge');
+        const pill = document.getElementById('pill-nuevos');
+        const estaAlFinal = Math.abs(lista.scrollHeight - lista.scrollTop - lista.clientHeight) < 10;
+
+        const nuevos = data.mensajes;
+        
+        mensajesCargados = nuevos;
+        document.getElementById('contador-destacados').textContent =
+          `${mensajesCargados.filter(m => m.destacado).length} mensajes destacados`;
+
+        const nuevoUltimoId = nuevos.length > 0 ? nuevos[nuevos.length - 1].id : null;
+        const hayMensajesNuevos = (ultimoMensajeId !== null && nuevoUltimoId !== ultimoMensajeId);
+
+        const mensajesActualesIds = new Set();
+        lista.querySelectorAll('.message').forEach(div => {
+          const id = div.getAttribute('data-id');
+          if(id) mensajesActualesIds.add(parseInt(id));
+        });
+
+        if(ultimoMensajeId === null){
+          lista.innerHTML = '';
+        }
+
+        // nuevos.forEach(m => {
+        //   if(!mensajesActualesIds.has(m.id)) {
+        //     const div = document.createElement('div');
+        //     div.classList.add('message');
+        //     div.setAttribute('data-id', m.id);
+        //     div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
+
+        //     div.innerHTML = crearContenidoMensaje(m);
+        //     lista.appendChild(div);
+        //   }
+        // });
+
+        nuevos.forEach(m => {
+  if (!mensajesActualesIds.has(m.id)) {
+    renderMensaje(m);
+  }
+});
+
+
+        // Agregar listeners para botones editar y borrar:
+        document.querySelectorAll('.btn-editar').forEach(btn => {
+          btn.onclick = iniciarEdicionMensaje;
+        });
+        document.querySelectorAll('.btn-borrar').forEach(btn => {
+          btn.onclick = borrarMensaje;
+        });
+
+        if (nuevoUltimoId) {
+          if (ultimoMensajeId !== null && nuevoUltimoId !== ultimoMensajeId) {
+            if (!estaAlFinal) {
+              contadorMensajesNuevos++;
+            } else {
+              contadorMensajesNuevos = 0;
+            }
+          }
+          ultimoMensajeId = nuevoUltimoId;
+        }
+
+        if (hayMensajesNuevos && !estaAlFinal && !badgeVisibleManualmente) {
+          badge.style.display = 'block';
+          badgeVisibleManualmente = true;
+        }
+
+        if (estaAlFinal) {
+          badge.style.display = 'none';
+          badgeVisibleManualmente = false;
+          contadorMensajesNuevos = 0;
+          lista.scrollTop = lista.scrollHeight;
+        }
+
+        pill.textContent = contadorMensajesNuevos > 0 ? contadorMensajesNuevos : '';
+        pill.style.display = contadorMensajesNuevos > 0 ? 'inline-block' : 'none';
+      });
+  }
+
+  // Función para iniciar la edición (reemplaza texto por textarea + botón guardar)
+  function iniciarEdicionMensaje(e) {
+    const btn = e.target;
+    const divMensaje = btn.closest('.message');
+    const textoDiv = divMensaje.querySelector('.texto-mensaje');
+    if (!textoDiv) return alert("No hay texto para editar.");
+
+    const textoOriginal = textoDiv.innerText;
+
+    // Crear textarea y botón guardar
+    const textarea = document.createElement('textarea');
+    textarea.value = textoOriginal.replace(/<br>/g, '\n');
+    textarea.style.width = '100%';
+    textarea.style.minHeight = '60px';
+
+    const btnGuardar = document.createElement('button');
+    // btnGuardar.textContent = '💾 Guardar';
+    btnGuardar.innerHTML = '<i class="bi bi-floppy"></i> Guardar';
+    btnGuardar.style.marginTop = '5px';
+    btnGuardar.classList.add('boton-chat', 'btn-guardar');
+
+    // Reemplazar texto por textarea
+    textoDiv.style.display = 'none';
+    divMensaje.insertBefore(textarea, textoDiv.nextSibling);
+    divMensaje.insertBefore(btnGuardar, textarea.nextSibling);
+
+    // Deshabilitar botones editar/borrar mientras editas
+    divMensaje.querySelectorAll('button.btn-editar, button.btn-borrar').forEach(b => b.disabled = true);
+    btnGuardar.disabled = false;
+
+    btnGuardar.onclick = () => {
+      const nuevoTexto = textarea.value.trim();
+      if (!nuevoTexto) return alert('El texto no puede estar vacío.');
+
+      // Enviar actualización al backend
+      fetch("{% url 'editar_mensaje' %}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({
+          id: divMensaje.getAttribute('data-id'),
+          texto: nuevoTexto
+        }),
+      })
+      .then(res => {
+        if (!res.ok) throw new Error('Error actualizando mensaje');
+        return res.json();
+      })
+      .then(() => {
+        // Restaurar UI
+        textoDiv.innerHTML = reemplazarYoutubeLinks(
+          nuevoTexto.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        ).replace(/\n/g, "<br>");
+        textoDiv.style.display = 'block';
+        textarea.remove();
+        btnGuardar.remove();
+
+        // Habilitar botones
+        divMensaje.querySelectorAll('button.btn-editar, button.btn-borrar').forEach(b => b.disabled = false);
+      })
+      .catch(err => alert(err.message));
+    };
+  }
+
+  // Función para borrar mensaje
+  function borrarMensaje(e) {
+    if (!confirm('¿Seguro que quieres borrar este mensaje?')) return;
+
+    const btn = e.target;
+    const divMensaje = btn.closest('.message');
+    const mensajeId = divMensaje.getAttribute('data-id');
+
+    fetch("{% url 'borrar_mensaje' %}", {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+      body: JSON.stringify({ id: mensajeId }),
+    })
+    .then(res => {
+      if (!res.ok) throw new Error('Error borrando mensaje');
+      return res.json();
+    })
+    .then(() => {
+      // Quitar mensaje de la lista
+      divMensaje.remove();
+    })
+    .catch(err => alert(err.message));
+  }
+
+  setInterval(actualizarMensajes, 1000);
+  actualizarMensajes();
+
+  document.getElementById('nuevo-badge').addEventListener('click', () => {
+    const lista = document.getElementById('message-list');
+    lista.scrollTop = lista.scrollHeight;
+    document.getElementById('nuevo-badge').style.display = 'none';
+    badgeVisibleManualmente = false;
+    contadorMensajesNuevos = 0;
+  });
+</script>
+<!-- polling para recibir los mensajes con recarga de 1s fin -->
+
+<!-- ver quien esta escribiendo inicia -->
+<script>
+  let typingTimeout;
+document.querySelector('textarea[name="mensaje"]').addEventListener('input', () => {
+  // Avisar que el usuario está escribiendo (cada vez que tipean)
+  fetch("{% url 'marcar_escribiendo' %}", {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}'
+    }
+  });
+
+  // Evitar flood de requests (cada 5s aprox)
+  clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {}, 3000);
+});
+
+// Mostrar quién está escribiendo
+function verificarTyping() {
+  fetch("{% url 'obtener_typing' %}")
+    .then(response => response.json())
+    .then(data => {
+      const box = document.getElementById('typing-box');
+      if (data.escribiendo.length > 0) {
+        box.innerText = `${data.escribiendo.join(', ')} está escribiendo...`;
+      } else {
+        box.innerText = '';
+      }
+    });
+}
+setInterval(verificarTyping, 1000); // Polling cada 1s
+</script>
+<!-- ver quien esta escribiendo fin -->
+
+<!-- ##################################### -->
+<script>
+  document.getElementById('btn-general').addEventListener('click', () => {
+    const lista = document.getElementById('message-list');
+    lista.scrollTop = lista.scrollHeight;
+    
+    const badge = document.getElementById('nuevo-badge');
+    badge.style.display = 'none';
+    
+    const pill = document.getElementById('pill-nuevos');
+    pill.textContent = '';
+    pill.style.display = 'none';
+    
+    contadorMensajesNuevos = 0;
+    badgeVisibleManualmente = false;
+  });
+</script>
+<!-- ##################################### -->
+
+<!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido inicia-->
+<script>
+  const fileInput = document.getElementById('file-input');
+  const form = document.getElementById('message-form');
+
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+      const fileName = fileInput.files[0].name;
+      const textarea = form.querySelector('textarea[name="mensaje"]');
+      if (textarea.value.trim() === '') {
+        textarea.value = '📎 ' + fileName;
+      }
+    }
+  });
+</script>
+<!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido fin-->
+<!-- editar , guardar y borrar mensajes inicia-->
+<script>
+  function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+fetch('/editar_mensaje/', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': csrftoken
+  },
+  body: JSON.stringify({ id: mensajeId, texto: nuevoTexto }),
+})
+.then(res => res.json())
+.then(data => { /* tu lógica */ })
+.catch(e => console.error(e));
+</script>
+<!-- editar , guardar y borrar mensajes fin-->
+<!-- destacar mensajes -->
+ <script>
+  function mostrarDestacados() {
+  const lista = document.getElementById('message-list');
+  lista.innerHTML = '';
+  mensajesCargados.filter(m => m.destacado).forEach(renderMensaje);
+}
+function mostrarTodos() {
+  const lista = document.getElementById('message-list');
+  lista.innerHTML = '';
+  mensajesCargados.forEach(renderMensaje);
+}
+ </script>
+<!-- destacar mensajes -->
+
+
 </body>
 </html>

@@ -33,30 +33,24 @@ class PerfilUsuarioManager(BaseUserManager):
 
         return self.create_user(nombre_usuario, correo, password, **extra_fields)
 
-# Modelo personalizado PerfilUsuario
 class PerfilUsuario(AbstractBaseUser, PermissionsMixin):
     id_usuario = models.CharField(max_length=6, primary_key=True)
     id_estudiante = models.OneToOneField('DatosDeEstudiantes', on_delete=models.CASCADE, null=True, blank=True)
     nombre_usuario = models.CharField(max_length=150, unique=True)
     correo = models.EmailField(unique=True)
-
-    # 🔽 Campo nuevo para la foto de perfil
     foto = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)
-
-        # 🔽 Campo nuevo para distinguir el rol del usuarioo
     rol = models.CharField(max_length=20, choices=[
         ('alumno', 'Alumno'),
         ('profesor', 'Profesor'),
         ('tutor', 'Tutor'),
     ], default='alumno') 
 
+    # ✅ NUEVO: Campo para detectar si está escribiendo
+    ultimo_typing = models.DateTimeField(null=True, blank=True)
+
     @property
     def email(self):
         return self.correo
-
-
-    # El campo 'password' viene por AbstractBaseUser y es visible en la tabla con hash
-    # password = models.CharField(max_length=128)  # NO definir explícitamente, ya existe
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -70,6 +64,12 @@ class PerfilUsuario(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.nombre_usuario
+
+    # ✅ NUEVO: Método para saber si está escribiendo ahora
+    def esta_escribiendo(self):
+        if self.ultimo_typing:
+            return timezone.now() - self.ultimo_typing < timezone.timedelta(seconds=5)
+        return False
 
 
 class Curso(models.Model):
@@ -451,6 +451,7 @@ class Mensaje(models.Model):
     texto = models.TextField(blank=True)
     archivo = models.FileField(upload_to='chat_archivos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
+    destacado = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.remitente} - {self.creado.strftime('%d/%m %H:%M')}"

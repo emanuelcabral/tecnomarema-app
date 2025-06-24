@@ -1771,35 +1771,34 @@ def mi_certificado(request, id_estudiante, id_comision):
 ###########################################################################
 
 from django.shortcuts import render, redirect
-from .models import Chat, Mensaje, PerfilUsuario  # Asegurate que esté PerfilUsuario
+from .models import Chat, Mensaje, PerfilUsuario
+from django.core.files.uploadedfile import UploadedFile
 
 def chat_general(request):
-    # Obtener nombre de usuario desde la sesión
     nombre_usuario = request.session.get('usuario_logueado')
     if not nombre_usuario:
-        return redirect('login')  # Si no hay usuario, redirige
+        return redirect('login')
 
-    # Obtener el objeto del usuario
     try:
         usuario = PerfilUsuario.objects.get(nombre_usuario=nombre_usuario)
     except PerfilUsuario.DoesNotExist:
-        return redirect('login')  # Usuario inválido
+        return redirect('login')
 
-    # Crear o recuperar chat general
     chat_general, creado = Chat.objects.get_or_create(tipo='general')
 
-    # Si se envió un mensaje
     if request.method == 'POST':
-        texto = request.POST.get('mensaje')
-        if texto:
+        texto = request.POST.get('mensaje', '').strip()
+        archivo = request.FILES.get('archivo')
+
+        if texto or archivo:  # Aceptar si hay texto o archivo (o ambos)
             Mensaje.objects.create(
                 chat=chat_general,
                 remitente=usuario,
-                texto=texto
+                texto=texto,
+                archivo=archivo if isinstance(archivo, UploadedFile) else None
             )
         return redirect('chat_general')
 
-    # Mostrar mensajes
     mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
 
     return render(request, 'educativa/chat.html', {
@@ -1807,3 +1806,153 @@ def chat_general(request):
         'mensajes': mensajes,
         'usuario': usuario,
     })
+
+#####################################################################################
+###----------------------------el polling del chat---------------------------------##
+#####################################################################################
+
+from zoneinfo import ZoneInfo
+from django.utils import timezone
+from django.http import JsonResponse
+from .models import Chat  # Asegurate de tener este import
+
+def obtener_mensajes(request):
+    chat_general = Chat.objects.get(tipo='general')
+    mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
+
+    tz_arg = ZoneInfo('America/Argentina/Buenos_Aires')
+
+    lista = []
+    for m in mensajes:
+        local_time = timezone.localtime(m.creado, tz_arg).strftime("%d/%m %H:%M")
+        lista.append({
+            'id': m.id,
+            'usuario': m.remitente.nombre_usuario,
+            'texto': m.texto,
+            'hora': local_time,
+            'archivo_url': m.archivo.url if m.archivo else None,
+            'archivo_name': m.archivo.name.split('/')[-1] if m.archivo else None,
+        })
+
+    return JsonResponse({'mensajes': lista})
+
+########################################################################################
+####-------------------saber si esta escribiendo un usuario en el chat---------------###
+########################################################################################
+
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from django.http import JsonResponse
+
+@csrf_exempt
+def marcar_escribiendo(request):
+    if request.method == 'POST':
+        usuario_id = request.session.get('usuario_id')
+        if usuario_id:
+            try:
+                usuario = PerfilUsuario.objects.get(pk=usuario_id)
+                usuario.ultimo_typing = timezone.now()
+                usuario.save(update_fields=['ultimo_typing'])
+                return JsonResponse({'ok': True})
+            except PerfilUsuario.DoesNotExist:
+                pass
+    return JsonResponse({'ok': False})
+
+# Vista para consultar quién está escribiendo ↓
+
+def obtener_typing(request):
+    usuarios_typing = PerfilUsuario.objects.filter(
+        ultimo_typing__gte=timezone.now() - timezone.timedelta(seconds=5)
+    ).exclude(pk=request.session.get('usuario_id'))
+
+    nombres = [u.nombre_usuario for u in usuarios_typing]
+    return JsonResponse({'escribiendo': nombres})
+
+################################################################################
+
+
+import json
+from django.http import JsonResponse, HttpResponseForbidden, HttpResponseBadRequest
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import get_object_or_404
+from .models import Mensaje
+
+@csrf_exempt  # si no usás CSRF token, sino sacá esto y enviá el token
+def editar_mensaje(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Método no permitido')
+
+    usuario_logueado = request.session.get('usuario_logueado')
+    if not usuario_logueado:
+        return HttpResponseForbidden('No autenticado')
+
+    try:
+        data = json.loads(request.body)
+        mensaje_id = data.get('id')
+        nuevo_texto = data.get('texto', '').strip()
+        if not mensaje_id or not nuevo_texto:
+            return HttpResponseBadRequest('Faltan datos')
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest('JSON inválido')
+
+    mensaje = get_object_or_404(Mensaje, id=mensaje_id)
+
+    # Validar que el usuario logueado sea dueño del mensaje
+    if mensaje.remitente.nombre_usuario != usuario_logueado:
+        return HttpResponseForbidden('No autorizado para editar este mensaje')
+
+    mensaje.texto = nuevo_texto
+    mensaje.save()
+
+    return JsonResponse({'status': 'ok', 'mensaje': 'Mensaje actualizado', 'texto': mensaje.texto})
+
+@csrf_exempt
+def borrar_mensaje(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Método no permitido')
+
+    usuario_logueado = request.session.get('usuario_logueado')
+    if not usuario_logueado:
+        return HttpResponseForbidden('No autenticado')
+
+    try:
+        data = json.loads(request.body)
+        mensaje_id = data.get('id')
+        if not mensaje_id:
+            return HttpResponseBadRequest('Faltan datos')
+    except json.JSONDecodeError:
+        return HttpResponseBadRequest('JSON inválido')
+
+    mensaje = get_object_or_404(Mensaje, id=mensaje_id)
+
+    # Validar que el usuario logueado sea dueño del mensaje
+    if mensaje.remitente.nombre_usuario != usuario_logueado:
+        return HttpResponseForbidden('No autorizado para borrar este mensaje')
+
+    mensaje.delete()
+
+    return JsonResponse({'status': 'ok', 'mensaje': 'Mensaje borrado'})
+##############################################################################
+#----------------------------mensaje destacado-------------------------------#
+##############################################################################
+# views.py
+@csrf_exempt
+def toggle_destacar_mensaje(request):
+    if request.method != 'POST':
+        return HttpResponseBadRequest('Método no permitido')
+
+    try:
+        data = json.loads(request.body)
+        mensaje_id = data.get('id')
+    except (json.JSONDecodeError, KeyError):
+        return HttpResponseBadRequest('Datos inválidos')
+
+    mensaje = get_object_or_404(Mensaje, id=mensaje_id)
+
+    usuario_logueado = request.session.get('usuario_logueado')
+    if not usuario_logueado or mensaje.remitente.nombre_usuario != usuario_logueado:
+        return HttpResponseForbidden('No autorizado')
+
+    mensaje.destacado = not mensaje.destacado
+    mensaje.save()
+    return JsonResponse({'status': 'ok', 'destacado': mensaje.destacado})
