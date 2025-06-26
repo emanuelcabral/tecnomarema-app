@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
   {% load static %}
+  {% load util_filtros %}
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
-  <title>Desarrollo Web</title>
+  <title>{{ comision.id_curso.nombre_curso }}</title>
   <style>
     body {
       background-color: #000;
@@ -281,8 +282,9 @@
 }
     /* intento de personalizr el google slides fin */
 
+  /* submenu incia */
 
-  .sub-menu{
+    .atencion{
     /* border: 10px solid #000; */
     border-radius: 10px;
     background-color: #111;
@@ -293,7 +295,8 @@
     padding: 10px;
     gap: 10px;
   }
-  .sub-menu a{
+
+  .atencion a{
     color:#12f693;
     text-decoration: none;
     text-align: center;
@@ -302,15 +305,138 @@
     border-radius: 10px;
     border: 1px solid #12f693;
   }
-
+  
   .sub-menu a:hover{
     box-shadow: 0 0 5px 5px #12f693;
   }
+  
+  /* submenu fin */
+
+
+
+  .asistencia-badge {
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: 8px;
+  display: inline-block;
+  margin-top: 10px;
+  text-align: center;
+  min-width: 120px;
+}
+
+.asistencia-presente {
+  background-color: #12f693 !important;
+  color: #000 !important;
+}
+
+.asistencia-btn {
+  background-color: #12f693;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  margin-top: 10px;
+  box-shadow: 0 4px 10px rgba(18, 246, 147, 0.3);
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.asistencia-btn:hover {
+  background-color: #0cd680;
+  transform: translateY(-2px);
+}
+
+
+
+    .btn-marcar {
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border-radius: 10px;
+      padding: 10px 20px;
+      white-space: nowrap;
+    }
+
+      .btn-marcar:hover {
+    background-color: #12f693;
+    color: #000;
+    box-shadow: 0 0 15px #12f693, 0 0 25px #12f693, 0 0 35px #12f693;
+    transform: scale(1.05);
+  }
+
+
+  /* info de porcentaje de asistencia - inicio */
+
+.asistencia-box {
+  width: 100px;
+  height: 100px;
+  background-color: #222;
+  color: white;
+  border-radius: 12px;
+  box-shadow: 0 0px 8px #12f693;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', sans-serif;
+  overflow: hidden; /* Esto evita que el fondo del título se vea recortado */
+}
+
+.asistencia-box .titulo {
+  font-size: 16px;
+  font-weight: bold;
+  height: 30%;
+  width: 100%; /* Asegura que ocupe todo el ancho */
+  background-color: #cf30ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.asistencia-box .porcentaje {
+  font-size: 25px;
+  font-weight: bold;
+  height: 70%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #12f693;
+}
+
+
+  /* info de porcentaje de asistencia - fin */
+
+  .btn-quizzes {
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  text-decoration: none;
+  display: inline-block;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(138, 28, 124, 0.4);
+}
+
+.btn-quizzes:hover {
+  background-color: #cf30ff;
+  transform: scale(1.05);
+  box-shadow: 0 0px 14px #cf30ff;
+}
+
+
     
   </style>
 </head>
 
 <body>
+
+<script>
+  const cursoID = "{{ comision.id_curso.nombre_curso }}";
+</script>
+
+<!-- <p style="color: yellow;">{{ comision.id_curso.id }}</p> -->
 
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark px-3">
@@ -352,7 +478,7 @@
 </nav>
 
 <div class="barra-bienvenida">
-    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀 </strong>
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
 </div>
 
 <div class="container mt-5">
@@ -380,7 +506,7 @@
           </p>
 
           <p class="card-text mb-0">
-            <span class="badge badge-marema me-2">Duración</span> {{ curso.duracion }} por clase
+            <span class="badge badge-marema me-2">Duración</span> {{ comision.duracion_clase }} por clase
           </p>
         </div>
       </div>
@@ -409,14 +535,56 @@
     </div>
   </div>
 
-  <div class="col-md-12 sub-menu">
-    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
-    Ver participantes
-    </a>
-    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">
-    Asistencias
-    </a>
+  <div class="container d-flex atencion">
+
+    <div class="col-md-6 atencion">
+      <p id="mensaje-curso" class="mt-3" style="color: #12f693; border: 1px solid #12f693; padding: 20px;border-radius: 10px;background-color: #222222;"></p>
+    </div>
+
+
+    <!-- sub-menu inicia -->
+    <div class="col-md-4 sub-menu atencion">
+
+    <div class="asistencia-box">
+      <div class="titulo">Asistencia</div>
+      <div class="porcentaje">
+        {{ asistencias_en_comision }}/{{ total_clases_comision }}
+      </div>
+    </div>
+
+      <div class="asistencia-box">
+        <div class="titulo">Quizzes</div>
+        <div class="porcentaje">
+          {{ puntaje_total_quiz }} pts
+        </div>
+      </div>
+
+      <div class="asistencia-box">
+        <div class="titulo">Nota Final</div>
+        <div class="porcentaje">
+          {{ entrega_existente.nota|default:"–" }}
+        </div>
+      </div>
+
+    </div>
+    <!-- sub-menu fin -->
+
   </div>
+
+  <div class="container d-flex atencion mt-3">
+
+    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">Ver participantes</a>
+    <!-- <a href="{% url 'asistencia_alumnos' %}">Asistencias</a> -->
+    <!-- <a href="{% url 'entrega_proyecto' comision.numero_comision %}">Entrega Final</a> -->
+    <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a>
+
+    <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}">Mi Certificado</a>
+
+    <a href="{% url 'chat_general' %}">chat</a>
+
+
+  </div>
+
 
   <!-- Layout de clases y contenido -->
   <div class="row mt-5">
@@ -431,260 +599,283 @@
     </div>
   </div>
 
-    <!-- Contenido dinámico a la derecha inicia -->
-    <div class="col-md-8">
-      <div id="contenido-clase" class="contenido-clase">
-        <h4>Clase 0 - Presentación del Curso</h4>
-        <span class="badge-fecha">30 Junio 2025</span>
-        <span class="badge-horario">Lunes 20 a 22 hs</span>
-        <a href="{% url 'valoracion_alumno' %}" class="btn-valorar" style="text-decoration: none; text-align: center;">Valorar clase ⭐</a>
+<!-- Contenido dinámico a la derecha inicia -->
+<div class="col-md-8">
+  <div id="contenido-clase" class="contenido-clase">
+    {% with clase=clases.0 %}
+      {% with cc=clasescomision|get_item:clase.id %}
+        <h4>Clase {{ clase.numero_clase }} - {{ clase.nombre_clase }}</h4>
+        <span class="badge-fecha p-1 rounded">
+          {{ cc.fecha|date:"j F Y"|default:"Fecha por definir" }}
+        </span>
+        <span class="badge-horario p-1 rounded">
+          {{ cc.horario|default:"Horario por definir" }} {{ cc.hora_fin|default:"Horario por definir" }}
+        </span>
+
+        <!-- ASISTENCIA (solo desde JS ahora, se eliminó la lógica de Django para evitar conflictos) -->
+
+        <a href="{% url 'valoracion_alumno' clase.id %}" class="btn-valorar mt-2">Valorar clase ⭐</a>
+
         <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
-        <a href="https://meet.jit.si/Tecnomarema-Desarrolloweb-Comision-11790-Clase-00-QWERTY" target="_blank" class="btn-valorar" style="text-decoration: none; text-align: center;">
-          <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
-        </a>
+        {% if cc.link %}
+          <a href="{{ cc.link }}" target="_blank" class="btn-valorar">
+            <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
+          </a>
+        {% else %}
+          <p>Clase en vivo aún no disponible</p>
+        {% endif %}
+
         <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
-        <iframe src="https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000" frameborder="0" width="100%" height="450px" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe>
+        {% if clase.ppt %}
+          <iframe src="{{ clase.ppt }}" width="100%" height="400px" frameborder="0"></iframe>
+        {% else %}
+          <p>Material aún no disponible</p>
+        {% endif %}
+
         <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
-        <iframe width="100%" height="400px" src="https://www.youtube.com/embed/t68gf9wJlPk?si=56jJ5JzmspyL9PEN" title="Clase grabada" frameborder="0" allowfullscreen></iframe>
+        {% if cc.video %}
+          <iframe width="100%" height="400px" src="{{ cc.video }}" frameborder="0" allowfullscreen></iframe>
+        {% else %}
+          <p>Clase grabada aún no disponible</p>
+        {% endif %}
+
+        <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
+        {% if comision.id_curso %}
+          <a href="/curso/{{ comision.id_curso.nombre_curso|urlencode }}/quizzes/" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
+        {% else %}
+          <p class="text-danger">Error: curso no asignado a la comisión.</p>
+        {% endif %}
+
+
         <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
         <ul>
-          <li><a href="#" target="_blank">Documento guía HTML</a></li>
-          <li><a href="#" target="_blank">Ejercicios recomendados</a></li>
+          <li><a href="#" target="_blank">Documento guía</a></li>
+          <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
         </ul>
-      </div>
-    </div>
-    <!-- Contenido dinámico a la derecha fin -->
+      {% endwith %}
+    {% endwith %}
+  </div>
+</div>
+<!-- Contenido dinámico a la derecha fin -->
+
+
   </div>
 </div>
 
 <script>
-  const clases = [
-    {
-      titulo: "Clase 0 - Presentación del Curso",
-      fecha: "30 Junio 2025",
-      horario: " Lunes 20 a 22 hs",
-      link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-00-QWERTY",
-      ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000",
-      video: ""
-    },
-    // Resto de clases sin material cargado aún
+  // Cambiar fondo y contenido activo al hacer clic en una clase
+  const claseCards = document.querySelectorAll('.clase-item');
+
+  claseCards.forEach((card, index) => {
+    card.addEventListener('click', () => {
+      claseCards.forEach((c) => c.classList.remove('active'));
+      card.classList.add('active');
+      mostrarClase(index); // <<--- CLAVE
+    });
+  });
+</script>
+
+<script>
+  const csrfToken = "{{ csrf_token }}";
+</script>
+
+
+
+<script>
+  const clasesData = [
+    {% for clase in clases %}
+      {% with cc=clasescomision|get_item:clase.id %}
       {
-    titulo: "Clase 1 - Conociendo a HTML",
-    fecha: "2 Julio 2025",
-    horario: "Miercoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-01-ASDFGH",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSWQTmHXS7JokOI65QHsFKL5r6W9VmC1m1HQOPzDUVYPXRomW376WXNPKy3zMclkw/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 2 - Introducción a HTML",
-    fecha: "9 Julio 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-02-ZXCVBN",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vRQ9pKTowW3lsLHVixPgdFYJA0gBsWGdWywo-_drqUxbrf85jXbjigu2ADEOPox5A/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 3 - Presentando a CSS",
-    fecha: "14 Julio 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-03-PLMOKN",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vT4kwrbYVQ6ILG0OqcPhoA-CpsVSMig5Qc_K-NmpNcgPbyiQxr6kKhkR5DRxoZppQ/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 4 - Primeros pasos con CSS",
-    fecha: "16 Julio 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-04-JHGFDS",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSAbWbdkGlH2uvETvAsPmhtJNsJvMZaNv-ZNTB6S9Xk6Wv4PV_Qz8vQJNPmakgXSg/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 5 - Modelo de cajas",
-    fecha: "21 Julio 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-05-NBVCXZ",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTR9bFkJuesdAi7th1xuBRiOnKJElR9mdi8AN-wNwSrLTUMPlL8yCd1sXp2f-_DVg/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 6 - Flexbox",
-    fecha: "23 Julio 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-06-QAZWSX",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vRpRuH4cPHbAkd3JTnjrixSo0HKO_akfbliPFxaD_MUZVa7lWuKx5megTtsNFUUIg/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 7 - Introducción a Grids",
-    fecha: "28 Julio 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-07-EDCRFV",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vR3qA80MkCNCFnBeBQpkGDV1GL-YnBUvGj-dVXgMywinlfCte-GfXr7Yub1rTpyyA/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 8 - Sitios Responsivos (media + grid + flex)",
-    fecha: "30 Julio 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-08-TGBYHN",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQW3SHQVf03MWOBDeXpqPSjcQ_r4YPvc_equhr6YqdxKggrDAicCUI_mgUv599YcA/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 9 - Pseudoclases y Pseudoelementos + BEM",
-    fecha: "4 Agosto 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-09-UJMIKO",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQtohoYN5OZLSn0DVRvNzGgXDBpbyMCFrJ_pY64xAwo3mpMziTq230uWvlGQBKhog/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 10 - Animaciones 1",
-    fecha: "6 Agosto 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-10-POLKJI",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTEHHui9kPKbBq_Bx9OMxk5q5J35Wyr_UyzZCqgLykrDOllLejOXCp-iVGPVuywmA/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 11 - Animaciones 2",
-    fecha: "11 Agosto 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-11-MNBVCX",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTabRZUrveyHlY3W2k4xH4JsQxG8k2U-maYUuJnJKiPuwfaO23Zr59cnJlQHMySlg/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 12 - Frameworks, librerías y Bootstrap",
-    fecha: "13 Agosto 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-12-LKJHGF",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vTnOMUAzqnCV37DKIvaj6vDBAy5U5KpjIg23bGgO8_Ol8pveMuPFSNV2IwYOQMaSg/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 13 - Maquetando con Bootstrap",
-    fecha: "18 Agosto 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-13-DSAMNB",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSjBQyDCNwTE9F4QqfZUEBtG0qTkc3IBUzuAqMHBJq2qlsyxUQfyb3yEz9IF2_W2A/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 14 - Git",
-    fecha: "20 Agosto 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-14-QWASZX",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSAtHgiRwg1n2fQJ4UDUib1-zXPh6O6_Q15by17pw9WqdZ9SO53SwFVGuTHpEO6lA/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 15 - GitHub",
-    fecha: "25 Agosto 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-15-EDXCVB",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQvR4qsWb7MJmqmP3hFtI-XWHd9290mDUNCd4EaH-tsumEbKeYoeIPqptyx02qSNg/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 16 - SASS",
-    fecha: "27 Agosto 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-16-RFVTGB",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQrVOPh2zyrCNS92FEfM1YGg-uPjwOgBfsvwwdI8I6YD7nCtDiDnSOh9jLRcV6Dhw/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 17 - SASS parte 2",
-    fecha: "1 Septiembre 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-17-YHNJMK",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQQdZ-hRUiZTJlkFvp_ClH9OfoNccieD2lDfCFH9Z4Ema4EJiAq00L1IavoUkk7BQ/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 18 - SEO",
-    fecha: "3 Septiembre 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-18-UJMIOL",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vRy4o74lrWrLlbdt3h6CXR1Spds7OmRRVZHFsSxN0KsNSAkhUROXNJOzXXqe2FBng/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 19 - Servidores",
-    fecha: "8 Septiembre 2025",
-    horario: "Miércoles 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-19-POKLNB",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vSsUbBu0wz_EZSxEVeiHbGOARcwMzSFDDsbOyXScT65uP21yQuxcd6TKMb5E_hc0A/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-  {
-    titulo: "Clase 20 - Final del curso",
-    fecha: "10 Septiembre 2025",
-    horario: "Lunes 20 a 22 hs",
-    link: "Tecnomarema-Desarrolloweb-Comision-11790-Clase-20-MZXCAS",
-    ppt: "https://docs.google.com/presentation/d/e/2PACX-1vQh4l7DpLAjQYgT6LPGZSpGhL7oYty1_0mAjJUp7IkefKDK8palVS8B7ctx-uJuoQ/pubembed?start=false&loop=false&delayms=3000",
-    video: ""
-  },
-    // Resto de clases sin material cargado aún
-    ...Array.from({ length: 20 }, (_, i) => ({
-      titulo: `Clase ${i + 1}`,
-      fecha: "",
-      horario: "",
-      link: "",
-      ppt: "",
-      video: ""
-    }))
+        id: {{ clase.id }},
+        ya_presente: {% if clase.id in clases_presentes_ids %}true{% else %}false{% endif %},
+        fecha_raw: "{{ cc.fecha|date:'Y-m-d'|default:'' }}",
+        hora_inicio: "{{ cc.horario|default:'' }}",
+        hora_fin: "{{ cc.hora_fin|default:'' }}",
+        titulo: "Clase {{ clase.numero_clase }} - {{ clase.nombre_clase }}",
+        fecha: "{{ cc.fecha|date:'j F Y'|default:'Fecha por definir' }}",
+        horario: "{{ cc.horario|default:'Horario por definir' }}",
+        link: "{{ cc.link|escapejs|default:'' }}",
+        ppt: "{{ clase.ppt|escapejs|default:'' }}",
+        video: "{{ cc.video|escapejs|default:'' }}"
+      }{% if not forloop.last %},{% endif %}
+      {% endwith %}
+    {% endfor %}
   ];
 
-  function mostrarClase(index) {
-    const clase = clases[index];
-    const contenido = document.getElementById("contenido-clase");
-    const items = document.querySelectorAll(".clase-item");
-    items.forEach((item, i) => {
-      item.classList.toggle("active", i === index);
-    });
+function mostrarClase(index) {
+  const clase = clasesData[index];
+  const contenidoDiv = document.getElementById('contenido-clase');
 
-    contenido.innerHTML = `
-      <h4>${clase.titulo}</h4>
-      <span class="badge-fecha p-1 rounded">${clase.fecha || 'Fecha por definir'}</span>
-      <span class="badge-horario p-1 rounded">${clase.horario || 'Horario por definir'}</span>
-      <a href="{% url 'valoracion_alumno' %}" class="btn-valorar" style="text-decoration: none; text-align: center;">Valorar clase ⭐</a>
+  if (!clase) {
+    contenidoDiv.innerHTML = `<p class="text-danger">⚠️ No se pudo cargar esta clase.</p>`;
+    return;
+  }
+
+  const hoyDateObj = new Date();
+  const hoy = hoyDateObj.toISOString().split('T')[0];
+  const horaActual = hoyDateObj.toTimeString().slice(0, 5);
+
+  function horaEnMinutos(hora) {
+    if (!hora || !hora.includes(":")) return null;
+    const [h, m] = hora.split(":").map(Number);
+    return h * 60 + m;
+  }
+
+  const ahoraMin = horaEnMinutos(horaActual);
+  const inicioMin = horaEnMinutos(clase.hora_inicio);
+  const finMin = horaEnMinutos(clase.hora_fin);
+
+  let dentroFranja = false;
+  let fueraFranja = false;
+
+  if (clase.fecha_raw === hoy && inicioMin !== null && finMin !== null) {
+    const margenAntes = inicioMin - 10;
+    const margenDespues = finMin + 30;
+    if (ahoraMin >= margenAntes && ahoraMin <= margenDespues) {
+      dentroFranja = true;
+    } else if (ahoraMin > margenDespues) {
+      fueraFranja = true;
+    }
+  } else {
+    if (clase.fecha_raw < hoy) fueraFranja = true;
+  }
+
+  let asistenciaHTML = "";
+  if (clase.ya_presente === true || clase.ya_presente === "true") {
+    asistenciaHTML = `<span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>`;
+  } else if (dentroFranja) {
+    asistenciaHTML = `
+      <form method="post" action="/marcar_presente/${clase.id}/" class="d-inline ms-2 d-flex justify-content-end">
+        <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+        <button class="btn btn-marcar btn-sm mt-2" type="submit">Marcar presente</button>
+      </form>
+    `;
+  } else if (fueraFranja) {
+    asistenciaHTML = `<span class="badge ms-2" style="background-color:#cf30ff;">Ausente</span>`;
+  }
+
+  contenidoDiv.innerHTML = `
+    <h4>${clase.titulo}</h4>
+    <span class="badge-fecha p-1 rounded">${clase.fecha}</span>
+    <span class="badge-horario p-1 rounded">${clase.horario} a ${clase.hora_fin} hs Arg.</span>
+    ${asistenciaHTML}
+
+    <p class="mt-3"><strong class="badge badge-marema me-2">Valoracion de la clase:</strong></p>
+    <a href="/valoracion_alumno/${clase.id}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>
 
     <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
-      ${
-        clase.link
-        ? `<a href="https://meet.jit.si/${clase.link}" target="_blank" class="btn-valorar" style="text-decoration: none; text-align:center;">
-          <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
-        </a>`
-          : "<p>Clase en vivo aún no disponible</p>"
-} 
-      <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
-      ${
-        clase.ppt
-          ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>`
-          : "<p>Material aún no disponible</p>"
-      }
-      <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
-      ${
-        clase.video
-          ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>`
-          : "<p>Clase grabada aún no disponible</p>"
-      }
+    ${clase.link ? `<a href="${clase.link}" target="_blank" class="btn-valorar" style="text-decoration:none; text-align:center">
+      <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
+    </a>` : `<p>Clase en vivo aún no disponible</p>`}
 
-      <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
-      <ul>
-        <li><a href="#" target="_blank">Documento guía</a></li>
-        <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
-      </ul>
-    `;
-  }
+    <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
+    ${clase.ppt ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>` : `<p>Material aún no disponible</p>`}
+
+    <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
+    ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
+
+    <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
+    <a href="/curso/${cursoID}/quizzes/" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
+
+    <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
+    <ul>
+      <li><a href="#" target="_blank">Documento guía</a></li>
+      <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
+    </ul>
+  `;
+}
+
+  document.addEventListener('DOMContentLoaded', () => {
+    mostrarClase(0);
+  });
 </script>
+
+
+<!-- mensaje de inicio, proceso y fin de cursada /// inicia//// -->
+<script>
+  function soloFecha(date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  }
+  
+  // Parseamos manualmente sin UTC
+  const fechaInicioStr = "{{ comision.fecha_inicio|date:'Y-m-d' }}";
+  const fechaFinStr = "{{ comision.fecha_fin|date:'Y-m-d' }}";
+  
+  const fechaInicioParts = fechaInicioStr.split("-");
+  const fechaFinParts = fechaFinStr.split("-");
+  
+  // Creamos las fechas en horario local (no UTC)
+  const fechaInicio = soloFecha(new Date(
+    parseInt(fechaInicioParts[0]),
+    parseInt(fechaInicioParts[1]) - 1,
+    parseInt(fechaInicioParts[2])
+  ));
+  
+  const fechaFin = soloFecha(new Date(
+    parseInt(fechaFinParts[0]),
+    parseInt(fechaFinParts[1]) - 1,
+    parseInt(fechaFinParts[2])
+  ));
+  
+  const hoy = soloFecha(new Date());
+  
+  let mensaje = "";
+
+  if (hoy.getTime() === fechaInicio.getTime()) {
+    mensaje = "🎉 ¡Llegó el día!<br>Hoy comienzas una nueva etapa llena de aprendizajes. ¡Disfrútalo al máximo! 💪📘";
+  } else if (hoy < fechaInicio) {
+    const diffDias = Math.floor((fechaInicio - hoy) / (1000 * 60 * 60 * 24));
+    mensaje = `🎓 ¡Cuenta regresiva! Faltan ${diffDias} día(s) para que comience tu curso.<br>Prepárate para aprender, crecer y alcanzar tus metas. 🚀📚`;
+  } else if (hoy > fechaInicio && hoy < fechaFin) {
+    mensaje = "📚 ¡Sigue así!<br>Ya estás cursando y cada día te acerca más a tus objetivos. 🌱✨";
+  } else if (hoy >= fechaFin) {
+    mensaje = "🎓 ¡Felicitaciones!<br>Has finalizado tu curso con dedicación y constancia. ¡Bravo! 👏🌟";
+  }
+  
+  document.addEventListener("DOMContentLoaded", function () {
+    const contenedor = document.getElementById("mensaje-curso");
+    if (contenedor) {
+      contenedor.innerHTML = mensaje;
+    }
+  });
+</script>
+<!-- mensaje de inicio, proceso y fin de cursada /// fin//// -->
+
+
+
+<!-- modal inicia -->
+<!-- MODAL DE CONFIRMACIÓN DE PRESENTE -->
+<div class="modal fade" id="modalPresente" tabindex="-1" aria-labelledby="modalPresenteLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="background-color: #111; border: 2px solid #12f693; color: #fff; box-shadow: 0 0 5px 5px #12f693;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalPresenteLabel" style="color:#12f693">Asistencia registrada</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body text-center">
+        ¡Gracias por marcar tu asistencia! <br>Tu presente fue registrado correctamente.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-marcar" data-bs-dismiss="modal">Entendido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("presente") === "1") {
+      const modal = new bootstrap.Modal(document.getElementById('modalPresente'));
+      modal.show();
+    }
+  });
+</script>
+
+
+
+<!-- modal fin -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
-
 </html>

@@ -159,6 +159,9 @@ urlpatterns = [
     path('editar_mensaje/', views.editar_mensaje, name='editar_mensaje'),
     path('borrar_mensaje/', views.borrar_mensaje, name='borrar_mensaje'),
 
+    path('chat/toggle_destacar/', views.toggle_destacar_mensaje, name='toggle_destacar'),
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

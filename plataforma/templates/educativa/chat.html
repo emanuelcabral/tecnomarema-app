@@ -186,17 +186,26 @@
 
 /* mensaje destacado */
 .borde-animado {
-  border: 2px solid transparent;
-  background-image: linear-gradient(#222, #222), linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+  border: 5px solid #cf30ff;
+  box-shadow: 0 0 5px 5px #12f693;
+  /* background-image: linear-gradient(#222, #222), linear-gradient(90deg, #12f693, #cf30ff, #12f693);
   background-origin: border-box;
-  background-clip: content-box, border-box;
+  background-clip: content-box, border-box; */
   animation: animarBorde 4s linear infinite;
   border-radius: 8px;
 }
 
-@keyframes animarBorde {
+/* @keyframes animarBorde {
   0% { background-position: 0% 50%; }
   100% { background-position: 100% 50%; }
+} */
+
+@keyframes animarBorde {
+  0% { box-shadow: 0 0 5px 5px #12f693; }
+  25% { box-shadow: 0 0 5px 5px #cf30ff; }
+  50% { box-shadow: 0 0 5px 5px #12f693; }
+  75% { box-shadow: 0 0 5px 5px #cf30ff; }
+  100% { box-shadow: 0 0 5px 5px #12f693; }
 }
 
 /* mensaje destacado */
@@ -226,9 +235,9 @@
 
   <!-- destacados -->
 <div id="destacados-info" style="color: #fff; margin-bottom: 10px; background-color: #cf30ff; padding: 10px 40px;">
-  <span id="contador-destacados">0 mensajes destacados</span>
-  <button class="btn btn-outline-info btn-sm" onclick="mostrarDestacados()">👁 Ver destacados</button>
-  <button class="btn btn-outline-secondary btn-sm" onclick="mostrarTodos()">🔁 Ver todos</button>
+  <span id="contador-destacados" >0 mensajes destacados</span>
+  <button class="btn btn-info btn-sm" onclick="mostrarDestacados()">👁 Ver destacados</button>
+  <button class="btn btn-dark btn-sm" onclick="mostrarTodos()">🔁 Ver todos</button>
 </div>
 <!-- destacados -->
 
@@ -295,20 +304,20 @@
     <button type="submit"><i class="bi bi-send"></i> Enviar</button><br>
   </form>
 </div>
-
-
-        
     </div>
     </div>
   </div>
-
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
   <script>
     // Scroll automático al último mensaje
     const messages = document.getElementById('message-list');
     messages.scrollTop = messages.scrollHeight;
   </script>
-
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
 <script>
+  let intervaloPolling = null;
   let ultimoMensajeId = null;
   let badgeVisibleManualmente = false;
   let contadorMensajesNuevos = 0;
@@ -388,9 +397,6 @@
         <button class="boton-chat btn-borrar" data-id="{{ mensaje.id }}">
           <i class="bi bi-trash"></i> Borrar
         </button>
-        <button class="boton-chat btn-destacar" data-id="{{ mensaje.id }}">
-          <i class="bi bi-highlighter"></i> Destacar
-        </button>
 
       `;
     }
@@ -451,7 +457,6 @@
   lista.appendChild(div);
 }
 // fin del destaque
-
   function actualizarMensajes() {
     fetch("{% url 'obtener_mensajes' %}")
       .then(response => response.json())
@@ -480,24 +485,11 @@
           lista.innerHTML = '';
         }
 
-        // nuevos.forEach(m => {
-        //   if(!mensajesActualesIds.has(m.id)) {
-        //     const div = document.createElement('div');
-        //     div.classList.add('message');
-        //     div.setAttribute('data-id', m.id);
-        //     div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
-
-        //     div.innerHTML = crearContenidoMensaje(m);
-        //     lista.appendChild(div);
-        //   }
-        // });
-
-        nuevos.forEach(m => {
-  if (!mensajesActualesIds.has(m.id)) {
+nuevos.forEach(m => {
+  if(!mensajesActualesIds.has(m.id)) {
     renderMensaje(m);
   }
 });
-
 
         // Agregar listeners para botones editar y borrar:
         document.querySelectorAll('.btn-editar').forEach(btn => {
@@ -628,7 +620,64 @@
     .catch(err => alert(err.message));
   }
 
-  setInterval(actualizarMensajes, 1000);
+  // destacar mensajes inicia
+function renderMensaje(m) {
+  const lista = document.getElementById('message-list');
+  const div = document.createElement('div');
+  div.classList.add('message');
+  div.setAttribute('data-id', m.id);
+  div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
+
+  // Contenido del mensaje
+  div.innerHTML = crearContenidoMensaje(m);
+
+  // Botón destacar
+  const btnDestacar = document.createElement('button');
+  btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
+  btnDestacar.className = 'btn btn-sm btn-warning';
+  btnDestacar.style.marginTop = '5px';
+
+  btnDestacar.addEventListener('click', () => {
+    fetch('/chat/toggle_destacar/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+      body: JSON.stringify({ id: m.id }),
+    })
+    .then(r => r.json())
+    .then(data => {
+      m.destacado = data.destacado;
+
+      // Redibujar sin recargar
+      div.classList.toggle('borde-animado', m.destacado);
+      btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
+
+      // Actualizar contador
+      const cantidad = mensajesCargados.filter(x => x.destacado).length;
+      document.getElementById('contador-destacados').textContent = `${cantidad} mensajes destacados`;
+    });
+  });
+
+  div.appendChild(btnDestacar);
+
+  if (m.destacado) {
+    div.classList.add('borde-animado');
+  }
+
+  lista.appendChild(div);
+}
+
+  // destacar mensajes fin
+  // setInterval(actualizarMensajes, 1000);
+  function iniciarPolling() {
+  if (intervaloPolling) clearInterval(intervaloPolling);
+  intervaloPolling = setInterval(actualizarMensajes, 1000);
+}
+
+iniciarPolling();  // ✅ inicia automáticamente
+
   actualizarMensajes();
 
   document.getElementById('nuevo-badge').addEventListener('click', () => {
@@ -640,7 +689,8 @@
   });
 </script>
 <!-- polling para recibir los mensajes con recarga de 1s fin -->
-
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
 <!-- ver quien esta escribiendo inicia -->
 <script>
   let typingTimeout;
@@ -674,8 +724,9 @@ function verificarTyping() {
 setInterval(verificarTyping, 1000); // Polling cada 1s
 </script>
 <!-- ver quien esta escribiendo fin -->
-
-<!-- ##################################### -->
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
+<!-- #### Script para el comportamiento del botón del chat general #### -->
 <script>
   document.getElementById('btn-general').addEventListener('click', () => {
     const lista = document.getElementById('message-list');
@@ -692,8 +743,9 @@ setInterval(verificarTyping, 1000); // Polling cada 1s
     badgeVisibleManualmente = false;
   });
 </script>
-<!-- ##################################### -->
-
+<!-- #### Script para el comportamiento del botón del chat general #### -->
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
 <!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido inicia-->
 <script>
   const fileInput = document.getElementById('file-input');
@@ -710,6 +762,8 @@ setInterval(verificarTyping, 1000); // Polling cada 1s
   });
 </script>
 <!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido fin-->
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
 <!-- editar , guardar y borrar mensajes inicia-->
 <script>
   function getCookie(name) {
@@ -741,21 +795,172 @@ fetch('/editar_mensaje/', {
 .catch(e => console.error(e));
 </script>
 <!-- editar , guardar y borrar mensajes fin-->
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
 <!-- destacar mensajes -->
- <script>
-  function mostrarDestacados() {
+<script>
+function mostrarDestacados() {
+  if (intervaloPolling) clearInterval(intervaloPolling); // ⛔ Detiene polling
   const lista = document.getElementById('message-list');
   lista.innerHTML = '';
-  mensajesCargados.filter(m => m.destacado).forEach(renderMensaje);
+
+  let ultimaFecha = '';
+
+  mensajesCargados
+    .filter(m => m.destacado)
+    .forEach(m => {
+      const fechaMsg = new Date(m.creado).toDateString(); // ⚠️ Asegurate que `m.creado` esté en el JSON
+      if (fechaMsg !== ultimaFecha) {
+        ultimaFecha = fechaMsg;
+
+        const hoy = new Date();
+        const msgDate = new Date(m.creado);
+        const diffTime = hoy - msgDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        let textoFecha = '';
+        if (diffDays === 0) {
+          textoFecha = 'Hoy';
+        } else if (diffDays === 1) {
+          textoFecha = 'Ayer';
+        } else {
+          const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+          textoFecha = msgDate.toLocaleDateString('es-AR', opciones);
+        }
+
+        const hr = document.createElement('hr');
+        hr.style.border = 'none';
+        hr.style.borderTop = '1px solid rgba(204,204,204,0.7)';
+        hr.style.margin = '30px auto 10px auto';
+        hr.style.width = '60%';
+
+        const label = document.createElement('div');
+        label.textContent = textoFecha;
+        label.style.textAlign = 'center';
+        label.style.color = '#ccc';
+        label.style.marginBottom = '10px';
+        label.style.fontWeight = 'bold';
+
+        lista.appendChild(hr);
+        lista.appendChild(label);
+      }
+
+      renderMensaje(m);
+    });
 }
+
+
 function mostrarTodos() {
   const lista = document.getElementById('message-list');
   lista.innerHTML = '';
-  mensajesCargados.forEach(renderMensaje);
+
+  let ultimaFecha = '';
+
+  mensajesCargados.forEach(m => {
+    const fechaMsg = new Date(m.fecha).toDateString();
+    if (fechaMsg !== ultimaFecha) {
+      ultimaFecha = fechaMsg;
+
+      const hoy = new Date();
+      const msgDate = new Date(m.fecha);
+      const diffTime = hoy - msgDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+      let textoFecha = '';
+      if (diffDays === 0) {
+        textoFecha = 'Hoy';
+      } else if (diffDays === 1) {
+        textoFecha = 'Ayer';
+      } else {
+        const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+        textoFecha = msgDate.toLocaleDateString('es-AR', opciones);
+      }
+
+      const hr = document.createElement('hr');
+      hr.style.border = 'none';
+      hr.style.borderTop = '1px solid rgba(204,204,204,0.7)';
+      hr.style.margin = '30px auto 10px auto';
+      hr.style.width = '60%';
+
+      const label = document.createElement('div');
+      label.textContent = textoFecha;
+      label.style.textAlign = 'center';
+      label.style.color = '#ccc';
+      label.style.marginBottom = '10px';
+      label.style.fontWeight = 'bold';
+
+      lista.appendChild(hr);
+      lista.appendChild(label);
+    }
+
+    renderMensaje(m);
+  });
+
+  iniciarPolling(); // ✅ Reactiva polling
 }
- </script>
+</script>
 <!-- destacar mensajes -->
+<!-- ######################################################################################################################### -->
+<!-- ######################################################################################################################### -->
+<!-- divisiones de dias del chat inicia-->
+<script>
+  function renderMensajesAgrupados(lista, mensajes) {
+  lista.innerHTML = '';
+  let ultimoDia = null;
 
+  mensajes.forEach(m => {
+    const fechaMsg = new Date(m.creado);
+    const hoy = new Date();
+    let etiquetaDia;
 
+    if (fechaMsg.toDateString() === hoy.toDateString()) {
+      etiquetaDia = 'Hoy';
+    } else {
+      const ayer = new Date();
+      ayer.setDate(hoy.getDate() - 1);
+      if (fechaMsg.toDateString() === ayer.toDateString()) {
+        etiquetaDia = 'Ayer';
+      } else {
+        etiquetaDia = fechaMsg.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
+      }
+    }
+
+    // Si cambia el día, insertamos un <hr> con texto flotante
+    if (etiquetaDia !== ultimoDia) {
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+      wrapper.style.margin = '20px 0';
+
+      const hr = document.createElement('hr');
+      hr.style.border = 'none';
+      hr.style.height = '1px';
+      hr.style.background = '#ccc';
+      hr.style.opacity = '0.7';
+
+      const texto = document.createElement('span');
+      texto.textContent = etiquetaDia;
+      texto.style.position = 'absolute';
+      texto.style.left = '50%';
+      texto.style.transform = 'translateX(-50%)';
+      texto.style.top = '-10px';
+      texto.style.background = '#222';
+      texto.style.padding = '0 12px';
+      texto.style.color = '#ccc';
+      texto.style.fontSize = '14px';
+      texto.style.opacity = '0.9';
+
+      wrapper.appendChild(hr);
+      wrapper.appendChild(texto);
+      lista.appendChild(wrapper);
+
+      ultimoDia = etiquetaDia;
+    }
+
+    const mensajeDiv = renderMensaje(m);
+    lista.appendChild(mensajeDiv);
+  });
+}
+</script>
+<!-- divisiones de dias del chat fin -->
 </body>
 </html>

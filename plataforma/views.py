@@ -102,22 +102,22 @@ def terminos_y_condiciones(request):
 # def mis_cursos(request):
 #     return render(request, 'educativa/mis_cursos.html')
 # mis cursos inician
-@session_required
-def desarrollo_web(request):
-    return render(request, 'educativa/desarrollo_web.html')
+# @session_required
+# def desarrollo_web(request):
+#     return render(request, 'educativa/desarrollo_web.html')
 
-@session_required
-def inteligencia_artificial(request):
-    return render(request, 'educativa/inteligencia_artificial.html')
+# @session_required
+# def inteligencia_artificial(request):
+#     return render(request, 'educativa/inteligencia_artificial.html')
 
-@session_required
-def python_curso(request):
-    return render(request, 'educativa/python_curso.html')
+# @session_required
+# def python_curso(request):
+#     return render(request, 'educativa/python_curso.html')
 
-@session_required
-def javascript_curso(request):
-    return render(request, 'educativa/javascript_curso.html')
-# mis cursos finaliza
+# @session_required
+# def javascript_curso(request):
+#     return render(request, 'educativa/javascript_curso.html')
+# # mis cursos finaliza
 
 @session_required
 def videos_desarrollo_web(request):
@@ -437,31 +437,31 @@ def mis_cursos(request):
 
 # --------------------------------------------------------------------------------------
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import PerfilUsuario
-from .decorators import session_required
+# from django.shortcuts import render, redirect
+# from django.contrib import messages
+# from .models import PerfilUsuario
+# from .decorators import session_required
 
-@session_required
-def desarrollo_web(request):
-    nombre_usuario = request.session.get('usuario_logueado', 'AnonymousUser')
-    es_autenticado = 'usuario_logueado' in request.session
+# @session_required
+# def desarrollo_web(request):
+#     nombre_usuario = request.session.get('usuario_logueado', 'AnonymousUser')
+#     es_autenticado = 'usuario_logueado' in request.session
 
-    try:
-        usuario = PerfilUsuario.objects.select_related('id_estudiante').get(nombre_usuario=nombre_usuario)
-        estudiante = usuario.id_estudiante
+#     try:
+#         usuario = PerfilUsuario.objects.select_related('id_estudiante').get(nombre_usuario=nombre_usuario)
+#         estudiante = usuario.id_estudiante
 
-        contexto = {
-            'usuario': usuario,
-            'estudiante': estudiante,
-            'nombre_usuario': nombre_usuario,
-            'es_autenticado': es_autenticado,
-        }
-        return render(request, 'educativa/desarrollo_web.html', contexto)
+#         contexto = {
+#             'usuario': usuario,
+#             'estudiante': estudiante,
+#             'nombre_usuario': nombre_usuario,
+#             'es_autenticado': es_autenticado,
+#         }
+#         return render(request, 'educativa/desarrollo_web.html', contexto)
 
-    except PerfilUsuario.DoesNotExist:
-        messages.error(request, 'Usuario no encontrado.')
-        return redirect('login')
+#     except PerfilUsuario.DoesNotExist:
+#         messages.error(request, 'Usuario no encontrado.')
+#         return redirect('login')
 
 
 
@@ -1135,6 +1135,7 @@ def curso_detalle_view(request, id_comision):
     nombre_normalizado = curso.nombre_curso.strip().lower()
     templates_por_curso = {
         "desarrollo web": "educativa/curso_desarrollo_web.html",
+        "desarrollo web_v2": "educativa/curso_desarrollo_web_v2.html",
         "inteligencia artificial": "educativa/curso_ia.html",
         "python": "educativa/curso_python.html",
         "javascript": "educativa/curso_javascript.html",
@@ -1239,16 +1240,16 @@ for comision in comisiones:
 ##---------------------traer nombres de clases-------------------------------##
 ###############################################################################
 
-from django.shortcuts import render, get_object_or_404
-from .models import Clase, Curso
+# from django.shortcuts import render, get_object_or_404
+# from .models import Clase, Curso
 
-def curso_desarrollo_web_view(request):
-    curso = get_object_or_404(Curso, nombre="Desarrollo Web")
-    clases = Clase.objects.filter(curso=curso).order_by('numero_clase')
-    return render(request, 'curso_desarrollo_web.html', {
-        'clases': clases,
-        'curso': curso,
-    })
+# def curso_desarrollo_web_view(request):
+#     curso = get_object_or_404(Curso, nombre="Desarrollo Web")
+#     clases = Clase.objects.filter(curso=curso).order_by('numero_clase')
+#     return render(request, 'curso_desarrollo_web.html', {
+#         'clases': clases,
+#         'curso': curso,
+#     })
 
 #------------------------------------------------------------------------------
 # from .models import Clase
@@ -1832,6 +1833,7 @@ def obtener_mensajes(request):
             'hora': local_time,
             'archivo_url': m.archivo.url if m.archivo else None,
             'archivo_name': m.archivo.name.split('/')[-1] if m.archivo else None,
+            'destacado': m.destacado,  # 👈 AGREGÁ ESTA LÍNEA
         })
 
     return JsonResponse({'mensajes': lista})

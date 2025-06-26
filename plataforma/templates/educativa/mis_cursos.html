@@ -329,7 +329,7 @@
     {% endfor %}
   </div>
 {% endif %}
-
+{% comment %} aca se deben agregar los cursos manualmente {% endcomment %}
 {% if comision.id_curso.nombre_curso == "Desarrollo web" %}
   <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% elif comision.id_curso.nombre_curso == "Inteligencia Artificial" %}
@@ -337,6 +337,8 @@
 {% elif comision.id_curso.nombre_curso == "Python" %}
   <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% elif comision.id_curso.nombre_curso|lower == "javascript" %}
+  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
+{% elif comision.id_curso.nombre_curso == "Desarrollo web_v2" %}
   <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
 {% else %}
   <a href="#" class="btn btn-secondary disabled">Curso no disponible</a>
