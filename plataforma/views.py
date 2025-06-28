@@ -1067,7 +1067,6 @@ from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision, Asiste
 from .decorators import session_required
 from plataforma.models import EntregaProyecto
 
-
 @session_required
 def curso_detalle_view(request, id_comision):
     # 1. Verificar sesión
@@ -1108,9 +1107,19 @@ def curso_detalle_view(request, id_comision):
     clasecomision_dict = {cc.clase_id: cc for cc in clases_comisionadas}
 
     # 7. Obtener asistencias
-    asistencias = AsistenciaClase.objects.filter(estudiante=estudiante)
-    clases_presentes_ids = list(asistencias.values_list('clase_id', flat=True))
+    # ✅ 7. Obtener IDs de clases de esta comisión
+    clases_ids_de_la_comision = [cc.clase.id for cc in clases_comisionadas]
 
+    # ✅ 7.1. Filtrar asistencias del estudiante en esas clases Y en esa comisión
+    asistencias = AsistenciaClase.objects.filter(
+        estudiante=estudiante,
+        clase_id__in=clases_ids_de_la_comision,
+        comision=comision  # Aquí el objeto, no el número como string
+    )
+
+
+    clases_presentes_dict = {a.clase_id: True for a in asistencias}
+    clases_presentes_ids = list(clases_presentes_dict.keys())
 
     # 7.5. Obtener clases ya valoradas
     valoradas = ValoracionAlumno.objects.filter(
@@ -1161,6 +1170,7 @@ def curso_detalle_view(request, id_comision):
         'clases_presentes_ids': clases_presentes_ids,
         'valoraciones_disponibles': valoraciones_disponibles,  # ✅ nuevo diccionario
         "entrega_existente": entrega_existente,  # 👈 se está pasando
+        'alumno_id': estudiante.id_estudiante,
     }
 
     from django.db.models import Sum
@@ -1173,13 +1183,15 @@ def curso_detalle_view(request, id_comision):
     # Total de quizzes hechos por el estudiante
     quizzes_realizados = PuntajeQuiz.objects.filter(
         estudiante=estudiante,
-        clase__curso=curso
+        clase__curso=curso,
+        comision=comision  # línea agregada
     ).count()
 
     # Puntaje acumulado por el estudiante
     puntaje_total = PuntajeQuiz.objects.filter(
         estudiante=estudiante,
-        clase__curso=curso
+        clase__curso=curso,
+        comision=comision  # línea agregada
     ).aggregate(Sum("puntaje_inicial"))["puntaje_inicial__sum"] or 0
 
     # Puntaje máximo posible (10 puntos por clase)
@@ -1191,22 +1203,20 @@ def curso_detalle_view(request, id_comision):
     contexto["puntaje_total_quiz"] = puntaje_total
     contexto["puntaje_maximo_posible"] = puntaje_maximo_posible
 
-
-
-        # 🔢 Total de clases activas de la comisión
+    # 🔢 Total de clases activas de la comisión
     total_clases_comision = clases_comisionadas.count()
 
-    # ✅ Asistencias del estudiante en esta comisión
+    # ✅ Asistencias del estudiante en esta comisión (no en otras del mismo curso)
     asistencias_en_comision = AsistenciaClase.objects.filter(
         estudiante=estudiante,
-        clase__in=[cc.clase for cc in clases_comisionadas]
+        clase__in=[cc.clase for cc in clases_comisionadas],
+        comision=comision  # 👈 filtro clave para distinguir comisiones
     ).count()
+
 
     # 👉 Guardar en el contexto
     contexto["asistencias_en_comision"] = asistencias_en_comision
     contexto["total_clases_comision"] = total_clases_comision
-
-
 
     return render(request, template_a_usar, contexto)
 
@@ -1410,71 +1420,59 @@ def listar_usuarios_view(request):
 ###---------------------marcar el presente-------------------------####
 #######################################################################
 
-from .models import Clase, DatosDeEstudiantes, AsistenciaClase
-from django.utils import timezone
-from django.shortcuts import redirect
-from urllib.parse import urlencode, urlparse, parse_qs, urlunparse
-from plataforma.decorators import session_required
-
-from .models import Clase, DatosDeEstudiantes, AsistenciaClase
-from django.shortcuts import redirect
-from urllib.parse import urlparse, parse_qsl, urlencode, urlunparse
-from plataforma.decorators import session_required
-
-def agregar_parametro(url, clave, valor):
-    partes = urlparse(url)
-    query = dict(parse_qsl(partes.query))
-    query[clave] = valor
-    nueva_query = urlencode(query)
-    return urlunparse(partes._replace(query=nueva_query))
-
-# @session_required
-# def marcar_presente(request, clase_id):
-#     estudiante_id = request.session.get('usuario_id')
-#     if not estudiante_id:
-#         return redirect('login')
-
-#     clase = Clase.objects.get(id=clase_id)
-#     estudiante = DatosDeEstudiantes.objects.get(id_estudiante=estudiante_id)
-
-#     ya_registrada = AsistenciaClase.objects.filter(estudiante=estudiante, clase=clase).exists()
-
-#     if ya_registrada:
-#         referer = request.META.get('HTTP_REFERER', '/')
-#         return redirect(agregar_parametro(referer, 'presente', '1'))
-
-#     asistencia = AsistenciaClase(estudiante=estudiante, clase=clase)
-#     asistencia.guardar_detalles()
-#     asistencia.save()
-
-#     return redirect(request.META.get('HTTP_REFERER', 'mis_cursos'))
-
 from django.http import JsonResponse
-from django.shortcuts import redirect
-from .models import Clase, DatosDeEstudiantes, AsistenciaClase
+from django.shortcuts import get_object_or_404
+from .models import Clase, Comision, DatosDeEstudiantes, AsistenciaClase, ClaseComision
 from .decorators import session_required
 
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.shortcuts import redirect
+
 @session_required
-def marcar_presente(request, clase_id):
-    estudiante_id = request.session.get('usuario_id')
-    if not estudiante_id:
-        return redirect('login')
+def marcar_presente(request, comision_id, clase_id, alumno_id):
+    print("DEBUG - Método:", request.method)
+    print("DEBUG - Datos recibidos:", comision_id, clase_id, alumno_id)
 
-    clase = Clase.objects.get(id=clase_id)
-    estudiante = DatosDeEstudiantes.objects.get(id_estudiante=estudiante_id)
+    if request.method != "POST":
+        return JsonResponse({"error": "Método no permitido"}, status=405)
 
-    if AsistenciaClase.objects.filter(estudiante=estudiante, clase=clase).exists():
-        # Si ya marcó presente, mostramos el modal después de recargar
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return JsonResponse({"ya_presente": True})
-        return redirect(f"{request.META.get('HTTP_REFERER', 'mis_cursos')}?presente=1")
+    clase = Clase.objects.filter(id=clase_id).first()
+    comision = Comision.objects.filter(id_comision=comision_id).first()
+    estudiante = DatosDeEstudiantes.objects.filter(id_estudiante=alumno_id).first()
 
-    asistencia = AsistenciaClase(estudiante=estudiante, clase=clase)
+    if not clase or not comision or not estudiante:
+        print("DEBUG - Alguno de los objetos es None")
+        return JsonResponse({"error": "Faltan datos para marcar presente"}, status=400)
+
+    if AsistenciaClase.objects.filter(estudiante=estudiante, clase=clase, comision=comision).exists():
+        print("DEBUG - Ya presente")
+        return JsonResponse({"ya_presente": True})
+
+    cc = ClaseComision.objects.filter(clase=clase, comision=comision).first()
+    if not cc:
+        print("DEBUG - ClaseComision no encontrada")
+        return JsonResponse({"error": "No se encontró la ClaseComision correspondiente"}, status=400)
+
+    asistencia = AsistenciaClase(
+        estudiante=estudiante,
+        clase=clase,
+        comision=comision,
+        fecha_clase=cc.fecha,
+        horario_inicio=cc.horario,
+        horario_fin=cc.hora_fin,
+    )
     asistencia.guardar_detalles()
     asistencia.save()
 
-    # ✅ Redirecciona con `?presente=1` para mostrar el modal
-    return redirect(f"{request.META.get('HTTP_REFERER', 'mis_cursos')}?presente=1")
+    print("DEBUG - Presente registrado correctamente")
+
+    # Si la petición es AJAX devolvemos JSON, si no, redirigimos (por si alguien accede manualmente)
+    if request.headers.get("x-requested-with") == "XMLHttpRequest":
+        return JsonResponse({"presente": True})
+    else:
+        # Podés cambiar la URL de redirección que te convenga
+        return redirect("mis_cursos")
+
 
 
 ################################################################################################
@@ -1499,21 +1497,23 @@ from plataforma.decorators import session_required
 # Vista del HUB de quizzes
 # ----------------------------
 
-def hub_de_quizzes(request, nombre_curso):
-    estudiante_id = request.session.get('usuario_id')
+@session_required
+def hub_de_quizzes(request, curso_id, comision_id, estudiante_id):
     estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=estudiante_id)
+    # curso = get_object_or_404(Curso, id=curso_id)
+    curso = get_object_or_404(Curso, id_curso=curso_id)
+    comision = get_object_or_404(Comision, id_comision=comision_id)
 
-    curso = Curso.objects.filter(nombre_curso=nombre_curso).first()
-    if not curso:
-        return render(request, "error.html", {"mensaje": "Curso no encontrado"})
-
-    comision = Comision.objects.filter(id_curso=curso).first()
     clases = Clase.objects.filter(curso=curso).order_by("numero_clase")
 
-    # 📊 Cargar puntajes por clase del estudiante
+    # 📊 Puntajes por clase del estudiante y esa comisión
     puntajes_dict = {}
     for clase in clases:
-        puntaje = PuntajeQuiz.objects.filter(estudiante=estudiante, clase=clase).first()
+        puntaje = PuntajeQuiz.objects.filter(
+            estudiante=estudiante,
+            clase=clase,
+            comision=comision  # 👈 clave
+        ).first()
         puntajes_dict[clase.id] = {
             "inicial": puntaje.puntaje_inicial if puntaje else "-",
             "maximo": puntaje.puntaje_maximo if puntaje else "-"
@@ -1521,10 +1521,10 @@ def hub_de_quizzes(request, nombre_curso):
 
     return render(request, "educativa/hub_de_quizzes.html", {
         "curso": curso,
-        "comision": comision,
+        "comision": comision,  # 👈 ahora es la correcta
         "clases": clases,
         "estudiante": estudiante,
-        "puntajes_dict": puntajes_dict,  # Este dict se usa en el template
+        "puntajes_dict": puntajes_dict,
     })
 
 # ----------------------------
@@ -1536,42 +1536,60 @@ def quiz_por_clase(request, clase_id):
     estudiante_id = request.session.get("usuario_id")
     estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=estudiante_id)
 
+    # Obtener la comisión actual del alumno por GET o fallback a la primera comisión del curso
+    numero_comision = request.GET.get("comision")
     clase = get_object_or_404(Clase, id=clase_id)
-    preguntas = Pregunta.objects.filter(clase=clase).order_by('id')
+    curso = clase.curso
 
+    if numero_comision:
+        comision = Comision.objects.filter(numero_comision=numero_comision, id_curso=curso).first()
+    else:
+        # Si no viene comision, tomar la primera comisión del curso
+        comision = Comision.objects.filter(id_curso=curso).first()
+
+    if not comision:
+        return render(request, "error.html", {"mensaje": "Comisión no encontrada para este curso."})
+
+    preguntas = Pregunta.objects.filter(clase=clase).order_by('id')
     total = preguntas.count()
     n = int(request.GET.get("n", 0))
-    clave_puntaje = f"puntaje_clase_{clase_id}"
 
-    # ✅ Si hay respuesta anterior, se evalúa
+    # Clave sesión con comisión para distinguir entre comisiones distintas
+    clave_puntaje = f"puntaje_clase_{clase_id}_comision_{comision.numero_comision}"
+
+    # Evaluar respuesta anterior si existe
     respuesta_usuario = request.GET.get("respuesta")
     if respuesta_usuario and n > 0:
         pregunta_anterior = preguntas[n - 1]
         if respuesta_usuario.lower() == pregunta_anterior.respuesta_correcta.lower():
             request.session[clave_puntaje] = request.session.get(clave_puntaje, 0) + 1
 
-    # 🏁 Si terminó el quiz
+    # Fin del quiz: guardar puntaje con comisión asociada
     if n >= total:
         puntaje = request.session.get(clave_puntaje, 0)
 
-        # 🧠 Guardar o actualizar puntaje en BD
-        puntaje_obj, created = PuntajeQuiz.objects.get_or_create(estudiante=estudiante, clase=clase)
+        puntaje_obj, created = PuntajeQuiz.objects.get_or_create(
+            estudiante=estudiante,
+            clase=clase,
+            comision=comision  # Aquí se asocia la comisión correcta
+        )
         if created:
             puntaje_obj.puntaje_inicial = puntaje
-        # Usar max con seguridad si el campo está en None
         puntaje_obj.puntaje_maximo = max(puntaje, puntaje_obj.puntaje_maximo or 0)
         puntaje_obj.save()
 
-        # 🔄 Limpiar sesión para próximos intentos
+        # Limpiar sesión para próximos intentos
         request.session.pop(clave_puntaje, None)
 
         return render(request, "educativa/quiz_finalizado.html", {
             "clase": clase,
-            "total": total,
             "puntaje": puntaje,
+            # "puntaje_maximo": puntaje_maximo,
+            "curso_id": comision.id_curso.id_curso,
+            "comision_id": comision.id_comision,
+            "estudiante_id": estudiante.id_estudiante,
         })
 
-    # Pregunta actual
     pregunta = preguntas[n]
 
     return render(request, 'educativa/quiz_por_clase.html', {
@@ -1579,7 +1597,9 @@ def quiz_por_clase(request, clase_id):
         'pregunta': pregunta,
         'n': n,
         'total': total,
+        'comision': comision,
     })
+
 
 #####################################################################################
 ####-----------------------Entrega del Proyecto Final----------------------------####
@@ -1737,7 +1757,7 @@ def mi_certificado(request, id_estudiante, id_comision):
     total_clases_comision = ClaseComision.objects.filter(comision=comision).count()
     asistencias_en_comision = AsistenciaClase.objects.filter(
         estudiante=estudiante,
-        comision=str(comision.numero_comision)
+        comision=comision  # ✅ corregido
     ).count()
 
     porcentaje_asistencia = (asistencias_en_comision / total_clases_comision * 100) if total_clases_comision > 0 else 0

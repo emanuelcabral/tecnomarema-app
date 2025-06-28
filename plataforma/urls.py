@@ -129,13 +129,17 @@ urlpatterns = [
 
     path('usuarios/', views.listar_usuarios_view, name='listar_usuarios'), 
 
-    path('marcar_presente/<int:clase_id>/', views.marcar_presente, name='marcar_presente'),
+    # path('marcar_presente/<int:clase_id>/', views.marcar_presente, name='marcar_presente'),
+    path('marcar_presente/<str:comision_id>/<int:clase_id>/<str:alumno_id>/', views.marcar_presente, name='marcar_presente'),
 
     path('agradecimiento/', views.agradecimiento, name='agradecimiento'),
 
 
-    path('curso/<str:nombre_curso>/quizzes/', views.hub_de_quizzes, name='hub_de_quizzes'), #http://127.0.0.1:8000/hub_de_quizzes
+    # path('curso/<str:nombre_curso>/quizzes/', views.hub_de_quizzes, name='hub_de_quizzes'), #http://127.0.0.1:8000/hub_de_quizzes
     path('quiz/<int:clase_id>/', views.quiz_por_clase, name='quiz_por_clase'), 
+    # path('curso/<int:curso_id>/comision/<int:comision_id>/estudiante/<str:estudiante_id>/quizzes/', views.hub_de_quizzes, name='hub_de_quizzes'),
+    path('curso/<str:curso_id>/comision/<str:comision_id>/estudiante/<str:estudiante_id>/quizzes/', views.hub_de_quizzes, name='hub_de_quizzes'),
+
 
 
     # path('entrega-proyecto/<int:comision_id>/', views.entrega_proyecto_view, name='entrega_proyecto'),

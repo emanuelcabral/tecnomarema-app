@@ -102,7 +102,7 @@
 <section class="mb-4 p-4" style="background-color: #333; border-radius: 12px;">
   <h2 style="color: #12f693;">📌 Consigna del Proyecto</h2>
   <p style="padding: 20px;">
-    {{ comision.id_curso.consigna_proyecto|default:"Aún no se cargó la consigna." }}
+    {{ comision.id_curso.consigna_proyecto|default:"Aún no se cargó la consigna."|safe }}
   </p>
   <p style="background-color: #cf30ff; border-radius: 12px;">
     <strong style="color: rgb(0, 0, 0);">📌 ATENCION A LA FECHA DE ENTREGA!!! ⚠</strong><br>

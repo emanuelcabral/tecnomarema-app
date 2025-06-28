@@ -1,4 +1,5 @@
 {% load static %}
+{% load util_filtros %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -314,7 +315,12 @@
   {% else %}
     <div class="alert alert-warning text-center mt-5">
       <h4>😕 Aún no cumplís con los requisitos para obtener tu certificado.</h4>
-      <p>Recordá que necesitás al menos 70% de asistencias y una nota mínima de 7.</p>
+      <p>
+  Recordá que necesitás al menos el 70% de asistencias 
+  (de {{ total_clases_comision|floatformat:0 }} clases → al menos 
+  {{ total_clases_comision|mul:0.7|floatformat:0 }} asistencias) 
+  y una nota mínima de 7.
+</p>
     </div>
     <div class="logo-marema d-flex justify-content-center giro-wrapper">
       <img src="{% static 'img/logo-marema.png' %}" alt="" class="imagen-animada">

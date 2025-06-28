@@ -273,7 +273,7 @@ from django.db import models
 class ClaseComision(models.Model):
     clase = models.ForeignKey('Clase', on_delete=models.CASCADE, related_name='instancias')
     comision = models.ForeignKey('Comision', on_delete=models.CASCADE, related_name='clases')
-    perfil_usuario = models.ForeignKey('PerfilUsuario', on_delete=models.SET_NULL, null=True, blank=True, related_name='clases_dictadas')  # profesor o tutor asignado a la clase
+    # perfil_usuario = models.ForeignKey('PerfilUsuario', on_delete=models.SET_NULL, null=True, blank=True, related_name='clases_dictadas')  # profesor o tutor asignado a la clase
 
     ### Info personalizada por comisión y clase ###
     fecha = models.DateField(null=True, blank=True)
@@ -294,21 +294,21 @@ from django.utils import timezone
 class AsistenciaClase(models.Model):
     estudiante = models.ForeignKey('DatosDeEstudiantes', on_delete=models.CASCADE)
     clase = models.ForeignKey('Clase', on_delete=models.CASCADE)
+    comision = models.ForeignKey('Comision', on_delete=models.CASCADE)
     fecha_marcada = models.DateTimeField(auto_now_add=True)
 
-    # Nuevos campos
+    # Campos para guardar info redundante
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     nombre_usuario = models.CharField(max_length=150)
     curso = models.CharField(max_length=200)
-    comision = models.CharField(max_length=10)
     nombre_clase = models.CharField(max_length=200)
     fecha_clase = models.DateField()
     horario_inicio = models.TimeField()
     horario_fin = models.TimeField()
 
     class Meta:
-        unique_together = ('estudiante', 'clase')
+        unique_together = ('estudiante', 'clase', 'comision')
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} - Clase {self.nombre_clase} - Presente"
@@ -321,14 +321,17 @@ class AsistenciaClase(models.Model):
         self.nombre_clase = self.clase.nombre_clase
 
         from plataforma.models import ClaseComision
-        cc = ClaseComision.objects.filter(clase=self.clase).first()
+
+        if self.comision:
+            cc = ClaseComision.objects.filter(clase=self.clase, comision=self.comision).first()
+        else:
+            cc = None
+
         if cc:
-            self.comision = str(cc.comision.numero_comision) if cc.comision else "-"
             self.fecha_clase = cc.fecha
             self.horario_inicio = cc.horario
             self.horario_fin = cc.hora_fin
         else:
-            self.comision = "-"
             self.fecha_clase = timezone.now().date()
             self.horario_inicio = timezone.now().time()
             self.horario_fin = timezone.now().time()
@@ -336,9 +339,6 @@ class AsistenciaClase(models.Model):
     def save(self, *args, **kwargs):
         self.guardar_detalles()
         super().save(*args, **kwargs)
-
-
-# fin del codigo 
 
 
 ######################################################################################################
@@ -371,11 +371,12 @@ from django.db import models
 class PuntajeQuiz(models.Model):
     estudiante = models.ForeignKey('DatosDeEstudiantes', on_delete=models.CASCADE)
     clase = models.ForeignKey('Clase', on_delete=models.CASCADE)
+    comision = models.ForeignKey('Comision', on_delete=models.CASCADE)  # ✅ NUEVO CAMPO
     puntaje_inicial = models.IntegerField(default=0)
     puntaje_maximo = models.IntegerField(default=0)
 
     class Meta:
-        unique_together = ('estudiante', 'clase')
+        unique_together = ('estudiante', 'clase', 'comision')  # ✅ prevenir duplicados por comisión
 
 
 #####################################################################################

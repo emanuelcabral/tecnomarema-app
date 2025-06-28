@@ -179,7 +179,11 @@ body{
             <p>{{ clase.nombre_clase }}</p>
           </div>
           <div class="hub-card-footer">
-            <a href="{% url 'quiz_por_clase' clase.id %}" class="hub-button">Jugar Quiz</a>
+            {% comment %} <a href="{% url 'quiz_por_clase' clase.id %}" class="hub-button">Jugar Quiz</a> {% endcomment %}
+            {% comment %} <a href="{% url 'quiz_por_clase' clase.id %}?comision_id={{ comision.id_comision }}" class="hub-button">Jugar Quiz</a>  <!-- #linea corregida --> {% endcomment %}
+            <a href="{% url 'quiz_por_clase' clase.id %}?comision={{ comision.numero_comision }}" class="hub-button"> Jugar Quiz</a>
+
+
           </div>
         </article>
       {% empty %}

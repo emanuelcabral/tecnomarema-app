@@ -105,7 +105,11 @@
       {% endif %}
     </div>
 
-    <a href="{% url 'hub_de_quizzes' clase.curso.nombre_curso %}" class="btn-volver">Volver al centro de quizzes</a>
+    {% comment %} <a href="{% url 'hub_de_quizzes' curso_id comision_id estudiante_id %}" class="btn-volver">Volver al centro de quizzes</a> {% endcomment %}
+    <a href="{% url 'hub_de_quizzes' curso_id comision_id estudiante_id %}" class="btn-volver">
+  Volver al centro de quizzes
+</a>
+
   </div>
 
 </body>
