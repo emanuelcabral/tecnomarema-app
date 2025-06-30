@@ -116,6 +116,8 @@
       padding: 20px;
     }
   
+
+
     .btn-valorar {
       background-color: #cf30ff;  /* Fucsia por defecto */
       color: #fff;
@@ -138,9 +140,12 @@
       box-shadow: 0 6px 12px rgba(18, 246, 147, 0.4);
     }
 
+
     /* navbar inicio */
+
+
         /* NAVBAR BASE */
-    .navbar {
+        .navbar {
       background-color: #111;
       position: relative;
       z-index: 10;
@@ -307,6 +312,8 @@
   
   /* submenu fin */
 
+
+
   .asistencia-badge {
   background-color: #cf30ff;
   color: #fff;
@@ -340,6 +347,8 @@
   background-color: #0cd680;
   transform: translateY(-2px);
 }
+
+
 
     .btn-marcar {
       background-color: #12f693;
@@ -394,6 +403,7 @@
   color: #12f693;
 }
 
+
   /* info de porcentaje de asistencia - fin */
 
   .btn-quizzes {
@@ -414,14 +424,16 @@
   transform: scale(1.05);
   box-shadow: 0 0px 14px #cf30ff;
 }
+
+
     
-</style>
+  </style>
 </head>
+
 <body>
 
 <script>
   const cursoID = "{{ comision.id_curso.nombre_curso }}";
-  const cursoID_valoracion = "{{ comision.id_curso.id_curso }}";
 </script>
 
 <!-- <p style="color: yellow;">{{ comision.id_curso.id }}</p> -->
@@ -528,6 +540,7 @@
       <p id="mensaje-curso" class="mt-3" style="color: #12f693; border: 1px solid #12f693; padding: 20px;border-radius: 10px;background-color: #222222;"></p>
     </div>
 
+
     <!-- sub-menu inicia -->
     <div class="col-md-4 sub-menu atencion">
 
@@ -538,6 +551,7 @@
 </div>
 
     </div>
+
       <!-- <div class="asistencia-box">
         <div class="titulo">Quizzes</div>
         <div class="porcentaje">85%</div>
@@ -575,6 +589,7 @@
 
   </div>
 
+
   <!-- Layout de clases y contenido -->
   <div class="row mt-5">
   <!-- Lista de clases a la izquierda -->
@@ -599,9 +614,7 @@
 
       <!-- ASISTENCIA (solo desde JS ahora, se eliminó la logica de Django para evitar conflictos) -->
 
-        <a href="{% url 'valoracion_alumno' curso_id=curso.id_curso comision_id=comision.id_comision estudiante_id=estudiante.id_estudiante numero_clase=clase.numero_clase %}" class="btn-valorar">
-          Valorar clase ⭐
-        </a>
+        <a href="{% url 'valoracion_alumno' clase.id %}" class="btn-valorar mt-2">Valorar clase ⭐</a>
 
         <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
         {% if cc.link %}
@@ -626,17 +639,18 @@
           <p>Clase grabada aún no disponible</p>
         {% endif %}
 
-        <p class="mt-4">
-          <strong class="badge badge-marema me-2">Quizzes:</strong>
-        </p>
+<p class="mt-4">
+  <strong class="badge badge-marema me-2">Quizzes:</strong>
+</p>
 
-        {% if curso and curso.id and comision and alumno_id %}
-          <a href="{% url 'hub_de_quizzes' curso.id comision.id alumno_id %}" class="btn btn-quizzes">
-            Ir a Quizzes 🏆
-          </a>
-        {% else %}
-          <p class="text-danger">Error: datos insuficientes para acceder a los quizzes.</p>
-        {% endif %}
+{% if curso and curso.id and comision and alumno_id %}
+  <a href="{% url 'hub_de_quizzes' curso.id comision.id alumno_id %}" class="btn btn-quizzes">
+    Ir a Quizzes 🏆
+  </a>
+{% else %}
+  <p class="text-danger">Error: datos insuficientes para acceder a los quizzes.</p>
+{% endif %}
+
 
 
         <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
@@ -644,6 +658,7 @@
           <li><a href="#" target="_blank">Documento guía</a></li>
           <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
         </ul>
+
 
       {% endwith %}
     {% endwith %}
@@ -690,9 +705,7 @@
         horario: "{{ cc.horario|default:'Horario por definir' }}",
         link: "{{ cc.link|escapejs|default:'' }}",
         ppt: "{{ clase.ppt|escapejs|default:'' }}",
-        video: "{{ cc.video|escapejs|default:'' }}",
-        numero_clase: "{{ clase.numero_clase }}"
-
+        video: "{{ cc.video|escapejs|default:'' }}"
       }{% if not forloop.last %},{% endif %}
       {% endwith %}
     {% endfor %}
@@ -748,11 +761,12 @@ function mostrarClase(index) {
       asistenciaHTML = `<span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>`;
     } else if (dentroFranja) {
       asistenciaHTML = `
-    <form class="form-marcar-presente d-inline ms-2 d-flex justify-content-end"
-          data-clase-id="${clase.id}">
-      <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-      <button type="submit" class="btn btn-marcar btn-sm mt-2">Marcar presente</button>
-    </form>
+<form class="form-marcar-presente d-inline ms-2 d-flex justify-content-end"
+      data-clase-id="${clase.id}">
+  <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+  <button type="submit" class="btn btn-marcar btn-sm mt-2">Marcar presente</button>
+</form>
+
 
       `;
     } else if (fueraFranja) {
@@ -766,7 +780,7 @@ function mostrarClase(index) {
       ${asistenciaHTML}
 
       <p class="mt-3"><strong class="badge badge-marema me-2">Valoracion de la clase:</strong></p>
-      <a href="/valoracion_alumno/${cursoID_valoracion}/comision/${comision_id}/estudiante/${alumno_id}/valoracion/${clase.numero_clase}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>
+      <a href="/valoracion_alumno/${clase.id}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>
 
       <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
       ${clase.link ? `<a href="${clase.link}" target="_blank" class="btn-valorar" style="text-decoration:none; text-align:center">
@@ -780,7 +794,10 @@ function mostrarClase(index) {
       ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
 
       <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
-      <a href="{% url 'hub_de_quizzes' curso.id_curso comision.id_comision estudiante.id_estudiante %}" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
+<a href="{% url 'hub_de_quizzes' curso.id_curso comision.id_comision estudiante.id_estudiante %}" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
+
+
+
 
       <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
       <ul>
@@ -794,6 +811,7 @@ function mostrarClase(index) {
     mostrarClase(0);
   });
 </script>
+
 
 <!-- mensaje de inicio, proceso y fin de cursada /// inicia//// -->
 <script>
@@ -873,6 +891,7 @@ function mostrarClase(index) {
     }
   });
 </script>
+
 <!-- modal fin -->
 <!-- codigo para que recargue correctamente y tenga en cuenta los presentes - inicia -->
 <script>
