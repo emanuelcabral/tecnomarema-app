@@ -531,7 +531,6 @@
           </div>
         </div>
       </div>
-        
     </div>
   </div>
 
@@ -547,10 +546,16 @@
 
     <div class="asistencia-box">
       <div class="titulo">Asistencia</div>
-      <div class="porcentaje">
-        {{ asistencias_en_comision }}/{{ total_clases_comision }}
-      </div>
+<div class="porcentaje">
+  {{ asistencias_en_comision }}/{{ total_clases_comision }}
+</div>
+
     </div>
+
+      <!-- <div class="asistencia-box">
+        <div class="titulo">Quizzes</div>
+        <div class="porcentaje">85%</div>
+      </div> -->
 
       <div class="asistencia-box">
         <div class="titulo">Quizzes</div>
@@ -582,7 +587,6 @@
 
     <a href="{% url 'chat_general' %}">chat</a>
 
-
   </div>
 
 
@@ -603,22 +607,18 @@
 <div class="col-md-8">
   <div id="contenido-clase" class="contenido-clase">
     {% with clase=clases.0 %}
-      {% with cc=clasescomision|get_item:clase.id %}
+      {% with clasescomision.clase.id as cc %}
         <h4>Clase {{ clase.numero_clase }} - {{ clase.nombre_clase }}</h4>
-        <span class="badge-fecha p-1 rounded">
-          {{ cc.fecha|date:"j F Y"|default:"Fecha por definir" }}
-        </span>
-        <span class="badge-horario p-1 rounded">
-          {{ cc.horario|default:"Horario por definir" }} {{ cc.hora_fin|default:"Horario por definir" }}
-        </span>
+        <span class="badge-fecha p-1 rounded">{{ cc.fecha|date:"j F Y"|default:"Fecha por definir" }}</span>
+        <span class="badge-horario p-1 rounded">{{ cc.horario|default:"Horario por definir" }} {{ cc.hora_fin|default:"Horario por definir" }}</span>
 
-        <!-- ASISTENCIA (solo desde JS ahora, se eliminó la lógica de Django para evitar conflictos) -->
+      <!-- ASISTENCIA (solo desde JS ahora, se eliminó la logica de Django para evitar conflictos) -->
 
         <a href="{% url 'valoracion_alumno' clase.id %}" class="btn-valorar mt-2">Valorar clase ⭐</a>
 
         <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
         {% if cc.link %}
-          <a href="{{ cc.link }}" target="_blank" class="btn-valorar">
+          <a href="https://meet.jit.si/{{ cc.link }}" target="_blank" class="btn-valorar">
             <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
           </a>
         {% else %}
@@ -639,12 +639,18 @@
           <p>Clase grabada aún no disponible</p>
         {% endif %}
 
-        <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
-        {% if comision.id_curso %}
-          <a href="/curso/{{ comision.id_curso.nombre_curso|urlencode }}/quizzes/" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
-        {% else %}
-          <p class="text-danger">Error: curso no asignado a la comisión.</p>
-        {% endif %}
+<p class="mt-4">
+  <strong class="badge badge-marema me-2">Quizzes:</strong>
+</p>
+
+{% if curso and curso.id and comision and alumno_id %}
+  <a href="{% url 'hub_de_quizzes' curso.id comision.id alumno_id %}" class="btn btn-quizzes">
+    Ir a Quizzes 🏆
+  </a>
+{% else %}
+  <p class="text-danger">Error: datos insuficientes para acceder a los quizzes.</p>
+{% endif %}
+
 
 
         <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
@@ -652,12 +658,13 @@
           <li><a href="#" target="_blank">Documento guía</a></li>
           <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
         </ul>
+
+
       {% endwith %}
     {% endwith %}
   </div>
 </div>
 <!-- Contenido dinámico a la derecha fin -->
-
 
   </div>
 </div>
@@ -676,10 +683,12 @@
 </script>
 
 <script>
-  const csrfToken = "{{ csrf_token }}";
+  // Variables que tenés que tener definidas antes:
+  const comision_id = "{{ comision.id }}";  // desde Django template
+  const alumno_id = "{{ request.session.usuario_id }}"; // o como tengas el id del alumno
+  const csrfToken = "{{ csrf_token }}"; // tu token CSRF
+  const cursoID = "{{ comision.id_curso.id }}"; // o el campo que tengas para curso
 </script>
-
-
 
 <script>
   const clasesData = [
@@ -703,17 +712,20 @@
   ];
 
 function mostrarClase(index) {
+
+  const comision_id = "{{ comision.id_comision }}";
+  const alumno_id = "{{ request.session.usuario_id }}";
+  const csrfToken = "{{ csrf_token }}";
+
   const clase = clasesData[index];
   const contenidoDiv = document.getElementById('contenido-clase');
 
-  if (!clase) {
-    contenidoDiv.innerHTML = `<p class="text-danger">⚠️ No se pudo cargar esta clase.</p>`;
-    return;
-  }
-
+  // ✅ Usamos hora local en vez de UTC
   const hoyDateObj = new Date();
-  const hoy = hoyDateObj.toISOString().split('T')[0];
-  const horaActual = hoyDateObj.toTimeString().slice(0, 5);
+  const hoy = hoyDateObj.getFullYear() + "-" +
+              String(hoyDateObj.getMonth() + 1).padStart(2, '0') + "-" +
+              String(hoyDateObj.getDate()).padStart(2, '0');
+  const horaActual = new Date().toTimeString().slice(0, 5);
 
   function horaEnMinutos(hora) {
     if (!hora || !hora.includes(":")) return null;
@@ -725,65 +737,75 @@ function mostrarClase(index) {
   const inicioMin = horaEnMinutos(clase.hora_inicio);
   const finMin = horaEnMinutos(clase.hora_fin);
 
-  let dentroFranja = false;
-  let fueraFranja = false;
+    let dentroFranja = false;
+    let fueraFranja = false;
 
-  if (clase.fecha_raw === hoy && inicioMin !== null && finMin !== null) {
-    const margenAntes = inicioMin - 10;
-    const margenDespues = finMin + 30;
-    if (ahoraMin >= margenAntes && ahoraMin <= margenDespues) {
-      dentroFranja = true;
-    } else if (ahoraMin > margenDespues) {
-      fueraFranja = true;
+    if (clase.fecha_raw === hoy && inicioMin !== null && finMin !== null) {
+      const margenAntes = inicioMin - 10;
+      const margenDespues = finMin + 30;
+
+      if (ahoraMin >= margenAntes && ahoraMin <= margenDespues) {
+        dentroFranja = true;
+      } else if (ahoraMin > margenDespues) {
+        fueraFranja = true;
+      }
+    } else {
+      if (clase.fecha_raw < hoy) {
+        fueraFranja = true;
+      }
     }
-  } else {
-    if (clase.fecha_raw < hoy) fueraFranja = true;
-  }
 
-  let asistenciaHTML = "";
-  if (clase.ya_presente === true || clase.ya_presente === "true") {
-    asistenciaHTML = `<span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>`;
-  } else if (dentroFranja) {
-    asistenciaHTML = `
-      <form method="post" action="/marcar_presente/${clase.id}/" class="d-inline ms-2 d-flex justify-content-end">
-        <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
-        <button class="btn btn-marcar btn-sm mt-2" type="submit">Marcar presente</button>
-      </form>
+    let asistenciaHTML = "";
+
+    if (clase.ya_presente === true || clase.ya_presente === "true") {
+      asistenciaHTML = `<span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>`;
+    } else if (dentroFranja) {
+      asistenciaHTML = `
+<form class="form-marcar-presente d-inline ms-2 d-flex justify-content-end"
+      data-clase-id="${clase.id}">
+  <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+  <button type="submit" class="btn btn-marcar btn-sm mt-2">Marcar presente</button>
+</form>
+
+
+      `;
+    } else if (fueraFranja) {
+      asistenciaHTML = `<span class="badge ms-2" style="background-color:#cf30ff;">Ausente</span>`;
+    }
+
+    contenidoDiv.innerHTML = `
+      <h4>${clase.titulo}</h4>
+      <span class="badge-fecha p-1 rounded">${clase.fecha}</span>
+      <span class="badge-horario p-1 rounded">${clase.horario} a ${clase.hora_fin} hs Arg.</span>
+      ${asistenciaHTML}
+
+      <p class="mt-3"><strong class="badge badge-marema me-2">Valoracion de la clase:</strong></p>
+      <a href="/valoracion_alumno/${clase.id}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>
+
+      <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
+      ${clase.link ? `<a href="${clase.link}" target="_blank" class="btn-valorar" style="text-decoration:none; text-align:center">
+        <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
+      </a>` : `<p>Clase en vivo aún no disponible</p>`}
+
+      <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
+      ${clase.ppt ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>` : `<p>Material aún no disponible</p>`}
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
+      ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
+<a href="{% url 'hub_de_quizzes' curso.id_curso comision.id_comision estudiante.id_estudiante %}" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
+
+
+
+
+      <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
+      <ul>
+        <li><a href="#" target="_blank">Documento guía</a></li>
+        <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
+      </ul>
     `;
-  } else if (fueraFranja) {
-    asistenciaHTML = `<span class="badge ms-2" style="background-color:#cf30ff;">Ausente</span>`;
   }
-
-  contenidoDiv.innerHTML = `
-    <h4>${clase.titulo}</h4>
-    <span class="badge-fecha p-1 rounded">${clase.fecha}</span>
-    <span class="badge-horario p-1 rounded">${clase.horario} a ${clase.hora_fin} hs Arg.</span>
-    ${asistenciaHTML}
-
-    <p class="mt-3"><strong class="badge badge-marema me-2">Valoracion de la clase:</strong></p>
-    <a href="/valoracion_alumno/${clase.id}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>
-
-    <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
-    ${clase.link ? `<a href="${clase.link}" target="_blank" class="btn-valorar" style="text-decoration:none; text-align:center">
-      <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
-    </a>` : `<p>Clase en vivo aún no disponible</p>`}
-
-    <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
-    ${clase.ppt ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>` : `<p>Material aún no disponible</p>`}
-
-    <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
-    ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
-
-    <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
-    <a href="/curso/${cursoID}/quizzes/" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
-
-    <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
-    <ul>
-      <li><a href="#" target="_blank">Documento guía</a></li>
-      <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
-    </ul>
-  `;
-}
 
   document.addEventListener('DOMContentLoaded', () => {
     mostrarClase(0);
@@ -841,8 +863,6 @@ function mostrarClase(index) {
 </script>
 <!-- mensaje de inicio, proceso y fin de cursada /// fin//// -->
 
-
-
 <!-- modal inicia -->
 <!-- MODAL DE CONFIRMACIÓN DE PRESENTE -->
 <div class="modal fade" id="modalPresente" tabindex="-1" aria-labelledby="modalPresenteLabel" aria-hidden="true">
@@ -872,10 +892,69 @@ function mostrarClase(index) {
   });
 </script>
 
-
-
 <!-- modal fin -->
+<!-- codigo para que recargue correctamente y tenga en cuenta los presentes - inicia -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.body.addEventListener('submit', async function (e) {
+      if (!e.target.matches('.form-marcar-presente')) return;
 
+      e.preventDefault();
+
+      const form = e.target;
+      const claseId = form.dataset.claseId;
+      const csrfToken = form.querySelector('input[name="csrfmiddlewaretoken"]').value;
+      const comisionId = "{{ comision.id_comision }}";
+      const alumnoId = "{{ request.session.usuario_id }}";
+
+      try {
+        const response = await fetch(`/marcar_presente/${comisionId}/${claseId}/${alumnoId}/`, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": csrfToken,
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        });
+
+        const data = await response.json();
+
+        if (data.presente === true) {
+          // ✅ Mostrar modal
+          const modal = new bootstrap.Modal(document.getElementById('modalPresente'));
+          modal.show();
+
+          // ✅ Reemplazar el botón por badge
+          form.outerHTML = `<span class="badge ms-2" style="background-color:#12f693; color:#000;">Presente</span>`;
+
+          // ✅ Marcar en el array clasesData
+          const claseIndex = clasesData.findIndex(c => String(c.id) === String(claseId));
+          if (claseIndex !== -1) {
+            clasesData[claseIndex].ya_presente = true;
+          }
+
+          // ✅ ACTUALIZAR CONTADOR DE ASISTENCIA (en pantalla)
+          const contador = document.getElementById("contador-asistencia");
+          if (contador) {
+            const actual = parseInt(contador.textContent.trim());
+            if (!isNaN(actual)) {
+              contador.textContent = actual + 1;
+            }
+          }
+
+        } else if (data.ya_presente === true) {
+          alert("Ya habías marcado presente.");
+        } else {
+          alert("No se pudo marcar presente.");
+        }
+      } catch (err) {
+        console.error("Error al marcar presente:", err);
+        alert("Ocurrió un error inesperado. Intente de nuevo.");
+      }
+    });
+  });
+</script>
+
+<!-- codigo para que recargue correctamente y tenga en cuenta los presentes - fin -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

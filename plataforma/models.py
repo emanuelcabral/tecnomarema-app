@@ -239,11 +239,17 @@ class ValoracionAlumno(models.Model):
 
     id_estudiante = models.CharField(max_length=10)  # desde DatosDeEstudiantes
     id_usuario = models.CharField(max_length=10)     # desde PerfilUsuario
-
     nombre_usuario = models.CharField(max_length=50)  # desde sesión o editable por el usuario
 
     clase = models.ForeignKey(Clase, on_delete=models.CASCADE)
 
+    # CAMPOS NUEVOS – Snapshot del contexto de la clase valorada
+    curso_id = models.CharField(max_length=10, blank=True, null=True) # ID del curso (ej: '02')
+    curso_nombre = models.CharField(max_length=100, blank=True, null=True) # Nombre del curso (IA)
+    comision_id = models.CharField(max_length=10, blank=True, null=True) # Ej: '000002'
+    numero_clase = models.IntegerField(blank=True, null=True)
+    nombre_clase = models.CharField(max_length=100, blank=True, null=True)
+    #preguntas de la valoracion
     preferencia_clase = models.CharField(
         max_length=20,
         choices=[
@@ -258,11 +264,19 @@ class ValoracionAlumno(models.Model):
     plataforma = models.IntegerField()     # 1 a 10
     streaming = models.IntegerField()      # 1 a 10
     comentarios = models.TextField(blank=True, null=True)
-
+    #fecha y hora de la valoracion
     fecha_valoracion = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['curso_id']),
+            models.Index(fields=['comision_id']),
+            models.Index(fields=['id_estudiante']),
+            models.Index(fields=['numero_clase']),
+        ]
+
     def __str__(self):
-        return f"Valoración de {self.nombre_usuario} para Clase {self.clase.numero_clase}"
+        return f"{self.nombre_usuario} valoró {self.nombre_clase} de {self.curso_nombre} ({self.comision_id})"
     
 #######################################################################################################################################
 #------------------------La nueva tabla ClaseComision (detalla las variaciones de datos en diferentes comisiones)------------------####

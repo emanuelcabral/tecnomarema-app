@@ -665,30 +665,31 @@ def eliminar_foto(request):
 #------------------------------------------------------------------------#
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
-from .models import DatosDeEstudiantes, Clase, ValoracionAlumno
+from .models import DatosDeEstudiantes, Clase, Comision, Curso
 
-def mostrar_formulario_valoracion(request, clase_id):
+def mostrar_formulario_valoracion(request, curso_id, comision_id, estudiante_id, numero_clase):
     id_usuario = request.session.get('usuario_id')
     nombre_usuario = request.session.get('usuario_logueado')
 
     if not id_usuario or not nombre_usuario:
         return redirect('login')  # Por si alguien accede sin sesión activa
 
-    # DEBUG para chequear que la sesión esté bien
-    print("DEBUG SESSION usuario_id:", id_usuario)
-    print("DEBUG SESSION usuario_logueado:", nombre_usuario)
-
-    estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=id_usuario)
-    clase = get_object_or_404(Clase, id=clase_id)
+    # 🔎 Verificaciones
+    estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=estudiante_id)
+    curso = get_object_or_404(Curso, id_curso=curso_id)
+    comision = get_object_or_404(Comision, id_comision=comision_id, id_curso=curso)
+    clase = get_object_or_404(Clase, curso=curso, numero_clase=numero_clase)
 
     contexto = {
-        'id_estudiante': str(id_usuario),
-        'id_usuario': str(id_usuario),
-        'nombre_usuario': str(nombre_usuario),
+        'id_estudiante': estudiante_id,
+        'id_usuario': id_usuario,
+        'nombre_usuario': nombre_usuario,
         'clase': clase,
+        'curso_id': curso_id,
+        'comision_id': comision_id,
+        'numero_clase': numero_clase,
     }
-    return render(request, 'educativa/guardar_valoracion.html', contexto)
-
+    return render(request, 'educativa/valoracion_alumno.html', contexto)
 
 from django.shortcuts import redirect, get_object_or_404
 from .models import ValoracionAlumno, Clase
@@ -696,17 +697,11 @@ from django.utils import timezone
 
 def guardar_valoracion(request):
     if request.method == 'POST':
-        # id_estudiante = request.session.get('usuario_id')
-        # nombre_usuario = request.session.get('usuario_logueado')
-
-        # id_estudiante = request.POST.get('id_estudiante')
-        # nombre_usuario = request.POST.get('nombre_usuario')
-        # clase_id = request.POST.get('clase_id')
-
         id_estudiante = request.POST.get('id_estudiante')
         id_usuario = request.POST.get('id_usuario')
         nombre_usuario = request.POST.get('nombre_usuario')
         clase_id = request.POST.get('clase_id')
+        comision_id = request.POST.get('comision_id')  # 🔸 Asegurate que este campo venga en el formulario
 
         print("VALORES POST crudos:")
         print("id_estudiante:", id_estudiante)
@@ -719,8 +714,7 @@ def guardar_valoracion(request):
 
         clase = get_object_or_404(Clase, id=clase_id)
 
-
-                # 🟢 DEBUG: imprimir datos antes de guardar
+        # 🟢 DEBUG: imprimir datos antes de guardar
         print("Guardando valoración de:", nombre_usuario, "para clase:", clase_id)
         print("Preferencia:", request.POST.get('preferencia_clase', ''))
         print("Rol:", request.POST.get('rol_profe', ''))
@@ -729,25 +723,36 @@ def guardar_valoracion(request):
         print("Streaming:", request.POST.get('streaming', ''))
         print("Comentarios:", request.POST.get('comentarios', ''))
 
+
         ValoracionAlumno.objects.create(
             id_estudiante=id_estudiante,
-            id_usuario=id_estudiante,
+            id_usuario=id_usuario,
             nombre_usuario=nombre_usuario,
             clase=clase,
+
+            # NUEVOS CAMPOS (snapshot)
+            curso_id = clase.curso.id_curso,
+            curso_nombre = clase.curso.nombre_curso,
+            comision_id=comision_id,
+            numero_clase=clase.numero_clase,
+            nombre_clase=clase.nombre_clase,
+
+            # Valoración
             preferencia_clase=request.POST.get('preferencia_clase', ''),
             rol_profe=request.POST.get('rol_profe', ''),
             contenido=request.POST.get('contenido', ''),
             plataforma=request.POST.get('plataforma', ''),
             streaming=request.POST.get('streaming', ''),
             comentarios=request.POST.get('comentarios', ''),
+
+            # Fecha ajustada automáticamente (ya lo manejás con TIME_ZONE si hace falta)
             fecha_valoracion=timezone.now()
+
         )
 
         return redirect('agradecimiento')
 
     return redirect('home')
-
-
 
 
 #------------------------captura de datos de inscripcion--------------------------------------------#
