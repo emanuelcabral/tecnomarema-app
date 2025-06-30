@@ -694,6 +694,7 @@ def mostrar_formulario_valoracion(request, curso_id, comision_id, estudiante_id,
 from django.shortcuts import redirect, get_object_or_404
 from .models import ValoracionAlumno, Clase
 from django.utils import timezone
+from django.contrib import messages  # Para mostrar un mensaje opcional
 
 def guardar_valoracion(request):
     if request.method == 'POST':
@@ -703,41 +704,36 @@ def guardar_valoracion(request):
         clase_id = request.POST.get('clase_id')
         comision_id = request.POST.get('comision_id')  # 🔸 Asegurate que este campo venga en el formulario
 
-        print("VALORES POST crudos:")
-        print("id_estudiante:", id_estudiante)
-        print("id_usuario:", id_usuario)
-        print("nombre_usuario:", nombre_usuario)
-        print("clase_id:", clase_id)
-
-        if not id_estudiante or not nombre_usuario or not clase_id:
+        # Validación básica
+        if not id_estudiante or not nombre_usuario or not clase_id or not comision_id:
             return redirect('mis_cursos')
 
         clase = get_object_or_404(Clase, id=clase_id)
 
-        # 🟢 DEBUG: imprimir datos antes de guardar
-        print("Guardando valoración de:", nombre_usuario, "para clase:", clase_id)
-        print("Preferencia:", request.POST.get('preferencia_clase', ''))
-        print("Rol:", request.POST.get('rol_profe', ''))
-        print("Contenido:", request.POST.get('contenido', ''))
-        print("Plataforma:", request.POST.get('plataforma', ''))
-        print("Streaming:", request.POST.get('streaming', ''))
-        print("Comentarios:", request.POST.get('comentarios', ''))
+        # ❌ Chequear si ya existe una valoración para este estudiante, clase y comisión
+        ya_valoro = ValoracionAlumno.objects.filter(
+            id_estudiante=id_estudiante,
+            clase_id=clase_id,
+            comision_id=comision_id
+        ).exists()
 
+        if ya_valoro:
+            messages.warning(request, "Ya valoraste esta clase en esta comisión.")
+            return redirect('agradecimiento')
 
+        # ✅ Guardar valoración
         ValoracionAlumno.objects.create(
             id_estudiante=id_estudiante,
             id_usuario=id_usuario,
             nombre_usuario=nombre_usuario,
             clase=clase,
 
-            # NUEVOS CAMPOS (snapshot)
-            curso_id = clase.curso.id_curso,
-            curso_nombre = clase.curso.nombre_curso,
+            curso_id=clase.curso.id_curso,
+            curso_nombre=clase.curso.nombre_curso,
             comision_id=comision_id,
             numero_clase=clase.numero_clase,
             nombre_clase=clase.nombre_clase,
 
-            # Valoración
             preferencia_clase=request.POST.get('preferencia_clase', ''),
             rol_profe=request.POST.get('rol_profe', ''),
             contenido=request.POST.get('contenido', ''),
@@ -745,14 +741,13 @@ def guardar_valoracion(request):
             streaming=request.POST.get('streaming', ''),
             comentarios=request.POST.get('comentarios', ''),
 
-            # Fecha ajustada automáticamente (ya lo manejás con TIME_ZONE si hace falta)
             fecha_valoracion=timezone.now()
-
         )
 
         return redirect('agradecimiento')
 
     return redirect('home')
+
 
 
 #------------------------captura de datos de inscripcion--------------------------------------------#
@@ -1071,6 +1066,8 @@ from django.contrib import messages
 from .models import PerfilUsuario, Curso, Comision, Clase, ClaseComision, AsistenciaClase
 from .decorators import session_required
 from plataforma.models import EntregaProyecto
+from plataforma.models import ValoracionAlumno
+
 
 @session_required
 def curso_detalle_view(request, id_comision):
@@ -1122,15 +1119,27 @@ def curso_detalle_view(request, id_comision):
         comision=comision  # Aquí el objeto, no el número como string
     )
 
-
     clases_presentes_dict = {a.clase_id: True for a in asistencias}
     clases_presentes_ids = list(clases_presentes_dict.keys())
 
-    # 7.5. Obtener clases ya valoradas
-    valoradas = ValoracionAlumno.objects.filter(
-        id_estudiante=estudiante, clase__in=clases_del_curso
-    ).values_list('clase_id', flat=True)
-    clases_valoradas_ids = list(valoradas)
+
+    # 7.5. Obtener valoraciones hechas por el estudiante en esta comisión (filtrando también por comisión)
+    valoraciones = ValoracionAlumno.objects.filter(
+        id_estudiante=estudiante,
+        comision_id=comision.id_comision,  # filtro clave para que sea sólo la comisión actual
+        clase__in=clases_del_curso,
+    )
+
+    # Obtener lista de tuplas (clase_id, comision_id)
+    clases_valoradas_ids_y_comisiones = list(valoraciones.values_list('clase_id', 'comision_id'))
+
+    # Crear un set para búsqueda rápida en el template
+    valoraciones_combinadas = set(clases_valoradas_ids_y_comisiones)
+
+    # Opcional: lista sólo de ids de clases valoradas en esta comisión
+    clases_valoradas_ids = [clase_id for clase_id, _ in clases_valoradas_ids_y_comisiones]
+
+
 
     # 8. Calcular posibilidad de valorar
     ahora = timezone.now()
@@ -1162,6 +1171,7 @@ def curso_detalle_view(request, id_comision):
         comision=comision
     ).first()
 
+
     # 10. Render
     contexto = {
         'usuario': usuario,
@@ -1174,9 +1184,13 @@ def curso_detalle_view(request, id_comision):
         'clasescomision': clasecomision_dict,
         'clases_presentes_ids': clases_presentes_ids,
         'valoraciones_disponibles': valoraciones_disponibles,  # ✅ nuevo diccionario
+        "clases_valoradas_ids": clases_valoradas_ids, #se agrega
+        'clases_valoradas_ids_y_comisiones': clases_valoradas_ids_y_comisiones, #se agrega
+        'valoraciones_combinadas': valoraciones_combinadas, #se agrega
         "entrega_existente": entrega_existente,  # 👈 se está pasando
         'alumno_id': estudiante.id_estudiante,
     }
+    
 
     from django.db.models import Sum
     from plataforma.models import PuntajeQuiz
@@ -1983,3 +1997,64 @@ def toggle_destacar_mensaje(request):
     mensaje.destacado = not mensaje.destacado
     mensaje.save()
     return JsonResponse({'status': 'ok', 'destacado': mensaje.destacado})
+
+
+#####################################################################################
+###-------------------------filtrado de valoraciones------------------------------###
+#####################################################################################
+
+@session_required
+def valoraciones_filtradas(request, curso_id, comision_id):
+    clases = list(range(1, 22))  # Clases 1 a 21
+    resumen_clases = {}
+
+    for clase_num in clases:
+        valoraciones_clase = ValoracionAlumno.objects.filter(
+            clase__numero_clase=clase_num,
+            curso_id=curso_id,
+            comision_id=comision_id
+        )
+        total = valoraciones_clase.count()
+
+        conteo = valoraciones_clase.values('preferencia_clase') \
+                                   .annotate(cantidad=Count('preferencia_clase'))
+
+        votos = {'me_gusto': 0, 'mas_o_menos': 0, 'no_me_gusto': 0}
+        for item in conteo:
+            votos[item['preferencia_clase']] = item['cantidad']
+
+        def porcentaje(x):
+            return round((x / total) * 100) if total > 0 else 0
+
+        resumen_clases[clase_num] = {
+            'total': total,
+            'votos': votos,
+            'porcentajes': {
+                'me_gusto': porcentaje(votos['me_gusto']),
+                'mas_o_menos': porcentaje(votos['mas_o_menos']),
+                'no_me_gusto': porcentaje(votos['no_me_gusto']),
+            }
+        }
+
+    valoraciones = ValoracionAlumno.objects.filter(
+        curso_id=curso_id,
+        comision_id=comision_id
+    ).select_related('clase')
+
+    for v in valoraciones:
+        if v.preferencia_clase == 'me_gusto':
+            v.color_avatar = '#12f693'
+        elif v.preferencia_clase == 'mas_o_menos':
+            v.color_avatar = '#00f7ff'
+        else:
+            v.color_avatar = '#cf30ff'
+
+    contexto = {
+        'clases': clases,
+        'resumen_clases': resumen_clases,
+        'valoraciones': valoraciones,
+        'comision_id': comision_id,
+        'curso_id': curso_id,
+    }
+
+    return render(request, 'educativa/valoraciones.html', contexto)

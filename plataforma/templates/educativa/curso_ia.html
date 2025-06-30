@@ -414,6 +414,10 @@
   transform: scale(1.05);
   box-shadow: 0 0px 14px #cf30ff;
 }
+
+.color1{
+  color: #cf30ff;
+}
     
 </style>
 </head>
@@ -573,6 +577,14 @@
 
     <a href="{% url 'chat_general' %}">chat</a>
 
+    <!-- <a href="{% url 'valoraciones' %}">valoraciones</a> -->
+
+    {% if usuario.rol == 'profesor' %}
+      <a href="{% url 'valoraciones_filtradas' curso_id=comision.id_curso.id_curso comision_id=comision.id_comision %}">
+        Estadísticas de valoraciones 📊
+      </a>
+    {% endif %}
+
   </div>
 
   <!-- Layout de clases y contenido -->
@@ -594,7 +606,7 @@
     {% with clase=clases.0 %}
       {% with clasescomision.clase.id as cc %}
         <h4>Clase {{ clase.numero_clase }} - {{ clase.nombre_clase }}</h4>
-        <span class="badge-fecha p-1 rounded">{{ cc.fecha|date:"j F Y"|default:"Fecha por definir" }}</span>
+        <span class="badge-fecha p-1 rounded" id="fecha_clase">{{ cc.fecha|date:"j F Y"|default:"Fecha por definir" }}</span>
         <span class="badge-horario p-1 rounded">{{ cc.horario|default:"Horario por definir" }} {{ cc.hora_fin|default:"Horario por definir" }}</span>
 
       <!-- ASISTENCIA (solo desde JS ahora, se eliminó la logica de Django para evitar conflictos) -->
@@ -605,11 +617,11 @@
 
         <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
         {% if cc.link %}
-          <a href="https://meet.jit.si/{{ cc.link }}" target="_blank" class="btn-valorar">
+          <a href="{{ cc.link }}" target="_blank" class="btn-valorar" id="btn_clase" style="display:none;">
             <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
           </a>
         {% else %}
-          <p>Clase en vivo aún no disponible</p>
+          <p id="msg_no_disponible">Clase en vivo aún no disponible</p>
         {% endif %}
 
         <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
@@ -673,6 +685,15 @@
   const alumno_id = "{{ request.session.usuario_id }}"; // o como tengas el id del alumno
   const csrfToken = "{{ csrf_token }}"; // tu token CSRF
   const cursoID = "{{ comision.id_curso.id }}"; // o el campo que tengas para curso
+  const clasesValoradas = {{ clases_valoradas_ids|safe }};
+</script>
+
+<script>
+  const valoradasSet = new Set([
+    {% for clase_id, comision_id in valoraciones_combinadas %}
+      "{{ clase_id }}-{{ comision_id }}",
+    {% endfor %}
+  ]);
 </script>
 
 <script>
@@ -765,13 +786,37 @@ function mostrarClase(index) {
       <span class="badge-horario p-1 rounded">${clase.horario} a ${clase.hora_fin} hs Arg.</span>
       ${asistenciaHTML}
 
-      <p class="mt-3"><strong class="badge badge-marema me-2">Valoracion de la clase:</strong></p>
-      <a href="/valoracion_alumno/${cursoID_valoracion}/comision/${comision_id}/estudiante/${alumno_id}/valoracion/${clase.numero_clase}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>
+<p class="mt-3"><strong class="badge badge-marema me-2">Valoración de la clase:</strong></p>
+${
+  (() => {
+    const claseFecha = new Date(clase.fecha_raw);
+    const hoyFecha = new Date(hoy);
+    const clave = `${clase.id}-${comision_id}`; // clave única clase+comisión
+
+    // Rango válido: hoy >= claseFecha && hoy <= claseFecha + 7 días
+    const diferenciaEnMs = hoyFecha - claseFecha;
+    const diasPasados = diferenciaEnMs / (1000 * 60 * 60 * 24);
+
+    if (valoradasSet.has(clave)) {
+      return `<p class="badge bg-success text-dark">✅ Clase valorada</p>`;
+    } else if (diasPasados >= 0 && diasPasados <= 7) {
+      return `<a href="/valoracion_alumno/${cursoID_valoracion}/comision/${comision_id}/estudiante/${alumno_id}/valoracion/${clase.numero_clase}/" class="btn-valorar" style="text-decoration: none;text-align:center">Valorar clase ⭐</a>`;
+    } else if (diasPasados > 7) {
+      return `<p class="color1">⏳ Tiempo expirado para valorar esta clase.</p>`;
+    } else {
+      return `<p class="text-white">⭐ Podrás valorar esta clase el día que se dicte.</p>`;
+    }
+  })()
+}
 
       <p class="mt-3"><strong class="badge badge-marema me-2">Link a la clase en vivo:</strong></p>
-      ${clase.link ? `<a href="${clase.link}" target="_blank" class="btn-valorar" style="text-decoration:none; text-align:center">
-        <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
-      </a>` : `<p>Clase en vivo aún no disponible</p>`}
+      ${
+        clase.link && clase.fecha_raw === hoy
+          ? `<a href="${clase.link}" target="_blank" class="btn-valorar" style="text-decoration:none; text-align:center">
+              <i class="bi bi-camera-video"></i> Entrar a la clase en vivo
+            </a>`
+          : `<p>❌ Link de la Clase en vivo no disponible. Solo estará visible el día de la clase</p>`
+      }
 
       <p class="mt-3"><strong class="badge badge-marema me-2">Presentación:</strong></p>
       ${clase.ppt ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>` : `<p>Material aún no disponible</p>`}
@@ -845,8 +890,7 @@ function mostrarClase(index) {
 </script>
 <!-- mensaje de inicio, proceso y fin de cursada /// fin//// -->
 
-<!-- modal inicia -->
-<!-- MODAL DE CONFIRMACIÓN DE PRESENTE -->
+<!-- modal de confirmacion de presente inicia -->
 <div class="modal fade" id="modalPresente" tabindex="-1" aria-labelledby="modalPresenteLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" style="background-color: #111; border: 2px solid #12f693; color: #fff; box-shadow: 0 0 5px 5px #12f693;">
@@ -934,6 +978,18 @@ function mostrarClase(index) {
     });
   });
 </script>
+
+<!-- script para no permitir valoracion duplicada inicia -->
+<script>
+  // Recibe la lista de pares [clase_id, comision_id]
+  const clases_valoradas_ids_y_comisiones = {{ clases_valoradas_ids_y_comisiones|safe }};
+  
+  // Crear un Set con claves "claseId-comisionId" para búsqueda rápida
+  const valoradasSet = new Set(
+    clases_valoradas_ids_y_comisiones.map(([claseId, comisionId]) => `${claseId}-${comisionId}`)
+  );
+</script>
+<!-- script para no permitir valoracion duplicada fin -->
 
 <!-- codigo para que recargue correctamente y tenga en cuenta los presentes - fin -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
