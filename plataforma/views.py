@@ -2058,3 +2058,66 @@ def valoraciones_filtradas(request, curso_id, comision_id):
     }
 
     return render(request, 'educativa/valoraciones.html', contexto)
+
+
+##################################################################################
+###------------------------feedback de proyectos-------------------------------###
+##################################################################################
+from django.shortcuts import render, get_object_or_404
+from plataforma.models import EntregaProyecto, Comision, DatosDeEstudiantes
+from django.db.models import Q
+
+def ver_entregas_proyectos(request, curso_id, comision_id):
+    comision = get_object_or_404(Comision, id_comision=comision_id, id_curso__id_curso=curso_id)
+
+    entregas = EntregaProyecto.objects.filter(
+        comision=comision,
+        curso__id_curso=curso_id
+    ).select_related('estudiante', 'curso')
+
+    entregas_sin_corregir = entregas.filter(nota__isnull=True)
+    entregas_corregidas = entregas.filter(nota__isnull=False)
+
+    # Total de estudiantes cursando esa comisión
+    cantidad_alumnos = DatosDeEstudiantes.objects.filter(
+        Q(cursando1=comision) |
+        Q(cursando2=comision) |
+        Q(cursando3=comision) |
+        Q(cursando4=comision) |
+        Q(cursando5=comision) |
+        Q(cursando6=comision) |
+        Q(cursando7=comision) |
+        Q(cursando8=comision) |
+        Q(cursando9=comision)
+    ).count()
+
+    # Estadísticas de entregas
+    total_entregas = entregas.count()
+    aprobados = entregas_corregidas.filter(nota__gte=7).count()
+    desaprobados = entregas_corregidas.filter(nota__lt=7).count()
+
+    contexto = {
+        'comision': comision,
+        'entregas_sin_corregir': entregas_sin_corregir,
+        'entregas_corregidas': entregas_corregidas,
+        'cantidad_alumnos': cantidad_alumnos,
+        'total_entregas': total_entregas,
+        'aprobados': aprobados,
+        'desaprobados': desaprobados,
+    }
+    return render(request, 'educativa/entregas_de_proyectos.html', contexto)
+
+#-----------------------------------------------------------------------------
+
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404, redirect
+from .models import EntregaProyecto
+
+@require_POST
+def guardar_nota_feedback(request, entrega_id):
+    entrega = get_object_or_404(EntregaProyecto, id=entrega_id)
+    entrega.nota = request.POST.get("nota") or None
+    entrega.feedback = request.POST.get("feedback") or ""
+    entrega.save()
+    return redirect(request.META.get("HTTP_REFERER", "/"))
+

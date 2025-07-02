@@ -3,16 +3,162 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Entrega de Proyecto Final</title>
   <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   <style>
+
+
+/* ******************************************************************
+   Navbar - Estilos Generales
+******************************************************************* */
+
+.navbar {
+  background-color: #111;
+  position: relative;
+  z-index: 10;
+  border-bottom: 3px solid transparent;
+  font-size: 1.2rem;
+}
+
+/* Efecto Neón Cyberpunk */
+.navbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+  animation: neonGlow 4s linear infinite;
+  background-size: 200% auto;
+}
+
+@keyframes neonGlow {
+  0% { background-position: 0% }
+  100% { background-position: 100% }
+}
+
+/* ******************************************************************
+   Navbar - Marca del Sitio (Logo)
+******************************************************************* */
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.navbar-brand span.white {
+  color: #fff;
+}
+
+.navbar-brand span.green {
+  color: #12f693;
+}
+
+.navbar-brand img {
+  height: 30px;
+  margin-left: 10px;
+}
+
+/* ******************************************************************
+   Navbar - Enlaces de Navegación
+******************************************************************* */
+
+.navbar-nav .nav-link {
+  color: #fff !important;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #12f693 !important;
+}
+
+.nav-link.active {
+  border-bottom: 2px solid #12f693;
+}
+
+/* ******************************************************************
+   Navbar - Botones Personalizados
+******************************************************************* */
+
+/* Botón Login */
+.btn-login {
+  margin-left: 10px;
+  background-color: #12f693;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-login:hover {
+  background-color: #0cd680;
+  color: #000;
+}
+
+/* Botón Inscripción */
+.btn-inscripcion {
+  margin-left: 10px;
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-inscripcion:hover {
+  background-color: #a120cc;
+  color: #fff;
+}
+
+/* ******************************************************************
+   Navbar - Menú Hamburguesa
+******************************************************************* */
+
+.navbar-toggler {
+  border-color: #12f693;
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ******************************************************************
+   Barra de Bienvenida
+******************************************************************* */
+
+.barra-bienvenida {
+  background-color: #121212;
+  color: #12f693;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #12f693;
+  position: relative;
+  z-index: 99;
+}
+
+
+
     body {
       background-color: #111;
       color: white;
       font-family: Arial, sans-serif;
-      padding: 40px 20px;
     }
 
     .container {
@@ -22,6 +168,7 @@
       padding: 40px;
       border-radius: 15px;
       box-shadow: 0 0 20px #12f693;
+      margin: 40px 20px;
     }
 
     h1 {
@@ -95,7 +242,51 @@
 </head>
 <body>
 
-<div class="container">
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.id_comision %}">Volver al curso</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+        <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+            </button>
+        </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+</div>
+
+<div class="container mt-4 mx-auto d-block">
     <h1>Entrega de Proyecto Final</h1>
 
 <!-- CONSIGNA -->
@@ -104,11 +295,18 @@
   <p style="padding: 20px;">
     {{ comision.id_curso.consigna_proyecto|default:"Aún no se cargó la consigna."|safe }}
   </p>
-  <p style="background-color: #cf30ff; border-radius: 12px;">
-    <strong style="color: rgb(0, 0, 0);">📌 ATENCION A LA FECHA DE ENTREGA!!! ⚠</strong><br>
-    <span class="badge badge-marema me-2">📆 Inicio de entrega:</span> {{ comision.fecha_fin|date:"j F Y" }}<br>
-    <span class="badge badge-marema me-2">⏳ Cierre de entrega:</span> {{ fecha_limite|date:"j F Y" }} a las 23:59 hs
-  </p>
+<div class="rounded p-3" style="background-color: #cf30ff; border-radius: 12px;">
+  <strong class="text-dark d-block mb-2">📌 ATENCIÓN A LA FECHA DE ENTREGA!!! ⚠</strong>
+  <div>
+    <span class="badge bg-light text-dark me-2">📆 Inicio de entrega:</span>
+    {{ comision.fecha_fin|date:"j F Y" }}
+  </div>
+  <div>
+    <span class="badge bg-light text-dark me-2">⏳ Cierre de entrega:</span>
+    {{ fecha_limite|date:"j F Y" }} a las 23:59 hs
+  </div>
+</div>
+
 
 </section>
 
@@ -128,7 +326,7 @@
   </div>
 
   <!-- DERECHA: Feedback -->
-  <div class="col-md-6">
+  <div class="col-md-6 mt-4 mt-md-0">
     <div class="p-4" style="background-color: #333; border-radius: 12px;">
       <h5 style="color: #12f693;">💬 Feedback del Profesor</h5>
       {% if entrega_existente.feedback %}
@@ -247,8 +445,6 @@
     }
   });
 </script>
-
-
 
 
 </body>

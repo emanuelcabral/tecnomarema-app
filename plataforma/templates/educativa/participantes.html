@@ -5,95 +5,317 @@
     <meta charset="UTF-8" />
     <title>Participantes</title>
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
     <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1rem;
-        }
-        h1 {
-            color: #12f693;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            text-align: center;
-        }
-        h2 {
-            text-align: center;
-            color: #12f693cc;
-            margin-bottom: 2rem;
-            font-weight: 600;
-            font-size: 1.8rem;
-        }
-        .count {
-            text-align: center;
-            font-size: 1.2rem;
-            color: #aaa;
-            margin-bottom: 3rem;
-        }
-        section {
-            margin-bottom: 3rem;
-            border: 2px solid #12f693;
-            border-radius: 10px;
-            padding: 20px;
-            background-color: #111;
-        }
-        section h3 {
-            color: #12f693;
-            font-size: 1.6rem;
-            margin-bottom: 1.5rem;
-            border-bottom: 2px solid #12f693;
-            padding-bottom: 0.3rem;
-            text-align: center;
-            /* max-width: max-content; */
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1.8rem;
-            justify-items: center;
-        }
-        .card {
-            background-color: #111;
-            border: 1px solid #12f69333;
-            border-radius: 15px;
-            padding: 1rem;
-            width: 140px;
-            text-align: center;
-            transition: border-color 0.3s ease, transform 0.2s ease;
-            box-shadow: 0 0 6px #12f69322;
-            cursor: default;
-        }
-        .card:hover {
-            border-color: #12f693;
-            transform: scale(1.05);
-            box-shadow: 0 0 12px #12f693aa;
-        }
-        .avatar {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2.5px solid #12f693;
-            /* margin-bottom: 2px; */
-            background-color: #222;
-        }
-        .name {
-            font-weight: 600;
-            font-size: 1rem;
-            color: #e0ffe9;
-            word-break: break-word;
-            min-height: 2.4rem;
-        }
+
+/* ******************************************************************
+   Navbar - Estilos Generales
+******************************************************************* */
+
+.navbar {
+  background-color: #111;
+  position: relative;
+  z-index: 10;
+  border-bottom: 3px solid transparent;
+  font-size: 1.2rem;
+}
+
+/* Efecto Neón Cyberpunk */
+.navbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+  animation: neonGlow 4s linear infinite;
+  background-size: 200% auto;
+}
+
+@keyframes neonGlow {
+  0% { background-position: 0% }
+  100% { background-position: 100% }
+}
+
+/* ******************************************************************
+   Navbar - Marca del Sitio (Logo)
+******************************************************************* */
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.navbar-brand span.white {
+  color: #fff;
+}
+
+.navbar-brand span.green {
+  color: #12f693;
+}
+
+.navbar-brand img {
+  height: 30px;
+  margin-left: 10px;
+}
+
+/* ******************************************************************
+   Navbar - Enlaces de Navegación
+******************************************************************* */
+
+.navbar-nav .nav-link {
+  color: #fff !important;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #12f693 !important;
+}
+
+.nav-link.active {
+  border-bottom: 2px solid #12f693;
+}
+
+/* ******************************************************************
+   Navbar - Botones Personalizados
+******************************************************************* */
+
+/* Botón Login */
+.btn-login {
+  margin-left: 10px;
+  background-color: #12f693;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-login:hover {
+  background-color: #0cd680;
+  color: #000;
+}
+
+/* Botón Inscripción */
+.btn-inscripcion {
+  margin-left: 10px;
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-inscripcion:hover {
+  background-color: #a120cc;
+  color: #fff;
+}
+
+/* ******************************************************************
+   Navbar - Menú Hamburguesa
+******************************************************************* */
+
+.navbar-toggler {
+  border-color: #12f693;
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ******************************************************************
+   Barra de Bienvenida
+******************************************************************* */
+
+.barra-bienvenida {
+  background-color: #121212;
+  color: #12f693;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #12f693;
+  position: relative;
+  z-index: 99;
+}
+
+/* ******************************************************************
+   Estilos Generales del Sitio
+******************************************************************* */
+
+body {
+  background-color: #000;
+  background-image: url("{% static 'img/fondo1.svg' %}");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+h1 {
+  color: #12f693;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+h2 {
+  text-align: center;
+  color: #12f693cc;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  font-size: 1.8rem;
+}
+
+.count {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #aaa;
+  margin-bottom: 3rem;
+}
+
+/* ******************************************************************
+   Secciones y Contenido
+******************************************************************* */
+
+section {
+  margin-bottom: 3rem;
+  border: 2px solid #12f693;
+  border-radius: 10px;
+  padding: 20px;
+  background-color: #111;
+}
+
+section h3 {
+  color: #12f693;
+  font-size: 1.6rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #12f693;
+  padding-bottom: 0.3rem;
+  text-align: center;
+}
+
+/* ******************************************************************
+   Grid y Tarjetas
+******************************************************************* */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.8rem;
+  justify-items: center;
+}
+
+.card {
+  background-color: #111;
+  border: 1px solid #12f69333;
+  border-radius: 15px;
+  padding: 1rem;
+  width: 140px;
+  text-align: center;
+  transition: border-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 0 6px #12f69322;
+  cursor: default;
+}
+
+.card:hover {
+  border-color: #12f693;
+  transform: scale(1.05);
+  box-shadow: 0 0 12px #12f693aa;
+}
+
+/* ******************************************************************
+   Avatares y Nombres
+******************************************************************* */
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #12f693;
+  background-color: #222;
+}
+
+.name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #e0ffe9;
+  word-break: break-word;
+  min-height: 2.4rem;
+}
+
+/* ****************************** Fin ******************************** */
+
     </style>
 </head>
 <body>
+
+{% comment %} barra de navegavion inicia {% endcomment %}
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.id_comision %}">Volver al curso</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+        <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+            </button>
+        </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+</div>
+{% comment %} barra de navegavion fin {% endcomment %}
 
 <div class="container">
 
@@ -109,11 +331,11 @@
         <h3>Profesor</h3>
         <div class="grid">
             {% for profesor in profesores %}
-            <div class="card">
+            <div class="card ">
                 {% if profesor.foto %}
-                <img src="{{ profesor.foto.url }}" alt="Avatar de {{ profesor.nombre_usuario }}" class="avatar" />
+                <img src="{{ profesor.foto.url }}" alt="Avatar de {{ profesor.nombre_usuario }}" class="avatar mx-auto d-block" />
                 {% else %}
-                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar" />
+                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar mx-auto d-block" />
                 {% endif %}
                 <p class="name">
                     {% with est=profesor.id_estudiante %}
@@ -138,9 +360,9 @@
             {% for tutor in tutores %}
             <div class="card">
                 {% if tutor.foto %}
-                <img src="{{ tutor.foto.url }}" alt="Avatar de {{ tutor.nombre_usuario }}" class="avatar" />
+                <img src="{{ tutor.foto.url }}" alt="Avatar de {{ tutor.nombre_usuario }}" class="avatar mx-auto d-block" />
                 {% else %}
-                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar" />
+                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar mx-auto d-block" />
                 {% endif %}
                 <p class="name">
                     {% with est=tutor.id_estudiante %}
@@ -163,9 +385,9 @@
             {% for alumno in alumnos %}
             <div class="card">
                 {% if alumno.foto %}
-                <img src="{{ alumno.foto.url }}" alt="Avatar de {{ alumno.nombre_usuario }}" class="avatar" />
+                <img src="{{ alumno.foto.url }}" alt="Avatar de {{ alumno.nombre_usuario }}" class="avatar mx-auto d-block" />
                 {% else %}
-                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar" />
+                <img src="{% static 'img/perfil-icon.png' %}" alt="Avatar genérico" class="avatar mx-auto d-block" />
                 {% endif %}
                 <p class="name">
                     {% with est=alumno.id_estudiante %}
@@ -207,6 +429,8 @@
         });
     });
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

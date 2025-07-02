@@ -171,6 +171,11 @@ urlpatterns = [
 
     path('chat/toggle_destacar/', views.toggle_destacar_mensaje, name='toggle_destacar'),
 
+    # path('comision/<str:comision_id>/entregas/', views.ver_entregas_proyectos, name='ver_entregas_proyectos'),
+    path('entrega/<int:entrega_id>/guardar/', views.guardar_nota_feedback, name='guardar_nota_feedback'),
+
+    path('curso/<str:curso_id>/comision/<str:comision_id>/entregas/', views.ver_entregas_proyectos, name='ver_entregas_proyectos'),
+
 
 ]
 

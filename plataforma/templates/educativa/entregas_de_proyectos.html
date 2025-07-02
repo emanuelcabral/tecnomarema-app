@@ -1,0 +1,519 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Entregas de Proyecto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+
+    body {
+      background-color: #111;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+      /* height: 100vh;
+      overflow: hidden; */
+    }
+
+
+    /* ******************************************************************
+   Navbar - Estilos Generales
+******************************************************************* */
+
+.navbar {
+  background-color: #111;
+  position: relative;
+  z-index: 10;
+  border-bottom: 3px solid transparent;
+  font-size: 1.2rem;
+}
+
+/* Efecto Neón Cyberpunk */
+.navbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+  animation: neonGlow 4s linear infinite;
+  background-size: 200% auto;
+}
+
+@keyframes neonGlow {
+  0% { background-position: 0% }
+  100% { background-position: 100% }
+}
+
+/* ******************************************************************
+   Navbar - Marca del Sitio (Logo)
+******************************************************************* */
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.navbar-brand span.white {
+  color: #fff;
+}
+
+.navbar-brand span.green {
+  color: #12f693;
+}
+
+.navbar-brand img {
+  height: 30px;
+  margin-left: 10px;
+}
+
+/* ******************************************************************
+   Navbar - Enlaces de Navegación
+******************************************************************* */
+
+.navbar-nav .nav-link {
+  color: #fff !important;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #12f693 !important;
+}
+
+.nav-link.active {
+  border-bottom: 2px solid #12f693;
+}
+
+/* ******************************************************************
+   Navbar - Botones Personalizados
+******************************************************************* */
+
+/* Botón Login */
+.btn-login {
+  margin-left: 10px;
+  background-color: #12f693;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-login:hover {
+  background-color: #0cd680;
+  color: #000;
+}
+
+/* Botón Inscripción */
+.btn-inscripcion {
+  margin-left: 10px;
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-inscripcion:hover {
+  background-color: #a120cc;
+  color: #fff;
+}
+
+/* ******************************************************************
+   Navbar - Menú Hamburguesa
+******************************************************************* */
+
+.navbar-toggler {
+  border-color: #12f693;
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ******************************************************************
+   Barra de Bienvenida
+******************************************************************* */
+
+.barra-bienvenida {
+  background-color: #121212;
+  color: #12f693;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #12f693;
+  position: relative;
+  z-index: 99;
+}
+
+
+    a, p, h4, h3, label {
+      color: #fff !important;
+    }
+    .card-entrega {
+      background-color: #222;
+      border: 1px solid #12f693;
+      border-radius: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    .card-entrega:hover, .card-entrega.active {
+      background-color: #12f693;
+      color: #111 !important;
+    }
+    .badge-aprobado {
+      background-color: #28a745;
+      color: #fff;
+    }
+    .badge-desaprobado {
+      background-color: #dc3545;
+      color: #fff;
+    }
+    .panel-left {
+      /* height: 90vh;
+      overflow-y: auto; */
+      border-right: 1px solid #12f693;
+      padding-right: 10px;
+      overflow-x: hidden; /*para desaparecer el scroll horizontal*/
+    }
+    .panel-right {
+      /* height: 90vh;
+      overflow-y: auto; */
+      padding: 20px;
+    }
+    .form-control, textarea {
+      background-color: #111;
+      color: #fff;
+      border: 1px solid #12f693;
+    }
+    .btn-guardar {
+      background-color: #12f693;
+      color: #111;
+      border: none;
+      font-weight: bold;
+    }
+    hr {
+      border-top: 1px solid #444;
+    }
+    video, audio {
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+    }
+    img {
+      max-height: 300px;
+      border-radius: 10px;
+    }
+
+    .color1{
+      color: #12f693;
+    }
+    .color2{
+      color: #cf30ff;
+    }
+    .badge-estadistica{
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- navbar inicia -->
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-xl navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.id_comision %}">Volver al curso</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+        <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+            </button>
+        </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+</div>
+<!-- navbar fin -->
+
+<div class="container-fluid mt-3">
+  <h2 class="mb-4 text-center" >Entregas de Proyecto - Curso {{ comision.id_curso.nombre_curso }} - Comisión {{ comision.numero_comision }}</h2>
+
+  <div class="row">
+    <!-- Panel Izquierdo: Lista de entregas -->
+    <div class="col-lg-5 panel-left">
+      <hr>
+      <div class="row mb-3">
+        <div class="col-md-12 text-center">
+          <h4 style="color:#cf30ff;">📊 Estadísticas de la comisión</h4>
+          <div class="d-flex justify-content-center flex-wrap gap-4 mt-3">
+            
+              <div class="col-md-6 badge badge-estadistica bg-info text-dark">👥 Estudiantes: {{ cantidad_alumnos }}</div>
+              <div class="col-md-6 badge badge-estadistica bg-secondary">📤 Entregas: {{ total_entregas }}</div>
+              <div class="col-md-6 badge badge-estadistica bg-success">✅ Aprobadas: {{ aprobados }}</div>
+              <div class="col-md-6 badge badge-estadistica bg-danger">❌ Desaprobadas: {{ desaprobados }}</div>
+
+          </div>
+        </div>
+      </div>
+      <hr>
+
+      <h4 style="color:#12f693;">
+        Pendientes de corrección 
+        <span class="badge text-bg-warning">{{ entregas_sin_corregir|length }}</span>
+      </h4>
+      {% if entregas_sin_corregir %}
+        {% for entrega in entregas_sin_corregir %}
+          <div class="card card-entrega" 
+               data-entrega-id="{{ entrega.id }}"
+               data-titulo="{{ entrega.titulo|escapejs }}"
+               data-descripcion="{{ entrega.descripcion|default:''|escapejs }}"
+               data-link_github="{{ entrega.link_github|default:''|escapejs }}"
+               data-link_pages="{{ entrega.link_pages|default:''|escapejs }}"
+               data-link_servidor="{{ entrega.link_servidor|default:''|escapejs }}"
+               data-link_adicional="{{ entrega.link_adicional|default:''|escapejs }}"
+               data-archivo_1_url="{% if entrega.archivo_1 %}{{ entrega.archivo_1.url }}{% else %}{% endif %}"
+               data-archivo_1_name="{% if entrega.archivo_1 %}{{ entrega.archivo_1.name|slice:'15:' }}{% else %}{% endif %}"
+               data-archivo_2_url="{% if entrega.archivo_2 %}{{ entrega.archivo_2.url }}{% else %}{% endif %}"
+               data-archivo_2_name="{% if entrega.archivo_2 %}{{ entrega.archivo_2.name|slice:'15:' }}{% else %}{% endif %}"
+               data-archivo_3_url="{% if entrega.archivo_3 %}{{ entrega.archivo_3.url }}{% else %}{% endif %}"
+               data-archivo_3_name="{% if entrega.archivo_3 %}{{ entrega.archivo_3.name|slice:'15:' }}{% else %}{% endif %}"
+               data-imagen_url="{% if entrega.imagen %}{{ entrega.imagen.url }}{% else %}{% endif %}"
+               data-video_url="{% if entrega.video %}{{ entrega.video.url }}{% else %}{% endif %}"
+               data-audio_url="{% if entrega.audio %}{{ entrega.audio.url }}{% else %}{% endif %}"
+               data-comentarios="{{ entrega.comentarios_adicionales|default:''|escapejs }}"
+               data-nota="{{ entrega.nota|default_if_none:'' }}"
+               data-feedback="{{ entrega.feedback|default_if_none:''|escapejs }}"
+               data-nombre_estudiante="{{ entrega.estudiante.nombre|default:'' }}"
+               data-apellido_estudiante="{{ entrega.estudiante.apellido|default:'' }}"
+               >
+            <div class="d-flex justify-content-between align-items-center p-2">
+              <span class="text-white">{{ entrega.estudiante.nombre }} {{ entrega.estudiante.apellido }}</span>
+              <!-- Badge: no hay nota => pendiente, por si alguna entrega está sin nota -->
+              <span class="badge bg-warning text-dark">Pendiente</span>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No hay entregas pendientes.</p>
+      {% endif %}
+
+      <hr style="border-color:#12f693;" />
+
+      <h4 style="color:#12f693;">
+        Entregas corregidas 
+        <span class="badge text-bg-success">{{ entregas_corregidas|length }}</span>
+      </h4>
+      {% if entregas_corregidas %}
+        {% for entrega in entregas_corregidas %}
+          <div class="card card-entrega" 
+               data-entrega-id="{{ entrega.id }}"
+               data-titulo="{{ entrega.titulo|escapejs }}"
+               data-descripcion="{{ entrega.descripcion|default:''|escapejs }}"
+               data-link_github="{{ entrega.link_github|default:''|escapejs }}"
+               data-link_pages="{{ entrega.link_pages|default:''|escapejs }}"
+               data-link_servidor="{{ entrega.link_servidor|default:''|escapejs }}"
+               data-link_adicional="{{ entrega.link_adicional|default:''|escapejs }}"
+               data-archivo_1_url="{% if entrega.archivo_1 %}{{ entrega.archivo_1.url }}{% else %}{% endif %}"
+               data-archivo_1_name="{% if entrega.archivo_1 %}{{ entrega.archivo_1.name|slice:'15:' }}{% else %}{% endif %}"
+               data-archivo_2_url="{% if entrega.archivo_2 %}{{ entrega.archivo_2.url }}{% else %}{% endif %}"
+               data-archivo_2_name="{% if entrega.archivo_2 %}{{ entrega.archivo_2.name|slice:'15:' }}{% else %}{% endif %}"
+               data-archivo_3_url="{% if entrega.archivo_3 %}{{ entrega.archivo_3.url }}{% else %}{% endif %}"
+               data-archivo_3_name="{% if entrega.archivo_3 %}{{ entrega.archivo_3.name|slice:'15:' }}{% else %}{% endif %}"
+               data-imagen_url="{% if entrega.imagen %}{{ entrega.imagen.url }}{% else %}{% endif %}"
+               data-video_url="{% if entrega.video %}{{ entrega.video.url }}{% else %}{% endif %}"
+               data-audio_url="{% if entrega.audio %}{{ entrega.audio.url }}{% else %}{% endif %}"
+               data-comentarios="{{ entrega.comentarios_adicionales|default:''|escapejs }}"
+               data-nota="{{ entrega.nota|default_if_none:'' }}"
+               data-feedback="{{ entrega.feedback|default_if_none:''|escapejs }}"
+               data-nombre_estudiante="{{ entrega.estudiante.nombre|default:'' }}"
+               data-apellido_estudiante="{{ entrega.estudiante.apellido|default:'' }}"
+               >
+            <div class="d-flex justify-content-between align-items-center p-2">
+              <span class="text-white">{{ entrega.estudiante.nombre }} {{ entrega.estudiante.apellido }}</span>
+              {% if entrega.nota >= 7 %}
+                <span class="badge badge-aprobado">Aprobado</span>
+              {% else %}
+                <span class="badge badge-desaprobado">Desaprobado</span>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No hay entregas corregidas.</p>
+      {% endif %}
+    </div>
+
+    <!-- Panel Derecho: Detalles y formulario -->
+    <div class="col-md-7 panel-right">
+      <div id="detalle-entrega" style="display:none;">
+      <h2 id="nombre-estudiante" class="color2">Estudiante no disponible</h2>
+
+
+        <h3 id="titulo-detalle"></h3>
+        <p id="descripcion-detalle"></p>
+
+        <div id="enlaces-detalle"></div>
+        <div id="archivos-detalle"></div>
+        <div id="media-detalle"></div>
+
+        <h6 class="color1">Comentarios del estudiante:</h6>
+        <p id="comentarios-detalle"></p>
+
+        <hr />
+
+        <form id="form-evaluacion" method="post" action="">
+          {% csrf_token %}
+          <div class="row">
+            <div class="col-md-2">
+              <label for="nota">Nota</label>
+              <input type="number" step="0.01" min="0" max="10" name="nota" id="nota" class="form-control" />
+            </div>
+            <div class="col-md-10">
+              <label for="feedback">Feedback</label>
+              <textarea name="feedback" id="feedback" rows="3" class="form-control"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-guardar mt-3">Guardar evaluación</button>
+        </form>
+      </div>
+
+      <div id="mensaje-seleccion" class="text-center mt-5" style="color:#12f693;">
+        Seleccione una entrega en el panel izquierdo para ver detalles.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Referencias
+  const cards = document.querySelectorAll('.card-entrega');
+  const detalle = document.getElementById('detalle-entrega');
+  const mensajeSeleccion = document.getElementById('mensaje-seleccion');
+
+  const tituloDetalle = document.getElementById('titulo-detalle');
+  const descripcionDetalle = document.getElementById('descripcion-detalle');
+  const enlacesDetalle = document.getElementById('enlaces-detalle');
+  const archivosDetalle = document.getElementById('archivos-detalle');
+  const mediaDetalle = document.getElementById('media-detalle');
+  const comentariosDetalle = document.getElementById('comentarios-detalle');
+  const formEvaluacion = document.getElementById('form-evaluacion');
+  const inputNota = formEvaluacion.querySelector('#nota');
+  const textareaFeedback = formEvaluacion.querySelector('#feedback');
+
+  let selectedCard = null;
+
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      // Quitar active de la card previa
+      if(selectedCard) selectedCard.classList.remove('active');
+      card.classList.add('active');
+      selectedCard = card;
+
+      // Mostrar panel detalle
+      detalle.style.display = 'block';
+      mensajeSeleccion.style.display = 'none';
+
+      const nombreEstudiante = card.dataset.nombre_estudiante || '';
+      const apellidoEstudiante = card.dataset.apellido_estudiante || '';
+      document.getElementById('nombre-estudiante').textContent = 
+        (nombreEstudiante && apellidoEstudiante) ? `${nombreEstudiante} ${apellidoEstudiante}` : 'Estudiante no disponible';
+
+
+      // Cargar datos desde data-attributes
+      tituloDetalle.textContent = card.dataset.titulo || 'Sin título';
+      descripcionDetalle.textContent = card.dataset.descripcion || 'Sin descripción';
+
+      // Enlaces
+      enlacesDetalle.innerHTML = '';
+      const enlaces = [];
+      if(card.dataset.link_github) enlaces.push(`<a href="${card.dataset.link_github}" target="_blank">GitHub</a>`);
+      if(card.dataset.link_pages) enlaces.push(`<a href="${card.dataset.link_pages}" target="_blank">GitHub Pages</a>`);
+      if(card.dataset.link_servidor) enlaces.push(`<a href="${card.dataset.link_servidor}" target="_blank">Servidor</a>`);
+      if(card.dataset.link_adicional) enlaces.push(`<a href="${card.dataset.link_adicional}" target="_blank">Otro enlace</a>`);
+      if(enlaces.length) {
+        enlacesDetalle.innerHTML = `<h6 class="color1">🔗 Enlaces:</h6><ul>${enlaces.map(e => `<li>${e}</li>`).join('')}</ul>`;
+      }
+
+      // Archivos
+      archivosDetalle.innerHTML = '';
+      const archivos = [];
+      if(card.dataset.archivo_1_url) archivos.push(`<a href="${card.dataset.archivo_1_url}" target="_blank">${card.dataset.archivo_1_name}</a>`);
+      if(card.dataset.archivo_2_url) archivos.push(`<a href="${card.dataset.archivo_2_url}" target="_blank">${card.dataset.archivo_2_name}</a>`);
+      if(card.dataset.archivo_3_url) archivos.push(`<a href="${card.dataset.archivo_3_url}" target="_blank">${card.dataset.archivo_3_name}</a>`);
+      if(archivos.length) {
+        archivosDetalle.innerHTML = `<h6 class="color1">📎 Archivos Adjuntos:</h6><ul>${archivos.map(a => `<li>${a}</li>`).join('')}</ul>`;
+      }
+
+      // Media: imagen, video, audio
+      mediaDetalle.innerHTML = '';
+      if(card.dataset.imagen_url) {
+        mediaDetalle.innerHTML += `<h6 class="color1">🖼️ Imagen:</h6><img src="${card.dataset.imagen_url}" alt="Imagen proyecto" class="img-fluid mb-2" />`;
+      }
+      if(card.dataset.video_url) {
+        mediaDetalle.innerHTML += `<h6 class="color1">🎥 Video:</h6><video controls src="${card.dataset.video_url}"></video>`;
+      }
+      if(card.dataset.audio_url) {
+        mediaDetalle.innerHTML += `<h6 class="color1">🔊 Audio:</h6><audio controls src="${card.dataset.audio_url}"></audio>`;
+      }
+
+      // Comentarios
+      comentariosDetalle.textContent = card.dataset.comentarios || 'Sin comentarios';
+
+      // Nota y feedback en el form
+      inputNota.value = card.dataset.nota || '';
+      textareaFeedback.value = card.dataset.feedback || '';
+
+      // Actualizar action del form para que postee a la url correcta
+      formEvaluacion.action = `{% url 'guardar_nota_feedback' 0 %}`.replace('0', card.dataset.entregaId);
+    });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
