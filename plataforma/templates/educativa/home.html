@@ -518,6 +518,36 @@ html {
 
     /* subir fin */
 
+@media only screen and (max-width: 768px) {
+  .hero {
+    width: 100%;
+  }
+
+  .banner-img {
+    order: 1;
+  }
+
+  .banner {
+    order: 2;
+    text-align: center;
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  .img-call {
+    height: auto !important;
+    margin-bottom: 10px;
+    width: 100% !important;
+    max-width: 100%;
+  }
+
+  .img-call img {
+    width: 100%;
+    height: auto;
+  }
+}
+
+
   </style>
 </head>
 <body>
@@ -561,9 +591,9 @@ html {
 
   <!-- Hero -->
   <section id="inicio" class="text-center py-5">
-    <div class="container">
+    <div class="container d-flex flex-wrap justify-content-center hero">
       <div class="row">
-        <div class="col-sm-6 text-start">
+        <div class="col-sm-6 text-start banner">
           <!-- <h1 class="display-4 neon-green">Bienvenido a Tecno Marema</h1> -->
           <!-- <h1 class="display-4 neon-green">Impulsa tu futuro en el mundo tecnológico.</h1> -->
           <h1 class="display-4 neon-green">Da el primer paso o sube <span class="resalte">al siguiente nivel</span> en tecnomarema</h1>
@@ -588,7 +618,7 @@ html {
           <a href="#cursos" class="btn btn-neon btn-lg mt-3 fw-bold"><i class="bi bi-mortarboard"></i> Inicia hoy!</a>
         </div>
         <div class="img-call col-sm-6">
-          <img src="{% static 'img/hero02.jpg' %}" alt="imagen principal" class="course-image" />
+          <img src="{% static 'img/hero02.jpg' %}" alt="imagen principal" class="course-image banner-img" />
         </div>
       </div>
     </div>
@@ -653,8 +683,8 @@ html {
           <p>Proyectos reales desde el primer día.</p>
         </div>
         <div class="col-md-4">
-          <h5 class="text-white">🎮 Estética gamer</h5>
-          <p>Un entorno que te motiva a seguir aprendiendo.</p>
+          <h5 class="text-white">💼 Enfoque profesional</h5>
+          <p>Formación alineada con lo que buscan las empresas.</p>
         </div>
         <div class="col-md-4">
           <h5 class="text-white">🚀 Tecnología actual</h5>
@@ -926,7 +956,7 @@ html {
           <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
           <p class="mb-1">
             <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
-            <a href="mailto:contacto@tecnomarema.com">contacto@tecnomarema.com</a>
+            <a class="text-break" href="mailto:contacto@tecnomarema.com">contacto@tecnomarema.com</a>
           </p>
         </div>
 

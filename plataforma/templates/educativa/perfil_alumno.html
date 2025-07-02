@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     {% load static %}
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="{% static 'css/perfil_alumno.css' %}">
     <title>Perfil de Alumno</title>
@@ -23,9 +23,7 @@
         }
     </style>
 </head>
-
 <body>
-
 
     <!-- NAVBAR -->
     <nav class="navbar navbar-expand-lg navbar-dark px-3">
@@ -140,63 +138,42 @@
                 </div>
             </div>
 
-            <!-- Imagen y configuración -->
-            <!-- <div class="col-md-6">
-        <div class="card p-4 rounded-4 text-center mb-4">
-          <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" class="profile-img mb-3" alt="Avatar de usuario" />
-          <div class="d-flex justify-content-center gap-3">
-            <button class="btn btn-green">Cambiar foto</button>
-            <button class="btn btn-purple">Eliminar foto</button>
-          </div>
-        </div> -->
-
-
-            <!-- <div class="col-md-6">
-                <div class="card p-4 rounded-4 text-center mb-4">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1144/1144760.png" class="profile-img mb-3" alt="Avatar de usuario" />
-                    <div class="d-flex justify-content-center gap-3">
-                        <button class="btn btn-green">Cambiar foto</button>
-                        <button class="btn btn-purple">Eliminar foto</button>
-                    </div>
-                </div> -->
-
             <div class="col-md-6">
 
                 <form method="POST" action="{% url 'cambiar_foto' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="card p-4 rounded-4 text-center mb-4">
                         {% if usuario.foto %}
-                            <img src="{{ usuario.foto.url }}?v={{ timestamp }}" alt="Foto de perfil"
-                                 class="profile-img mb-3" width="120" style="border-radius: 10px;">
+                        <img src="{{ usuario.foto.url }}?v={{ timestamp }}" alt="Foto de perfil"
+                            class="profile-img mb-3" width="120" style="border-radius: 10px;">
                         {% else %}
-                            <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
-                                 alt="Foto por defecto" class="profile-img mb-3" width="120"
-                                 style="border-radius: 10px;">
+                        <img src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
+                            alt="Foto por defecto" class="profile-img mb-3" width="120" style="border-radius: 10px;">
                         {% endif %}
                         <input type="file" name="foto" class="form-control mb-3" accept="image/*" required>
                         <div class="d-flex justify-content-center gap-3">
                             <!-- <button type="submit" class="btn btn-green">Cambiar foto</button> -->
-                            <button type="submit" name="formulario" value="foto" class="btn btn-green">Cambiar foto</button>
+                            <button type="submit" name="formulario" value="foto" class="btn btn-green">Cambiar
+                                foto</button>
                             <a href="{% url 'eliminar_foto' %}" class="btn btn-purple">Eliminar foto</a>
                         </div>
-                        <p class="mt-3" style="color: #12f693;">Limite maximo de 1024kb - Formatos admitidos ( jpg png gif webp )</p>
+                        <p class="mt-3" style="color: #12f693;">Limite maximo de 1024kb - Formatos admitidos ( jpg png
+                            gif webp )</p>
 
                         {% if messages %}
-  <div class="container mt-3">
-    {% for message in messages %}
-      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-      </div>
-    {% endfor %}
-  </div>
-{% endif %}
-
+                        <div class="container mt-3">
+                            {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"
+                                    aria-label="Cerrar"></button>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
 
                     </div>
                 </form>
-
-
 
                 <div class="card p-4 rounded-4">
                     <h5 class="text-success">Seguridad y configuración</h5>
@@ -207,22 +184,10 @@
                         <li><a href="#" class="nav-link">Eliminar cuenta</a></li>
                     </ul>
                 </div>
-
-
-
             </div>
-
-
-
-
-
         </div>
     </div>
     </div>
-
-
-
-
 
     <!-- Modal de éxito -->
     <!-- Modal limpio y centrado estilo Tecno Marema -->
@@ -247,8 +212,6 @@
         </div>
     </div>
 
-
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const params = new URLSearchParams(window.location.search);
@@ -264,5 +227,4 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
-
 </html>

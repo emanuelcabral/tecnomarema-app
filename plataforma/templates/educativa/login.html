@@ -25,6 +25,35 @@
             color: black !important;
             border: 2px solid #000 !important;
         }
+
+        @media only screen and (max-width:992px){
+            .login{
+                border-radius: 15px;
+                width: 100%;
+            }
+            .login-img{
+                display:none;
+            }
+
+            .volver{
+                right:25px;
+                bottom: 25px;
+            }
+        }
+
+        /*personalizacion del ojo del password inicia*/
+        .login-pass {
+    position: relative;
+}
+
+#toggle-password {
+    font-size: 18px;
+    user-select: none;
+    top: 42px !important;
+}
+
+        /*personalizacion del ojo del password fin*/
+
     </style>
     <title>Ingreso a la plataforma</title>
 </head>
@@ -57,10 +86,11 @@
                     <label for="login-usuario">| Usuario: </label>
                     <input type="text" placeholder="Ingresa tu usuario" required id="login-usuario" name="username">
                 </div>
-                <div class="login-pass">
+                <div class="login-pass position-relative">
                     <span>🔒</span>
                     <label for="login-password">| Contraseña: </label>
                     <input type="password" placeholder="Ingresa tu contraseña" name="password" id="login-password" required>
+                    <span id="toggle-password" style="position:absolute; right:10px; top:35px; cursor:pointer;">👁️</span>
                 </div>
                 <input type="checkbox" name="remember_me" id="recordar"><label for="recordar">Recordar Usuario</label>
                 <button type="submit" id="btn-ingreso">Ingresa</button>
@@ -131,6 +161,23 @@
 
 
     <!-- recordar contraseña fin -->
+
+
+    <!-- script para visualizar el password inicia -->
+    <script>
+        const togglePassword = document.getElementById('toggle-password');
+        const passwordInput = document.getElementById('login-password');
+
+        togglePassword.addEventListener('click', () => {
+            const isPassword = passwordInput.type === 'password';
+            passwordInput.type = isPassword ? 'text' : 'password';
+            togglePassword.textContent = isPassword ? '🙈' : '👁️';
+        });
+    </script>
+
+    <!-- script para visualizar el password fin -->
+
+    
 
     <!-- BS 5.1 inicia -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"

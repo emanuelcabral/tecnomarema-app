@@ -1,85 +1,86 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <title>Mis Cursos</title>
-    <style>
-        body {
-            background-color: #000;
-            background-image: url("{% static 'img/fondo2negro.svg' %}");
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            color: #fff;
-            font-family: 'Segoe UI', sans-serif;
-        }
+  {% load static %}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <title>Mis Cursos</title>
+  <style>
+    body {
+      background-color: #000;
+      background-image: url("{% static 'img/fondo2negro.svg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      color: #fff;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-        .navbar {
-            background-color: #111;
-        }
+    .navbar {
+      background-color: #111;
+    }
 
-        .nav-link {
-            color: #12f693 !important;
-        }
+    .nav-link {
+      color: #12f693 !important;
+    }
 
-        .nav-link.active {
-            border-bottom: 2px solid #12f693;
-        }
+    .nav-link.active {
+      border-bottom: 2px solid #12f693;
+    }
 
-        .curso-card {
-            background-color: #111;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            padding: 20px;
-            display: flex;
-            gap: 20px;
-        }
+    .curso-card {
+      background-color: #111;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+    }
 
-        .curso-img {
-            width: 250px;
-            height: 160px;
-            object-fit: cover;
-            border-radius: 12px;
-        }
+    .curso-img {
+      width: 250px;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 12px;
+    }
 
-        .badge-encurso {
-            background-color: #ffc107;
-            color: #000;
-            font-size: 0.8rem;
-            padding: 5px 10px;
-            border-radius: 20px;
-        }
+    .badge-encurso {
+      background-color: #ffc107;
+      color: #000;
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
 
-        .badge-comision {
-            background-color: #cf30ff;
-            color: white;
-            font-size: 0.75rem;
-            padding: 5px 10px;
-            border-radius: 20px;
-            margin-left: 10px;
-        }
+    .badge-comision {
+      background-color: #cf30ff;
+      color: white;
+      font-size: 0.75rem;
+      padding: 5px 10px;
+      border-radius: 20px;
+      margin-left: 10px;
+    }
 
-        .icono-tec {
-            width: 30px;
-            margin-right: 10px;
-        }
+    .icono-tec {
+      width: 30px;
+      margin-right: 10px;
+    }
 
-        .btn-acceder {
-            background-color: #12f693;
-            color: #000;
-        }
-
-
-/* navbar inicio */
+    .btn-acceder {
+      background-color: #12f693;
+      color: #000;
+    }
 
 
-        /* NAVBAR BASE */
-        .navbar {
+    /* navbar inicio */
+
+
+    /* NAVBAR BASE */
+    .navbar {
       background-color: #111;
       position: relative;
       z-index: 10;
@@ -100,8 +101,13 @@
     }
 
     @keyframes neonGlow {
-      0% { background-position: 0% }
-      100% { background-position: 100% }
+      0% {
+        background-position: 0%
+      }
+
+      100% {
+        background-position: 100%
+      }
     }
 
     .navbar::after {
@@ -139,13 +145,13 @@
       color: #12f693 !important;
     }
 
-/* eliminar borde outline del menu hamburguesa */
-.navbar-toggler:focus,
-.navbar-toggler:active,
-.navbar-toggler.collapsed:focus {
-    outline: none;
-    box-shadow: none;
-}
+    /* eliminar borde outline del menu hamburguesa */
+    .navbar-toggler:focus,
+    .navbar-toggler:active,
+    .navbar-toggler.collapsed:focus {
+      outline: none;
+      box-shadow: none;
+    }
 
     /* BOTÓN LOGIN */
     .btn-login {
@@ -188,173 +194,196 @@
       background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
     }
 
-        .barra-bienvenida {
-    background-color: #121212;
-    color: #12f693;
-    text-align: center;
-    padding: 10px 20px;
-    font-size: 1.1rem;
-    border-bottom: 2px solid #12f693;
-    position: relative;
-    z-index: 99;
-  }
+    .barra-bienvenida {
+      background-color: #121212;
+      color: #12f693;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 1.1rem;
+      border-bottom: 2px solid #12f693;
+      position: relative;
+      z-index: 99;
+    }
 
     /* navbar fin */
 
+    .badge-estado {
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+    }
 
+    .badge-encurso {
+      background-color: #12f693;
+      color: black;
+    }
 
-.badge-estado {
-  padding: 4px 8px;
-  border-radius: 10px;
-  font-weight: bold;
-}
+    .badge-proximo {
+      background-color: #ffc107;
+      color: black;
+      
+    }
 
-.badge-encurso {
-  background-color: #12f693;
-  color: black;
-}
+    .badge-finalizado {
+      background-color: #dc3545;
+      color: white;
+    }
 
-.badge-proximo {
-  background-color: #ffc107;
-  color: black;
-}
+    @media only screen and (max-width: 400px){
+    .curso-img{
+      display:none;
+    }
+    .curso-card{
+      border: 2px solid #12f693;
+    }
+    .badge-comision{
+      display: inline-block;
+      margin: 0 !important;
+    }
+  }
 
-.badge-finalizado {
-  background-color: #dc3545;
-  color: white;
-}
+  @media only screen and (max-width:1200px){
+    .curso-img{
+      width: 100% !important;
+      height: 250px !important;
+      font-size: 12.8px;
+    }
+  }
 
-    </style>
+  </style>
 </head>
 
 <body>
 
-    <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark px-3">
-  <div class="container-fluid">
-    <!-- LOGO -->
-    <a class="navbar-brand" href="#">
-      <span class="white">Tecno</span><span class="green">Marema</span>
-      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
-    </a>
+  <!-- NAVBAR -->
+  <nav class="navbar navbar-expand-lg navbar-dark px-3">
+    <div class="container-fluid">
+      <!-- LOGO -->
+      <a class="navbar-brand" href="#">
+        <span class="white">Tecno</span><span class="green">Marema</span>
+        <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+      </a>
 
-    <!-- HAMBURGUESA -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
-      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
-    </button>
+      <!-- HAMBURGUESA -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido"
+        style="border: none !important;">
+        <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+      </button>
 
-    <!-- MENÚ -->
-    <div class="collapse navbar-collapse" id="navbarContenido">
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
-        <li class="nav-item">
-          <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
-                       <form action="{% url 'logout' %}" method="post" class="d-inline">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-login btn-sm">
-        <i class="bi bi-person-badge"></i>
-        Cerrar sesión
-    </button>
-</form>
-        </li>
-      </ul>
+      <!-- MENÚ -->
+      <div class="collapse navbar-collapse" id="navbarContenido">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+          <li class="nav-item">
+            <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
     </div>
+  </nav>
+
+  <div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
   </div>
-</nav>
-
-    <div class="barra-bienvenida">
-        Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
-    </div>
 
 
-    <!-- Título -->
-    <div class="container mt-5">
-        <h2 class="text-white mb-4">Mis cursos adquiridos</h2>
+  <!-- Título -->
+  <div class="container mt-5">
+    <h2 class="text-white mb-4">Mis cursos adquiridos</h2>
 
 
-{% block content %}
-<!-- <h2 class="text-white">Bienvenido, {{ nombre_usuario }}</h2>
-<h3 class="text-white mb-4">Tus cursos asignados:</h3> -->
-
-{% if comisiones %}
-  {% for comision in comisiones %}
-    <div class="curso-card mb-4 p-3 d-flex  shadow text-white">
-        <img src="{% static 'img/' %}{{ comision.id_curso.nombre_curso }}.jpg" class="curso-img me-3" alt="{{ comision.id_curso.nombre_curso }}" style="width: 250px; height: auto; border-radius: 12px;">
-        <div class="flex-grow-1">
-            <div class="d-flex justify-content-between align-items-center">
-                <h4 class="mb-1">
-                    {{ comision.id_curso.nombre_curso }}
-                    <span class="badge-comision ms-2">Comisión {{ comision.numero_comision }}</span>
-                </h4>
-
-              {% if comision.estado_comision == 'en_curso' %}
-                <span class="badge-estado badge-encurso">¡En curso!</span>
-              {% elif comision.estado_comision == 'finalizado' %}
-                <span class="badge-estado badge-finalizado">Finalizado</span>
-              {% else %}
-                <span class="badge-estado badge-proximo">Próximo</span>
-              {% endif %}
+    {% block content %}
 
 
-                  <!-- JS insertará el estado -->
-                </span>
-            </div>
+    {% if comisiones %}
+    {% for comision in comisiones %}
+    <div class="curso-card mb-4 p-3 d-flex justify-content-center flex-wrap shadow text-white">
+      <img src="{% static 'img/' %}{{ comision.id_curso.nombre_curso }}.jpg" class="curso-img me-3 "
+        alt="{{ comision.id_curso.nombre_curso }}" style="width: 250px; height: auto; border-radius: 12px;">
+      <div class="flex-grow-1 ">
+        <div class="d-flex justify-content-between flex-wrap align-items-center">
+          <h4 class="mb-1">
+            {{ comision.id_curso.nombre_curso }}
+            <span class="badge-comision ms-2 text-nowrap">Comisión {{ comision.numero_comision }}</span>
+          </h4>
 
-            <p>{{ comision.id_curso.descripcion }}</p>
-
-            <p><strong>Día 1:</strong> {{ comision.dia1 }} {{ comision.horario1 }}</p>
-            {% if comision.dia2 %}
-              <p><strong>Día 2:</strong> {{ comision.dia2 }} {{ comision.horario2 }}</p>
-            {% endif %}
-            
-            <p>
-              <strong>Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y" }} &nbsp;&nbsp;
-              <strong>Fin:</strong> {{ comision.fecha_fin|date:"d/m/Y" }}
-            </p>
-
-            {% comment %} <p><strong>Duración por clase:</strong> {{ comision.id_curso.duracion }}</p> {% endcomment %}
-            <p><strong>Duración por clase:</strong> {{ comision.duracion_clase }}</p>
-
-
-{% if comision.id_curso.iconos_cargados %}
-  <div class="d-flex align-items-center mb-3">
-    {% for icono in comision.id_curso.iconos_cargados %}
-      <img src="{{ icono.url }}?v={{ timestamp }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}" style="height: 30px; padding-right: 15px;">
-    {% endfor %}
-  </div>
-{% endif %}
-{% comment %} aca se deben agregar los cursos manualmente {% endcomment %}
-{% if comision.id_curso.nombre_curso == "Desarrollo web" %}
-  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
-{% elif comision.id_curso.nombre_curso == "Inteligencia Artificial" %}
-  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
-{% elif comision.id_curso.nombre_curso == "Python" %}
-  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
-{% elif comision.id_curso.nombre_curso|lower == "javascript" %}
-  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
-{% elif comision.id_curso.nombre_curso == "Desarrollo web_v2" %}
-  <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
-{% else %}
-  <a href="#" class="btn btn-secondary disabled">Curso no disponible</a>
-{% endif %}
+          {% if comision.estado_comision == 'en_curso' %}
+          <span class="badge-estado badge-encurso">¡En curso!</span>
+          {% elif comision.estado_comision == 'finalizado' %}
+          <span class="badge-estado badge-finalizado">Finalizado</span>
+          {% else %}
+          <span class="badge-estado badge-proximo">Próximo</span>
+          {% endif %}
 
 
+          <!-- JS insertará el estado -->
+          </span>
         </div>
+
+        <p>{{ comision.id_curso.descripcion }}</p>
+
+        <p><strong>Día 1:</strong> {{ comision.dia1 }} {{ comision.horario1 }}</p>
+        {% if comision.dia2 %}
+        <p><strong>Día 2:</strong> {{ comision.dia2 }} {{ comision.horario2 }}</p>
+        {% endif %}
+
+        <p>
+          <strong>Inicio:</strong> {{ comision.fecha_inicio|date:"d/m/Y" }} &nbsp;&nbsp;
+          <strong>Fin:</strong> {{ comision.fecha_fin|date:"d/m/Y" }}
+        </p>
+
+        <p><strong>Duración por clase:</strong> {{ comision.duracion_clase }}</p>
+
+
+        {% if comision.id_curso.iconos_cargados %}
+        <div class="d-flex align-items-center mb-3">
+          {% for icono in comision.id_curso.iconos_cargados %}
+          <img src="{{ icono.url }}?v={{ timestamp }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}"
+            style="height: 30px; padding-right: 15px;">
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% comment %} aca se deben agregar los cursos manualmente {% endcomment %}
+        {% if comision.id_curso.nombre_curso == "Desarrollo web" %}
+        <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
+        {% elif comision.id_curso.nombre_curso == "Inteligencia Artificial" %}
+        <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
+        {% elif comision.id_curso.nombre_curso == "Python" %}
+        <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
+        {% elif comision.id_curso.nombre_curso|lower == "javascript" %}
+        <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
+        {% elif comision.id_curso.nombre_curso == "Desarrollo web_v2" %}
+        <a href="{% url 'curso_detalle' comision.id_comision %}" class="btn btn-acceder">Acceder</a>
+        {% else %}
+        <a href="#" class="btn btn-secondary disabled">Curso no disponible</a>
+        {% endif %}
+
+
+      </div>
     </div>
-  {% endfor %}
-{% else %}
-  <p class="text-white">Todavía no estás anotado en ningún curso.</p>
-{% endif %}
-{% endblock %}
+    {% endfor %}
+    {% else %}
+    <p class="text-white">Todavía no estás anotado en ningún curso.</p>
+    {% endif %}
+    {% endblock %}
 
 
 
-    </div>
+  </div>
 </body>
+
 </html>
