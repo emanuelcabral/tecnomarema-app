@@ -2003,21 +2003,30 @@ def toggle_destacar_mensaje(request):
 ###-------------------------filtrado de valoraciones------------------------------###
 #####################################################################################
 
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Count, Q
+from plataforma.decorators import session_required
+from plataforma.models import ValoracionAlumno, ClaseComision, Curso, Comision, DatosDeEstudiantes
+
 @session_required
 def valoraciones_filtradas(request, curso_id, comision_id):
-    clases = list(range(1, 22))  # Clases 1 a 21
+    curso = get_object_or_404(Curso, id_curso=curso_id)
+    comision = get_object_or_404(Comision, id_comision=comision_id)
+
+    clases_comision = ClaseComision.objects.filter(comision_id=comision_id).select_related('clase')
+    clases = [cc.clase for cc in clases_comision]
+
     resumen_clases = {}
 
-    for clase_num in clases:
+    for clase in clases:
         valoraciones_clase = ValoracionAlumno.objects.filter(
-            clase__numero_clase=clase_num,
+            clase=clase,
             curso_id=curso_id,
             comision_id=comision_id
         )
-        total = valoraciones_clase.count()
 
-        conteo = valoraciones_clase.values('preferencia_clase') \
-                                   .annotate(cantidad=Count('preferencia_clase'))
+        total = valoraciones_clase.count()
+        conteo = valoraciones_clase.values('preferencia_clase').annotate(cantidad=Count('preferencia_clase'))
 
         votos = {'me_gusto': 0, 'mas_o_menos': 0, 'no_me_gusto': 0}
         for item in conteo:
@@ -2026,7 +2035,7 @@ def valoraciones_filtradas(request, curso_id, comision_id):
         def porcentaje(x):
             return round((x / total) * 100) if total > 0 else 0
 
-        resumen_clases[clase_num] = {
+        resumen_clases[clase.numero_clase] = {
             'total': total,
             'votos': votos,
             'porcentajes': {
@@ -2037,6 +2046,7 @@ def valoraciones_filtradas(request, curso_id, comision_id):
         }
 
     valoraciones = ValoracionAlumno.objects.filter(
+        clase__in=clases,
         curso_id=curso_id,
         comision_id=comision_id
     ).select_related('clase')
@@ -2049,15 +2059,63 @@ def valoraciones_filtradas(request, curso_id, comision_id):
         else:
             v.color_avatar = '#cf30ff'
 
+    total_general = valoraciones.count()
+    conteo_general = valoraciones.values('preferencia_clase').annotate(cantidad=Count('preferencia_clase'))
+
+    votos_general = {'me_gusto': 0, 'mas_o_menos': 0, 'no_me_gusto': 0}
+    for item in conteo_general:
+        votos_general[item['preferencia_clase']] = item['cantidad']
+
+    def porcentaje(x):
+        return round((x / total_general) * 100) if total_general > 0 else 0
+
+    resumen_general = {
+        'total': total_general,
+        'votos': votos_general,
+        'porcentajes': {
+            'me_gusto': porcentaje(votos_general['me_gusto']),
+            'mas_o_menos': porcentaje(votos_general['mas_o_menos']),
+            'no_me_gusto': porcentaje(votos_general['no_me_gusto']),
+        }
+    }
+
+    total_estudiantes = valoraciones.values('id_estudiante').distinct().count()
+
+    # Buscar estudiantes que tengan la comisión actual en alguno de los campos cursando1 a cursando9
+    total_inscritos = DatosDeEstudiantes.objects.filter(
+        Q(cursando1=comision_id) |
+        Q(cursando2=comision_id) |
+        Q(cursando3=comision_id) |
+        Q(cursando4=comision_id) |
+        Q(cursando5=comision_id) |
+        Q(cursando6=comision_id) |
+        Q(cursando7=comision_id) |
+        Q(cursando8=comision_id) |
+        Q(cursando9=comision_id)
+    ).count()
+
+    porcentaje_val_curso = round((total_estudiantes / total_inscritos) * 100) if total_inscritos > 0 else 0
+
     contexto = {
-        'clases': clases,
+        'clases': sorted([c.numero_clase for c in clases]),
         'resumen_clases': resumen_clases,
+        'resumen_general': resumen_general,
         'valoraciones': valoraciones,
         'comision_id': comision_id,
         'curso_id': curso_id,
+        'nombre_curso': curso.nombre_curso,
+        'numero_comision': comision.numero_comision,
+        'total_estudiantes': total_estudiantes,
+        'total_valoraciones_curso': total_general,
+        'total_inscritos': total_inscritos,
+        'porcentaje_val_curso': porcentaje_val_curso,
+        'comision': comision,
     }
 
     return render(request, 'educativa/valoraciones.html', contexto)
+
+
+
 
 
 ##################################################################################

@@ -10,33 +10,164 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #000;
-      color: white;
-      margin: 0;
-      padding: 20px;
-    }
 
     body {
+      background-color: #000;
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
+      margin: 0;
     }
 
-    .navbar {
-      background-color: #111;
+    .contenedor-principal{
+      padding: 40px;
     }
 
-    .nav-link {
-      color: #12f693 !important;
-    }
+    /* ******************************************************************
+    Navbar - Estilos Generales
+******************************************************************* */
 
-    .nav-link.active {
-      border-bottom: 2px solid #12f693;
-    }
+.navbar {
+  background-color: #111;
+  position: relative;
+  z-index: 10;
+  border-bottom: 3px solid transparent;
+  font-size: 1.2rem;
+}
+
+/* Efecto Neón Cyberpunk */
+.navbar::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+  animation: neonGlow 4s linear infinite;
+  background-size: 200% auto;
+}
+
+@keyframes neonGlow {
+  0% { background-position: 0% }
+  100% { background-position: 100% }
+}
+
+/* ******************************************************************
+   Navbar - Marca del Sitio (Logo)
+******************************************************************* */
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.3rem;
+}
+
+.navbar-brand span.white {
+  color: #fff;
+}
+
+.navbar-brand span.green {
+  color: #12f693;
+}
+
+.navbar-brand img {
+  height: 30px;
+  margin-left: 10px;
+}
+
+/* ******************************************************************
+   Navbar - Enlaces de Navegación
+******************************************************************* */
+
+.navbar-nav .nav-link {
+  color: #fff !important;
+  transition: 0.3s;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #12f693 !important;
+}
+
+.nav-link.active {
+  border-bottom: 2px solid #12f693;
+}
+
+/* ******************************************************************
+   Navbar - Botones Personalizados
+******************************************************************* */
+
+/* Botón Login */
+.btn-login {
+  margin-left: 10px;
+  background-color: #12f693;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-login:hover {
+  background-color: #0cd680;
+  color: #000;
+}
+
+/* Botón Inscripción */
+.btn-inscripcion {
+  margin-left: 10px;
+  background-color: #cf30ff;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  transition: 0.3s;
+  font-size: 1.3rem;
+}
+
+.btn-inscripcion:hover {
+  background-color: #a120cc;
+  color: #fff;
+}
+
+/* ******************************************************************
+   Navbar - Menú Hamburguesa
+******************************************************************* */
+
+.navbar-toggler {
+  border-color: #12f693;
+}
+
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ******************************************************************
+   Barra de Bienvenida
+******************************************************************* */
+
+.barra-bienvenida {
+  background-color: #121212;
+  color: #12f693;
+  text-align: center;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  border-bottom: 2px solid #12f693;
+  position: relative;
+  z-index: 99;
+}
+/* ******************************************************************
+    Barra de Bienvenida - fin
+******************************************************************* */
 
     .container {
       max-width: 1000px;
@@ -210,166 +341,250 @@
 </head>
 <body>
 
-  <!-- Barra de navegación -->
-  <nav class="navbar navbar-dark px-4 py-3 mb-4">
-    <span class="navbar-brand fw-bold text-white">Cursos</span>
-    <div>
-      <a class="nav-link d-inline-block mx-3" href="#">Mis cursos</a>
-      <a class="nav-link d-inline-block mx-3 active" href="#">Cursos</a>
-      <a class="nav-link d-inline-block mx-3" href="#">Perfil</a>
-      <a class="nav-link d-inline-block mx-3" href="#">Cerrar sesión</a>
+<!-- navbar inicia -->
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-xl navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.id_comision %}">Volver al curso</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+        <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+            </button>
+        </form>
+        </li>
+      </ul>
     </div>
-  </nav>
-  <!-- fin Barra de navegación -->
+  </div>
+</nav>
 
-
-
+<div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+</div>
+<!-- navbar fin -->
+<div class="contenedor-principal">
   <!-- rate inicia -->
-
-<h2 class="text-white mb-4">Valoraciones del curso</h2>
-
-<div class="rate-header">
-  <select id="selectorClase">
-    <option value="general">General del curso</option>
-    {% for clase_num in clases %}
-      <option value="{{ clase_num }}">Clase {{ clase_num }}</option>
-    {% endfor %}
-  </select>
-  <div class="rate-score" id="rateScore">—</div>
-</div>
-
-<div class="faces" id="facesContainer">
-  <!-- Este bloque se va a actualizar con JS -->
-</div>
-
-<script>
-  const dataValoraciones = {
-    general: {{ resumen_general|safe }},
-    {% for num, resumen in resumen_clases.items %}
-      "{{ num }}": {{ resumen|safe }},
-    {% endfor %}
-  }
-
-  const selector = document.getElementById('selectorClase');
-  const facesContainer = document.getElementById('facesContainer');
-  const rateScore = document.getElementById('rateScore');
-
-  function renderFaces(resumen) {
-    const total = resumen.total || 0;
-    const p = resumen.porcentajes;
-    const v = resumen.votos;
-
-    rateScore.innerText = total > 0
-      ? `${((p.me_gusto * 5 + p.mas_o_menos * 3 + p.no_me_gusto * 1) / 100).toFixed(1)} / 5.0`
-      : '—';
-
-    facesContainer.innerHTML = `
-      <div class="face green">
-        <div style="font-size: 2rem;">😊</div>
-        <h3>Me gustó</h3>
-        <div>${p.me_gusto}%</div>
-        <div class="bar green" style="width: ${p.me_gusto}%"></div>
-        <div>${v.me_gusto} votos</div>
-      </div>
-      <div class="face cyan">
-        <div style="font-size: 2rem;">😐</div>
-        <h3>Más o menos</h3>
-        <div>${p.mas_o_menos}%</div>
-        <div class="bar cyan" style="width: ${p.mas_o_menos}%"></div>
-        <div>${v.mas_o_menos} votos</div>
-      </div>
-      <div class="face purple">
-        <div style="font-size: 2rem;">😠</div>
-        <h3>No me gustó</h3>
-        <div>${p.no_me_gusto}%</div>
-        <div class="bar purple" style="width: ${p.no_me_gusto}%"></div>
-        <div>${v.no_me_gusto} votos</div>
-      </div>
-    `;
-  }
-
-  // Inicializar con la vista general
-  renderFaces(dataValoraciones["general"]);
-
-  selector.addEventListener('change', () => {
-    const valor = selector.value;
-    const resumen = dataValoraciones[valor];
-    renderFaces(resumen);
-  });
-</script>
+  <h2 class="text-white mb-4">
+    Valoraciones del curso <span style="color: #12f693">{{ nombre_curso }}</span> - Comisión <span style="color: #00f7ff">{{ numero_comision }}</span>
+  </h2>
 
 
-  <!-- rate fin -->
-
-<!--####################-----panel de datos adicionales--------##########################--->
-
-    <div class="stats">
-      <div class="stat-box">
-        <h3>4.2 / 5.0</h3>
-        <p>100 de 120 alumnos valoraron esta clase.</p>
-        <p>Total: 240 valoraciones en el curso.</p>
-      </div>
-      <div class="stat-box">
-        <h3>82%</h3>
-        <p>Porcentaje de alumnos que valoran respecto al total del curso.</p>
-      </div>
-    </div>
-    
-
-
-
-{% comment %} filtrado de comentarios {% endcomment %}
-<div class="comments-section">
-  <div class="comments-header">
-    <h3 id="comentarios">Comentarios por clase</h3>
-    <select class="filter-select" id="filtro-comentarios">
-      <option value="todos">Todos</option>
-      <option value="me_gusto">Positivos</option>
-      <option value="mas_o_menos">Más o menos</option>
-      <option value="no_me_gusto">Negativos</option>
+  <div class="rate-header">
+    <select id="selectorClase">
+      <option value="general">General del curso</option>
+      {% for clase_num in clases %}
+        <option value="{{ clase_num }}">Clase {{ clase_num }}</option>
+      {% endfor %}
     </select>
+    <div class="rate-score" id="rateScore">—</div>
   </div>
 
-  {% for valoracion in valoraciones %}
-    {% if valoracion.comentarios %}
-      <div class="comment" data-tipo="{{ valoracion.preferencia_clase }}">
-        <div class="avatar" style="background: {{ valoracion.color_avatar }};">
-          {{ valoracion.nombre_usuario|first|upper }}
+  <div class="faces" id="facesContainer"></div>
+
+  <script>
+    const dataValoraciones = {
+      general: {{ resumen_general|safe }},
+      {% for num, resumen in resumen_clases.items %}
+        "{{ num }}": {{ resumen|safe }}{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    };
+
+    const selector = document.getElementById('selectorClase');
+    const facesContainer = document.getElementById('facesContainer');
+    const rateScore = document.getElementById('rateScore');
+
+    function renderFaces(resumen) {
+      if (!resumen || !resumen.porcentajes || !resumen.votos) {
+        facesContainer.innerHTML = `<p>No hay datos para esta clase.</p>`;
+        rateScore.innerText = '—';
+        return;
+      }
+
+      const p = resumen.porcentajes;
+      const v = resumen.votos;
+      const total = resumen.total || 0;
+
+      let puntaje = '—';
+      if (total > 0) {
+        const calculo = (p.me_gusto * 5 + p.mas_o_menos * 3 + p.no_me_gusto * 1) / 100;
+        puntaje = `${calculo.toFixed(1)} / 5.0`;
+      }
+
+      rateScore.innerText = puntaje;
+
+      facesContainer.innerHTML = `
+        <div class="face green">
+          <div style="font-size: 2rem;">😊</div>
+          <h3>Me gustó</h3>
+          <div>${p.me_gusto ?? 0}%</div>
+          <div class="bar green" style="width: ${p.me_gusto ?? 0}%"></div>
+          <div>${v.me_gusto ?? 0} votos</div>
         </div>
-        <div class="comment-content">
-          <h4 style="color: {{ valoracion.color_avatar }};">{{ valoracion.nombre_usuario }} - Clase {{ valoracion.clase.numero_clase }} - {{ valoracion.clase.nombre_clase }}
-            <span style="float:right; color:#94a3b8">
-              {{ valoracion.fecha_valoracion|date:"d M. Y - H:i" }}
-            </span>
-          </h4>
-          <p>{{ valoracion.comentarios }}</p>
+        <div class="face cyan">
+          <div style="font-size: 2rem;">😐</div>
+          <h3>Más o menos</h3>
+          <div>${p.mas_o_menos ?? 0}%</div>
+          <div class="bar cyan" style="width: ${p.mas_o_menos ?? 0}%"></div>
+          <div>${v.mas_o_menos ?? 0} votos</div>
         </div>
-      </div>
-    {% endif %}
-  {% endfor %}
+        <div class="face purple">
+          <div style="font-size: 2rem;">😠</div>
+          <h3>No me gustó</h3>
+          <div>${p.no_me_gusto ?? 0}%</div>
+          <div class="bar purple" style="width: ${p.no_me_gusto ?? 0}%"></div>
+          <div>${v.no_me_gusto ?? 0} votos</div>
+        </div>
+      `;
+    }
+
+  function actualizarEstadisticas(clave) {
+    const resumen = resumenClases[clave];
+    const porcentajeElem = document.getElementById('porcentajeClase');
+    const alumnosElem = document.getElementById('alumnosClase');
+    const totalElem = document.getElementById('totalValoracionesClase');
+
+    if (clave === "general") {
+      porcentajeElem.innerText = '—';
+      alumnosElem.innerText = '—';
+      totalElem.innerText = '—';
+      return;
+    }
+
+    if (!resumen || !resumen.total || totalInscritos === 0) {
+      porcentajeElem.innerText = '—';
+      alumnosElem.innerText = '—';
+      totalElem.innerText = '—';
+      return;
+    }
+
+    const total = resumen.total;
+    const porcentaje = Math.round((total / totalInscritos) * 100);
+
+    porcentajeElem.innerText = porcentaje;
+    alumnosElem.innerText = total;
+    totalElem.innerText = total;
+  }
+
+    selector.addEventListener('change', () => {
+      const clave = selector.value;
+      renderFaces(dataValoraciones[clave]);
+      actualizarEstadisticas(clave);
+    });
+
+    // carga inicial
+    renderFaces(dataValoraciones["general"]);
+    actualizarEstadisticas("general");
+  </script>
+  <!-- rate fin -->
+
+  <!--####################-----panel de datos adicionales--------##########################--->
+  <div class="stats">
+    <div class="stat-box">
+      <h3><span id="porcentajeClase">—</span>% del total de alumnos valoraron esta clase</h3>
+      <p><span id="alumnosClase">—</span> de {{ total_inscritos }} alumnos valoraron esta clase.</p>
+      <p>Total: <span id="totalValoracionesClase">—</span> valoraciones en la clase.</p>
+    </div>
+    <div class="stat-box">
+      <h3>{{ porcentaje_val_curso }}% del total de alumnos valoraron en todo el curso</h3>
+      <p>{{ total_estudiantes }} de {{ total_inscritos }} alumnos valoraron en este curso</p>
+      <p>Total: {{ total_valoraciones_curso }} valoraciones en el curso.</p>
+    </div>
+  </div>
+
+  <!--####################-----filtrado de comentarios--------##########################--->
+  <div class="comments-section">
+    <div class="comments-header">
+      <h3 id="comentarios">Comentarios por clase</h3>
+      <select class="filter-select" id="filtro-comentarios">
+        <option value="todos">Todos</option>
+        <option value="me_gusto">Positivos</option>
+        <option value="mas_o_menos">Más o menos</option>
+        <option value="no_me_gusto">Negativos</option>
+      </select>
+    </div>
+
+    {% for valoracion in valoraciones %}
+      {% if valoracion.comentarios %}
+        <div class="comment" data-tipo="{{ valoracion.preferencia_clase }}" data-clase="{{ valoracion.clase.numero_clase }}">
+          <div class="avatar" style="background: {{ valoracion.color_avatar }};">
+            {{ valoracion.nombre_usuario|first|upper }}
+          </div>
+          <div class="comment-content">
+            <h4 style="color: {{ valoracion.color_avatar }};">
+              {{ valoracion.nombre_usuario }} - Clase {{ valoracion.clase.numero_clase }} - {{ valoracion.clase.nombre_clase }}
+              <span style="float:right; color:#94a3b8">
+                {{ valoracion.fecha_valoracion|date:"d M. Y - H:i" }}
+              </span>
+            </h4>
+            <p>{{ valoracion.comentarios }}</p>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
 </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const filtro = document.getElementById('filtro-comentarios');
-    const comentarios = document.querySelectorAll('.comment');
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const filtroEmocion = document.getElementById('filtro-comentarios');
+      const filtroClase = document.getElementById('selectorClase');
+      const comentarios = document.querySelectorAll('.comment');
 
-    filtro.addEventListener('change', function () {
-      const valor = this.value;
+      function filtrarComentarios() {
+        const claseSeleccionada = filtroClase.value;
+        const emocionSeleccionada = filtroEmocion.value;
 
-      comentarios.forEach(comentario => {
-        const tipo = comentario.getAttribute('data-tipo');
+        comentarios.forEach(comentario => {
+          const tipo = comentario.getAttribute('data-tipo');
+          const clase = comentario.getAttribute('data-clase');
 
-        if (valor === 'todos' || valor === tipo) {
-          comentario.style.display = 'flex'; // o 'block' si es tu estilo
-        } else {
-          comentario.style.display = 'none';
-        }
-      });
+          const coincideClase = (claseSeleccionada === "general") || (clase === claseSeleccionada);
+          const coincideEmocion = (emocionSeleccionada === "todos") || (tipo === emocionSeleccionada);
+
+          comentario.style.display = (coincideClase && coincideEmocion) ? 'flex' : 'none';
+        });
+      }
+
+      filtroClase.addEventListener('change', filtrarComentarios);
+      filtroEmocion.addEventListener('change', filtrarComentarios);
+
+      filtrarComentarios(); // inicial
     });
-  });
-</script>
-{% comment %} fin de filtrado de comentarios {% endcomment %}
+  </script>
+
+  <script>
+    const totalInscritos = {{ total_inscritos }};
+    const resumenClases = {
+      general: {{ resumen_general|safe }},
+      {% for num, resumen in resumen_clases.items %}
+        "{{ num }}": {{ resumen|safe }}{% if not forloop.last %},{% endif %}
+      {% endfor %}
+    };
+  </script>
 
 </body>
 </html>
