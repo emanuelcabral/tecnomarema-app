@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="{% static 'css/perfil_alumno.css' %}">
+    <meta name="csrf-token" content="{{ csrf_token }}">
     <title>Perfil de Alumno</title>
 
     <style>
@@ -181,7 +182,7 @@
                         <li><a href="{% url 'password_reset' %}" class="nav-link">Cambiar contraseña</a></li>
                         <li><a href="{% url 'logout_all' %}" class="nav-link">Cerrar sesión en todos los
                                 dispositivos</a></li>
-                        <li><a href="#" class="nav-link">Eliminar cuenta</a></li>
+                        <li><a href="#" class="nav-link text-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarCuenta">Eliminar cuenta</a></li>
                     </ul>
                 </div>
             </div>
@@ -224,6 +225,83 @@
         });
     </script>
     <!-- Antes de </body> -->
+
+
+    <!-- modal confirmacion de eliminacion de cuenta inicia -->
+<!-- modal confirmacion de eliminacion de cuenta inicia -->
+<div class="modal fade" id="modalEliminarCuenta" tabindex="-1" aria-labelledby="eliminarCuentaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-white" style="background-color: #111; border: 2px solid #12f693;">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eliminarCuentaLabel">¿Estás seguro?</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3">
+          Esta acción es irreversible. Perderás todos tus datos y no podrás recuperarlos luego.
+        </p>
+        <p>Para confirmar, escribe: <strong>eliminar cuenta</strong></p>
+        <input type="text" id="confirmacionTexto" class="form-control bg-dark text-white" placeholder="escribe aquí..." />
+        <div class="mt-4 d-flex justify-content-between">
+          <button class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-danger" id="btnEliminarCuenta" disabled>Eliminar cuenta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const input = document.getElementById("confirmacionTexto");
+  const boton = document.getElementById("btnEliminarCuenta");
+
+  // Activar/desactivar botón según texto de confirmación
+  input.addEventListener("input", () => {
+    boton.disabled = input.value.toLowerCase().trim() !== "eliminar cuenta";
+  });
+
+  boton.addEventListener("click", async () => {
+    boton.disabled = true;
+    const textoOriginal = boton.textContent;
+    boton.textContent = "Eliminando...";
+
+    // Obtener token CSRF del meta
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+
+    try {
+      const response = await fetch("/eliminar_cuenta/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": csrfToken,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ confirmacion: input.value })
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        // Redirigir a despedida
+        window.location.href = "/despedida/";
+      } else {
+        alert("Error al eliminar la cuenta: " + (result.error || "Desconocido"));
+        boton.disabled = false;
+        boton.textContent = textoOriginal;
+      }
+    } catch (error) {
+      alert("Error inesperado: " + error);
+      boton.disabled = false;
+      boton.textContent = textoOriginal;
+    }
+  });
+});
+</script>
+
+
+    <!-- modal confirmacion de eliminacion de cuenta fin -->
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>

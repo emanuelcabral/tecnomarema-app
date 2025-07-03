@@ -2179,3 +2179,114 @@ def guardar_nota_feedback(request, entrega_id):
     entrega.save()
     return redirect(request.META.get("HTTP_REFERER", "/"))
 
+###############################################################################
+###-----------------------inscripción clase 1-------------------------------###
+###############################################################################
+
+
+from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
+
+def formulario_inscripcion(request):
+    dias_semana = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"]
+    horarios = ["Mañana", "Tarde", "Noche"]
+    tecnologias = [
+        "HTML", "CSS", "SASS", "Bootstrap", "JavaScript", "Git", "GitHub", "Tailwind",
+        "React", "Vue", "Angular", "Node.js", "Python", "Django", "SQL", ".NET", "Ruby",
+        "PHP", "WordPress", "Otra", "Ninguna de las anteriores"
+    ]
+    niveles = list(range(1, 11))
+
+    return render(request, 'educativa/inscripcion_clase1.html', {
+        'dias_semana': dias_semana,
+        'horarios': horarios,
+        'tecnologias': tecnologias,
+        'niveles': niveles,
+    })
+#------------------------------------------------------------------------------------------------
+
+from django.shortcuts import render
+from .models import InscripcionClaseGratis
+
+def guardar_inscripcion(request):
+    if request.method == "POST":
+        datos = request.POST
+
+        inscripcion = InscripcionClaseGratis(
+            nombre=datos.get("nombre"),
+            apellido=datos.get("apellido"),
+            telefono=datos.get("telefono"),
+            pais=datos.get("pais"),
+            email=datos.get("email"),
+            dias=", ".join(datos.getlist("dias[]")),
+            horarios=", ".join(datos.getlist("horarios[]")),
+            nivel_pc=int(datos.get("nivel_pc")),
+            exp_programacion=datos.get("exp_programacion"),
+            nivel_programacion=int(datos.get("nivel_programacion")),
+            tecnologias=", ".join(datos.getlist("tecnologias[]")),
+        )
+        inscripcion.save()
+        return render(request, "educativa/gracias.html")
+    else:
+        return render(request, "404.html")  # opcional
+#######################################################################################
+###--------------------eliminar cuenta desde perfil de usuario----------------------###
+#######################################################################################
+
+import os
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.contrib.auth import logout
+from .models import PerfilUsuario, DatosDeEstudiantes, AsistenciaClase, EntregaProyecto, PuntajeQuiz, ValoracionAlumno
+import json
+
+@csrf_exempt
+def eliminar_cuenta(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            confirmacion = data.get("confirmacion", "").strip().lower()
+
+            if confirmacion != "eliminar cuenta":
+                return JsonResponse({"error": "Confirmación inválida"}, status=400)
+
+            id_usuario = request.session.get("usuario_id")
+            if not id_usuario:
+                return JsonResponse({"error": "Sesión inválida"}, status=401)
+
+            try:
+                usuario = PerfilUsuario.objects.get(id_usuario=id_usuario)
+
+                # Eliminar la foto si existe
+                if usuario.foto and usuario.foto.path and os.path.isfile(usuario.foto.path):
+                    os.remove(usuario.foto.path)
+
+                # Cerrar sesión antes de eliminar el usuario
+                logout(request)
+
+                # Eliminar datos relacionados
+                DatosDeEstudiantes.objects.filter(id_estudiante=id_usuario).delete()
+                AsistenciaClase.objects.filter(estudiante_id=id_usuario).delete()
+                EntregaProyecto.objects.filter(estudiante_id=id_usuario).delete()
+                PuntajeQuiz.objects.filter(estudiante_id=id_usuario).delete()
+                ValoracionAlumno.objects.filter(id_estudiante=id_usuario).delete()
+
+                # Eliminar el perfil
+                usuario.delete()
+
+                return JsonResponse({"success": True})
+
+            except PerfilUsuario.DoesNotExist:
+                return JsonResponse({"error": "Usuario no encontrado"}, status=404)
+
+        except Exception as e:
+            return JsonResponse({"error": f"Error en la solicitud: {str(e)}"}, status=500)
+
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+
+#-----------------------------------------------------------------------------------------------
+
+def despedida_view(request):
+    return render(request, "educativa/despedida.html")

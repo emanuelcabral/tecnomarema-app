@@ -177,6 +177,13 @@ urlpatterns = [
     path('curso/<str:curso_id>/comision/<str:comision_id>/entregas/', views.ver_entregas_proyectos, name='ver_entregas_proyectos'),
 
 
+    path('inscripcion_clase1/', views.formulario_inscripcion, name='formulario_inscripcion'),
+    path('guardar_inscripcion/', views.guardar_inscripcion, name='guardar_inscripcion'),
+
+    path('eliminar_cuenta/', views.eliminar_cuenta, name='eliminar_cuenta'),
+    path('despedida/', views.despedida_view, name='despedida'),
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

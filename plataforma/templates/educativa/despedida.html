@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Te vamos a extrañar 😢</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        h1 {
+            color: #12f693
+        }
+
+        img {
+            width: 400px;
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn .8s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fade-in-left,
+        .fade-in-right {
+            opacity: 0;
+            animation-duration: 1.2s;
+            animation-fill-mode: forwards;
+            animation-timing-function: ease-out;
+        }
+
+        .fade-in-left {
+            animation-name: fadeInLeft;
+        }
+
+        .fade-in-right {
+            animation-name: fadeInRight;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media only screen and (max-width:450px) {
+            img {
+                width: 250px;
+                transition: all 0.7s;
+            }
+
+            h1 {
+                font-style: 20px;
+                padding: 10px;
+            }
+
+            p {
+                font-style: 16px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-dark text-white text-center d-flex flex-column justify-content-center align-items-center vh-100">
+    <img src="{% static 'img/gato-logo.png' %}" alt="Logo" class="fade-in">
+    <h1 class="display-4 mb-4 fade-in-left">Nos da pena que nos abandones</h1>
+    <p class="lead fade-in-right">Esperamos verte de nuevo. Tu cuenta ha sido eliminada exitosamente.</p>
+    <a href="{% url 'home' %}" class="btn btn-outline-light mt-4">Volver al inicio</a>
+</body>
+</html>

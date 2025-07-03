@@ -471,3 +471,24 @@ class Mensaje(models.Model):
     def __str__(self):
         return f"{self.remitente} - {self.creado.strftime('%d/%m %H:%M')}"
 
+####################################################################################################
+#                           inscripcion gratis a desarrollo web
+####################################################################################################
+from django.db import models
+
+class InscripcionClaseGratis(models.Model):
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    telefono = models.CharField(max_length=20)
+    pais = models.CharField(max_length=100)
+    email = models.EmailField()
+    dias = models.CharField(max_length=255)  # se puede guardar como texto plano
+    horarios = models.CharField(max_length=255)
+    nivel_pc = models.IntegerField()
+    exp_programacion = models.CharField(max_length=100)
+    nivel_programacion = models.IntegerField()
+    tecnologias = models.CharField(max_length=500)
+    creado = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido} - {self.email}"
