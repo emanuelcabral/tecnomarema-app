@@ -1,0 +1,26 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Listado de Administradores</h2>
+  <table class="table table-dark table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre de usuario</th>
+        <th>Correo</th>
+        <th>Rol</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for user in usuarios %}
+      <tr>
+        <td>{{ user.id_usuario }}</td>
+        <td>{{ user.nombre_usuario }}</td>
+        <td>{{ user.correo }}</td>
+        <td>{{ user.rol }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

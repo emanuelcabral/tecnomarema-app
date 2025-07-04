@@ -1,0 +1,38 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Listado de Comisiones</h2>
+  <table class="table table-dark table-striped">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Comision</th>
+        <th>Curso</th>
+        <th>Inicio</th>
+        <th>Fin</th>
+        <th>Dia 1</th>
+        <th>Horario 1</th>
+        <th>Dia 2</th>
+        <th>Horario 2</th>
+        <th>Estado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for com in comisiones %}
+      <tr>
+        <td>{{ com.id_comision }}</td>
+        <td>{{ com.numero_comision }}</td>
+        <td>{{ com.id_curso.nombre_curso }}</td>
+        <td>{{ com.fecha_inicio|date:"j/n/Y" }}</td>
+        <td>{{ com.fecha_fin|date:"j/n/Y" }}</td>
+        <td>{{ com.dia1 }}</td>
+        <td>{{ com.horario1 }}</td>
+        <td>{{ com.dia2 }}</td>
+        <td>{{ com.horario2 }}</td>
+        <td>{{ com.estado_comision }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

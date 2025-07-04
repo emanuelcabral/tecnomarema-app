@@ -1,0 +1,175 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Panel Administrativo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+  <style>
+    body {
+      background-color: #111;
+      color: #fff;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: #222;
+      min-height: 100vh;
+    }
+    .sidebar a {
+      color: #ccc;
+      text-decoration: none;
+    }
+    .sidebar a:hover {
+      color: #fff;
+      background-color: #333;
+    }
+    .card {
+      background-color: #1d1d1d;
+      border: none;
+    }
+    .navbar {
+      background-color: #222;
+    }
+  </style>
+</head>
+<body>
+  <div class="d-flex">
+    <!-- Sidebar -->
+    <div class="sidebar p-3">
+      <h4 class="text-center mb-4 text-success">Admin Panel</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-house me-2"></i>Dashboard</a></li>
+        <li class="nav-item"><a href="{% url 'alta_alumno' %}" class="nav-link"><i class="bi bi-people me-2"></i>Alumnos</a></li>
+        <li class="nav-item"><a href="{% url 'alta_curso' %}" class="nav-link"><i class="bi bi-journal me-2"></i>Cursos</a></li>
+        <li class="nav-item"><a href="{% url 'alta_clase_comision' %}" class="nav-link"><i class="bi bi-calendar me-2"></i>Clases</a></li>
+        <li class="nav-item"><a href="{% url 'estadisticas' %}" class="nav-link"><i class="bi bi-bar-chart me-2"></i>Estadísticas</a></li>
+        <li class="nav-item"><a href="{% url 'entrega_proyecto' comision_id='000001' %}" class="nav-link"><i class="bi bi-upload me-2"></i>Entregas</a></li>
+        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+        <li class="nav-item mt-3"><a href="{% url 'logout' %}" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+      </ul>
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="flex-grow-1">
+      <!-- Navbar -->
+      <nav class="navbar navbar-expand-lg navbar-dark px-4">
+        <div class="container-fluid">
+          <span class="navbar-brand mb-0 h1">Panel Administrativo desde educativa</span>
+          <div class="d-flex ms-auto">
+            <button class="btn btn-outline-light me-2"><i class="bi bi-bell"></i></button>
+            <button class="btn btn-outline-success"><i class="bi bi-person-circle"></i> {{ request.session.usuario_logueado|default:"Admin" }}</button>
+          </div>
+        </div>
+      </nav>
+
+<!-- Dashboard -->
+<div class="container py-4">
+  <h2 class="mb-4">Resumen general</h2>
+  <div class="row g-4">
+    <div class="col-md-3">
+      <a href="{% url 'listado_alumnos' %}" class="text-decoration-none">
+        <div class="card text-white bg-primary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Alumnos</h5>
+            <p class="card-text display-6">{{ cantidad_alumnos }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'listado_cursos' %}" class="text-decoration-none">
+        <div class="card text-white bg-success h-100">
+          <div class="card-body">
+            <h5 class="card-title">Cursos</h5>
+            <p class="card-text display-6">{{ cantidad_cursos }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'listado_comisiones' %}" class="text-decoration-none">
+        <div class="card text-white bg-warning h-100">
+          <div class="card-body">
+            <h5 class="card-title">Comisiones</h5>
+            <p class="card-text display-6">{{ cantidad_comisiones }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'listado_clases' %}" class="text-decoration-none">
+        <div class="card text-white bg-danger h-100">
+          <div class="card-body">
+            <h5 class="card-title">Clases</h5>
+            <p class="card-text display-6">{{ cantidad_clases }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Segunda fila -->
+  <div class="row g-4 mt-3">
+    <div class="col-md-3">
+      <a href="{% url 'listado_profesores' %}" class="text-decoration-none">
+        <div class="card text-white bg-info h-100">
+          <div class="card-body">
+            <h5 class="card-title">Profesores</h5>
+            <p class="card-text display-6">{{ cantidad_profesores }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'listado_tutores' %}" class="text-decoration-none">
+        <div class="card text-white bg-secondary h-100">
+          <div class="card-body">
+            <h5 class="card-title">Tutores</h5>
+            <p class="card-text display-6">{{ cantidad_tutores }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'listado_admins' %}" class="text-decoration-none">
+        <div class="card text-white bg-dark border-light h-100">
+          <div class="card-body">
+            <h5 class="card-title">Administradores</h5>
+            <p class="card-text display-6">{{ cantidad_admins }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-3">
+      <a href="{% url 'vista_chat' %}" class="text-decoration-none">
+        <div class="card text-white bg-light h-100">
+          <div class="card-body">
+            <h5 class="card-title text-dark">Chat</h5>
+            <p class="card-text display-6 text-dark">🗨️</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+        <!-- Más contenido -->
+        <div class="mt-5 p-4">
+          <h4>Últimas acciones</h4>
+          <ul class="list-group list-group-flush text-white">
+            <li class="list-group-item bg-transparent border-secondary">✅ Juan Pérez se inscribió en Desarrollo Web</li>
+            <li class="list-group-item bg-transparent border-secondary">📩 Se agregó clase 10 en IA</li>
+            <li class="list-group-item bg-transparent border-secondary">🔍 Nueva valoración en Clase 5 - Python</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

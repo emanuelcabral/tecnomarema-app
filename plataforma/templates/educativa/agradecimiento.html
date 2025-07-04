@@ -1,7 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  {% load static %}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
   <title>¡Gracias por tu valoración!</title>
   <style>
     body {
@@ -11,31 +14,30 @@
       padding: 5rem;
       font-family: 'Segoe UI', sans-serif;
     }
+
     .emoji {
       font-size: 5rem;
     }
 
     .btn-valoracion-custom {
-    background-color: #cf30ff;
-    color: #222;
-    padding: 12px 24px;
-    font-weight: bold;
-    border: none;
-    border-radius: 10px;
-    text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 10px rgba(207, 48, 255, 0.3);
+      background-color: #cf30ff;
+      color: #222;
+      padding: 12px 24px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(207, 48, 255, 0.3);
     }
 
     .btn-valoracion-custom:hover {
-    background-color: #222;
-    color: #cf30ff;
-    box-shadow: 0 0 10px #cf30ff, 0 0 20px #cf30ff, 0 0 30px #cf30ff;
-    transform: translateY(-2px);
+      background-color: #222;
+      color: #cf30ff;
+      box-shadow: 0 0 10px #cf30ff, 0 0 20px #cf30ff, 0 0 30px #cf30ff;
+      transform: translateY(-2px);
     }
-
-
   </style>
 </head>
 <body>

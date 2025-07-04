@@ -46,6 +46,8 @@ def login_view(request):
                 request.session['usuario_logueado'] = usuario.nombre_usuario
                 request.session['usuario_id'] = usuario.pk
                 messages.success(request, 'Inicio de sesión exitoso.')
+                if usuario.rol == 'admin' or usuario.is_staff:
+                    return redirect('../administrador/admin_panel')
                 return redirect('mis_cursos')
             else:
                 messages.error(request, 'Contraseña incorrecta.')
@@ -2284,9 +2286,102 @@ def eliminar_cuenta(request):
 
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
-
-
 #-----------------------------------------------------------------------------------------------
 
 def despedida_view(request):
     return render(request, "educativa/despedida.html")
+
+#######################################################################
+#######################################################################
+
+
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+
+@session_required
+def admin_panel_view(request):
+    return render(request, 'educativa/admin_panel.html')
+
+#######################################################################
+##-------------------Estadisticas del dashboard----------------------##
+#######################################################################
+
+from django.shortcuts import render
+from plataforma.models import DatosDeEstudiantes, Curso, Clase, Comision
+from plataforma.decorators import session_required
+
+@session_required
+def admin_panel_view(request):
+    cantidad_alumnos = DatosDeEstudiantes.objects.count()
+    cantidad_cursos = Curso.objects.count()
+    cantidad_clases = Clase.objects.count()
+    cantidad_comisiones = Comision.objects.count()
+
+    contexto = {
+        "cantidad_alumnos": cantidad_alumnos,
+        "cantidad_cursos": cantidad_cursos,
+        "cantidad_clases": cantidad_clases,
+        "cantidad_comisiones": cantidad_comisiones,
+    }
+
+    return render(request, "educativa/admin_panel.html", contexto)
+
+#---------------------------------------------------------------------------
+
+# views.py
+from django.shortcuts import render
+from plataforma.models import DatosDeEstudiantes, Curso, Clase, Comision, PerfilUsuario
+from plataforma.decorators import session_required
+
+@session_required
+def admin_panel_view(request):
+    contexto = {
+        "cantidad_alumnos": PerfilUsuario.objects.filter(rol='alumno').count(),
+        "cantidad_cursos": Curso.objects.count(),
+        "cantidad_clases": Clase.objects.count(),
+        "cantidad_comisiones": Comision.objects.count(),
+        "cantidad_profesores": PerfilUsuario.objects.filter(rol='profesor').count(),
+        "cantidad_tutores": PerfilUsuario.objects.filter(rol='tutor').count(),
+        "cantidad_admins": PerfilUsuario.objects.filter(is_staff=True).count(),
+    }
+    return render(request, "administrador/admin_panel.html", contexto)
+
+@session_required
+def listado_alumnos_view(request):
+    alumnos = DatosDeEstudiantes.objects.select_related('perfilusuario') \
+                .filter(perfilusuario__rol='alumno')
+    return render(request, 'administrador/listado_alumnos.html', {'alumnos': alumnos})
+
+@session_required
+def listado_cursos_view(request):
+    cursos = Curso.objects.all().order_by('id_curso') 
+    return render(request, 'administrador/listado_cursos.html', {'cursos': cursos})
+
+@session_required
+def listado_comisiones_view(request):
+    comisiones = Comision.objects.select_related('id_curso').all().order_by('id_comision') 
+    return render(request, 'administrador/listado_comisiones.html', {'comisiones': comisiones})
+
+@session_required
+def listado_clases_view(request):
+    clases = Clase.objects.select_related('curso').all().order_by('curso_id', 'numero_clase')
+    return render(request, 'administrador/listado_clases.html', {'clases': clases})
+
+@session_required
+def listado_profesores_view(request):
+    profesores = PerfilUsuario.objects.filter(rol='profesor')
+    return render(request, 'administrador/listado_profesores.html', {'usuarios': profesores})
+
+@session_required
+def listado_tutores_view(request):
+    tutores = PerfilUsuario.objects.filter(rol='tutor')
+    return render(request, 'administrador/listado_tutores.html', {'usuarios': tutores})
+
+@session_required
+def listado_admins_view(request):
+    admins = PerfilUsuario.objects.filter(is_staff=True)
+    return render(request, 'administrador/listado_admins.html', {'usuarios': admins})
+
+@session_required
+def vista_chat_view(request):
+    return render(request, 'administrador/chat_placeholder.html')

@@ -114,6 +114,22 @@ urlpatterns = [
     path('alta_comision/', views.alta_comision_view, name='alta_comision'), #http://127.0.0.1:8000/alta_comision/
     path('alta_clase_comision/', views.alta_clase_comision_view, name='alta_clase_comision'), #http://127.0.0.1:8000/alta_clase_comision/
 
+    path('alta_curso/', views.alta_curso_view, name='alta_curso'),
+
+
+    path('administrador/admin_panel/', views.admin_panel_view, name='admin_panel'), #http://127.0.0.1:8000/admin-panel/
+
+    path('administrador/alumnos/', views.listado_alumnos_view, name='listado_alumnos'),
+    path('administrador/cursos/', views.listado_cursos_view, name='listado_cursos'),
+    path('administrador/comisiones/', views.listado_comisiones_view, name='listado_comisiones'),
+    path('administrador/clases/', views.listado_clases_view, name='listado_clases'),
+    path('administrador/profesores/', views.listado_profesores_view, name='listado_profesores'),
+    path('administrador/tutores/', views.listado_tutores_view, name='listado_tutores'),
+    path('administrador/admins/', views.listado_admins_view, name='listado_admins'),
+    path('administrador/chat/', views.vista_chat_view, name='vista_chat'),
+
+
+
 
 
     #  path('mis-cursos/', views.mis_cursos_view, name='mis_cursos'), #con este path no me anda el login
