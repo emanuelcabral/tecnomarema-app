@@ -48,7 +48,14 @@
         <li class="nav-item"><a href="{% url 'estadisticas' %}" class="nav-link"><i class="bi bi-bar-chart me-2"></i>Estadísticas</a></li>
         <li class="nav-item"><a href="{% url 'entrega_proyecto' comision_id='000001' %}" class="nav-link"><i class="bi bi-upload me-2"></i>Entregas</a></li>
         <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-gear me-2"></i>Configuración</a></li>
-        <li class="nav-item mt-3"><a href="{% url 'logout' %}" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión</a></li>
+        <li class="nav-item ">
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="nav-link text-danger bg-transparent border-0 pl-3" style="cursor: pointer;">
+                    <i class="bi bi-box-arrow-right me-2"></i>Cerrar sesión
+                </button>
+            </form>
+        </li>
       </ul>
     </div>
 

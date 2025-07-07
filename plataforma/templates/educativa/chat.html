@@ -157,8 +157,6 @@
         user-select: none;
 }
 
-
-
 .boton-chat{
   background-color: transparent;
   border: none;
@@ -188,17 +186,10 @@
 .borde-animado {
   border: 5px solid #cf30ff;
   box-shadow: 0 0 5px 5px #12f693;
-  /* background-image: linear-gradient(#222, #222), linear-gradient(90deg, #12f693, #cf30ff, #12f693);
-  background-origin: border-box;
-  background-clip: content-box, border-box; */
   animation: animarBorde 4s linear infinite;
   border-radius: 8px;
 }
 
-/* @keyframes animarBorde {
-  0% { background-position: 0% 50%; }
-  100% { background-position: 100% 50%; }
-} */
 
 @keyframes animarBorde {
   0% { box-shadow: 0 0 5px 5px #12f693; }
@@ -218,13 +209,84 @@
       <!-- Sidebar -->
       <div class="sidebar">
         <h5>Chats</h5>
-        <div class="chat-list">
-          <!-- <button id="btn-general" class="active"># General<span id="pill-nuevos" class="badge-pill">0</span></button> -->
-          <button id="btn-general" class="active"># General <span id="pill-nuevos" class="badge-pill" style="display:none;">0</span></button>
+<div class="chat-list">
+  <!-- Botón: Chat General -->
+  <button id="btn-general" class="{% if chat.tipo == 'general' %}active{% endif %}" onclick="window.location.href='{% url 'chat_general' %}'">
+    # General
+    <span id="pill-nuevos" class="badge-pill" style="display:none;">0</span>
+  </button>
 
-          <button># Comisión 20735</button>
-          <button>@ Emanuel Cabral</button>
-        </div>
+  <!-- Botones: Chats de Comisión -->
+  {% if usuario.id_estudiante %}
+    {% for comision in usuario.id_estudiante|comisiones_del_usuario %}
+      <button class="{% if chat.tipo == 'comision' and chat.comision.id_comision == comision.id_comision %}active{% endif %}"
+              onclick="window.location.href='{% url 'chat_comision' comision.id_comision %}'">
+        # Comisión {{ comision.numero_comision }}
+      </button>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Separador visual -->
+  <hr style="border-color: #444;">
+
+  <!-- Chat privado -->
+  <h6 class="text-white mt-3">Iniciar chat privado con:</h6>
+
+  <!-- Input buscador -->
+  <input
+    type="text"
+    id="buscador-usuarios"
+    class="form-control mb-2"
+    placeholder="Buscar usuario..."
+    autocomplete="off"
+  />
+
+  <!-- Lista donde se muestran usuarios filtrados -->
+  <ul class="list-unstyled ps-2" id="lista-usuarios">
+    {% for u in usuarios_destino %}
+      <li>
+        <a href="{% url 'chat_privado' nombre_usuario_destino=u.nombre_usuario %}"
+           class="text-decoration-none {% if chat.tipo == 'privado' and destinatario.nombre_usuario == u.nombre_usuario %}fw-bold text-success{% else %}text-light{% endif %}">
+          <i class="bi bi-person-circle me-1"></i>
+          {{ u.id_estudiante.nombre|default:u.nombre_usuario }}
+          {{ u.id_estudiante.apellido|default:'' }}
+        </a>
+      </li>
+    {% empty %}
+      <li class="text-secondary">No hay usuarios disponibles para chat privado</li>
+    {% endfor %}
+  </ul>
+</div>
+
+{% if chat.tipo == 'privado' and destinatario %}
+<div class="chat-header">
+  <h5>💬 Chat privado con 
+    {% if destinatario.id_estudiante.nombre and destinatario.id_estudiante.apellido %}
+      {{ destinatario.id_estudiante.nombre }} {{ destinatario.id_estudiante.apellido }}
+    {% else %}
+      {{ destinatario.nombre_usuario }}
+    {% endif %}
+  </h5>
+</div>
+{% endif %}
+
+
+
+<!-- Lista de chats privados -->
+{% for item in chats_privados_con_otro %}
+  <button onclick="location.href='{% url 'chat_privado' item.otro.nombre_usuario %}'"
+          class="{% if chat.id == item.chat.id %}active{% endif %}">
+    💬 
+    {% if item.otro.id_estudiante.nombre %}
+      {{ item.otro.id_estudiante.nombre }} {{ item.otro.id_estudiante.apellido }}
+    {% else %}
+      {{ item.otro.nombre_usuario }}
+    {% endif %}
+  </button>
+{% endfor %}
+
+
+
       </div>
 
 
@@ -238,6 +300,9 @@
   <span id="contador-destacados" >0 mensajes destacados</span>
   <button class="btn btn-info btn-sm" onclick="mostrarDestacados()">👁 Ver destacados</button>
   <button class="btn btn-dark btn-sm" onclick="mostrarTodos()">🔁 Ver todos</button>
+  {% if chat.tipo != 'general' %}
+<a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}" class="btn btn-light btn-sm">👥 Participantes</a>
+{% endif %}
 </div>
 <!-- destacados -->
 
@@ -283,26 +348,32 @@
   <div id="nuevo-badge">Mensajes nuevos ↓</div>
   <div id="typing-box" class="text-muted small px-3" style="color: #12f693 !important;"></div>
 
-  <!-- Formulario para enviar mensajes con archivo -->
-  <form class="message-input" id="message-form" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    
-    <!-- Input oculto para archivo -->
-    <input type="file" name="archivo" id="file-input" style="display: none;"
-      accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.zip,.rar">
+<!-- Formulario para enviar mensajes con archivo -->
+<form class="message-input" id="message-form" method="POST" enctype="multipart/form-data"
+  action="{% if chat.tipo == 'comision' %}
+            {% url 'enviar_mensaje_comision' chat.comision.id_comision %}
+          {% else %}
+            {% url 'enviar_mensaje_general' %}
+          {% endif %}">
+  {% csrf_token %}
 
-    <!-- Botón de adjuntar -->
-    <button type="button" class="file-btn" title="Adjuntar archivo"
-      onclick="document.getElementById('file-input').click();">
-      <i class="bi bi-paperclip"></i>
-    </button>
+  <!-- Input oculto para archivo -->
+  <input type="file" name="archivo" id="file-input" style="display: none;"
+    accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.zip,.rar">
 
-    <!-- Área de texto -->
-    <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
+  <!-- Botón de adjuntar -->
+  <button type="button" class="file-btn" title="Adjuntar archivo"
+    onclick="document.getElementById('file-input').click();">
+    <i class="bi bi-paperclip"></i>
+  </button>
 
-    <!-- Botón enviar -->
-    <button type="submit"><i class="bi bi-send"></i> Enviar</button><br>
-  </form>
+  <!-- Área de texto -->
+  <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
+
+  <!-- Botón enviar -->
+  <button type="submit"><i class="bi bi-send"></i> Enviar</button><br>
+</form>
+
 </div>
     </div>
     </div>
@@ -324,6 +395,7 @@
   let mensajesCargados = [];  // Se usará para almacenar todos los mensajes cargados
 
   const usuarioLogueado = "{{ request.session.usuario_logueado }}"; // usuario actual para comparación
+  const chatId = "{{ chat.id }}";  // ID del chat actual para control de escritura
 
   function reemplazarYoutubeLinks(texto) {
     const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/g;
@@ -458,7 +530,8 @@
 }
 // fin del destaque
   function actualizarMensajes() {
-    fetch("{% url 'obtener_mensajes' %}")
+    const urlMensajes = "{% if chat.tipo == 'comision' %}{% url 'obtener_mensajes_comision' chat.comision.id_comision %}{% else %}{% url 'obtener_mensajes' %}{% endif %}";
+    fetch(urlMensajes)
       .then(response => response.json())
       .then(data => {
         const lista = document.getElementById('message-list');
@@ -693,36 +766,40 @@ iniciarPolling();  // ✅ inicia automáticamente
 <!-- ######################################################################################################################### -->
 <!-- ver quien esta escribiendo inicia -->
 <script>
-  let typingTimeout;
-document.querySelector('textarea[name="mensaje"]').addEventListener('input', () => {
-  // Avisar que el usuario está escribiendo (cada vez que tipean)
-  fetch("{% url 'marcar_escribiendo' %}", {
-    method: 'POST',
-    headers: {
-      'X-CSRFToken': '{{ csrf_token }}'
-    }
+  function notificarEscribiendo() {
+    fetch("/chat/escribiendo/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": "{{ csrf_token }}",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        usuario: usuarioLogueado
+      })
+    });
+  }
+
+  document.querySelector('textarea[name="mensaje"]').addEventListener('input', () => {
+    notificarEscribiendo();
   });
 
-  // Evitar flood de requests (cada 5s aprox)
-  clearTimeout(typingTimeout);
-  typingTimeout = setTimeout(() => {}, 3000);
-});
+  function verificarEscribiendo() {
+    fetch(`/chat/verificar_escribiendo/?chat_id=${chatId}`)
+      .then(res => res.json())
+      .then(data => {
+        const box = document.getElementById('typing-box');
+        if (data.usuario && data.usuario !== usuarioLogueado) {
+          box.innerHTML = `<i class="bi bi-pencil"></i> ${data.usuario} está escribiendo...`;
+        } else {
+          box.innerText = '';
+        }
+      });
+  }
 
-// Mostrar quién está escribiendo
-function verificarTyping() {
-  fetch("{% url 'obtener_typing' %}")
-    .then(response => response.json())
-    .then(data => {
-      const box = document.getElementById('typing-box');
-      if (data.escribiendo.length > 0) {
-        box.innerText = `${data.escribiendo.join(', ')} está escribiendo...`;
-      } else {
-        box.innerText = '';
-      }
-    });
-}
-setInterval(verificarTyping, 1000); // Polling cada 1s
+  setInterval(verificarEscribiendo, 1000);
 </script>
+
 <!-- ver quien esta escribiendo fin -->
 <!-- ######################################################################################################################### -->
 <!-- ######################################################################################################################### -->
@@ -962,5 +1039,47 @@ function mostrarTodos() {
 }
 </script>
 <!-- divisiones de dias del chat fin -->
+<!-- script para buscador de participantes para envio de mensaje privado inicia -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const inputBuscador = document.getElementById('buscador-usuarios');
+  const listaUsuarios = document.getElementById('lista-usuarios');
+
+  inputBuscador.addEventListener('input', () => {
+    const query = inputBuscador.value.trim();
+
+    if (query.length === 0) {
+      // Si está vacío, recargamos la página para mostrar la lista completa o
+      // podés implementar lógica para mostrar lista inicial guardada en JS
+      location.reload();
+      return;
+    }
+
+    fetch(`/chat/buscar_usuarios/?q=${encodeURIComponent(query)}`)
+      .then(res => res.json())
+      .then(data => {
+        listaUsuarios.innerHTML = '';
+
+        if (data.usuarios.length === 0) {
+          listaUsuarios.innerHTML = `<li class="text-muted">No se encontraron usuarios</li>`;
+          return;
+        }
+
+        data.usuarios.forEach(u => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = `/chat/privado/${u.id_usuario}/`; // Ajusta URL según tu config
+          a.className = 'text-decoration-none text-light';
+          a.innerHTML = `<i class="bi bi-person-circle me-1"></i> @${u.nombre_usuario}`;
+          li.appendChild(a);
+          listaUsuarios.appendChild(li);
+        });
+      });
+  });
+});
+
+</script>
+<!-- script para buscador de participantes para envio de mensaje privado fin -->
+
 </body>
 </html>

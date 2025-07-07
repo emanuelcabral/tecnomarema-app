@@ -179,13 +179,34 @@ urlpatterns = [
     path('chat_general/', views.chat_general, name='chat_general'),
     path('chat_general/mensajes/', views.obtener_mensajes, name='obtener_mensajes'),
 
-    path('chat_general/escribiendo/', views.obtener_typing, name='obtener_typing'),
-    path('chat_general/marcar_escribiendo/', views.marcar_escribiendo, name='marcar_escribiendo'),
+    # path('chat_general/escribiendo/', views.obtener_typing, name='obtener_typing'),
+    # path('chat_general/marcar_escribiendo/', views.marcar_escribiendo, name='marcar_escribiendo'),
 
     path('editar_mensaje/', views.editar_mensaje, name='editar_mensaje'),
     path('borrar_mensaje/', views.borrar_mensaje, name='borrar_mensaje'),
 
     path('chat/toggle_destacar/', views.toggle_destacar_mensaje, name='toggle_destacar'),
+
+    path('chat_comision/<str:id_comision>/', views.chat_comision_view, name='chat_comision'), # chat de comisiones
+
+    path('chat_comision/<str:id_comision>/mensajes/', views.obtener_mensajes_comision, name='obtener_mensajes_comision'), # mensajes de chat por comision
+
+    path('chat_general/enviar/', views.enviar_mensaje_general, name='enviar_mensaje_general'),
+path('chat_comision/<str:id_comision>/enviar/', views.enviar_mensaje_comision, name='enviar_mensaje_comision'),
+path("chat/privado/enviar/<str:id_usuario>/", views.enviar_mensaje_privado, name="enviar_mensaje_privado"),
+
+    path('chat/buscar_usuarios/', views.buscar_usuarios, name='buscar_usuarios'),
+    # path('mensaje/enviar/<str:nombre_usuario>/', views.enviar_mensaje_view, name='enviar_mensaje'),
+    # path('chat/privado/<str:usuario_destino>/', views.chat_privado_view, name='chat_privado'),
+    path('chat/privado/<str:nombre_usuario_destino>/', views.chat_privado, name='chat_privado'),
+
+
+
+
+path("chat/escribiendo/", views.notificar_escribiendo, name="notificar_escribiendo"),
+path("chat/verificar_escribiendo/", views.verificar_escribiendo, name="verificar_escribiendo"),
+
+
 
     # path('comision/<str:comision_id>/entregas/', views.ver_entregas_proyectos, name='ver_entregas_proyectos'),
     path('entrega/<int:entrega_id>/guardar/', views.guardar_nota_feedback, name='guardar_nota_feedback'),

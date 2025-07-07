@@ -96,12 +96,12 @@
                 <button type="submit" id="btn-ingreso">Ingresa</button>
                 <p>¿Olvidaste tu contraseña? Recuperala <a href="{% url 'password_reset' %}">aquí</a>.</p>
 
-                <!-- botón de google -->
+                {% comment %} <!-- botón de google -->
                 <a id="btn-google" href="" class="google-btn">
                     <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google logo" style="height:20px; vertical-align:middle; margin-right:8px;">
                     Ingresar con Google
                 </a>
-                <p class="text-center">*-- Proximamente ingreso con google ! --*</p>
+                <p class="text-center">*-- Proximamente ingreso con google ! --*</p> {% endcomment %}
             </form>
 
             <!-- Incluye SweetAlert2 -->

@@ -933,8 +933,8 @@ html {
             <li><a href="#info">Info</a></li>
             <li><a href="#testimonios">Testimonios</a></li>
             <li><a href="#faq">FAQ</a></li>
-            <li><a href="#inscripcion">Inscripción</a></li>
-            <li><a href="#login">Login</a></li>
+            <li><a href="{% url 'inscripcion' %}">Inscripción</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
             <li><a href="#contacto">Contacto</a></li>
           </ul>
         </div>
@@ -986,7 +986,7 @@ html {
           © 2025 Tecno Marema. Todos los derechos reservados.
         </div>
         <div>
-          <a href="#terminos">Términos y Condiciones</a>
+          <a href="{% url 'terminos_y_condiciones' %}">Términos y Condiciones</a>
         </div>
       </div>
     </div>

@@ -61,6 +61,12 @@
       border-radius: 12px;
     }
     /* Badges */
+    /* p.badge-marema{
+      display: inline-block !important;
+      word-wrap: break-word !important; 
+      overflow-wrap: break-word !important;
+    } */
+
     .badge-marema,
     .badge-horario {
       background-color: #12f693;
@@ -536,7 +542,7 @@
 <body>
   <!-- Navbar -->
   <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <nav class="navbar navbar-expand-xl navbar-dark px-3">
     <div class="container-fluid">
       <!-- LOGO -->
       <a class="navbar-brand" href="#">
@@ -560,7 +566,7 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#testimonios">Testimonios</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#faq">FAQ</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
           <li class="nav-item">
             <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm"><i
                 class="bi bi-pencil me-1"></i>Inscripción</a>
@@ -581,13 +587,13 @@
     <section class="container my-5">
       <div class="row align-items-center">
         <!-- Imagen a la izquierda -->
-        <div class="col-md-6 mb-4 mb-md-0">
+        <div class="col-lg-6 mb-4 mb-md-0">
           <!-- <img src="static/img/devweb.png" alt="Curso de Desarrollo Web" class="img-fluid rounded shadow"> -->
           <img src="{% static 'img/desarrollo.jpg' %}" alt="Desarrollo Web" class="curso-img mb-4">
         </div>
 
         <!-- Card a la derecha -->
-        <div class="col-md-6">
+        <div class="col-lg-6">
           <div class="card text-center text-white border-0 shadow-lg p-4 rounded-4">
             <h3 class="text-success mb-3">¿Qué aprenderás?</h3>
             <p class="fs-5">
@@ -599,7 +605,7 @@
               dispositivo.
               <br>
               <br>
-              <span class="badge badge-marema me-2">💥 ¡Probá la primera clase GRATIS y decidí después!</span>
+              <span class="badge badge-marema me-2 text-wrap">💥 ¡Probá la primera clase GRATIS y decidí después!</span>
             </p>
           </div>
         </div>
@@ -625,19 +631,19 @@
         <!-- Card Info del curso -->
         <div class="col-md-6">
           <div class="card card-tech h-100 p-4">
-            <h5 class="card-title text-uppercase text-success mb-4">Información del Proximo curso</h5>
+            <h5 class="card-title text-uppercase text-success mb-4 ">Información del Proximo curso</h5>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-hourglass-split"> Duración por clase</span> 2 horas por clase
+              <span class="badge badge-marema me-2 bi bi-hourglass-split text-wrap"> Duración por clase</span> 2 horas por clase
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-calendar-range"> Duración por curso</span> 11 semanas
+              <span class="badge badge-marema me-2 bi bi-calendar-range text-wrap"> Duración por curso</span> 11 semanas
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-journal-text"> Compromiso de Practica</span> 4-6 horas
+              <span class="badge badge-marema me-2 bi bi-journal-text text-wrap"> Compromiso de Practica</span> 4-6 horas
               semanales
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-bar-chart-fill"> Nivel del curso</span> Principiante a Experto
+              <span class="badge badge-marema me-2 bi bi-bar-chart-fill text-wrap"> Nivel del curso</span> Principiante a Experto
             </p>
           </div>
         </div>
@@ -678,8 +684,6 @@
       </div>
     </div>
 
-
-
 <div class="col-md-12 d-flex">
   <div class="card card-tech p-4 pb-0 w-100 text-center">
     <h5 class="card-title text-uppercase text-success mb-4">El calendario de los próximos cursos</h5>
@@ -687,7 +691,7 @@
 </div>
 
 <!-- Bloque: Próximos Cursos (Carousel con 3 por slide) -->
-<section class="container my-5">
+<section class="container my-5 p-5">
   <h2 class="text-uppercase fw-bold mb-4 text-center" style="color: #cf30ff;">Próximos Cursos</h2>
   <div id="cursosCarousel" class="carousel slide" data-bs-ride="carousel">
 
@@ -733,14 +737,30 @@
     </div>
 
     <!-- Flechas laterales personalizadas -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#cursosCarousel" data-bs-slide="prev" style="position: absolute; top: 50%; left: -140px; transform: translateY(-50%);">
-      <span class="carousel-control-prev-icon" aria-hidden="true" style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);"></span>
-      <span class="visually-hidden">Anterior</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#cursosCarousel" data-bs-slide="next" style="position: absolute; top: 50%; right: -140px; transform: translateY(-50%);">
-      <span class="carousel-control-next-icon" aria-hidden="true" style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);"></span>
-      <span class="visually-hidden">Siguiente</span>
-    </button>
+<!-- Flecha izquierda -->
+<button class="carousel-control-prev d-flex align-items-center justify-content-center 
+              top-50 start-0 translate-middle-y ms-0 ms-md-0 bg-success rounded" 
+        type="button" 
+        data-bs-target="#cursosCarousel" 
+        data-bs-slide="prev" style="width: auto;">
+  <span class="carousel-control-prev-icon" aria-hidden="true"
+        style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);">
+  </span>
+  <span class="visually-hidden">Anterior</span>
+</button>
+
+<!-- Flecha derecha -->
+<button class="carousel-control-next d-flex align-items-center justify-content-center 
+              top-50 end-0 translate-middle-y me-0 me-md-0 bg-success rounded" 
+        type="button" 
+        data-bs-target="#cursosCarousel" 
+        data-bs-slide="next" style="width: auto;">
+  <span class="carousel-control-next-icon" aria-hidden="true"
+        style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);">
+  </span>
+  <span class="visually-hidden">Siguiente</span>
+</button>
+
   </div>
 </section>
 
@@ -831,7 +851,7 @@
       <div class="card border-0 rounded-4 shadow-lg p-4" style="background-color: #121212; color: white;">
         <div class="row g-4 align-items-center">
           <!-- Imagen del certificado con modal -->
-          <div class="col-md-6">
+          <div class="col-lg-6">
             <a href="#" data-bs-toggle="modal" data-bs-target="#certModal">
               <img src="{% static 'img/certificado.jpg' %}" alt="Certificado del curso"
                 class="img-fluid rounded-3 shadow" style="border: 0px solid #12f693; cursor: pointer;">
@@ -839,7 +859,7 @@
           </div>
 
           <!-- Texto del bloque -->
-          <div class="col-md-6">
+          <div class="col-lg-6">
             <h3 class="text-uppercase fw-bold mb-3" style="color: #cf30ff;">Certificación Oficial</h3>
             <p class="mb-3 fs-5">
               Al finalizar el curso y aprobar tu <span style="color: #12f693;">proyecto final</span>, recibirás un
@@ -850,8 +870,8 @@
               <li>✅ Incluye tu nombre y proyecto final</li>
               <li>✅ Ideal para incluir en tu CV y LinkedIn</li>
             </ul>
-            <span class="badge text-bg-dark border border-dark px-3 py-2 fs-6"
-              style="background-color: #12f693 !important; color: #111 !important;">
+            <span class="badge text-bg-dark border border-dark px-3 py-2 fs-6 text-wrap"
+              style="background-color: #12f693 !important; color: #111 !important; ">
               💡 Sumá una credencial que potencia tu perfil profesional.
             </span>
           </div>
@@ -984,7 +1004,7 @@
       <div class="row">
 
         <!-- Mapa del sitio -->
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
           <ul class="list-unstyled">
             <li><a href="#inicio">Inicio</a></li>
@@ -992,14 +1012,14 @@
             <li><a href="#info">Info</a></li>
             <li><a href="#testimonios">Testimonios</a></li>
             <li><a href="#faq">FAQ</a></li>
-            <li><a href="#inscripcion">Inscripción</a></li>
-            <li><a href="#login">Login</a></li>
+            <li><a href="{% url 'inscripcion' %}">Inscripción</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
             <li><a href="#contacto">Contacto</a></li>
           </ul>
         </div>
 
         <!-- Redes sociales -->
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
           <div class="d-flex justify-content-start gap-3">
             <a href="#" class="fs-4 footer-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
@@ -1011,16 +1031,16 @@
         </div>
 
         <!-- Contacto -->
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
           <p class="mb-1">
             <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
-            <a href="mailto:contacto@tecnomarema.com">contacto@tecnomarema.com</a>
+            <a id="contacto" href="mailto:contacto@tecnomarema.com" style="word-wrap: break-word;">contacto@tecnomarema.com</a>
           </p>
         </div>
 
         <!-- Newsletter -->
-        <div class="col-md-3 mb-4">
+        <div class="col-lg-3 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Newsletter</h5>
           <p class="small">
             Suscribite y mantenete al día con novedades, recursos y contenidos exclusivos en tu correo.
@@ -1045,7 +1065,7 @@
           © 2025 Tecno Marema. Todos los derechos reservados.
         </div>
         <div>
-          <a href="#terminos">Términos y Condiciones</a>
+          <a href="{% url 'terminos_y_condiciones' %}">Términos y Condiciones</a>
         </div>
       </div>
     </div>

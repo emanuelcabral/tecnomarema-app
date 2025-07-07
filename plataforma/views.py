@@ -413,15 +413,31 @@ def mis_cursos(request):
         usuario = PerfilUsuario.objects.select_related('id_estudiante').get(nombre_usuario=nombre_usuario)
         estudiante = usuario.id_estudiante
 
-        # Cargar cursos y comisiones de cursando1, cursando2 y cursando3 hasta la 9 si llega haber mas de nueve cursos se debe actualizar
+        # Recolectar todas las comisiones del estudiante
         comisiones = []
-        for comision_id in [estudiante.cursando1_id, estudiante.cursando2_id, estudiante.cursando3_id, estudiante.cursando4_id, estudiante.cursando5_id , estudiante.cursando6_id, estudiante.cursando7_id, estudiante.cursando8_id , estudiante.cursando9_id ]:
+        for comision_id in [
+            estudiante.cursando1_id, estudiante.cursando2_id, estudiante.cursando3_id,
+            estudiante.cursando4_id, estudiante.cursando5_id, estudiante.cursando6_id,
+            estudiante.cursando7_id, estudiante.cursando8_id, estudiante.cursando9_id
+        ]:
             if comision_id:
                 try:
                     comision = Comision.objects.select_related('id_curso').get(id_comision=comision_id)
                     comisiones.append(comision)
                 except Comision.DoesNotExist:
                     continue
+
+        # Ordenar comisiones por estado: en_curso (0), proximo (1), finalizado (2)
+        estado_orden = {
+            'en_curso': 0,
+            'proximo': 1,
+            'finalizado': 2
+        }
+
+        comisiones.sort(key=lambda c: (
+            estado_orden.get(c.estado_comision, 3),  # orden de estado
+            c.fecha_inicio or datetime.date.today()  # orden secundario por fecha de inicio
+        ))
 
         contexto = {
             'usuario': usuario,
@@ -430,12 +446,12 @@ def mis_cursos(request):
             'nombre_usuario': nombre_usuario,
             'es_autenticado': es_autenticado,
         }
+
         return render(request, 'educativa/mis_cursos.html', contexto)
 
     except PerfilUsuario.DoesNotExist:
         messages.error(request, 'Usuario no encontrado.')
         return redirect('login')
-    
 
 # --------------------------------------------------------------------------------------
 
@@ -1386,16 +1402,10 @@ from django.shortcuts import render, get_object_or_404
 from .models import PerfilUsuario, Curso, Comision, DatosDeEstudiantes
 from django.db.models import Q
 
-from django.shortcuts import render, get_object_or_404
-from .models import PerfilUsuario, Curso, Comision, DatosDeEstudiantes
-from django.db.models import Q
-
 def participantes_view(request, numero_comision, id_curso):
-    # Buscar el curso y la comisión específica
     curso = get_object_or_404(Curso, id_curso=id_curso)
     comision = get_object_or_404(Comision, numero_comision=numero_comision, id_curso=curso)
 
-    # Buscar estudiantes cursando esa comisión en cualquiera de los campos cursando1-9
     estudiantes = DatosDeEstudiantes.objects.filter(
         Q(cursando1=comision) |
         Q(cursando2=comision) |
@@ -1412,6 +1422,14 @@ def participantes_view(request, numero_comision, id_curso):
     tutores = PerfilUsuario.objects.filter(rol='tutor', id_estudiante__in=estudiantes)
     alumnos = PerfilUsuario.objects.filter(rol='alumno', id_estudiante__in=estudiantes)
 
+    nombre_usuario = request.session.get('usuario_logueado')
+    perfil_usuario_logueado = None
+    if nombre_usuario:
+        try:
+            perfil_usuario_logueado = PerfilUsuario.objects.get(nombre_usuario=nombre_usuario)
+        except PerfilUsuario.DoesNotExist:
+            perfil_usuario_logueado = None
+
     context = {
         'curso': curso,
         'comision': comision,
@@ -1419,9 +1437,11 @@ def participantes_view(request, numero_comision, id_curso):
         'tutores': tutores,
         'alumnos': alumnos,
         'cantidad_alumnos': alumnos.count(),
+        'perfil_usuario_logueado': perfil_usuario_logueado,
     }
 
     return render(request, 'educativa/participantes.html', context)
+
 
 
 
@@ -1750,21 +1770,21 @@ def mi_certificado_redirect(request):
 
     return redirect('mi_certificado', id_estudiante=estudiante.id_estudiante, id_comision=comision.id_comision)
 
+#aca con este codigo muestra las comisiones proximas del curso de desarrollo web
+def desarrollo_web_compra(request):
+    desarrollo_web = Curso.objects.filter(nombre_curso__icontains="desarrollo web").first()
 
-# def desarrollo_web_compra(request):
-#     desarrollo_web = Curso.objects.filter(nombre_curso__icontains="desarrollo web").first()
+    if desarrollo_web:
+        comisiones = Comision.objects.filter(
+            id_curso=desarrollo_web,
+            estado_comision='proximo'
+        ).order_by('fecha_inicio')
+    else:
+        comisiones = []
 
-#     if desarrollo_web:
-#         comisiones = Comision.objects.filter(
-#             id_curso=desarrollo_web,
-#             estado_comision='proximo'
-#         ).order_by('fecha_inicio')
-#     else:
-#         comisiones = []
-
-#     return render(request, 'educativa/desarrollo_web_compra.html', {
-#         'comisiones': comisiones
-#     })
+    return render(request, 'educativa/desarrollo_web_compra.html', {
+        'comisiones': comisiones
+    })
 
 
 @session_required
@@ -1832,7 +1852,7 @@ def chat_general(request):
         texto = request.POST.get('mensaje', '').strip()
         archivo = request.FILES.get('archivo')
 
-        if texto or archivo:  # Aceptar si hay texto o archivo (o ambos)
+        if texto or archivo:
             Mensaje.objects.create(
                 chat=chat_general,
                 remitente=usuario,
@@ -1847,6 +1867,8 @@ def chat_general(request):
         'chat': chat_general,
         'mensajes': mensajes,
         'usuario': usuario,
+        'usuarios_destino': [],  # 👈 vacío en chat general
+        'comision': comision,
     })
 
 #####################################################################################
@@ -1880,36 +1902,102 @@ def obtener_mensajes(request):
     return JsonResponse({'mensajes': lista})
 
 ########################################################################################
+###---------------------obtener mensajes por comision--------------------------------###
+########################################################################################
+
+@session_required
+def obtener_mensajes_comision(request, id_comision):
+    usuario = PerfilUsuario.objects.get(nombre_usuario=request.session['usuario_logueado'])
+
+    try:
+        chat = Chat.objects.get(tipo='comision', comision__id_comision=id_comision)
+    except Chat.DoesNotExist:
+        return JsonResponse({'mensajes': []})
+
+    mensajes = chat.mensajes.select_related('remitente').order_by('creado')
+
+    data = []
+    for m in mensajes:
+        data.append({
+            'id': m.id,
+            'usuario': m.remitente.nombre_usuario,
+            'texto': m.texto,
+            'archivo_url': m.archivo.url if m.archivo else '',
+            'archivo_nombre': m.archivo.name.split('/')[-1] if m.archivo else '',
+            'hora': m.creado.strftime("%d/%m %H:%M"),
+            'fecha': m.creado.isoformat(),
+            'destacado': m.destacado,
+            'creado': m.creado.isoformat(),
+        })
+
+    return JsonResponse({'mensajes': data})
+
+
+########################################################################################
 ####-------------------saber si esta escribiendo un usuario en el chat---------------###
 ########################################################################################
 
+# from django.views.decorators.csrf import csrf_exempt
+# from django.utils import timezone
+# from django.http import JsonResponse
+
+# @csrf_exempt
+# def marcar_escribiendo(request):
+#     if request.method == 'POST':
+#         usuario_id = request.session.get('usuario_id')
+#         if usuario_id:
+#             try:
+#                 usuario = PerfilUsuario.objects.get(pk=usuario_id)
+#                 usuario.ultimo_typing = timezone.now()
+#                 usuario.save(update_fields=['ultimo_typing'])
+#                 return JsonResponse({'ok': True})
+#             except PerfilUsuario.DoesNotExist:
+#                 pass
+#     return JsonResponse({'ok': False})
+
+# # Vista para consultar quién está escribiendo ↓
+
+# def obtener_typing(request):
+#     usuarios_typing = PerfilUsuario.objects.filter(
+#         ultimo_typing__gte=timezone.now() - timezone.timedelta(seconds=5)
+#     ).exclude(pk=request.session.get('usuario_id'))
+
+#     nombres = [u.nombre_usuario for u in usuarios_typing]
+#     return JsonResponse({'escribiendo': nombres})
+
+
+
+
+
 from django.views.decorators.csrf import csrf_exempt
-from django.utils import timezone
 from django.http import JsonResponse
+import json, time
+
+# Guardamos temporalmente quién escribe en qué chat
+usuarios_escribiendo = {}
 
 @csrf_exempt
-def marcar_escribiendo(request):
-    if request.method == 'POST':
-        usuario_id = request.session.get('usuario_id')
-        if usuario_id:
-            try:
-                usuario = PerfilUsuario.objects.get(pk=usuario_id)
-                usuario.ultimo_typing = timezone.now()
-                usuario.save(update_fields=['ultimo_typing'])
-                return JsonResponse({'ok': True})
-            except PerfilUsuario.DoesNotExist:
-                pass
-    return JsonResponse({'ok': False})
+def notificar_escribiendo(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        chat_id = str(data.get("chat_id"))
+        usuario = data.get("usuario")
+        if chat_id and usuario:
+            usuarios_escribiendo[chat_id] = {
+                'usuario': usuario,
+                'timestamp': time.time()
+            }
+        return JsonResponse({"status": "ok"})
+    return JsonResponse({"error": "Método no permitido"}, status=405)
 
-# Vista para consultar quién está escribiendo ↓
+def verificar_escribiendo(request):
+    chat_id = request.GET.get("chat_id")
+    ahora = time.time()
+    data = usuarios_escribiendo.get(chat_id)
+    if data and ahora - data['timestamp'] < 5:
+        return JsonResponse({'usuario': data['usuario']})
+    return JsonResponse({'usuario': None})
 
-def obtener_typing(request):
-    usuarios_typing = PerfilUsuario.objects.filter(
-        ultimo_typing__gte=timezone.now() - timezone.timedelta(seconds=5)
-    ).exclude(pk=request.session.get('usuario_id'))
-
-    nombres = [u.nombre_usuario for u in usuarios_typing]
-    return JsonResponse({'escribiendo': nombres})
 
 ################################################################################
 
@@ -1999,6 +2087,64 @@ def toggle_destacar_mensaje(request):
     mensaje.destacado = not mensaje.destacado
     mensaje.save()
     return JsonResponse({'status': 'ok', 'destacado': mensaje.destacado})
+
+####################################################################################
+###------------------chat comision view-(filtrado de chats)----------------------###
+####################################################################################
+
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from .models import Chat, Mensaje, PerfilUsuario, Comision
+
+@session_required
+def chat_comision_view(request, id_comision):
+    usuario = PerfilUsuario.objects.select_related('id_estudiante').get(nombre_usuario=request.session['usuario_logueado'])
+
+    # Obtener comisiones del estudiante
+    estudiante = usuario.id_estudiante
+    comisiones_permitidas = [
+        estudiante.cursando1_id, estudiante.cursando2_id, estudiante.cursando3_id,
+        estudiante.cursando4_id, estudiante.cursando5_id, estudiante.cursando6_id,
+        estudiante.cursando7_id, estudiante.cursando8_id, estudiante.cursando9_id
+    ]
+    pertenece = (id_comision in comisiones_permitidas) or (usuario.rol in ['profesor', 'tutor'])
+
+    if not pertenece:
+        messages.error(request, "No tenés permiso para acceder a este chat.")
+        return redirect('mis_cursos')
+
+    chat, _ = Chat.objects.get_or_create(tipo='comision', comision_id=id_comision)
+    chat.participantes.add(usuario)
+
+    # Obtener la comision para acceder a tutores y profesor
+    from .models import Comision
+    comision = Comision.objects.get(id_comision=id_comision)
+
+    usuarios_destino = []
+
+    # Agregar tutores (si existen)
+    if hasattr(comision, 'tutores'):  # Si es M2M
+        usuarios_destino.extend(comision.tutores.all())
+    elif hasattr(comision, 'tutor') and comision.tutor is not None:
+        usuarios_destino.append(comision.tutor)
+
+    # Agregar profesor (si existe)
+    if hasattr(comision, 'profesor') and comision.profesor is not None:
+        usuarios_destino.append(comision.profesor)
+
+    # Excluir al usuario actual
+    usuarios_destino = [u for u in usuarios_destino if u != usuario]
+
+    mensajes = Mensaje.objects.filter(chat=chat).select_related('remitente').order_by('creado')
+
+    return render(request, 'educativa/chat.html', {
+        'chat': chat,
+        'mensajes': mensajes,
+        'usuario': usuario,
+        'usuarios_destino': usuarios_destino,
+        'comision': comision,
+    })
+
 
 
 #####################################################################################
@@ -2385,3 +2531,201 @@ def listado_admins_view(request):
 @session_required
 def vista_chat_view(request):
     return render(request, 'administrador/chat_placeholder.html')
+
+##################################################################################################
+###-------------------enviado de mensajes por comision y chat general--------------------------###
+##################################################################################################
+
+@session_required
+def enviar_mensaje_general(request):
+    if request.method == "POST":
+        usuario = PerfilUsuario.objects.get(nombre_usuario=request.session['usuario_logueado'])
+        texto = request.POST.get("mensaje", "")
+        archivo = request.FILES.get("archivo")
+
+        chat = Chat.objects.get(tipo='general')
+
+        Mensaje.objects.create(
+            chat=chat,
+            remitente=usuario,
+            texto=texto,
+            archivo=archivo
+        )
+
+        return redirect('chat_general')
+
+@session_required
+def enviar_mensaje_comision(request, id_comision):
+    if request.method == "POST":
+        usuario = PerfilUsuario.objects.get(nombre_usuario=request.session['usuario_logueado'])
+        texto = request.POST.get("mensaje", "")
+        archivo = request.FILES.get("archivo")
+
+        chat = Chat.objects.get(tipo='comision', comision__id_comision=id_comision)
+
+        Mensaje.objects.create(
+            chat=chat,
+            remitente=usuario,
+            texto=texto,
+            archivo=archivo
+        )
+
+        return redirect('chat_comision', id_comision=id_comision)
+
+##################################################################################################
+###----------------------------------Chat privado----------------------------------------------###
+##################################################################################################
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.db.models import Count
+from .models import Chat, PerfilUsuario
+
+def comparten_comision(est1, est2):
+    if not est1 or not est2:
+        return False
+    coms1 = [est1.cursando1, est1.cursando2, est1.cursando3, est1.cursando4,
+             est1.cursando5, est1.cursando6, est1.cursando7, est1.cursando8, est1.cursando9]
+    coms2 = [est2.cursando1, est2.cursando2, est2.cursando3, est2.cursando4,
+             est2.cursando5, est2.cursando6, est2.cursando7, est2.cursando8, est2.cursando9]
+    return any(c1 and c1 in coms2 for c1 in coms1)
+
+def chat_privado(request, nombre_usuario_destino):
+    if 'usuario_logueado' not in request.session:
+        return redirect('login')
+
+    remitente = get_object_or_404(PerfilUsuario, nombre_usuario=request.session['usuario_logueado'])
+    destinatario = get_object_or_404(PerfilUsuario, nombre_usuario=nombre_usuario_destino)
+
+    est_rem = remitente.id_estudiante
+    est_dest = destinatario.id_estudiante
+
+    # Validaciones por rol y comisión compartida
+    if remitente.rol == 'alumno':
+        if destinatario.rol not in ['tutor', 'profesor'] or not comparten_comision(est_rem, est_dest):
+            return redirect('chat_general')
+    elif remitente.rol == 'tutor':
+        if destinatario.rol not in ['alumno', 'profesor'] or not comparten_comision(est_rem, est_dest):
+            return redirect('chat_general')
+    elif remitente.rol == 'profesor':
+        if destinatario.rol not in ['alumno', 'tutor'] or not comparten_comision(est_rem, est_dest):
+            return redirect('chat_general')
+
+    # Buscar chat privado con esos dos usuarios
+    chats = Chat.objects.filter(
+        tipo='privado',
+        participantes=remitente
+    ).filter(
+        participantes=destinatario
+    ).annotate(num_participantes=Count('participantes')).filter(num_participantes=2)
+
+    chat = chats.first()
+
+    if not chat:
+        chat = Chat.objects.create(tipo='privado')
+        chat.participantes.add(remitente, destinatario)
+
+    mensajes = chat.mensajes.select_related('remitente').order_by('creado')
+
+    return render(request, 'educativa/chat.html', {
+        'chat': chat,
+        'mensajes': mensajes,
+        'usuario': remitente,
+        'destinatario': destinatario,
+        'comision': comision,
+    })
+
+##################################################################################################
+###---------------------Enviar mensaje a chat privado------------------------------------------###
+##################################################################################################
+
+def enviar_mensaje_privado(request, id_usuario_destino):
+    if request.method == 'POST':
+        remitente = PerfilUsuario.objects.get(nombre_usuario=request.session['usuario_logueado'])
+        destinatario = PerfilUsuario.objects.get(id_usuario=id_usuario_destino)
+
+        chats = Chat.objects.filter(
+            tipo='privado',
+            comision=remitente.comision,
+            participantes=remitente
+        ).filter(
+            participantes=destinatario
+        ).annotate(num_participantes=Count('participantes')).filter(num_participantes=2)
+
+        chat = chats.first()
+
+        if not chat:
+            return redirect('chat_general')  # O crear el chat antes
+
+        texto = request.POST.get('mensaje')
+        archivo = request.FILES.get('archivo')
+
+        Mensaje.objects.create(chat=chat, remitente=remitente, texto=texto, archivo=archivo)
+
+        return redirect('chat_privado', id_usuario_destino=id_usuario_destino)
+
+
+##################################################################################################
+###---------------------obtener usuarios de destino privado-------------------------------------###
+##################################################################################################
+
+
+from django.db.models import Q
+
+def obtener_usuarios_destino_privado(usuario):
+    if usuario.rol == 'alumno':
+        comisiones = [
+            usuario.cursando1, usuario.cursando2, usuario.cursando3,
+            usuario.cursando4, usuario.cursando5, usuario.cursando6,
+            usuario.cursando7, usuario.cursando8, usuario.cursando9
+        ]
+        comisiones = [c for c in comisiones if c is not None]
+
+        return PerfilUsuario.objects.filter(
+            Q(rol='tutor', id_empleado__comision__in=comisiones) |
+            Q(rol='profesor', id_empleado__comision__in=comisiones)
+        ).distinct()
+
+    elif usuario.rol in ['tutor', 'profesor']:
+        comisiones = [
+            usuario.id_empleado.comision1, usuario.id_empleado.comision2,
+            usuario.id_empleado.comision3, usuario.id_empleado.comision4,
+            usuario.id_empleado.comision5
+        ]
+        comisiones = [c for c in comisiones if c is not None]
+
+        alumnos_q = Q()
+        for i in range(1, 10):
+            alumnos_q |= Q(**{f'cursando{i}__in': comisiones})
+
+        if usuario.rol == 'tutor':
+            return PerfilUsuario.objects.filter(
+                Q(rol='alumno') & alumnos_q |
+                Q(rol='profesor', id_empleado__comision__in=comisiones)
+            ).exclude(id_usuario=usuario.id_usuario).distinct()
+        else:  # profesor
+            return PerfilUsuario.objects.filter(
+                Q(rol='alumno') & alumnos_q |
+                Q(rol='tutor', id_empleado__comision__in=comisiones)
+            ).exclude(id_usuario=usuario.id_usuario).distinct()
+
+    return PerfilUsuario.objects.none()
+
+
+##################################################################################################
+###---------------------buscar usuarios desde input para chat privado--------------------------###
+##################################################################################################
+
+from django.http import JsonResponse
+from .models import PerfilUsuario
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def buscar_usuarios(request):
+    q = request.GET.get('q', '').strip()
+    usuarios = []
+
+    if q:
+        usuarios_qs = PerfilUsuario.objects.filter(nombre_usuario__icontains=q)[:20]
+        usuarios = [{'id_usuario': u.id_usuario, 'nombre_usuario': u.nombre_usuario} for u in usuarios_qs]
+
+    return JsonResponse({'usuarios': usuarios})

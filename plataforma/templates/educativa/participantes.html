@@ -222,7 +222,7 @@ section h3 {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 1.8rem;
   justify-items: center;
 }
@@ -232,7 +232,7 @@ section h3 {
   border: 1px solid #12f69333;
   border-radius: 15px;
   padding: 1rem;
-  width: 140px;
+  width: 150px;
   text-align: center;
   transition: border-color 0.3s ease, transform 0.2s ease;
   box-shadow: 0 0 6px #12f69322;
@@ -314,8 +314,9 @@ section h3 {
 </nav>
 
 <div class="barra-bienvenida">
-    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+    Bienvenido {{ perfil_usuario_logueado.nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
 </div>
+
 {% comment %} barra de navegavion fin {% endcomment %}
 
 <div class="container">
@@ -341,12 +342,17 @@ section h3 {
                 <p class="name">
                     {% with est=profesor.id_estudiante %}
                         {% if est and est.nombre and est.apellido %}
-                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em> <br> <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
-
+                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em> <br> 
+                            <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
                         {% else %}
                             {{ profesor.nombre_usuario }}
                         {% endif %}
                     {% endwith %}
+
+                    {% if perfil_usuario_logueado and perfil_usuario_logueado.nombre_usuario != profesor.nombre_usuario %}
+                    <br>
+                    <a href="{% url 'chat_privado' profesor.nombre_usuario %}" class="btn btn-success btn-sm" style="font-size:12px">Enviar mensaje</a>
+                    {% endif %}
                 </p>
             </div>
             {% endfor %}
@@ -368,11 +374,17 @@ section h3 {
                 <p class="name">
                     {% with est=tutor.id_estudiante %}
                         {% if est and est.nombre and est.apellido %}
-                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em><br> <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
+                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em><br> 
+                            <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
                         {% else %}
                             {{ tutor.nombre_usuario }}
                         {% endif %}
                     {% endwith %}
+
+                    {% if perfil_usuario_logueado and perfil_usuario_logueado.nombre_usuario != tutor.nombre_usuario %}
+                    <br>
+                    <a href="{% url 'chat_privado' tutor.nombre_usuario %}" class="btn btn-success btn-sm" style="font-size:12px">Enviar mensaje</a>
+                    {% endif %}
                 </p>
             </div>
             {% endfor %}
@@ -393,11 +405,17 @@ section h3 {
                 <p class="name">
                     {% with est=alumno.id_estudiante %}
                         {% if est and est.nombre and est.apellido %}
-                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em><br> <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
+                            {{ est.nombre }} {{ est.apellido }} <br> <em>{{ est.provincia }}</em><br> 
+                            <em class="age" data-fecha="{{ est.fecha_nacimiento|date:'Y-m-d' }}">Edad: </em>
                         {% else %}
                             {{ alumno.nombre_usuario }}
                         {% endif %}
                     {% endwith %}
+
+                    {% if perfil_usuario_logueado and perfil_usuario_logueado.nombre_usuario != alumno.nombre_usuario %}
+                    <br>
+                    <a href="{% url 'chat_privado' alumno.nombre_usuario %}" class="btn btn-success btn-sm" style="font-size:12px">Enviar mensaje</a>
+                    {% endif %}
                 </p>
             </div>
             {% endfor %}
@@ -405,6 +423,9 @@ section h3 {
     </section>
 
 </div>
+
+
+
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {

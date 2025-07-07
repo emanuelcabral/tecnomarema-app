@@ -130,19 +130,19 @@
 
 
 
-
+# #util_filtros.py
 from django import template
 from datetime import datetime, timedelta
 
 register = template.Library()
 
-# 🔹 Acceso a diccionarios en templates (puede usarse como get_item o dict_get)
+# 🔹 Acceso a diccionarios
 @register.filter(name="get_item")
 @register.filter(name="dict_get")
 def dict_get(d, key):
     return d.get(key)
 
-# 🔹 Resta 10 minutos a una hora en string "HH:MM"
+# 🔹 Resta 10 minutos a una hora en formato "HH:MM"
 @register.filter
 def resta_10min(hora_str):
     try:
@@ -152,7 +152,7 @@ def resta_10min(hora_str):
     except:
         return hora_str
 
-# 🔹 Suma 30 minutos a una hora en string "HH:MM"
+# 🔹 Suma 30 minutos a una hora en formato "HH:MM"
 @register.filter
 def suma_30min(hora_str):
     try:
@@ -162,7 +162,7 @@ def suma_30min(hora_str):
     except:
         return hora_str
 
-# 🔹 Agrupa una lista en bloques de N elementos
+# 🔹 Agrupar lista en bloques de N elementos
 @register.filter
 def agrupar_por(lista, n):
     if not lista:
@@ -170,15 +170,37 @@ def agrupar_por(lista, n):
     n = int(n)
     return [lista[i:i + n] for i in range(0, len(lista), n)]
 
-# 🔹 Filtro para verificar si termina con cierta extensión (chat, archivos)
-@register.filter
-def endswith(value, suffix):
-    return str(value).lower().endswith(suffix.lower())
-
-# 🔹 Multiplica dos valores
+# 🔹 Multiplicar dos valores
 @register.filter
 def mul(value, arg):
     try:
         return float(value) * float(arg)
     except:
         return ''
+
+# 🔹 Filtros para archivos / cadenas
+@register.filter
+def endswith(value, suffix):
+    return str(value).lower().endswith(suffix.lower())
+
+@register.filter
+def startswith(value, prefix):
+    return str(value).lower().startswith(prefix.lower())
+
+@register.filter
+def contains(value, substring):
+    return substring.lower() in str(value).lower()
+
+###################################################################################
+# -------------------- Filtro de comisiones del estudiante -----------------------
+###################################################################################
+
+@register.filter
+def comisiones_del_usuario(estudiante):
+    if not estudiante:
+        return []
+    return [c for c in [
+        estudiante.cursando1, estudiante.cursando2, estudiante.cursando3,
+        estudiante.cursando4, estudiante.cursando5, estudiante.cursando6,
+        estudiante.cursando7, estudiante.cursando8, estudiante.cursando9
+    ] if c]
