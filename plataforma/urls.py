@@ -200,6 +200,9 @@ path("chat/privado/enviar/<str:id_usuario>/", views.enviar_mensaje_privado, name
     # path('chat/privado/<str:usuario_destino>/', views.chat_privado_view, name='chat_privado'),
     path('chat/privado/<str:nombre_usuario_destino>/', views.chat_privado, name='chat_privado'),
 
+    path("chat_privado/<int:id>/mensajes/", views.obtener_mensajes_privado, name="chat_privado_mensajes"),
+
+
 
 
 
@@ -220,6 +223,8 @@ path("chat/verificar_escribiendo/", views.verificar_escribiendo, name="verificar
     path('eliminar_cuenta/', views.eliminar_cuenta, name='eliminar_cuenta'),
     path('despedida/', views.despedida_view, name='despedida'),
 
+
+path('ajax/comisiones/<str:id_curso>/', views.obtener_comisiones_por_curso, name='ajax_comisiones'),
 
 ]
 

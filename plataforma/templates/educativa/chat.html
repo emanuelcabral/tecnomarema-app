@@ -2,6 +2,7 @@
 {% load util_filtros %}
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Chat Interno</title>
@@ -21,7 +22,7 @@
       display: flex;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 0 15px rgba(0,0,0,0.7);
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
     }
 
     .sidebar {
@@ -129,340 +130,349 @@
       color: #fff;
     }
 
-    #nuevo-badge{
-        display:none;
-        position: sticky;
-        top: 0;
-        background-color: #fff000;
-        color: #111;
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-weight: bold;
-        cursor: pointer;
-        text-align: center;
-        z-index: 10;
-        margin-bottom: 4px;
+    #nuevo-badge {
+      display: none;
+      position: sticky;
+      top: 0;
+      background-color: #fff000;
+      color: #111;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      text-align: center;
+      z-index: 10;
+      margin-bottom: 4px;
     }
 
 
     .badge-pill {
-        background-color: #0bd68f; 
-        color: #fff;               
-        font-weight: bold;
-        font-size: 0.8rem;
-        padding: 2px 8px;
-        border-radius: 12px;
-        vertical-align: middle;
-        margin-left: 6px;
-        user-select: none;
-}
+      background-color: #0bd68f;
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      vertical-align: middle;
+      margin-left: 6px;
+      user-select: none;
+    }
 
-.boton-chat{
-  background-color: transparent;
-  border: none;
-  font-size: 13px;
-  color: #ffffff !important;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: background 0.3s ease, color 0.3s ease;
-}
+    .boton-chat {
+      background-color: transparent;
+      border: none;
+      font-size: 13px;
+      color: #ffffff !important;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
 
-.boton-chat:hover {
-  background-color: rgba(255, 255, 255, 0.3); /* sutil fondo al pasar el mouse */
-  color: #111 !important;
-}
+    .boton-chat:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      /* sutil fondo al pasar el mouse */
+      color: #111 !important;
+    }
 
-.boton-chat i {
-  color: inherit;  /* hereda el color del texto */
-  font-size: 14px;
-  transition: color 0.3s ease;
-}
+    .boton-chat i {
+      color: inherit;
+      /* hereda el color del texto */
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
 
-/* mensaje destacado */
-.borde-animado {
-  border: 5px solid #cf30ff;
-  box-shadow: 0 0 5px 5px #12f693;
-  animation: animarBorde 4s linear infinite;
-  border-radius: 8px;
-}
+    /* mensaje destacado */
+    .borde-animado {
+      border: 5px solid #cf30ff;
+      box-shadow: 0 0 5px 5px #12f693;
+      animation: animarBorde 4s linear infinite;
+      border-radius: 8px;
+    }
 
 
-@keyframes animarBorde {
-  0% { box-shadow: 0 0 5px 5px #12f693; }
-  25% { box-shadow: 0 0 5px 5px #cf30ff; }
-  50% { box-shadow: 0 0 5px 5px #12f693; }
-  75% { box-shadow: 0 0 5px 5px #cf30ff; }
-  100% { box-shadow: 0 0 5px 5px #12f693; }
-}
+    @keyframes animarBorde {
+      0% {
+        box-shadow: 0 0 5px 5px #12f693;
+      }
 
-/* mensaje destacado */
+      25% {
+        box-shadow: 0 0 5px 5px #cf30ff;
+      }
 
+      50% {
+        box-shadow: 0 0 5px 5px #12f693;
+      }
+
+      75% {
+        box-shadow: 0 0 5px 5px #cf30ff;
+      }
+
+      100% {
+        box-shadow: 0 0 5px 5px #12f693;
+      }
+    }
+
+    /* mensaje destacado */
   </style>
 </head>
+
 <body>
   <div class="container-fluid py-3">
-    <div class="chat-container">
-      <!-- Sidebar -->
-      <div class="sidebar">
-        <h5>Chats</h5>
-<div class="chat-list">
-  <!-- Botón: Chat General -->
-  <button id="btn-general" class="{% if chat.tipo == 'general' %}active{% endif %}" onclick="window.location.href='{% url 'chat_general' %}'">
-    # General
-    <span id="pill-nuevos" class="badge-pill" style="display:none;">0</span>
-  </button>
+  <div class="chat-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <h5>Chats</h5>
+      <div class="chat-list">
+        <!-- Botón: Chat General -->
+        <button id="btn-general" class="{% if chat.tipo == 'general' %}active{% endif %}"
+          onclick="window.location.href='{% url 'chat_general' %}'">
+          # General
+          <span id="pill-nuevos" class="badge-pill" style="display:none;">0</span>
+        </button>
 
-  <!-- Botones: Chats de Comisión -->
-  {% if usuario.id_estudiante %}
-    {% for comision in usuario.id_estudiante|comisiones_del_usuario %}
-      <button class="{% if chat.tipo == 'comision' and chat.comision.id_comision == comision.id_comision %}active{% endif %}"
-              onclick="window.location.href='{% url 'chat_comision' comision.id_comision %}'">
-        # Comisión {{ comision.numero_comision }}
-      </button>
-    {% endfor %}
-  {% endif %}
-
-  <!-- Separador visual -->
-  <hr style="border-color: #444;">
-
-  <!-- Chat privado -->
-  <h6 class="text-white mt-3">Iniciar chat privado con:</h6>
-
-  <!-- Input buscador -->
-  <input
-    type="text"
-    id="buscador-usuarios"
-    class="form-control mb-2"
-    placeholder="Buscar usuario..."
-    autocomplete="off"
-  />
-
-  <!-- Lista donde se muestran usuarios filtrados -->
-  <ul class="list-unstyled ps-2" id="lista-usuarios">
-    {% for u in usuarios_destino %}
-      <li>
-        <a href="{% url 'chat_privado' nombre_usuario_destino=u.nombre_usuario %}"
-           class="text-decoration-none {% if chat.tipo == 'privado' and destinatario.nombre_usuario == u.nombre_usuario %}fw-bold text-success{% else %}text-light{% endif %}">
-          <i class="bi bi-person-circle me-1"></i>
-          {{ u.id_estudiante.nombre|default:u.nombre_usuario }}
-          {{ u.id_estudiante.apellido|default:'' }}
-        </a>
-      </li>
-    {% empty %}
-      <li class="text-secondary">No hay usuarios disponibles para chat privado</li>
-    {% endfor %}
-  </ul>
-</div>
-
-{% if chat.tipo == 'privado' and destinatario %}
-<div class="chat-header">
-  <h5>💬 Chat privado con 
-    {% if destinatario.id_estudiante.nombre and destinatario.id_estudiante.apellido %}
-      {{ destinatario.id_estudiante.nombre }} {{ destinatario.id_estudiante.apellido }}
-    {% else %}
-      {{ destinatario.nombre_usuario }}
-    {% endif %}
-  </h5>
-</div>
-{% endif %}
-
-
-
-<!-- Lista de chats privados -->
-{% for item in chats_privados_con_otro %}
-  <button onclick="location.href='{% url 'chat_privado' item.otro.nombre_usuario %}'"
-          class="{% if chat.id == item.chat.id %}active{% endif %}">
-    💬 
-    {% if item.otro.id_estudiante.nombre %}
-      {{ item.otro.id_estudiante.nombre }} {{ item.otro.id_estudiante.apellido }}
-    {% else %}
-      {{ item.otro.nombre_usuario }}
-    {% endif %}
-  </button>
-{% endfor %}
-
-
-
-      </div>
-
-
-
-
-<!-- Chat area -->
-<div class="chat-area d-flex flex-column">
-
-  <!-- destacados -->
-<div id="destacados-info" style="color: #fff; margin-bottom: 10px; background-color: #cf30ff; padding: 10px 40px;">
-  <span id="contador-destacados" >0 mensajes destacados</span>
-  <button class="btn btn-info btn-sm" onclick="mostrarDestacados()">👁 Ver destacados</button>
-  <button class="btn btn-dark btn-sm" onclick="mostrarTodos()">🔁 Ver todos</button>
-  {% if chat.tipo != 'general' %}
-<a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}" class="btn btn-light btn-sm">👥 Participantes</a>
-{% endif %}
-</div>
-<!-- destacados -->
-
-  <!-- Messages -->
-  <div class="messages d-flex flex-column" id="message-list">
-    {% for mensaje in mensajes %}
-      <div class="message {% if mensaje.remitente == request.user %}from-me{% else %}from-other{% endif %}">
-        <strong style="color: #12f693;">{{ mensaje.remitente.nombre_usuario }}</strong><br>
-        {{ mensaje.texto|linebreaksbr }}
-
-        {% if mensaje.archivo %}
-          {% with archivo=mensaje.archivo.url|lower %}
-            {% if archivo|endswith:".jpg" or archivo|endswith:".jpeg" or archivo|endswith:".png" or archivo|endswith:".webp" %}
-              <img src="{{ mensaje.archivo.url }}" alt="imagen" style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
-
-            {% elif archivo|endswith:".mp4" or archivo|endswith:".webm" %}
-              <video controls style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
-                <source src="{{ mensaje.archivo.url }}">
-                Tu navegador no soporta video.
-              </video>
-
-            {% elif archivo|endswith:".mp3" or archivo|endswith:".wav" %}
-              <audio controls style="margin-top: 5px;">
-                <source src="{{ mensaje.archivo.url }}">
-                Tu navegador no soporta audio.
-              </audio>
-
-            {% else %}
-              <a href="{{ mensaje.archivo.url }}" download style="display: block; margin-top: 5px; color: #fff000;">
-                📎 Descargar archivo ({{ mensaje.archivo.name|cut:"chat_archivos/" }})
-              </a>
-            {% endif %}
-          {% endwith %}
+        <!-- Botones: Chats de Comisión -->
+        {% if usuario.id_estudiante %}
+        {% for comision in usuario.id_estudiante|comisiones_del_usuario %}
+        <button
+          class="{% if chat.tipo == 'comision' and chat.comision.id_comision == comision.id_comision %}active{% endif %}"
+          onclick="window.location.href='{% url 'chat_comision' comision.id_comision %}'">
+          # Comisión {{ comision.numero_comision }}
+        </button>
+        {% endfor %}
         {% endif %}
 
-        <div class="small" style="color: #000">{{ mensaje.creado|date:"d/m H:i" }}</div>
+        <!-- Separador visual -->
+        <hr style="border-color: #444;">
+
+        <!-- Chat privado -->
+        <h6 class="text-white mt-3">Iniciar chat privado con:</h6>
+
+        <!-- Input buscador -->
+        <input type="text" id="buscador-usuarios" class="form-control mb-2" placeholder="Buscar usuario..."
+          autocomplete="off" />
+
+        <!-- Lista donde se muestran usuarios filtrados -->
+        <ul class="list-unstyled ps-2" id="lista-usuarios">
+          {% for u in usuarios_destino %}
+          <li>
+            <a href="{% url 'chat_privado' nombre_usuario_destino=u.nombre_usuario %}"
+              class="text-decoration-none {% if chat.tipo == 'privado' and destinatario.nombre_usuario == u.nombre_usuario %}fw-bold text-success{% else %}text-light{% endif %}">
+              <i class="bi bi-person-circle me-1"></i>
+              {{ u.id_estudiante.nombre|default:u.nombre_usuario }}
+              {{ u.id_estudiante.apellido|default:'' }}
+            </a>
+          </li>
+          {% empty %}
+          <li class="text-secondary">No hay usuarios disponibles para chat privado</li>
+          {% endfor %}
+        </ul>
       </div>
-    {% empty %}
-      <p class="text-center text-muted">Aún no hay mensajes en este chat.</p>
+
+      {% if chat.tipo == 'privado' and destinatario %}
+      <div class="chat-header">
+        <h5>💬 Chat privado con
+          {% if destinatario.id_estudiante.nombre and destinatario.id_estudiante.apellido %}
+          {{ destinatario.id_estudiante.nombre }} {{ destinatario.id_estudiante.apellido }}
+          {% else %}
+          {{ destinatario.nombre_usuario }}
+          {% endif %}
+        </h5>
+      </div>
+      {% endif %}
+
+      <!-- Lista de chats privados -->
+      {% for item in chats_privados_con_otro %}
+      <button onclick="location.href='{% url 'chat_privado' item.otro.nombre_usuario %}'"
+        class="{% if chat.id == item.chat.id %}active{% endif %}">
+        💬
+        {% if item.otro.id_estudiante.nombre %}
+        {{ item.otro.id_estudiante.nombre }} {{ item.otro.id_estudiante.apellido }}
+        {% else %}
+        {{ item.otro.nombre_usuario }}
+        {% endif %}
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- Chat area -->
+    <div class="chat-area d-flex flex-column">
+
+      <!-- destacados -->
+      <div id="destacados-info"
+        style="color: #fff; margin-bottom: 10px; background-color: #cf30ff; padding: 10px 40px;">
+        <span id="contador-destacados">0 mensajes destacados</span>
+        <button class="btn btn-info btn-sm" onclick="mostrarDestacados()">👁 Ver destacados</button>
+        <button class="btn btn-dark btn-sm" onclick="mostrarTodos()">🔁 Ver todos</button>
+        {% if chat.tipo == 'comision' and comision %}
+        <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}"
+          class="btn btn-light btn-sm">👥 Participantes</a>
+        {% endif %}
+      </div>
+      <!-- destacados -->
+
+<!-- Área de mensajes -->
+<div class="messages d-flex flex-column" id="message-list">
+  {% if mensajes.exists %}
+    {% for mensaje in mensajes %}
+    <div class="message {% if mensaje.remitente.id_usuario == usuario.id_usuario %}from-me{% else %}from-other{% endif %}">
+      <strong style="color: #12f693;">{{ mensaje.remitente.nombre_usuario }}</strong><br>
+      {{ mensaje.texto|linebreaksbr }}
+
+      {% if mensaje.archivo %}
+        {% with archivo=mensaje.archivo.url|lower %}
+          {% if archivo|endswith:".jpg" or archivo|endswith:".jpeg" or archivo|endswith:".png" or archivo|endswith:".webp" %}
+            <img src="{{ mensaje.archivo.url }}" alt="imagen"
+              style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+          {% elif archivo|endswith:".mp4" or archivo|endswith:".webm" %}
+            <video controls style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+              <source src="{{ mensaje.archivo.url }}">
+              Tu navegador no soporta video.
+            </video>
+          {% elif archivo|endswith:".mp3" or archivo|endswith:".wav" %}
+            <audio controls style="margin-top: 5px;">
+              <source src="{{ mensaje.archivo.url }}">
+              Tu navegador no soporta audio.
+            </audio>
+          {% else %}
+            <a href="{{ mensaje.archivo.url }}" download style="display: block; margin-top: 5px; color: #fff000;">
+              📎 Descargar archivo ({{ mensaje.archivo.name|cut:"chat_archivos/" }})
+            </a>
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+
+      <div class="small text-muted">{{ mensaje.creado|date:"d/m H:i" }}</div>
+    </div>
     {% endfor %}
-  </div>
+  {% else %}
+    <div class="text-center text-muted py-4">
+      <p>Aún no hay mensajes en este chat. ¡Sé el primero en escribir!</p>
+    </div>
+  {% endif %}
+</div>
 
-  <div id="nuevo-badge">Mensajes nuevos ↓</div>
-  <div id="typing-box" class="text-muted small px-3" style="color: #12f693 !important;"></div>
+<!-- Badge de nuevos -->
+<div id="nuevo-badge">Mensajes nuevos ↓</div>
 
-<!-- Formulario para enviar mensajes con archivo -->
+<!-- Indicador de escritura -->
+<div id="typing-box" class="text-muted small px-3" style="color: #12f693 !important;"></div>
+
+<!-- Formulario de envío de mensaje -->
 <form class="message-input" id="message-form" method="POST" enctype="multipart/form-data"
   action="{% if chat.tipo == 'comision' %}
             {% url 'enviar_mensaje_comision' chat.comision.id_comision %}
+          {% elif chat.tipo == 'privado' %}
+            {% url 'enviar_mensaje_privado' destinatario.id_usuario %}
           {% else %}
             {% url 'enviar_mensaje_general' %}
           {% endif %}">
   {% csrf_token %}
 
-  <!-- Input oculto para archivo -->
+  <!-- Input oculto para archivos -->
   <input type="file" name="archivo" id="file-input" style="display: none;"
     accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.zip,.rar">
 
-  <!-- Botón de adjuntar -->
+  <!-- Botón para adjuntar -->
   <button type="button" class="file-btn" title="Adjuntar archivo"
     onclick="document.getElementById('file-input').click();">
     <i class="bi bi-paperclip"></i>
   </button>
 
-  <!-- Área de texto -->
+  <!-- Caja de texto -->
   <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
 
-  <!-- Botón enviar -->
+  <!-- Botón de envío -->
   <button type="submit"><i class="bi bi-send"></i> Enviar</button><br>
 </form>
 
-</div>
-    </div>
     </div>
   </div>
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
+</div>
+
   <script>
     // Scroll automático al último mensaje
     const messages = document.getElementById('message-list');
     messages.scrollTop = messages.scrollHeight;
   </script>
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<script>
-  let intervaloPolling = null;
-  let ultimoMensajeId = null;
-  let badgeVisibleManualmente = false;
-  let contadorMensajesNuevos = 0;
-  let mensajesCargados = [];  // Se usará para almacenar todos los mensajes cargados
 
-  const usuarioLogueado = "{{ request.session.usuario_logueado }}"; // usuario actual para comparación
-  const chatId = "{{ chat.id }}";  // ID del chat actual para control de escritura
+  <script>
+    let intervaloPolling = null;
+    let ultimoMensajeId = null;
+    let badgeVisibleManualmente = false;
+    let contadorMensajesNuevos = 0;
+    let mensajesCargados = []; // Se usará para almacenar todos los mensajes cargados
 
-  function reemplazarYoutubeLinks(texto) {
-    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/g;
-    return texto.replace(youtubeRegex, (match, videoId) => {
-      return `<br><iframe width="320" height="180" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="margin-top: 5px; border-radius: 8px;"></iframe><br>`;
-    });
-  }
+    const usuarioLogueado = "{{ request.session.usuario_logueado }}"; // usuario actual para comparación
+    const chatId = "{{ chat.id }}"; // ID del chat actual para control de escritura
+    const chatTipo = "{{ chat.tipo }}";  // general, comision o privado
 
-  function crearContenidoMensaje(m) {
-    let contenido = `<strong style="color: #fff000;">${m.usuario}</strong><br>`;
-
-    if(m.texto) {
-      let textoSeguro = m.texto
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-      textoSeguro = reemplazarYoutubeLinks(textoSeguro);
-      textoSeguro = textoSeguro.replace(/\n/g, "<br>");
-      contenido += `<div class="texto-mensaje">${textoSeguro}</div><br>`;
+    function reemplazarYoutubeLinks(texto) {
+      const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/g;
+      return texto.replace(youtubeRegex, (match, videoId) => {
+        return `<br><iframe width="320" height="180" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen style="margin-top: 5px; border-radius: 8px;"></iframe><br>`;
+      });
     }
 
-    if(m.archivo_url) {
-      const url = m.archivo_url.toLowerCase();
-      let nombreArchivo = m.archivo_nombre || 'Archivo adjunto';
+    function crearContenidoMensaje(m) {
+      let contenido = `<strong style="color: #fff000;">${m.usuario}</strong><br>`;
 
-      try {
-        if(url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif')) {
-          contenido += `<img src="${m.archivo_url}" alt="imagen" style="max-width: 100%; margin-top: 5px; border-radius: 8px;"><br>`;
-        }
-        else if(url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg')) {
-          contenido += `<video controls style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
+      if (m.texto) {
+        let textoSeguro = m.texto
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        textoSeguro = reemplazarYoutubeLinks(textoSeguro);
+        textoSeguro = textoSeguro.replace(/\n/g, "<br>");
+        contenido += `<div class="texto-mensaje">${textoSeguro}</div><br>`;
+      }
+
+      if (m.archivo_url) {
+        const url = m.archivo_url.toLowerCase();
+        let nombreArchivo = m.archivo_nombre || 'Archivo adjunto';
+
+        try {
+          if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.gif')) {
+            contenido +=
+              `<img src="${m.archivo_url}" alt="imagen" style="max-width: 100%; margin-top: 5px; border-radius: 8px;"><br>`;
+          } else if (url.endsWith('.mp4') || url.endsWith('.webm') || url.endsWith('.ogg')) {
+            contenido += `<video controls style="max-width: 100%; margin-top: 5px; border-radius: 8px;">
                           <source src="${m.archivo_url}">
                           Tu navegador no soporta video.
                         </video><br>`;
-        }
-        else if(url.endsWith('.mp3') || url.endsWith('.wav') || url.endsWith('.oga')) {
-          contenido += `<audio controls style="margin-top: 5px;">
+          } else if (url.endsWith('.mp3') || url.endsWith('.wav') || url.endsWith('.oga')) {
+            contenido += `<audio controls style="margin-top: 5px;">
                           <source src="${m.archivo_url}">
                           Tu navegador no soporta audio.
                         </audio><br>`;
-        }
-        else if(url.endsWith('.pdf') ||
-                url.endsWith('.doc') || url.endsWith('.docx') ||
-                url.endsWith('.xls') || url.endsWith('.xlsx') ||
-                url.endsWith('.ppt') || url.endsWith('.pptx')) {
-          contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
+          } else if (url.endsWith('.pdf') ||
+            url.endsWith('.doc') || url.endsWith('.docx') ||
+            url.endsWith('.xls') || url.endsWith('.xlsx') ||
+            url.endsWith('.ppt') || url.endsWith('.pptx')) {
+            contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
                           📎 Descargar archivo (${nombreArchivo})
                         </a><br>`;
-        }
-        else {
-          contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
+          } else {
+            contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
                           📎 Descargar archivo (${nombreArchivo})
                         </a><br>`;
-        }
-      } catch (error) {
-        console.error('Error mostrando preview archivo:', error);
-        contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
+          }
+        } catch (error) {
+          console.error('Error mostrando preview archivo:', error);
+          contenido += `<a href="${m.archivo_url}" download style="display: block; margin-top: 5px; color: #fff000;">
                         📎 Descargar archivo (${nombreArchivo})
                       </a><br>`;
+        }
       }
-    }
 
-    contenido += `<div class="small" style="color: #000">${m.hora}</div>`;
+      contenido += `<div class="small" style="color: #000">${m.hora}</div>`;
 
-    // Solo el usuario propietario puede editar o borrar:
-    if (m.usuario === usuarioLogueado) {
-      contenido += `
+      // Solo el usuario propietario puede editar o borrar:
+      if (m.usuario === usuarioLogueado) {
+        contenido += `
         <button class="boton-chat btn-editar" data-id="{{ mensaje.id }}">
           <i class="bi bi-pencil"></i> Editar
         </button>
@@ -471,615 +481,642 @@
         </button>
 
       `;
-    }
-
-    return contenido;
-  }
-
-  // aca ingreso el contenido para destacar
-
-  function renderMensaje(m) {
-  const lista = document.getElementById('message-list');
-  const div = document.createElement('div');
-  div.classList.add('message');
-  div.setAttribute('data-id', m.id);
-  div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
-
-  // Contenido general
-  div.innerHTML = crearContenidoMensaje(m);
-
-  // ✅ Botón Destacar
-  const btnDestacar = document.createElement('button');
-  btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
-  btnDestacar.className = 'btn btn-sm btn-warning';
-  btnDestacar.style.marginTop = '5px';
-
-  btnDestacar.addEventListener('click', () => {
-    fetch('/chat/toggle_destacar/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}'
-      },
-      body: JSON.stringify({ id: m.id })
-    })
-    .then(r => r.json())
-    .then(data => {
-      if (data.destacado) {
-        div.classList.add('borde-animado');
-        btnDestacar.innerHTML = '⭐ No destacar';
-      } else {
-        div.classList.remove('borde-animado');
-        btnDestacar.innerHTML = '⭐ Destacar';
       }
 
-      // Actualizar contador en tiempo real
-      const destacados = mensajesCargados.filter(m => m.destacado);
-      document.getElementById('contador-destacados').textContent = `${destacados.length} mensajes destacados`;
-    });
-  });
+      return contenido;
+    }
 
-  div.appendChild(btnDestacar);
+    // aca ingreso el contenido para destacar
 
-  // ✅ Si ya estaba destacado al cargar
-  if (m.destacado) {
-    div.classList.add('borde-animado');
-  }
+    function renderMensaje(m) {
+      const lista = document.getElementById('message-list');
+      const div = document.createElement('div');
+      div.classList.add('message');
+      div.setAttribute('data-id', m.id);
+      div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
 
-  lista.appendChild(div);
-}
-// fin del destaque
-  function actualizarMensajes() {
-    const urlMensajes = "{% if chat.tipo == 'comision' %}{% url 'obtener_mensajes_comision' chat.comision.id_comision %}{% else %}{% url 'obtener_mensajes' %}{% endif %}";
-    fetch(urlMensajes)
-      .then(response => response.json())
-      .then(data => {
-        const lista = document.getElementById('message-list');
-        const badge = document.getElementById('nuevo-badge');
-        const pill = document.getElementById('pill-nuevos');
-        const estaAlFinal = Math.abs(lista.scrollHeight - lista.scrollTop - lista.clientHeight) < 10;
+      // Contenido general
+      div.innerHTML = crearContenidoMensaje(m);
 
-        const nuevos = data.mensajes;
-        
-        mensajesCargados = nuevos;
-        document.getElementById('contador-destacados').textContent =
-          `${mensajesCargados.filter(m => m.destacado).length} mensajes destacados`;
+      // ✅ Botón Destacar
+      const btnDestacar = document.createElement('button');
+      btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
+      btnDestacar.className = 'btn btn-sm btn-warning';
+      btnDestacar.style.marginTop = '5px';
 
-        const nuevoUltimoId = nuevos.length > 0 ? nuevos[nuevos.length - 1].id : null;
-        const hayMensajesNuevos = (ultimoMensajeId !== null && nuevoUltimoId !== ultimoMensajeId);
-
-        const mensajesActualesIds = new Set();
-        lista.querySelectorAll('.message').forEach(div => {
-          const id = div.getAttribute('data-id');
-          if(id) mensajesActualesIds.add(parseInt(id));
-        });
-
-        if(ultimoMensajeId === null){
-          lista.innerHTML = '';
-        }
-
-nuevos.forEach(m => {
-  if(!mensajesActualesIds.has(m.id)) {
-    renderMensaje(m);
-  }
-});
-
-        // Agregar listeners para botones editar y borrar:
-        document.querySelectorAll('.btn-editar').forEach(btn => {
-          btn.onclick = iniciarEdicionMensaje;
-        });
-        document.querySelectorAll('.btn-borrar').forEach(btn => {
-          btn.onclick = borrarMensaje;
-        });
-
-        if (nuevoUltimoId) {
-          if (ultimoMensajeId !== null && nuevoUltimoId !== ultimoMensajeId) {
-            if (!estaAlFinal) {
-              contadorMensajesNuevos++;
+      btnDestacar.addEventListener('click', () => {
+        fetch('/chat/toggle_destacar/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+              id: m.id
+            })
+          })
+          .then(r => r.json())
+          .then(data => {
+            if (data.destacado) {
+              div.classList.add('borde-animado');
+              btnDestacar.innerHTML = '⭐ No destacar';
             } else {
-              contadorMensajesNuevos = 0;
+              div.classList.remove('borde-animado');
+              btnDestacar.innerHTML = '⭐ Destacar';
             }
-          }
-          ultimoMensajeId = nuevoUltimoId;
-        }
 
-        if (hayMensajesNuevos && !estaAlFinal && !badgeVisibleManualmente) {
-          badge.style.display = 'block';
-          badgeVisibleManualmente = true;
-        }
-
-        if (estaAlFinal) {
-          badge.style.display = 'none';
-          badgeVisibleManualmente = false;
-          contadorMensajesNuevos = 0;
-          lista.scrollTop = lista.scrollHeight;
-        }
-
-        pill.textContent = contadorMensajesNuevos > 0 ? contadorMensajesNuevos : '';
-        pill.style.display = contadorMensajesNuevos > 0 ? 'inline-block' : 'none';
+            // Actualizar contador en tiempo real
+            const destacados = mensajesCargados.filter(m => m.destacado);
+            document.getElementById('contador-destacados').textContent =
+              `${destacados.length} mensajes destacados`;
+          });
       });
-  }
 
-  // Función para iniciar la edición (reemplaza texto por textarea + botón guardar)
-  function iniciarEdicionMensaje(e) {
-    const btn = e.target;
-    const divMensaje = btn.closest('.message');
-    const textoDiv = divMensaje.querySelector('.texto-mensaje');
-    if (!textoDiv) return alert("No hay texto para editar.");
+      div.appendChild(btnDestacar);
 
-    const textoOriginal = textoDiv.innerText;
+      // ✅ Si ya estaba destacado al cargar
+      if (m.destacado) {
+        div.classList.add('borde-animado');
+      }
 
-    // Crear textarea y botón guardar
-    const textarea = document.createElement('textarea');
-    textarea.value = textoOriginal.replace(/<br>/g, '\n');
-    textarea.style.width = '100%';
-    textarea.style.minHeight = '60px';
+      lista.appendChild(div);
+    }
+    // fin del destaque
+    function actualizarMensajes() {
+  let urlMensajes = "";
 
-    const btnGuardar = document.createElement('button');
-    // btnGuardar.textContent = '💾 Guardar';
-    btnGuardar.innerHTML = '<i class="bi bi-floppy"></i> Guardar';
-    btnGuardar.style.marginTop = '5px';
-    btnGuardar.classList.add('boton-chat', 'btn-guardar');
+  {% if chat.tipo == 'comision' %}
+    urlMensajes = "{% url 'obtener_mensajes_comision' chat.comision.id_comision %}";
+  {% elif chat.tipo == 'privado' %}
+    urlMensajes = "{% url 'chat_privado_mensajes' chat.id %}";
+  {% else %}
+    urlMensajes = "{% url 'obtener_mensajes' %}";
+  {% endif %}
 
-    // Reemplazar texto por textarea
-    textoDiv.style.display = 'none';
-    divMensaje.insertBefore(textarea, textoDiv.nextSibling);
-    divMensaje.insertBefore(btnGuardar, textarea.nextSibling);
+  fetch(urlMensajes)
+    .then(response => response.json())
+    .then(data => {
+      const lista = document.getElementById('message-list');
+      const badge = document.getElementById('nuevo-badge');
+      const pill = document.getElementById('pill-nuevos');
+      const estaAlFinal = Math.abs(lista.scrollHeight - lista.scrollTop - lista.clientHeight) < 10;
 
-    // Deshabilitar botones editar/borrar mientras editas
-    divMensaje.querySelectorAll('button.btn-editar, button.btn-borrar').forEach(b => b.disabled = true);
-    btnGuardar.disabled = false;
+      const nuevos = data.mensajes;
+      mensajesCargados = nuevos;
 
-    btnGuardar.onclick = () => {
-      const nuevoTexto = textarea.value.trim();
-      if (!nuevoTexto) return alert('El texto no puede estar vacío.');
+      document.getElementById('contador-destacados').textContent =
+        `${mensajesCargados.filter(m => m.destacado).length} mensajes destacados`;
 
-      // Enviar actualización al backend
-      fetch("{% url 'editar_mensaje' %}", {
+      const nuevoUltimoId = nuevos.length > 0 ? nuevos[nuevos.length - 1].id : null;
+      const hayMensajesNuevos = (ultimoMensajeId !== null && nuevoUltimoId !== ultimoMensajeId);
+
+      const mensajesActualesIds = new Set();
+      lista.querySelectorAll('.message').forEach(div => {
+        const id = div.getAttribute('data-id');
+        if (id) mensajesActualesIds.add(parseInt(id));
+      });
+
+      if (ultimoMensajeId === null) {
+        lista.innerHTML = '';
+      }
+
+      nuevos.forEach(m => {
+        if (!mensajesActualesIds.has(m.id)) {
+          renderMensaje(m);
+        }
+      });
+
+      // Agregar listeners para botones editar y borrar:
+      document.querySelectorAll('.btn-editar').forEach(btn => {
+        btn.onclick = iniciarEdicionMensaje;
+      });
+      document.querySelectorAll('.btn-borrar').forEach(btn => {
+        btn.onclick = borrarMensaje;
+      });
+
+      if (nuevoUltimoId) {
+        if (ultimoMensajeId !== null && nuevoUltimoId !== ultimoMensajeId) {
+          if (!estaAlFinal) {
+            contadorMensajesNuevos++;
+          } else {
+            contadorMensajesNuevos = 0;
+          }
+        }
+        ultimoMensajeId = nuevoUltimoId;
+      }
+
+      if (hayMensajesNuevos && !estaAlFinal && !badgeVisibleManualmente) {
+        badge.style.display = 'block';
+        badgeVisibleManualmente = true;
+      }
+
+      if (estaAlFinal) {
+        badge.style.display = 'none';
+        badgeVisibleManualmente = false;
+        contadorMensajesNuevos = 0;
+        lista.scrollTop = lista.scrollHeight;
+      }
+
+      pill.textContent = contadorMensajesNuevos > 0 ? contadorMensajesNuevos : '';
+      pill.style.display = contadorMensajesNuevos > 0 ? 'inline-block' : 'none';
+    });
+}
+
+
+    // Función para iniciar la edición (reemplaza texto por textarea + botón guardar)
+    function iniciarEdicionMensaje(e) {
+      const btn = e.target;
+      const divMensaje = btn.closest('.message');
+      const textoDiv = divMensaje.querySelector('.texto-mensaje');
+      if (!textoDiv) return alert("No hay texto para editar.");
+
+      const textoOriginal = textoDiv.innerText;
+
+      // Crear textarea y botón guardar
+      const textarea = document.createElement('textarea');
+      textarea.value = textoOriginal.replace(/<br>/g, '\n');
+      textarea.style.width = '100%';
+      textarea.style.minHeight = '60px';
+
+      const btnGuardar = document.createElement('button');
+      // btnGuardar.textContent = '💾 Guardar';
+      btnGuardar.innerHTML = '<i class="bi bi-floppy"></i> Guardar';
+      btnGuardar.style.marginTop = '5px';
+      btnGuardar.classList.add('boton-chat', 'btn-guardar');
+
+      // Reemplazar texto por textarea
+      textoDiv.style.display = 'none';
+      divMensaje.insertBefore(textarea, textoDiv.nextSibling);
+      divMensaje.insertBefore(btnGuardar, textarea.nextSibling);
+
+      // Deshabilitar botones editar/borrar mientras editas
+      divMensaje.querySelectorAll('button.btn-editar, button.btn-borrar').forEach(b => b.disabled = true);
+      btnGuardar.disabled = false;
+
+      btnGuardar.onclick = () => {
+        const nuevoTexto = textarea.value.trim();
+        if (!nuevoTexto) return alert('El texto no puede estar vacío.');
+
+        // Enviar actualización al backend
+        fetch("{% url 'editar_mensaje' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({
+              id: divMensaje.getAttribute('data-id'),
+              texto: nuevoTexto
+            }),
+          })
+          .then(res => {
+            if (!res.ok) throw new Error('Error actualizando mensaje');
+            return res.json();
+          })
+          .then(() => {
+            // Restaurar UI
+            textoDiv.innerHTML = reemplazarYoutubeLinks(
+              nuevoTexto.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+            ).replace(/\n/g, "<br>");
+            textoDiv.style.display = 'block';
+            textarea.remove();
+            btnGuardar.remove();
+
+            // Habilitar botones
+            divMensaje.querySelectorAll('button.btn-editar, button.btn-borrar').forEach(b => b.disabled = false);
+          })
+          .catch(err => alert(err.message));
+      };
+    }
+
+    // Función para borrar mensaje
+    function borrarMensaje(e) {
+      if (!confirm('¿Seguro que quieres borrar este mensaje?')) return;
+
+      const btn = e.target;
+      const divMensaje = btn.closest('.message');
+      const mensajeId = divMensaje.getAttribute('data-id');
+
+      fetch("{% url 'borrar_mensaje' %}", {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+          },
+          body: JSON.stringify({
+            id: mensajeId
+          }),
+        })
+        .then(res => {
+          if (!res.ok) throw new Error('Error borrando mensaje');
+          return res.json();
+        })
+        .then(() => {
+          // Quitar mensaje de la lista
+          divMensaje.remove();
+        })
+        .catch(err => alert(err.message));
+    }
+
+    // destacar mensajes inicia
+    function renderMensaje(m) {
+      const lista = document.getElementById('message-list');
+      const div = document.createElement('div');
+      div.classList.add('message');
+      div.setAttribute('data-id', m.id);
+      div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
+
+      // Contenido del mensaje
+      div.innerHTML = crearContenidoMensaje(m);
+
+      // Botón destacar
+      const btnDestacar = document.createElement('button');
+      btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
+      btnDestacar.className = 'btn btn-sm btn-warning';
+      btnDestacar.style.marginTop = '5px';
+
+      btnDestacar.addEventListener('click', () => {
+        fetch('/chat/toggle_destacar/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: JSON.stringify({
+              id: m.id
+            }),
+          })
+          .then(r => r.json())
+          .then(data => {
+            m.destacado = data.destacado;
+
+            // Redibujar sin recargar
+            div.classList.toggle('borde-animado', m.destacado);
+            btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
+
+            // Actualizar contador
+            const cantidad = mensajesCargados.filter(x => x.destacado).length;
+            document.getElementById('contador-destacados').textContent = `${cantidad} mensajes destacados`;
+          });
+      });
+
+      div.appendChild(btnDestacar);
+
+      if (m.destacado) {
+        div.classList.add('borde-animado');
+      }
+
+      lista.appendChild(div);
+    }
+
+    // destacar mensajes fin
+    // setInterval(actualizarMensajes, 1000);
+    function iniciarPolling() {
+      if (intervaloPolling) clearInterval(intervaloPolling);
+      intervaloPolling = setInterval(actualizarMensajes, 1000);
+    }
+
+    iniciarPolling(); // ✅ inicia automáticamente
+
+    actualizarMensajes(); // llama al cargar
+
+    document.getElementById('nuevo-badge').addEventListener('click', () => {
+      const lista = document.getElementById('message-list');
+      lista.scrollTop = lista.scrollHeight;
+      document.getElementById('nuevo-badge').style.display = 'none';
+      badgeVisibleManualmente = false;
+      contadorMensajesNuevos = 0;
+    });
+  </script>
+  <!-- polling para recibir los mensajes con recarga de 1s fin -->
+
+  <!-- ver quien esta escribiendo inicia -->
+  <script>
+    function notificarEscribiendo() {
+      fetch("/chat/escribiendo/", {
+        method: "POST",
+        headers: {
+          "X-CSRFToken": "{{ csrf_token }}",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          chat_id: chatId,
+          usuario: usuarioLogueado
+        })
+      });
+    }
+
+    document.querySelector('textarea[name="mensaje"]').addEventListener('input', () => {
+      notificarEscribiendo();
+    });
+
+    function verificarEscribiendo() {
+      fetch(`/chat/verificar_escribiendo/?chat_id=${chatId}`)
+        .then(res => res.json())
+        .then(data => {
+          const box = document.getElementById('typing-box');
+          if (data.usuario && data.usuario !== usuarioLogueado) {
+            box.innerHTML = `<i class="bi bi-pencil"></i> ${data.usuario} está escribiendo...`;
+          } else {
+            box.innerText = '';
+          }
+        });
+    }
+
+    setInterval(verificarEscribiendo, 1000);
+  </script>
+
+  <!-- ver quien esta escribiendo fin -->
+
+  <!-- #### Script para el comportamiento del botón del chat general #### -->
+  <script>
+    document.getElementById('btn-general').addEventListener('click', () => {
+      const lista = document.getElementById('message-list');
+      lista.scrollTop = lista.scrollHeight;
+
+      const badge = document.getElementById('nuevo-badge');
+      badge.style.display = 'none';
+
+      const pill = document.getElementById('pill-nuevos');
+      pill.textContent = '';
+      pill.style.display = 'none';
+
+      contadorMensajesNuevos = 0;
+      badgeVisibleManualmente = false;
+    });
+  </script>
+  <!-- #### Script para el comportamiento del botón del chat general #### -->
+
+  <!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido inicia-->
+  <script>
+    const fileInput = document.getElementById('file-input');
+    const form = document.getElementById('message-form');
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        const fileName = fileInput.files[0].name;
+        const textarea = form.querySelector('textarea[name="mensaje"]');
+        if (textarea.value.trim() === '') {
+          textarea.value = '📎 ' + fileName;
+        }
+      }
+    });
+  </script>
+  <!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido fin-->
+
+  <!-- editar , guardar y borrar mensajes inicia-->
+  <script>
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    fetch('/editar_mensaje/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': '{{ csrf_token }}',
+          'X-CSRFToken': csrftoken
         },
         body: JSON.stringify({
-          id: divMensaje.getAttribute('data-id'),
+          id: mensajeId,
           texto: nuevoTexto
         }),
       })
-      .then(res => {
-        if (!res.ok) throw new Error('Error actualizando mensaje');
-        return res.json();
-      })
-      .then(() => {
-        // Restaurar UI
-        textoDiv.innerHTML = reemplazarYoutubeLinks(
-          nuevoTexto.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-        ).replace(/\n/g, "<br>");
-        textoDiv.style.display = 'block';
-        textarea.remove();
-        btnGuardar.remove();
-
-        // Habilitar botones
-        divMensaje.querySelectorAll('button.btn-editar, button.btn-borrar').forEach(b => b.disabled = false);
-      })
-      .catch(err => alert(err.message));
-    };
-  }
-
-  // Función para borrar mensaje
-  function borrarMensaje(e) {
-    if (!confirm('¿Seguro que quieres borrar este mensaje?')) return;
-
-    const btn = e.target;
-    const divMensaje = btn.closest('.message');
-    const mensajeId = divMensaje.getAttribute('data-id');
-
-    fetch("{% url 'borrar_mensaje' %}", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}',
-      },
-      body: JSON.stringify({ id: mensajeId }),
-    })
-    .then(res => {
-      if (!res.ok) throw new Error('Error borrando mensaje');
-      return res.json();
-    })
-    .then(() => {
-      // Quitar mensaje de la lista
-      divMensaje.remove();
-    })
-    .catch(err => alert(err.message));
-  }
-
-  // destacar mensajes inicia
-function renderMensaje(m) {
-  const lista = document.getElementById('message-list');
-  const div = document.createElement('div');
-  div.classList.add('message');
-  div.setAttribute('data-id', m.id);
-  div.classList.add(m.usuario === usuarioLogueado ? 'from-me' : 'from-other');
-
-  // Contenido del mensaje
-  div.innerHTML = crearContenidoMensaje(m);
-
-  // Botón destacar
-  const btnDestacar = document.createElement('button');
-  btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
-  btnDestacar.className = 'btn btn-sm btn-warning';
-  btnDestacar.style.marginTop = '5px';
-
-  btnDestacar.addEventListener('click', () => {
-    fetch('/chat/toggle_destacar/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': '{{ csrf_token }}',
-      },
-      body: JSON.stringify({ id: m.id }),
-    })
-    .then(r => r.json())
-    .then(data => {
-      m.destacado = data.destacado;
-
-      // Redibujar sin recargar
-      div.classList.toggle('borde-animado', m.destacado);
-      btnDestacar.innerHTML = m.destacado ? '⭐ No destacar' : '⭐ Destacar';
-
-      // Actualizar contador
-      const cantidad = mensajesCargados.filter(x => x.destacado).length;
-      document.getElementById('contador-destacados').textContent = `${cantidad} mensajes destacados`;
-    });
-  });
-
-  div.appendChild(btnDestacar);
-
-  if (m.destacado) {
-    div.classList.add('borde-animado');
-  }
-
-  lista.appendChild(div);
-}
-
-  // destacar mensajes fin
-  // setInterval(actualizarMensajes, 1000);
-  function iniciarPolling() {
-  if (intervaloPolling) clearInterval(intervaloPolling);
-  intervaloPolling = setInterval(actualizarMensajes, 1000);
-}
-
-iniciarPolling();  // ✅ inicia automáticamente
-
-  actualizarMensajes();
-
-  document.getElementById('nuevo-badge').addEventListener('click', () => {
-    const lista = document.getElementById('message-list');
-    lista.scrollTop = lista.scrollHeight;
-    document.getElementById('nuevo-badge').style.display = 'none';
-    badgeVisibleManualmente = false;
-    contadorMensajesNuevos = 0;
-  });
-</script>
-<!-- polling para recibir los mensajes con recarga de 1s fin -->
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<!-- ver quien esta escribiendo inicia -->
-<script>
-  function notificarEscribiendo() {
-    fetch("/chat/escribiendo/", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": "{{ csrf_token }}",
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        usuario: usuarioLogueado
-      })
-    });
-  }
-
-  document.querySelector('textarea[name="mensaje"]').addEventListener('input', () => {
-    notificarEscribiendo();
-  });
-
-  function verificarEscribiendo() {
-    fetch(`/chat/verificar_escribiendo/?chat_id=${chatId}`)
       .then(res => res.json())
       .then(data => {
-        const box = document.getElementById('typing-box');
-        if (data.usuario && data.usuario !== usuarioLogueado) {
-          box.innerHTML = `<i class="bi bi-pencil"></i> ${data.usuario} está escribiendo...`;
-        } else {
-          box.innerText = '';
+        /* tu lógica */ })
+      .catch(e => console.error(e));
+  </script>
+  <!-- editar , guardar y borrar mensajes fin-->
+
+  <!-- destacar mensajes -->
+  <script>
+    function mostrarDestacados() {
+      if (intervaloPolling) clearInterval(intervaloPolling); // ⛔ Detiene polling
+      const lista = document.getElementById('message-list');
+      lista.innerHTML = '';
+
+      let ultimaFecha = '';
+
+      mensajesCargados
+        .filter(m => m.destacado)
+        .forEach(m => {
+          const fechaMsg = new Date(m.creado).toDateString(); // ⚠️ Asegurate que `m.creado` esté en el JSON
+          if (fechaMsg !== ultimaFecha) {
+            ultimaFecha = fechaMsg;
+
+            const hoy = new Date();
+            const msgDate = new Date(m.creado);
+            const diffTime = hoy - msgDate;
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+            let textoFecha = '';
+            if (diffDays === 0) {
+              textoFecha = 'Hoy';
+            } else if (diffDays === 1) {
+              textoFecha = 'Ayer';
+            } else {
+              const opciones = {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+              };
+              textoFecha = msgDate.toLocaleDateString('es-AR', opciones);
+            }
+
+            const hr = document.createElement('hr');
+            hr.style.border = 'none';
+            hr.style.borderTop = '1px solid rgba(204,204,204,0.7)';
+            hr.style.margin = '30px auto 10px auto';
+            hr.style.width = '60%';
+
+            const label = document.createElement('div');
+            label.textContent = textoFecha;
+            label.style.textAlign = 'center';
+            label.style.color = '#ccc';
+            label.style.marginBottom = '10px';
+            label.style.fontWeight = 'bold';
+
+            lista.appendChild(hr);
+            lista.appendChild(label);
+          }
+
+          renderMensaje(m);
+        });
+    }
+
+
+    function mostrarTodos() {
+      const lista = document.getElementById('message-list');
+      lista.innerHTML = '';
+
+      let ultimaFecha = '';
+
+      mensajesCargados.forEach(m => {
+        const fechaMsg = new Date(m.fecha).toDateString();
+        if (fechaMsg !== ultimaFecha) {
+          ultimaFecha = fechaMsg;
+
+          const hoy = new Date();
+          const msgDate = new Date(m.fecha);
+          const diffTime = hoy - msgDate;
+          const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+          let textoFecha = '';
+          if (diffDays === 0) {
+            textoFecha = 'Hoy';
+          } else if (diffDays === 1) {
+            textoFecha = 'Ayer';
+          } else {
+            const opciones = {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long'
+            };
+            textoFecha = msgDate.toLocaleDateString('es-AR', opciones);
+          }
+
+          const hr = document.createElement('hr');
+          hr.style.border = 'none';
+          hr.style.borderTop = '1px solid rgba(204,204,204,0.7)';
+          hr.style.margin = '30px auto 10px auto';
+          hr.style.width = '60%';
+
+          const label = document.createElement('div');
+          label.textContent = textoFecha;
+          label.style.textAlign = 'center';
+          label.style.color = '#ccc';
+          label.style.marginBottom = '10px';
+          label.style.fontWeight = 'bold';
+
+          lista.appendChild(hr);
+          lista.appendChild(label);
         }
+
+        renderMensaje(m);
       });
-  }
 
-  setInterval(verificarEscribiendo, 1000);
-</script>
-
-<!-- ver quien esta escribiendo fin -->
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<!-- #### Script para el comportamiento del botón del chat general #### -->
-<script>
-  document.getElementById('btn-general').addEventListener('click', () => {
-    const lista = document.getElementById('message-list');
-    lista.scrollTop = lista.scrollHeight;
-    
-    const badge = document.getElementById('nuevo-badge');
-    badge.style.display = 'none';
-    
-    const pill = document.getElementById('pill-nuevos');
-    pill.textContent = '';
-    pill.style.display = 'none';
-    
-    contadorMensajesNuevos = 0;
-    badgeVisibleManualmente = false;
-  });
-</script>
-<!-- #### Script para el comportamiento del botón del chat general #### -->
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido inicia-->
-<script>
-  const fileInput = document.getElementById('file-input');
-  const form = document.getElementById('message-form');
-
-  fileInput.addEventListener('change', () => {
-    if (fileInput.files.length > 0) {
-      const fileName = fileInput.files[0].name;
-      const textarea = form.querySelector('textarea[name="mensaje"]');
-      if (textarea.value.trim() === '') {
-        textarea.value = '📎 ' + fileName;
-      }
+      iniciarPolling(); // ✅ Reactiva polling
     }
-  });
-</script>
-<!-- ✅ Extra: JavaScript opcional para mostrar el nombre del archivo elegido fin-->
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<!-- editar , guardar y borrar mensajes inicia-->
-<script>
-  function getCookie(name) {
-  let cookieValue = null;
-  if (document.cookie && document.cookie !== '') {
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
-      }
-    }
-  }
-  return cookieValue;
-}
-const csrftoken = getCookie('csrftoken');
+  </script>
+  <!-- destacar mensajes -->
 
-fetch('/editar_mensaje/', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'X-CSRFToken': csrftoken
-  },
-  body: JSON.stringify({ id: mensajeId, texto: nuevoTexto }),
-})
-.then(res => res.json())
-.then(data => { /* tu lógica */ })
-.catch(e => console.error(e));
-</script>
-<!-- editar , guardar y borrar mensajes fin-->
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<!-- destacar mensajes -->
-<script>
-function mostrarDestacados() {
-  if (intervaloPolling) clearInterval(intervaloPolling); // ⛔ Detiene polling
-  const lista = document.getElementById('message-list');
-  lista.innerHTML = '';
+  <!-- divisiones de dias del chat inicia-->
+  <script>
+    function renderMensajesAgrupados(lista, mensajes) {
+      lista.innerHTML = '';
+      let ultimoDia = null;
 
-  let ultimaFecha = '';
-
-  mensajesCargados
-    .filter(m => m.destacado)
-    .forEach(m => {
-      const fechaMsg = new Date(m.creado).toDateString(); // ⚠️ Asegurate que `m.creado` esté en el JSON
-      if (fechaMsg !== ultimaFecha) {
-        ultimaFecha = fechaMsg;
-
+      mensajes.forEach(m => {
+        const fechaMsg = new Date(m.creado);
         const hoy = new Date();
-        const msgDate = new Date(m.creado);
-        const diffTime = hoy - msgDate;
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        let etiquetaDia;
 
-        let textoFecha = '';
-        if (diffDays === 0) {
-          textoFecha = 'Hoy';
-        } else if (diffDays === 1) {
-          textoFecha = 'Ayer';
+        if (fechaMsg.toDateString() === hoy.toDateString()) {
+          etiquetaDia = 'Hoy';
         } else {
-          const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
-          textoFecha = msgDate.toLocaleDateString('es-AR', opciones);
+          const ayer = new Date();
+          ayer.setDate(hoy.getDate() - 1);
+          if (fechaMsg.toDateString() === ayer.toDateString()) {
+            etiquetaDia = 'Ayer';
+          } else {
+            etiquetaDia = fechaMsg.toLocaleDateString('es-AR', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long'
+            });
+          }
         }
 
-        const hr = document.createElement('hr');
-        hr.style.border = 'none';
-        hr.style.borderTop = '1px solid rgba(204,204,204,0.7)';
-        hr.style.margin = '30px auto 10px auto';
-        hr.style.width = '60%';
+        // Si cambia el día, insertamos un <hr> con texto flotante
+        if (etiquetaDia !== ultimoDia) {
+          const wrapper = document.createElement('div');
+          wrapper.style.position = 'relative';
+          wrapper.style.margin = '20px 0';
 
-        const label = document.createElement('div');
-        label.textContent = textoFecha;
-        label.style.textAlign = 'center';
-        label.style.color = '#ccc';
-        label.style.marginBottom = '10px';
-        label.style.fontWeight = 'bold';
+          const hr = document.createElement('hr');
+          hr.style.border = 'none';
+          hr.style.height = '1px';
+          hr.style.background = '#ccc';
+          hr.style.opacity = '0.7';
 
-        lista.appendChild(hr);
-        lista.appendChild(label);
-      }
+          const texto = document.createElement('span');
+          texto.textContent = etiquetaDia;
+          texto.style.position = 'absolute';
+          texto.style.left = '50%';
+          texto.style.transform = 'translateX(-50%)';
+          texto.style.top = '-10px';
+          texto.style.background = '#222';
+          texto.style.padding = '0 12px';
+          texto.style.color = '#ccc';
+          texto.style.fontSize = '14px';
+          texto.style.opacity = '0.9';
 
-      renderMensaje(m);
-    });
-}
+          wrapper.appendChild(hr);
+          wrapper.appendChild(texto);
+          lista.appendChild(wrapper);
 
+          ultimoDia = etiquetaDia;
+        }
 
-function mostrarTodos() {
-  const lista = document.getElementById('message-list');
-  lista.innerHTML = '';
-
-  let ultimaFecha = '';
-
-  mensajesCargados.forEach(m => {
-    const fechaMsg = new Date(m.fecha).toDateString();
-    if (fechaMsg !== ultimaFecha) {
-      ultimaFecha = fechaMsg;
-
-      const hoy = new Date();
-      const msgDate = new Date(m.fecha);
-      const diffTime = hoy - msgDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-      let textoFecha = '';
-      if (diffDays === 0) {
-        textoFecha = 'Hoy';
-      } else if (diffDays === 1) {
-        textoFecha = 'Ayer';
-      } else {
-        const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
-        textoFecha = msgDate.toLocaleDateString('es-AR', opciones);
-      }
-
-      const hr = document.createElement('hr');
-      hr.style.border = 'none';
-      hr.style.borderTop = '1px solid rgba(204,204,204,0.7)';
-      hr.style.margin = '30px auto 10px auto';
-      hr.style.width = '60%';
-
-      const label = document.createElement('div');
-      label.textContent = textoFecha;
-      label.style.textAlign = 'center';
-      label.style.color = '#ccc';
-      label.style.marginBottom = '10px';
-      label.style.fontWeight = 'bold';
-
-      lista.appendChild(hr);
-      lista.appendChild(label);
+        const mensajeDiv = renderMensaje(m);
+        lista.appendChild(mensajeDiv);
+      });
     }
+  </script>
+  <!-- divisiones de dias del chat fin -->
+  <!-- script para buscador de participantes para envio de mensaje privado inicia -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const inputBuscador = document.getElementById('buscador-usuarios');
+      const listaUsuarios = document.getElementById('lista-usuarios');
 
-    renderMensaje(m);
-  });
+      inputBuscador.addEventListener('input', () => {
+        const query = inputBuscador.value.trim();
 
-  iniciarPolling(); // ✅ Reactiva polling
-}
-</script>
-<!-- destacar mensajes -->
-<!-- ######################################################################################################################### -->
-<!-- ######################################################################################################################### -->
-<!-- divisiones de dias del chat inicia-->
-<script>
-  function renderMensajesAgrupados(lista, mensajes) {
-  lista.innerHTML = '';
-  let ultimoDia = null;
-
-  mensajes.forEach(m => {
-    const fechaMsg = new Date(m.creado);
-    const hoy = new Date();
-    let etiquetaDia;
-
-    if (fechaMsg.toDateString() === hoy.toDateString()) {
-      etiquetaDia = 'Hoy';
-    } else {
-      const ayer = new Date();
-      ayer.setDate(hoy.getDate() - 1);
-      if (fechaMsg.toDateString() === ayer.toDateString()) {
-        etiquetaDia = 'Ayer';
-      } else {
-        etiquetaDia = fechaMsg.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'long' });
-      }
-    }
-
-    // Si cambia el día, insertamos un <hr> con texto flotante
-    if (etiquetaDia !== ultimoDia) {
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'relative';
-      wrapper.style.margin = '20px 0';
-
-      const hr = document.createElement('hr');
-      hr.style.border = 'none';
-      hr.style.height = '1px';
-      hr.style.background = '#ccc';
-      hr.style.opacity = '0.7';
-
-      const texto = document.createElement('span');
-      texto.textContent = etiquetaDia;
-      texto.style.position = 'absolute';
-      texto.style.left = '50%';
-      texto.style.transform = 'translateX(-50%)';
-      texto.style.top = '-10px';
-      texto.style.background = '#222';
-      texto.style.padding = '0 12px';
-      texto.style.color = '#ccc';
-      texto.style.fontSize = '14px';
-      texto.style.opacity = '0.9';
-
-      wrapper.appendChild(hr);
-      wrapper.appendChild(texto);
-      lista.appendChild(wrapper);
-
-      ultimoDia = etiquetaDia;
-    }
-
-    const mensajeDiv = renderMensaje(m);
-    lista.appendChild(mensajeDiv);
-  });
-}
-</script>
-<!-- divisiones de dias del chat fin -->
-<!-- script para buscador de participantes para envio de mensaje privado inicia -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const inputBuscador = document.getElementById('buscador-usuarios');
-  const listaUsuarios = document.getElementById('lista-usuarios');
-
-  inputBuscador.addEventListener('input', () => {
-    const query = inputBuscador.value.trim();
-
-    if (query.length === 0) {
-      // Si está vacío, recargamos la página para mostrar la lista completa o
-      // podés implementar lógica para mostrar lista inicial guardada en JS
-      location.reload();
-      return;
-    }
-
-    fetch(`/chat/buscar_usuarios/?q=${encodeURIComponent(query)}`)
-      .then(res => res.json())
-      .then(data => {
-        listaUsuarios.innerHTML = '';
-
-        if (data.usuarios.length === 0) {
-          listaUsuarios.innerHTML = `<li class="text-muted">No se encontraron usuarios</li>`;
+        if (query.length === 0) {
+          // Si está vacío, recargamos la página para mostrar la lista completa o
+          // podés implementar lógica para mostrar lista inicial guardada en JS
+          location.reload();
           return;
         }
 
-        data.usuarios.forEach(u => {
-          const li = document.createElement('li');
-          const a = document.createElement('a');
-          a.href = `/chat/privado/${u.id_usuario}/`; // Ajusta URL según tu config
-          a.className = 'text-decoration-none text-light';
-          a.innerHTML = `<i class="bi bi-person-circle me-1"></i> @${u.nombre_usuario}`;
-          li.appendChild(a);
-          listaUsuarios.appendChild(li);
-        });
-      });
-  });
-});
+        fetch(`/chat/buscar_usuarios/?q=${encodeURIComponent(query)}`)
+          .then(res => res.json())
+          .then(data => {
+            listaUsuarios.innerHTML = '';
 
-</script>
-<!-- script para buscador de participantes para envio de mensaje privado fin -->
+            if (data.usuarios.length === 0) {
+              listaUsuarios.innerHTML = `<li class="text-muted">No se encontraron usuarios</li>`;
+              return;
+            }
+
+            data.usuarios.forEach(u => {
+              const li = document.createElement('li');
+              const a = document.createElement('a');
+              a.href = `/chat/privado/${u.nombre_usuario}/`; // Ajusta URL según tu config
+              a.className = 'text-decoration-none text-light';
+              a.innerHTML = `<i class="bi bi-person-circle me-1"></i> @${u.nombre_usuario}`;
+              li.appendChild(a);
+              listaUsuarios.appendChild(li);
+            });
+          });
+      });
+    });
+  </script>
+  <!-- script para buscador de participantes para envio de mensaje privado fin -->
 
 </body>
+
 </html>

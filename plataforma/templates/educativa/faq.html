@@ -221,45 +221,66 @@
 
 <body>
 
-    
-    <!-- NAVBAR -->
+
+<!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark px-3">
-  <div class="container-fluid">
-    <!-- LOGO -->
-    <a class="navbar-brand" href="#">
-      <span class="white">Tecno</span><span class="green">Marema</span>
-      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
-    </a>
+    <div class="container-fluid">
+        <!-- LOGO -->
+        <a class="navbar-brand" href="#">
+            <span class="white">Tecno</span><span class="green">Marema</span>
+            <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+        </a>
 
-    <!-- HAMBURGUESA -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
-      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
-    </button>
+        <!-- HAMBURGUESA -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido"
+            style="border: none !important;">
+            <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+        </button>
 
-    <!-- MENÚ -->
-    <div class="collapse navbar-collapse" id="navbarContenido">
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
-        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
-        <li class="nav-item">
-          <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
-                       <form action="{% url 'logout' %}" method="post" class="d-inline">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-login btn-sm">
-        <i class="bi bi-person-badge"></i>
-        Cerrar sesión
-    </button>
-</form>
-        </li>
-      </ul>
+        <!-- MENÚ -->
+        <div class="collapse navbar-collapse" id="navbarContenido">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+                {% if request.session.usuario_logueado %}
+                    <!-- Usuario logueado -->
+                    <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+                    <li class="nav-item">
+                        <form action="{% url 'logout' %}" method="post" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-login btn-sm">
+                                <i class="bi bi-person-badge"></i> Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                {% else %}
+                    <!-- Usuario NO logueado -->
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#testimonios">Testimonios</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#redes">Redes</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#contacto">Contacto</a></li>
+                    <li class="nav-item">
+                        <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm">
+                            <i class="bi bi-pencil me-1"></i>Inscripción
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{% url 'login' %}" class="btn btn-login btn-sm">
+                            <i class="bi bi-person-badge"></i>Login
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
+
 
     <div class="barra-bienvenida">
         Bienvenido {{ nombre_usuario }} a <strong>TecnoMarema 🚀</strong>
@@ -289,7 +310,7 @@
             </div>
         </div>
 
-        <!-- ACCESO -->
+        <!-- ACCESO Y REGISTRO -->
         <div class="section-title"><i class="bi bi-unlock"></i> Acceso y Registro</div>
         <div class="accordion" id="faqAcceso">
             <div class="accordion-item">
@@ -301,8 +322,9 @@
                 </h2>
                 <div id="a1" class="accordion-collapse collapse" aria-labelledby="acc1" data-bs-parent="#faqAcceso">
                     <div class="accordion-body">
-                        Completá el formulario de inscripción en la sección "Cursos". Una vez recibido, te enviaremos un
-                        correo con la confirmación y acceso al contenido inicial gratuito.
+                        Completá el formulario de inscripción presionando en el botón "Inscripción" y sigue los pasos.
+                        Una vez recibido el pago, te enviaremos un correo con la confirmación y acceso al contenido
+                        inicial.
                     </div>
                 </div>
             </div>
@@ -317,10 +339,56 @@
                 <div id="a2" class="accordion-collapse collapse" aria-labelledby="acc2" data-bs-parent="#faqAcceso">
                     <div class="accordion-body">
                         Sí, es necesario tener una cuenta para acceder al panel de estudiante y a los contenidos
-                        exclusivos. El registro es gratuito y solo toma unos minutos.
+                        exclusivos. Para registrarte necesitas abonar el monto del curso, solo toma unos minutos. Además
+                        podés inscribirte a la primera clase de forma gratuita.
                     </div>
                 </div>
             </div>
+        </div>
+
+        <!-- PLATAFORMA -->
+        <div class="section-title"><i class="bi bi-laptop"></i> Plataforma</div>
+        <div class="accordion" id="faqPlataforma">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="plat1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#pl1"
+                        aria-expanded="false" aria-controls="pl1">
+                        ¿Qué características tiene la plataforma de Tecno Marema?
+                    </button>
+                </h2>
+                <div id="pl1" class="accordion-collapse collapse" aria-labelledby="plat1"
+                    data-bs-parent="#faqPlataforma">
+                    <div class="accordion-body">
+                        Nuestra plataforma es moderna, intuitiva y está diseñada para que tu experiencia de aprendizaje
+                        sea óptima. Incluye una vista clara de tus cursos activos, acceso directo a los enlaces de las
+                        clases en vivo, materiales complementarios, seguimiento de tu progreso y un chat interno para
+                        comunicarte con profesores y compañeros.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="plat2">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#pl2"
+                        aria-expanded="false" aria-controls="pl2">
+                        ¿Por cuánto tiempo tendré acceso al material y la plataforma luego de finalizar el curso?
+                    </button>
+                </h2>
+                <div id="pl2" class="accordion-collapse collapse" aria-labelledby="plat2"
+                    data-bs-parent="#faqPlataforma">
+                    <div class="accordion-body">
+                        Una vez finalizado el curso, tendrás acceso al material y a la plataforma de Tecno Marema por un
+                        mínimo de un mes adicional. Esto incluye las diapositivas, las clases grabadas y todos los
+                        recursos disponibles para que puedas repasar y profundizar.<br><br>
+                        Aunque nos esforzamos para mantener el servicio sin interrupciones, pueden presentarse
+                        inconvenientes técnicos o situaciones imprevistas que escapan a nuestro control. Por lo tanto,
+                        no nos hacemos responsables si el acceso se ve afectado, aunque trabajamos para minimizar
+                        cualquier inconveniente.
+                    </div>
+                </div>
+            </div>
+
         </div>
 
         <!-- CLASES Y TECNOLOGÍA -->
@@ -335,8 +403,10 @@
                 </h2>
                 <div id="t1" class="accordion-collapse collapse" aria-labelledby="tech1" data-bs-parent="#faqTech">
                     <div class="accordion-body">
-                        Necesitás una computadora con acceso a internet, navegador actualizado y auriculares si es
-                        posible. No hace falta software previo: todo lo instalamos en clase.
+                        Necesitás una computadora con acceso a internet, sistema operativo a partir de Windows 7 (se
+                        recomienda Windows 11), navegadores actualizados y auriculares o parlantes para escuchar la
+                        clase. No hace falta software previo: todo lo instalamos en clase. Pero sobre todas las cosas,
+                        ¡muchas ganas de aprender! 😄
                     </div>
                 </div>
             </div>
@@ -357,7 +427,139 @@
             </div>
         </div>
 
-        <!-- PAGOS -->
+        <!-- BENEFICIOS -->
+        <div class="section-title"><i class="bi bi-stars"></i> Beneficios</div>
+        <div class="accordion" id="faqBeneficios">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="ben1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#b1"
+                        aria-expanded="false" aria-controls="b1">
+                        ¿Qué beneficios tengo al estudiar en Tecno Marema?
+                    </button>
+                </h2>
+                <div id="b1" class="accordion-collapse collapse" aria-labelledby="ben1" data-bs-parent="#faqBeneficios">
+                    <div class="accordion-body">
+                        Al formar parte de Tecno Marema accedés a clases en vivo, grabaciones para repaso, comunidad
+                        activa de estudiantes y profesores, proyectos prácticos, orientación laboral, acceso a nuestro
+                        chat interno y contenidos actualizados constantemente.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOPORTE Y AYUDA TÉCNICA -->
+        <div class="section-title"><i class="bi bi-tools"></i> Soporte y Ayuda Técnica</div>
+        <div class="accordion" id="faqSoporte">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="sup1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#s1"
+                        aria-expanded="false" aria-controls="s1">
+                        ¿Qué hago si tengo un problema técnico durante la clase?
+                    </button>
+                </h2>
+                <div id="s1" class="accordion-collapse collapse" aria-labelledby="sup1" data-bs-parent="#faqSoporte">
+                    <div class="accordion-body">
+                        Si tenés un inconveniente técnico, podés escribirnos por el chat interno. Además, no te
+                        preocupes si no podés asistir en el momento, todas las clases quedan grabadas para que las veas
+                        cuando quieras.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CAMBIOS Y DEVOLUCIONES -->
+        <div class="section-title"><i class="bi bi-shield-exclamation"></i> Cambios y Devoluciones</div>
+        <div class="accordion" id="faqCambios">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="chg1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#c1"
+                        aria-expanded="false" aria-controls="c1">
+                        ¿Puedo cambiarme de curso o pedir un reembolso?
+                    </button>
+                </h2>
+                <div id="c1" class="accordion-collapse collapse" aria-labelledby="chg1" data-bs-parent="#faqCambios">
+                    <div class="accordion-body">
+                        Podés presenciar la primera clase de manera gratuita y sin compromiso. Sin embargo, una vez
+                        realizada la inscripción formal y confirmado el pago, <strong>no realizamos reembolsos</strong>.
+                        Te recomendamos elegir con atención el curso y horario que mejor se adapten a vos.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DURACIÓN Y MODALIDAD -->
+        <div class="section-title"><i class="bi bi-clock-history"></i> Duración y Modalidad</div>
+        <div class="accordion" id="faqDuracion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="dur1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#d1"
+                        aria-expanded="false" aria-controls="d1">
+                        ¿Cuánto duran los cursos?
+                    </button>
+                </h2>
+                <div id="d1" class="accordion-collapse collapse" aria-labelledby="dur1" data-bs-parent="#faqDuracion">
+                    <div class="accordion-body">
+                        La duración depende del curso, pero en general van de 1 a 3 meses. Cada curso cuenta con clases
+                        semanales y un cronograma claro para que puedas organizar tu tiempo.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="dur2">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#d2"
+                        aria-expanded="false" aria-controls="d2">
+                        ¿Las clases son 100% online?
+                    </button>
+                </h2>
+                <div id="d2" class="accordion-collapse collapse" aria-labelledby="dur2" data-bs-parent="#faqDuracion">
+                    <div class="accordion-body">
+                        Sí, todas las clases se dictan de forma virtual a través de Jitsi Meet. También tendrás acceso a
+                        las grabaciones, materiales y actividades directamente desde tu panel.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROYECTO FINAL -->
+        <div class="section-title"><i class="bi bi-lightbulb"></i> Proyecto Final y Evaluación</div>
+        <div class="accordion" id="faqProyecto">
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="proy1">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#pr1"
+                        aria-expanded="false" aria-controls="pr1">
+                        ¿Qué incluye el proyecto final?
+                    </button>
+                </h2>
+                <div id="pr1" class="accordion-collapse collapse" aria-labelledby="proy1" data-bs-parent="#faqProyecto">
+                    <div class="accordion-body">
+                        Cada curso finaliza con un proyecto práctico donde aplicarás todos los conocimientos aprendidos.
+                        Vas a contar con guía del docente, fechas de entrega y criterios de evaluación claros. El
+                        proyecto es obligatorio para obtener el certificado final.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="proy2">
+                    <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#pr2"
+                        aria-expanded="false" aria-controls="pr2">
+                        ¿Qué pasa si no apruebo el proyecto?
+                    </button>
+                </h2>
+                <div id="pr2" class="accordion-collapse collapse" aria-labelledby="proy2" data-bs-parent="#faqProyecto">
+                    <div class="accordion-body">
+                        Si no alcanzás la nota mínima para aprobar, no podrás obtener el certificado. Sin embargo, vas a
+                        tener la posibilidad de volver a cursar el mismo curso con un <strong>50% de descuento</strong>
+                        para mejorar tu desempeño y completar el proyecto satisfactoriamente.
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- PAGOS Y CERTIFICADOS -->
         <div class="section-title"><i class="bi bi-credit-card"></i> Pagos y Certificados</div>
         <div class="accordion" id="faqPagos">
             <div class="accordion-item">
@@ -370,7 +572,7 @@
                 <div id="p1" class="accordion-collapse collapse" aria-labelledby="pago1" data-bs-parent="#faqPagos">
                     <div class="accordion-body">
                         Aceptamos transferencias bancarias, tarjetas a través de Mercado Pago y criptomonedas
-                        seleccionadas. Una vez procesado el pago, el acceso se habilita en menos de 24h.
+                        seleccionadas. Una vez procesado el pago.
                     </div>
                 </div>
             </div>
@@ -384,25 +586,30 @@
                 </h2>
                 <div id="p2" class="accordion-collapse collapse" aria-labelledby="pago2" data-bs-parent="#faqPagos">
                     <div class="accordion-body">
-                        Sí. Al finalizar el curso y cumplir con el 80% de asistencia y ejercicios aprobados, recibirás
-                        un certificado digital personalizado.
+                        Sí. Al finalizar el curso y cumplir con el 70% de asistencia y el Proyecto final aprobado con
+                        nota igual o superior a 7, recibirás un certificado digital personalizado.
                     </div>
                 </div>
             </div>
         </div>
 
+
         <hr class="section-divider">
 
-        <p class="text-center mt-1 mb-5" style="color: #ccc;">¿Todavía tenés dudas? Contactanos por nuestras redes o nuestro formulario de contacto.</p>
+        <p class="text-center mt-1 mb-5" style="color: #ccc;">¿Todavía tenés dudas? Contactanos por nuestras redes o
+            nuestro formulario de contacto.</p>
 
     </div>
 
     <!-- footer incia -->
-    <footer style="background-color: #111; color: #888; text-align: center; font-size: 0.9rem; padding: 1.2rem 0; position: relative; border-top: 3px solid transparent;">
-    <div style="position: absolute; top: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(90deg, #12f693, #cf30ff, #12f693); background-size: 200% auto; animation: neonGlow 4s linear infinite;"></div>
-    <div class="container">
-        <small>© {% now "Y" %} Tecnomarema · Todos los derechos reservados</small>
-    </div>
+    <footer
+        style="background-color: #111; color: #888; text-align: center; font-size: 0.9rem; padding: 1.2rem 0; position: relative; border-top: 3px solid transparent;">
+        <div
+            style="position: absolute; top: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(90deg, #12f693, #cf30ff, #12f693); background-size: 200% auto; animation: neonGlow 4s linear infinite;">
+        </div>
+        <div class="container">
+            <small>© {% now "Y" %} Tecnomarema · Todos los derechos reservados</small>
+        </div>
     </footer>
     <!-- footer fin -->
 
