@@ -491,3 +491,21 @@ class InscripcionClaseGratis(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} - {self.email}"
+##################################################################################
+###------------------badges para comisiones general y privado------------------###
+##################################################################################
+
+from django.db import models
+from django.conf import settings
+
+class LecturaMensaje(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    chat = models.ForeignKey('Chat', on_delete=models.CASCADE)
+    ultimo_mensaje_leido = models.ForeignKey('Mensaje', on_delete=models.CASCADE, null=True, blank=True)
+    fecha_lectura = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('usuario', 'chat')
+
+    def __str__(self):
+        return f"Lectura {self.usuario} en chat {self.chat} hasta {self.ultimo_mensaje_leido}"

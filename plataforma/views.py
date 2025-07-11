@@ -2266,30 +2266,38 @@ def chat_general(request):
     except PerfilUsuario.DoesNotExist:
         return redirect('login')
 
-    chat_general, creado = Chat.objects.get_or_create(tipo='general')
+    chat_general_obj, creado = Chat.objects.get_or_create(tipo='general')
 
     if request.method == 'POST':
         texto = request.POST.get('mensaje', '').strip()
         archivo = request.FILES.get('archivo')
-
         if texto or archivo:
             Mensaje.objects.create(
-                chat=chat_general,
+                chat=chat_general_obj,
                 remitente=usuario,
                 texto=texto,
                 archivo=archivo if isinstance(archivo, UploadedFile) else None
             )
         return redirect('chat_general')
 
-    mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
+    mensajes = chat_general_obj.mensajes.select_related('remitente').order_by('creado')
+
+    # Ejemplo: badges vacíos para no romper template
+    badges = {}
+
+    # Ejemplo: chats_comision vacío para que no falle
+    chats_comision = {}
 
     return render(request, 'educativa/chat.html', {
-        'chat': chat_general,
+        'chat_general': chat_general_obj,
+        'chat': chat_general_obj,
         'mensajes': mensajes,
         'usuario': usuario,
-        'usuarios_destino': [],  # 👈 vacío en chat general
-        'comision': comision,
+        'usuarios_destino': [],
+        'badges': badges,
+        'chats_comision': chats_comision,
     })
+
 
 #####################################################################################
 ###----------------------------el polling del chat---------------------------------##
@@ -2526,7 +2534,6 @@ def chat_comision_view(request, id_comision):
 
     estudiante = usuario.id_estudiante
 
-    # Verificar si el usuario pertenece a la comisión o es profe/tutor
     comisiones_permitidas = [
         estudiante.cursando1_id, estudiante.cursando2_id, estudiante.cursando3_id,
         estudiante.cursando4_id, estudiante.cursando5_id, estudiante.cursando6_id,
@@ -2539,51 +2546,53 @@ def chat_comision_view(request, id_comision):
         messages.error(request, "No tenés permiso para acceder a este chat.")
         return redirect('mis_cursos')
 
-    # Obtener el chat de la comisión (lo crea si no existe)
     chat, _ = Chat.objects.get_or_create(tipo='comision', comision_id=id_comision)
     chat.participantes.add(usuario)
 
     comision = get_object_or_404(Comision, id_comision=id_comision)
 
-    # 🔍 OBTENER TODOS LOS DESTINATARIOS POSIBLES (compañeros + tutores + profe)
+    # 🔍 Participantes visibles según rol
+    comisiones = [id_comision]
     usuarios_destino = set()
 
-    # Agregar profesor
-    if hasattr(comision, 'profesor') and comision.profesor:
-        usuarios_destino.add(comision.profesor)
-
-    # Agregar tutores
-    if hasattr(comision, 'tutores'):
-        usuarios_destino.update(comision.tutores.all())
-    elif hasattr(comision, 'tutor') and comision.tutor:
-        usuarios_destino.add(comision.tutor)
-
-    # Agregar alumnos que cursan esta comisión (por cualquier campo)
-    alumnos = PerfilUsuario.objects.filter(
-        rol='alumno',
-        id_estudiante__in=DatosDeEstudiantes.objects.filter(
-            Q(cursando1=comision) | Q(cursando2=comision) | Q(cursando3=comision) |
-            Q(cursando4=comision) | Q(cursando5=comision) | Q(cursando6=comision) |
-            Q(cursando7=comision) | Q(cursando8=comision) | Q(cursando9=comision)
+    if usuario.rol == 'alumno':
+        profesores_y_tutores = PerfilUsuario.objects.filter(
+            rol__in=['profesor', 'tutor'],
+            id_estudiante__in=DatosDeEstudiantes.objects.filter(
+                Q(cursando1__in=comisiones) | Q(cursando2__in=comisiones) |
+                Q(cursando3__in=comisiones) | Q(cursando4__in=comisiones) |
+                Q(cursando5__in=comisiones) | Q(cursando6__in=comisiones) |
+                Q(cursando7__in=comisiones) | Q(cursando8__in=comisiones) |
+                Q(cursando9__in=comisiones)
+            )
         )
-    )
-    usuarios_destino.update(alumnos)
+        usuarios_destino.update(profesores_y_tutores)
 
-    # ❌ Excluirse a sí mismo
+    else:  # tutor o profesor ve todos
+        todos = PerfilUsuario.objects.filter(
+            id_estudiante__in=DatosDeEstudiantes.objects.filter(
+                Q(cursando1__in=comisiones) | Q(cursando2__in=comisiones) |
+                Q(cursando3__in=comisiones) | Q(cursando4__in=comisiones) |
+                Q(cursando5__in=comisiones) | Q(cursando6__in=comisiones) |
+                Q(cursando7__in=comisiones) | Q(cursando8__in=comisiones) |
+                Q(cursando9__in=comisiones)
+            )
+        )
+        usuarios_destino.update(todos)
+
+    # Excluirse
     usuarios_destino.discard(usuario)
 
-    # 📨 Obtener mensajes del chat
+    # Mensajes
     mensajes = Mensaje.objects.filter(chat=chat).select_related('remitente').order_by('creado')
 
     return render(request, 'educativa/chat.html', {
         'chat': chat,
         'mensajes': mensajes,
         'usuario': usuario,
-        'usuarios_destino': list(usuarios_destino),  # convertir a lista
+        'usuarios_destino': list(usuarios_destino),
         'comision': comision,
     })
-
-
 
 
 
@@ -2677,11 +2686,8 @@ def chat_privado(request, nombre_usuario_destino):
     if remitente.rol == 'alumno':
         if destinatario.rol not in ['tutor', 'profesor'] or not comparten_comision(remitente, destinatario):
             return redirect('chat_general')
-    elif remitente.rol == 'tutor':
-        if destinatario.rol != 'alumno' or not comparten_comision(remitente, destinatario):
-            return redirect('chat_general')
-    elif remitente.rol == 'profesor':
-        if destinatario.rol != 'alumno' or not comparten_comision(remitente, destinatario):
+    elif remitente.rol in ['tutor', 'profesor']:
+        if destinatario.rol not in ['alumno', 'tutor', 'profesor'] or not comparten_comision(remitente, destinatario):
             return redirect('chat_general')
 
     # Obtener o crear chat privado único
@@ -2701,7 +2707,7 @@ def chat_privado(request, nombre_usuario_destino):
 
     # Alumnos que comparten esas comisiones
     alumnos = PerfilUsuario.objects.filter(
-        rol='alumno',
+        Q(rol='profesor') | Q(rol='profesor') | Q(rol='tutor'),
         id_estudiante__in=DatosDeEstudiantes.objects.filter(
             Q(cursando1__in=comisiones) | Q(cursando2__in=comisiones) |
             Q(cursando3__in=comisiones) | Q(cursando4__in=comisiones) |
@@ -2769,43 +2775,45 @@ def enviar_mensaje_privado(request, id_usuario):
 from django.db.models import Q
 
 def obtener_usuarios_destino_privado(usuario):
-    if usuario.rol == 'alumno':
+    comisiones = []
+
+    # 1. Obtener comisiones según el rol
+    if usuario.rol == 'alumno' and usuario.id_estudiante:
         comisiones = [
-            usuario.cursando1, usuario.cursando2, usuario.cursando3,
-            usuario.cursando4, usuario.cursando5, usuario.cursando6,
-            usuario.cursando7, usuario.cursando8, usuario.cursando9
+            usuario.id_estudiante.cursando1, usuario.id_estudiante.cursando2,
+            usuario.id_estudiante.cursando3, usuario.id_estudiante.cursando4,
+            usuario.id_estudiante.cursando5, usuario.id_estudiante.cursando6,
+            usuario.id_estudiante.cursando7, usuario.id_estudiante.cursando8,
+            usuario.id_estudiante.cursando9
         ]
-        comisiones = [c for c in comisiones if c is not None]
+    elif usuario.rol == 'profesor':
+        if hasattr(usuario, 'profesorado'):
+            comisiones = list(usuario.profesorado.all())
+    elif usuario.rol == 'tutor':
+        if hasattr(usuario, 'tutorado'):
+            comisiones = list(usuario.tutorado.all())
 
-        return PerfilUsuario.objects.filter(
-            Q(rol='tutor', id_empleado__comision__in=comisiones) |
-            Q(rol='profesor', id_empleado__comision__in=comisiones)
-        ).distinct()
+    comisiones = [c for c in comisiones if c]
 
-    elif usuario.rol in ['tutor', 'profesor']:
-        comisiones = [
-            usuario.id_empleado.comision1, usuario.id_empleado.comision2,
-            usuario.id_empleado.comision3, usuario.id_empleado.comision4,
-            usuario.id_empleado.comision5
-        ]
-        comisiones = [c for c in comisiones if c is not None]
+    if not comisiones:
+        return PerfilUsuario.objects.none()
 
-        alumnos_q = Q()
-        for i in range(1, 10):
-            alumnos_q |= Q(**{f'cursando{i}__in': comisiones})
+    # 2. Buscar alumnos que cursen alguna de esas comisiones
+    alumnos_q = Q()
+    for i in range(1, 10):
+        alumnos_q |= Q(**{f'id_estudiante__cursando{i}__in': comisiones})
 
-        if usuario.rol == 'tutor':
-            return PerfilUsuario.objects.filter(
-                Q(rol='alumno') & alumnos_q |
-                Q(rol='profesor', id_empleado__comision__in=comisiones)
-            ).exclude(id_usuario=usuario.id_usuario).distinct()
-        else:  # profesor
-            return PerfilUsuario.objects.filter(
-                Q(rol='alumno') & alumnos_q |
-                Q(rol='tutor', id_empleado__comision__in=comisiones)
-            ).exclude(id_usuario=usuario.id_usuario).distinct()
+    alumnos = PerfilUsuario.objects.filter(rol='alumno').filter(alumnos_q)
 
-    return PerfilUsuario.objects.none()
+    # 3. Buscar profesores de esas comisiones
+    profesores = PerfilUsuario.objects.filter(rol='profesor', profesorado__in=comisiones)
+
+    # 4. Buscar tutores de esas comisiones
+    tutores = PerfilUsuario.objects.filter(rol='tutor', tutorado__in=comisiones)
+
+    # 5. Unificar y excluir a sí mismo
+    todos = alumnos.union(profesores, tutores).exclude(id_usuario=usuario.id_usuario).distinct()
+    return todos
 
 
 ##################################################################################################
@@ -2831,73 +2839,74 @@ def buscar_usuarios(request):
 
 
 
+from django.db.models import Q
+
 def obtener_usuarios_para_chat_privado_extendido(usuario):
-    if not usuario.id_estudiante and not hasattr(usuario, 'id_empleado'):
+    if not usuario:
         return PerfilUsuario.objects.none()
 
     resultados = PerfilUsuario.objects.none()
 
-    if usuario.rol == 'alumno':
-        comisiones_ids = [
-            usuario.id_estudiante.cursando1_id,
-            usuario.id_estudiante.cursando2_id,
-            usuario.id_estudiante.cursando3_id,
-            usuario.id_estudiante.cursando4_id,
-            usuario.id_estudiante.cursando5_id,
-            usuario.id_estudiante.cursando6_id,
-            usuario.id_estudiante.cursando7_id,
-            usuario.id_estudiante.cursando8_id,
-            usuario.id_estudiante.cursando9_id,
+    if usuario.rol == 'alumno' and usuario.id_estudiante:
+        comisiones = [
+            usuario.id_estudiante.cursando1,
+            usuario.id_estudiante.cursando2,
+            usuario.id_estudiante.cursando3,
+            usuario.id_estudiante.cursando4,
+            usuario.id_estudiante.cursando5,
+            usuario.id_estudiante.cursando6,
+            usuario.id_estudiante.cursando7,
+            usuario.id_estudiante.cursando8,
+            usuario.id_estudiante.cursando9,
         ]
-        comisiones_ids = [c for c in comisiones_ids if c]
+        comisiones = [c for c in comisiones if c]
 
-        # Usuarios que comparten comisión (alumnos, profesores, tutores)
+        # Alumnos en las mismas comisiones
+        alumnos_q = Q()
+        for i in range(1, 10):
+            alumnos_q |= Q(**{f'id_estudiante__cursando{i}__in': comisiones})
+
+        # Profesores y tutores desde las comisiones
+        profesores = []
+        tutores = []
+        for com in comisiones:
+            if hasattr(com, 'profesor') and com.profesor:
+                profesores.append(com.profesor)
+            if hasattr(com, 'tutores'):
+                tutores.extend(com.tutores.all())
+            elif hasattr(com, 'tutor') and com.tutor:
+                tutores.append(com.tutor)
+
+        profesores_ids = [p.id_usuario for p in profesores]
+        tutores_ids = [t.id_usuario for t in tutores]
+
         resultados = PerfilUsuario.objects.filter(
-            (
-                Q(rol='alumno', id_estudiante__cursando1_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando2_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando3_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando4_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando5_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando6_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando7_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando8_id__in=comisiones_ids) |
-                Q(rol='alumno', id_estudiante__cursando9_id__in=comisiones_ids) |
-                Q(rol='profesor', id_empleado__comision__id_comision__in=comisiones_ids) |
-                Q(rol='tutor', id_empleado__comision__id_comision__in=comisiones_ids)
-            )
+            alumnos_q | Q(id_usuario__in=profesores_ids) | Q(id_usuario__in=tutores_ids)
         ).exclude(id_usuario=usuario.id_usuario)
 
     elif usuario.rol in ['tutor', 'profesor']:
-        comisiones_ids = [
-            usuario.id_empleado.comision1_id,
-            usuario.id_empleado.comision2_id,
-            usuario.id_empleado.comision3_id,
-            usuario.id_empleado.comision4_id,
-            usuario.id_empleado.comision5_id,
-        ]
-        comisiones_ids = [c for c in comisiones_ids if c]
+        if usuario.rol == 'tutor':
+            comisiones = usuario.tutorado.all() if hasattr(usuario, 'tutorado') else []
+        else:
+            comisiones = usuario.profesorado.all() if hasattr(usuario, 'profesorado') else []
+
+        comisiones = list(comisiones)
 
         alumnos_q = Q()
         for i in range(1, 10):
-            alumnos_q |= Q(**{f'id_estudiante__cursando{i}_id__in': comisiones_ids})
+            alumnos_q |= Q(**{f'id_estudiante__cursando{i}__in': comisiones})
 
-        if usuario.rol == 'tutor':
-            resultados = PerfilUsuario.objects.filter(
-                (
-                    Q(rol='alumno') & alumnos_q |
-                    Q(rol='profesor', id_empleado__comision__id_comision__in=comisiones_ids)
-                )
-            )
-        else:  # profesor
-            resultados = PerfilUsuario.objects.filter(
-                (
-                    Q(rol='alumno') & alumnos_q |
-                    Q(rol='tutor', id_empleado__comision__id_comision__in=comisiones_ids)
-                )
-            )
+        alumnos = PerfilUsuario.objects.filter(rol='alumno').filter(alumnos_q)
 
-        resultados = resultados.exclude(id_usuario=usuario.id_usuario)
+        # También pueden chatear entre roles
+        otros_rol = 'profesor' if usuario.rol == 'tutor' else 'tutor'
+        usuarios_rol_opuesto = PerfilUsuario.objects.filter(
+            rol=otros_rol
+        ).filter(
+            Q(profesorado__in=comisiones) | Q(tutorado__in=comisiones)
+        ).distinct()
+
+        resultados = (alumnos | usuarios_rol_opuesto).exclude(id_usuario=usuario.id_usuario)
 
     return resultados.distinct()
 
@@ -2937,3 +2946,90 @@ def obtener_chat_privado(remitente, destinatario):
         chat.participantes.add(remitente, destinatario)
     return chat
 
+###################################################################################################################
+###---------------vistas para visualizar la cantidad de mensajes no leidos por comision y general---------------###
+###################################################################################################################
+from .models import LecturaMensaje
+
+def obtener_badges(request):
+    usuario = request.user  # o como accedés al usuario actual
+    badges = {}
+
+    # Chats que el usuario tiene: general + comisiones + privados (según lo que uses)
+    chats = Chat.objects.filter(participantes=usuario)
+
+    for chat in chats:
+        lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
+        if lectura and lectura.ultimo_mensaje_leido:
+            # Contar mensajes posteriores a ese último mensaje leído
+            nuevos = chat.mensajes.filter(creado__gt=lectura.ultimo_mensaje_leido.creado).count()
+        else:
+            # No hay lectura previa, contamos todos los mensajes
+            nuevos = chat.mensajes.count()
+        badges[chat.id] = nuevos
+
+    return badges
+#-------------------------------------------------------------------------
+
+
+from django.http import JsonResponse
+from .models import Chat, LecturaMensaje, PerfilUsuario
+
+def mensajes_nuevos_view(request):
+    nombre_usuario = request.session.get('usuario_logueado')
+    if not nombre_usuario:
+        return JsonResponse({'error': 'no logueado'}, status=401)
+
+    try:
+        usuario = PerfilUsuario.objects.get(nombre_usuario=nombre_usuario)
+    except PerfilUsuario.DoesNotExist:
+        return JsonResponse({'error': 'usuario inválido'}, status=401)
+
+    chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
+
+    data = {
+        'general': 0,
+        'comisiones': {},
+        'privados': {},
+    }
+
+    for chat in chats:
+        # Obtener cantidad de nuevos mensajes desde la última lectura
+        lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
+        if lectura and lectura.ultimo_mensaje_leido:
+            nuevos = chat.mensajes.filter(creado__gt=lectura.ultimo_mensaje_leido.creado).count()
+        else:
+            nuevos = chat.mensajes.count()
+
+        # Clasificar correctamente los mensajes
+        if chat.tipo == 'general':
+            data['general'] = nuevos  # solo uno general
+
+        elif chat.tipo == 'comision' and chat.comision:
+            com_id = chat.comision.id_comision
+            data['comisiones'][com_id] = nuevos  # exacto por comision
+
+        elif chat.tipo == 'privado':
+            otros = chat.participantes.exclude(id=usuario.id)
+            if otros.exists():
+                otro = otros.first()
+                data['privados'][otro.id_usuario] = nuevos  # por privado exacto
+
+        else:
+            # Si no tiene tipo definido, ignorar para evitar errores
+            continue
+
+    return JsonResponse(data)
+
+#-------------------------------------------------------------------------------------------------------------------
+
+from .models import LecturaMensaje
+
+def actualizar_lectura(usuario, chat):
+    ultimo = chat.mensajes.order_by('-creado').first()
+    if ultimo:
+        LecturaMensaje.objects.update_or_create(
+            usuario=usuario,
+            chat=chat,
+            defaults={'ultimo_mensaje_leido': ultimo}
+        )
