@@ -3,7 +3,7 @@
 <head>
     {% load static %}
     <meta charset="UTF-8">
-    <title>Alta de Alumno - Tecno Marema</title>
+    <title>Alta de Usuario - Tecno Marema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -23,7 +23,7 @@
         label {
             color: #12f693;
         }
-        input, select, textarea {
+        input, select, textarea, .form-select {
             background-color: #111;
             border: 1px solid #12f693;
             color: white;
@@ -51,7 +51,7 @@
 </head>
 <body>
 <div class="container py-5">
-    <h2>Alta Manual de Alumno</h2>
+    <h2>Alta Manual de Usuario</h2>
     <form method="post" id="form-alta-alumno" >
         {% csrf_token %}
 
@@ -112,30 +112,47 @@
             {% endfor %}
         </div>
 
-<!-- DATOS DE USUARIO --> 
-<h4>Datos de Usuario</h4>
-<div class="row">
-    {% for field in form %}
-        {% if field.name in "username password" %}
+        <!-- ROL DEL USUARIO -->
+        <h4>Rol del Usuario</h4>
+        <div class="row">
             <div class="mb-3 col-md-6">
-                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                {{ field }}
-                {% if field.name == "username" %}
-                    <span id="estado_nombre_usuario" class="form-text"></span>
-                {% endif %}
-                {% if field.help_text %}
-                    <small class="form-text text-muted">{{ field.help_text }}</small>
-                {% endif %}
-                {% for error in field.errors %}
+                <label for="id_rol">Rol</label>
+                <select name="rol" id="id_rol" class="form-select" required>
+                    <option value="alumno" {% if form.rol.value == "alumno" %}selected{% endif %}>Alumno</option>
+                    <option value="tutor" {% if form.rol.value == "tutor" %}selected{% endif %}>Tutor</option>
+                    <option value="profesor" {% if form.rol.value == "profesor" %}selected{% endif %}>Profesor</option>
+                    <option value="admin" {% if form.rol.value == "admin" %}selected{% endif %}>Admin</option>
+                </select>
+                {% for error in form.rol.errors %}
                     <div class="text-danger">{{ error }}</div>
                 {% endfor %}
             </div>
-        {% endif %}
-    {% endfor %}
-</div>
+        </div>
 
-<button type="submit" class="btn btn-success mt-3">Dar de Alta</button>
-<a class="btn btn-success mt-3" href="{% url 'admin_panel' %}">Volver al panel</a>
+        <!-- DATOS DE USUARIO --> 
+        <h4>Datos de Usuario</h4>
+        <div class="row">
+            {% for field in form %}
+                {% if field.name in "username password" %}
+                    <div class="mb-3 col-md-6">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.name == "username" %}
+                            <span id="estado_nombre_usuario" class="form-text"></span>
+                        {% endif %}
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                        {% endif %}
+                        {% for error in field.errors %}
+                            <div class="text-danger">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="btn btn-success mt-3">Dar de Alta</button>
+        <a class="btn btn-success mt-3" href="{% url 'admin_panel' %}">Volver al panel</a>
 
     </form>
 </div>

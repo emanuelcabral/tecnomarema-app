@@ -106,18 +106,18 @@ class Curso(models.Model):
 
 
     # 🔽 Campo nuevo para la icono del curso
-    icono01 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono02 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono03 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono04 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono05 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono06 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono07 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono08 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono09 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono10 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono11 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
-    icono12 = models.ImageField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono01 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono02 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono03 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono04 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono05 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono06 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono07 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono08 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono09 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono10 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono11 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
+    icono12 = models.FileField(upload_to='iconos_cursos/', blank=True, null=True)
 
     def __str__(self):
         return f"{self.nombre_curso} ({self.estado_curso})"

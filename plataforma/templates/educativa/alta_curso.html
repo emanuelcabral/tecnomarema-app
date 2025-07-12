@@ -62,7 +62,7 @@
 <div class="container">
     <div class="card">
         <h1 class="title">Alta de Curso</h1>
-        <form  method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             <div class="mb-3">
@@ -81,8 +81,18 @@
             </div>
 
             <div class="mb-3">
+                {{ form.fecha_creacion.label_tag }}
+                {{ form.fecha_creacion|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
                 {{ form.descripcion.label_tag }}
                 {{ form.descripcion|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.consigna_proyecto.label_tag }}
+                {{ form.consigna_proyecto|add_class:"form-control" }}
             </div>
 
             <div class="mb-3">
@@ -91,70 +101,78 @@
             </div>
 
             <div class="mb-3">
+                {{ form.precio_original.label_tag }}
+                {{ form.precio_original|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.precio_final.label_tag }}
+                {{ form.precio_final|add_class:"form-control" }}
+            </div>
+
+            <div class="mb-3">
+                {{ form.modalidad.label_tag }}
+                {{ form.modalidad|add_class:"form-control" }}
+            </div>
+
+            <!-- ICONOS -->
+            <h6 class="text-warning">Adjuntar iconos en formato svg | png | gif | webp</h6>
+            
+            <div class="mb-3">
                 {{ form.icono01.label_tag }}
                 {{ form.icono01|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono02.label_tag }}
                 {{ form.icono02|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono03.label_tag }}
                 {{ form.icono03|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono04.label_tag }}
                 {{ form.icono04|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono05.label_tag }}
                 {{ form.icono05|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono06.label_tag }}
                 {{ form.icono06|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono07.label_tag }}
                 {{ form.icono07|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono08.label_tag }}
                 {{ form.icono08|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
                 {{ form.icono09.label_tag }}
                 {{ form.icono09|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
-                {{ form.icono010.label_tag }}
-                {{ form.icono010|add_class:"form-control" }}
+                {{ form.icono10.label_tag }}
+                {{ form.icono10|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
-                {{ form.icono011.label_tag }}
-                {{ form.icono011|add_class:"form-control" }}
+                {{ form.icono11.label_tag }}
+                {{ form.icono11|add_class:"form-control" }}
             </div>
-
             <div class="mb-3">
-                {{ form.icono012.label_tag }}
-                {{ form.icono012|add_class:"form-control" }}
+                {{ form.icono12.label_tag }}
+                {{ form.icono12|add_class:"form-control" }}
             </div>
 
             <button type="submit" class="btn btn-primary w-100 mt-4">Guardar Curso</button>
-            <a class="btn btn-primary w-100 mt-4" href="{% url 'admin_panel' %}">Volver al panel</a>
+            <a class="btn btn-secondary w-100 mt-2" href="{% url 'admin_panel' %}">Volver al panel</a>
         </form>
     </div>
 </div>
+
 
 <!-- ventana modal inicia -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
@@ -168,7 +186,7 @@
             </div>
             <div class="modal-footer">
                 <a href="{% url 'alta_curso' %}" class="btn btn-success">Cargar otro</a>
-                <a href="{% url 'login' %}" class="btn btn-outline-success">Volver al inicio</a>
+                <a href="{% url 'admin_panel' %}" class="btn btn-outline-success">Volver al inicio</a>
             </div>
         </div>
     </div>

@@ -226,6 +226,16 @@ path("chat/verificar_escribiendo/", views.verificar_escribiendo, name="verificar
 
 path('ajax/comisiones/<str:id_curso>/', views.obtener_comisiones_por_curso, name='ajax_comisiones'),
 
+
+
+
+
+
+path('ajax/obtener_clases_de_comision/', views.obtener_clases_de_comision, name='obtener_clases_de_comision'),
+path('ajax/obtener_datos_clase_comision/', views.obtener_datos_clase_comision, name='obtener_datos_clase_comision'),
+
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

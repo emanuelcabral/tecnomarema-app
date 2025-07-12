@@ -80,35 +80,6 @@ class PerfilUsuarioForm(forms.ModelForm):
 #########################################################################################################
 
 from django import forms
-from .models import PerfilUsuario
-from .models import DatosDeEstudiantes
-
-# class AltaAlumnoForm(forms.ModelForm):
-#     # username = forms.CharField(max_length=150, label="Nombre de usuario")
-#     username = forms.CharField(
-#     max_length=150,
-#     label="Nombre de usuario",
-#     widget=forms.TextInput(attrs={'id': 'id_username'})
-# )
-#     password = forms.CharField(widget=forms.PasswordInput, label="Contraseña provisional")
-
-#     class Meta:
-#         model = DatosDeEstudiantes
-#         fields = [
-#             'id_estudiante', 'nombre', 'apellido', 'dni', 'correo',
-#             'fecha_nacimiento', 'pais', 'provincia', 'telefono',
-#             'genero', 'biografia',
-#             'cursando1', 'cursando2', 'cursando3', 'cursando4',
-#             'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9'
-#         ]
-
-# def clean_username(self):
-#     username = self.cleaned_data.get('username')
-#     if PerfilUsuario.objects.filter(nombre_usuario=username).exists():
-#         raise forms.ValidationError("Este nombre de usuario ya está en uso. Elegí otro.")
-#     return username
-
-from django import forms
 from .models import PerfilUsuario, DatosDeEstudiantes
 
 class AltaAlumnoForm(forms.ModelForm):
@@ -122,6 +93,20 @@ class AltaAlumnoForm(forms.ModelForm):
         label="Contraseña provisional"
     )
 
+    # AGREGAMOS EL CAMPO rol como ChoiceField
+    ROLES = (
+        ('alumno', 'Alumno'),
+        ('tutor', 'Tutor'),
+        ('profesor', 'Profesor'),
+        ('admin', 'Admin'),
+    )
+    rol = forms.ChoiceField(
+        choices=ROLES,
+        label="Rol",
+        initial='alumno',
+        widget=forms.Select(attrs={'class': 'form-select', 'id': 'id_rol'})
+    )
+
     class Meta:
         model = DatosDeEstudiantes
         fields = [
@@ -132,14 +117,12 @@ class AltaAlumnoForm(forms.ModelForm):
             'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9'
         ]
 
-    # ←--- Esta función verifica si el nombre de usuario ya existe
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if PerfilUsuario.objects.filter(nombre_usuario=username).exists():
             raise forms.ValidationError("Este nombre de usuario ya está en uso. Elegí otro.")
         return username
 
-    # ←--- Esta función hace que el campo 'id_estudiante' se muestre solo lectura
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['id_estudiante'].widget.attrs['readonly'] = True
@@ -192,7 +175,7 @@ from .models import ClaseComision
 class ClaseComisionForm(forms.ModelForm):
     class Meta:
         model = ClaseComision  # o el modelo que uses
-        fields = ['comision', 'clase', 'fecha', 'horario', 'link', 'video']
+        fields = ['comision', 'clase', 'fecha', 'horario','hora_fin', 'link', 'video']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

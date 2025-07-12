@@ -874,14 +874,13 @@ def enviar_confirmacion(request):
 ##------------------------alta manual de alumnos--------------------------------------##
 ########################################################################################
 from django.shortcuts import render, redirect
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.conf import settings
 from django.db import IntegrityError
+from django.urls import reverse
+from django.template.loader import render_to_string
 from .forms import AltaAlumnoForm
 from .models import DatosDeEstudiantes, PerfilUsuario
-from django.urls import reverse
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
 
 def alta_alumno_view(request):
     mostrar_modal_error = False
@@ -895,6 +894,9 @@ def alta_alumno_view(request):
             password = form.cleaned_data['password']
             correo = datos.correo
 
+            # Capturamos el rol seleccionado, si no viene, 'alumno' por defecto
+            rol = form.cleaned_data.get('rol', 'alumno')
+
             if PerfilUsuario.objects.filter(nombre_usuario=username).exists():
                 form.add_error('username', 'Este nombre de usuario ya está en uso. Elegí otro.')
                 mostrar_modal_error = True
@@ -903,13 +905,14 @@ def alta_alumno_view(request):
                     # 1. Guardamos el estudiante para que exista el id_estudiante
                     datos.save()
 
-                    # 2. Creamos o actualizamos el PerfilUsuario asignando id_usuario = id_estudiante
+                    # 2. Creamos o actualizamos el PerfilUsuario asignando id_usuario = id_estudiante y guardando el rol
                     usuario, creado = PerfilUsuario.objects.update_or_create(
                         id_usuario=datos.id_estudiante,
                         defaults={
                             'id_estudiante': datos,          # FK a DatosDeEstudiantes
                             'nombre_usuario': username,
                             'correo': correo,
+                            'rol': rol,                     # <-- guardamos el rol
                             'is_active': True,
                             'is_staff': False,
                         }
@@ -920,12 +923,9 @@ def alta_alumno_view(request):
                     usuario.save()
 
                     # 4. Enviar email de confirmación
-
-                    # Construir URL con reverse
                     reset_path = reverse('password_reset')
                     reset_url = request.build_absolute_uri(reset_path)
 
-                    # Renderizar HTML del correo
                     html_content = render_to_string('registration/bienvenida_alumno.html', {
                         'nombre': datos.nombre,
                         'usuario': username,
@@ -933,7 +933,6 @@ def alta_alumno_view(request):
                         'reset_url': reset_url,
                     })
 
-                    # Crear email con HTML
                     email = EmailMultiAlternatives(
                         subject="🎓 ¡Bienvenido/a a Tecno Marema!",
                         body="Este mensaje requiere un cliente compatible con HTML.",
@@ -956,6 +955,7 @@ def alta_alumno_view(request):
         'form': form,
         'mostrar_modal_error': mostrar_modal_error
     })
+
 
 #----------------------------------------------------------
 def alumno_alta_exitosa_view(request):
@@ -1351,6 +1351,8 @@ def alta_clase_comision_view(request):
     comisiones = Comision.objects.all()
     clases = Clase.objects.all().order_by('id')
     comision_seleccionada = None
+    clase_existente = None
+    form = ClaseComisionForm()
 
     if request.method == 'POST':
         # Carga de una nueva clase general
@@ -1379,27 +1381,51 @@ def alta_clase_comision_view(request):
 
             return redirect(f'/alta_clase_comision/?id_comision={comision_id}')
 
-        # Carga de datos específicos para una comisión (ClaseComision)
+        # Carga o actualización de una ClaseComision
         elif 'guardar_clase_comision' in request.POST:
-            form = ClaseComisionForm(request.POST)
+            comision_id = request.POST.get('comision')
+            clase_id = request.POST.get('clase')
+
+            try:
+                clase_existente = ClaseComision.objects.get(comision_id=comision_id, clase_id=clase_id)
+                form = ClaseComisionForm(request.POST, instance=clase_existente)  # Actualizar existente
+            except ClaseComision.DoesNotExist:
+                form = ClaseComisionForm(request.POST)  # Crear nuevo
+
             if form.is_valid():
                 form.save()
-                comision_id = request.POST.get('comision')
-                # redirect con parámetro para mostrar modal
                 return redirect(f'/alta_clase_comision/?id_comision={comision_id}&guardado=1')
             else:
                 print(form.errors)  # Debug en consola
+
+    # Si es GET (mostrar formulario)
     else:
         form = ClaseComisionForm()
 
     comision_id = request.GET.get('id_comision')
+    clase_id = request.GET.get('clase_id')  # opcional: para precargar una clase seleccionada
+
     if comision_id:
         comision_seleccionada = Comision.objects.get(id_comision=comision_id)
         clases = Clase.objects.filter(curso=comision_seleccionada.id_curso).order_by('numero_clase')
 
+        # Si también recibimos clase_id, buscamos si ya hay ClaseComision
+        if clase_id:
+            try:
+                clase_existente = ClaseComision.objects.get(comision_id=comision_id, clase_id=clase_id)
+                form = ClaseComisionForm(instance=clase_existente)
+            except ClaseComision.DoesNotExist:
+                pass
+
     guardado_exitoso = request.GET.get('guardado') == '1'
 
     nuevo_id_clase = get_random_string(length=8).upper()
+
+    # Extraemos horas si ya hay clase_comision cargada
+    hora_inicio = hora_fin = None
+    if clase_existente:
+        hora_inicio = clase_existente.horario
+        hora_fin = clase_existente.hora_fin
 
     return render(request, 'educativa/alta_clase_comision.html', {
         'comisiones': comisiones,
@@ -1407,8 +1433,70 @@ def alta_clase_comision_view(request):
         'clases': clases,
         'nuevo_id_clase': nuevo_id_clase,
         'form': form,
-        'guardado_exitoso': guardado_exitoso
+        'guardado_exitoso': guardado_exitoso,
+        'hora_inicio': hora_inicio,
+        'hora_fin': hora_fin
     })
+
+#----------------------------------------------------------------------------
+#-----------obtener los datos del formulario clase comision------------------
+#----------------------------------------------------------------------------
+
+from django.http import JsonResponse
+from .models import ClaseComision
+
+def obtener_datos_clase_comision(request):
+    comision_id = request.GET.get('comision_id')
+    clase_id = request.GET.get('clase_id')
+
+    try:
+        clase_comision = ClaseComision.objects.get(
+            comision__id_comision=comision_id,
+            clase__id=clase_id
+        )
+        data = {
+            'fecha': clase_comision.fecha.isoformat() if clase_comision.fecha else '',
+            'hora_inicio': clase_comision.horario.strftime('%H:%M') if clase_comision.horario else '',
+            'hora_fin': clase_comision.hora_fin.strftime('%H:%M') if clase_comision.hora_fin else '',
+            'link': clase_comision.link or '',
+            'video': clase_comision.video or ''
+        }
+    except ClaseComision.DoesNotExist:
+        data = {
+            'fecha': '',
+            'hora_inicio': '',
+            'hora_fin': '',
+            'link': '',
+            'video': ''
+        }
+
+    return JsonResponse(data)
+
+
+
+
+#------------------------------------------------------------------------------
+#        trae las clases del curso correspondiente
+#------------------------------------------------------------------------------
+from django.http import JsonResponse
+from .models import Clase, Comision
+
+def obtener_clases_de_comision(request):
+    comision_id = request.GET.get('comision_id')
+
+    try:
+        comision = Comision.objects.get(id_comision=comision_id)
+        curso = comision.id_curso
+        clases = Clase.objects.filter(curso=curso).order_by('numero_clase').values('id', 'nombre_clase')
+        data = [{'id': c['id'], 'nombre': c['nombre_clase']} for c in clases]
+    except Comision.DoesNotExist:
+        data = []
+
+    return JsonResponse({'clases': data})
+
+
+
+
 ##############################################################################
 #-----------------------------------------------------------------------#
 ##############################################################################

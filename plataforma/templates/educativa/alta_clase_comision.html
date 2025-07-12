@@ -65,28 +65,31 @@
 <body>
 
 <div class="container">
-    <div class="card">
-        <h1 class="title">Alta / Edición de Clase Comisión</h1>
+    <div class="card p-4">
+        <h1 class="title mb-4">Alta / Edición de Clase Comisión</h1>
+
         <form method="post" novalidate>
             {% csrf_token %}
 
             <div class="mb-3">
                 <label for="id_comision">Comisión</label>
                 <select name="comision" id="id_comision" class="form-select" required>
+                    <option value="">Seleccionar comisión</option>
                     {% for comision in comisiones %}
-                        <option value="{{ comision.id_comision }}" 
+                        <option value="{{ comision.id_comision }}"
                             {% if comision.id_comision|stringformat:"s" == form.comision.value|stringformat:"s" %}selected{% endif %}>
                             {{ comision }}
                         </option>
                     {% endfor %}
                 </select>
             </div>
-            
+
             <div class="mb-3">
                 <label for="id_clase">Clase</label>
-                <select name="clase" id="id_clase" class="form-select" required>
+                <select name="clase" id="id_clase" class="form-select" required disabled>
+                    <option value="">Seleccionar clase</option>
                     {% for clase in clases %}
-                        <option value="{{ clase.id }}" 
+                        <option value="{{ clase.id }}"
                             {% if clase.id|stringformat:"s" == form.clase.value|stringformat:"s" %}selected{% endif %}>
                             {{ clase.nombre_clase }}
                         </option>
@@ -100,17 +103,24 @@
                        value="{{ form.fecha.value|stringformat:'s' }}" required>
             </div>
 
-            <div class="mb-3">
-                <label for="id_horario">Horario</label>
-                <input type="time" name="horario" id="id_horario" class="form-control" step="60"
-                       value="{{ form.horario.value|stringformat:'s' }}" required>
-                <small class="text-info">Ingrese hora y minuto (sin segundos)</small>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="id_hora_inicio">Hora de Inicio</label>
+                    <input type="time" name="horario" id="id_hora_inicio" class="form-control" step="60"
+                           value="{{ form.hora_inicio.value|stringformat:'s' }}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="id_hora_fin">Hora de Fin</label>
+                    <input type="time" name="hora_fin" id="id_hora_fin" class="form-control" step="60"
+                           value="{{ form.hora_fin.value|stringformat:'s' }}">
+                </div>
             </div>
 
             <div class="mb-3">
                 <label for="id_link">Link a la clase (Jitsi, Zoom, etc.)</label>
                 <input type="url" name="link" id="id_link" class="form-control"
-                       placeholder="https://..." value="{{ form.link.value|stringformat:'s' }}" required>
+                       placeholder="https://..." value="{{ form.link.value|stringformat:'s' }}">
             </div>
 
             <div class="mb-3">
@@ -119,11 +129,14 @@
                        placeholder="https://..." value="{{ form.video.value|stringformat:'s' }}">
             </div>
 
-            <button type="submit" class="btn btn-primary w-100 mt-4" name="guardar_clase_comision">Guardar Clase Comisión</button>
-            <a class="btn btn-primary w-100 mt-4" href="{% url 'admin_panel' %}">Volver al panel</a>
+            <button type="submit" class="btn btn-primary w-100 mt-4" name="guardar_clase_comision">
+                Guardar Clase Comisión
+            </button>
+            <a class="btn btn-secondary w-100 mt-2" href="{% url 'admin_panel' %}">Volver al panel</a>
         </form>
     </div>
 </div>
+
 
 <!-- Modal de éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
@@ -137,7 +150,7 @@
             </div>
             <div class="modal-footer">
                 <a href="{% url 'alta_clase_comision' %}" class="btn btn-success">Cargar otra</a>
-                <a href="{% url 'home' %}" class="btn btn-outline-success">Volver al inicio</a>
+                <a href="{% url 'admin_panel' %}" class="btn btn-outline-success">Volver al inicio</a>
             </div>
         </div>
     </div>
@@ -154,6 +167,106 @@
     });
 </script>
 {% endif %}
+
+
+{% comment %} codigo para actulizar dinamicamente clasecommision - inicia {% endcomment %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const comisionSelect = document.getElementById('id_comision');
+    const claseSelect = document.getElementById('id_clase');
+
+    const campos = {
+        fecha: document.getElementById('id_fecha'),
+        hora_inicio: document.getElementById('id_hora_inicio'),
+        hora_fin: document.getElementById('id_hora_fin'),
+        link: document.getElementById('id_link'),
+        video: document.getElementById('id_video')
+    };
+
+    function limpiarCampos() {
+        for (let key in campos) {
+            campos[key].value = '';
+        }
+    }
+
+    function cargarClasesParaComision(comisionId) {
+        if (!comisionId) {
+            claseSelect.innerHTML = '<option value="">Seleccionar clase</option>';
+            claseSelect.disabled = true;
+            limpiarCampos();
+            return;
+        }
+
+        claseSelect.innerHTML = '<option value="">Cargando clases...</option>';
+        claseSelect.disabled = true;
+        limpiarCampos();
+
+        fetch(`/ajax/obtener_clases_de_comision/?comision_id=${comisionId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Error al obtener clases');
+                return response.json();
+            })
+            .then(data => {
+                claseSelect.innerHTML = '<option value="">Seleccionar clase</option>';
+                data.clases.forEach(clase => {
+                    const opt = document.createElement('option');
+                    opt.value = clase.id;
+                    opt.textContent = clase.nombre;
+                    claseSelect.appendChild(opt);
+                });
+                claseSelect.disabled = false;
+            })
+            .catch(err => {
+                claseSelect.innerHTML = '<option value="">Error al cargar clases</option>';
+                claseSelect.disabled = true;
+                console.error(err);
+            });
+    }
+
+    function cargarDatosClaseComision(comisionId, claseId) {
+        if (!comisionId || !claseId) {
+            limpiarCampos();
+            return;
+        }
+
+        fetch(`/ajax/obtener_datos_clase_comision/?comision_id=${comisionId}&clase_id=${claseId}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Error al obtener datos de clase');
+                return response.json();
+            })
+            .then(data => {
+                campos.fecha.value = data.fecha || '';
+                campos.hora_inicio.value = data.hora_inicio || '';
+                campos.hora_fin.value = data.hora_fin || '';
+                campos.link.value = data.link || '';
+                campos.video.value = data.video || '';
+            })
+            .catch(err => {
+                limpiarCampos();
+                console.error(err);
+            });
+    }
+
+    comisionSelect.addEventListener('change', function () {
+        cargarClasesParaComision(this.value);
+    });
+
+    claseSelect.addEventListener('change', function () {
+        cargarDatosClaseComision(comisionSelect.value, this.value);
+    });
+
+    // Al cargar la página, si hay valores preseleccionados, habilitar y cargar datos
+    if (comisionSelect.value) {
+        claseSelect.disabled = false;
+        if (claseSelect.value) {
+            cargarDatosClaseComision(comisionSelect.value, claseSelect.value);
+        }
+    }
+});
+</script>
+
+
+
 
 </body>
 </html>
