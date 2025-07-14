@@ -2278,7 +2278,7 @@ def admin_panel_view(request):
 
 # views.py
 from django.shortcuts import render
-from plataforma.models import DatosDeEstudiantes, Curso, Clase, Comision, PerfilUsuario
+from plataforma.models import DatosDeEstudiantes, Curso, Clase, Comision, PerfilUsuario, InscripcionClaseGratis
 from plataforma.decorators import session_required
 
 @session_required
@@ -2291,6 +2291,7 @@ def admin_panel_view(request):
         "cantidad_profesores": PerfilUsuario.objects.filter(rol='profesor').count(),
         "cantidad_tutores": PerfilUsuario.objects.filter(rol='tutor').count(),
         "cantidad_admins": PerfilUsuario.objects.filter(is_staff=True).count(),
+        "cantidad_clase1": InscripcionClaseGratis.objects.count(),
     }
     return render(request, "administrador/admin_panel.html", contexto)
 
@@ -3121,3 +3122,315 @@ def actualizar_lectura(usuario, chat):
             chat=chat,
             defaults={'ultimo_mensaje_leido': ultimo}
         )
+
+###################################################################################################################
+###-----------------------Estadisticas generales, cursos, comisiones y clase------------------------------------###
+###################################################################################################################
+
+from django.http import JsonResponse
+from .models import ValoracionAlumno, ClaseComision
+from django.db.models import Avg, Count
+from collections import defaultdict
+
+def obtener_estadisticas_valoraciones(request):
+    clase_id = request.GET.get('clase')
+    ambito = request.GET.get('ambito')
+
+    valoraciones = ValoracionAlumno.objects.all()
+
+    if clase_id and clase_id.isdigit():
+        clase_id_num = int(clase_id)
+
+        if ambito == "clase":
+            valoraciones = valoraciones.filter(clase_id=clase_id_num)
+
+        elif ambito == "comision":
+            clase = ClaseComision.objects.filter(id=clase_id_num).first()
+            if clase:
+                valoraciones = valoraciones.filter(comision_id=clase.comision.id_comision)
+
+        elif ambito == "curso":
+            clase = ClaseComision.objects.filter(id=clase_id_num).first()
+            if clase and clase.comision and clase.comision.id_curso:
+                valoraciones = valoraciones.filter(curso_id=clase.comision.id_curso.id_curso)
+
+    # Recuento preferencia_clase
+    liked_counts = valoraciones.values('preferencia_clase').annotate(total=Count('valoracion_alumno_id'))
+
+    # Promedios generales
+    promedio = valoraciones.aggregate(
+        profe=Avg('rol_profe'),
+        contenido=Avg('contenido'),
+        plataforma=Avg('plataforma'),
+        streaming=Avg('streaming')
+    )
+
+    total_valoraron = valoraciones.count()
+    total_alumnos = valoraciones.values('id_estudiante').distinct().count()
+    total_no_valoraron = max(0, total_alumnos - total_valoraron)
+
+    # Estadísticas por pregunta: distribución 1 a 10
+    def contar_valores_por_pregunta(campo):
+        # Diccionario de 1 a 10 con conteo inicial en 0
+        conteo = {str(i): 0 for i in range(1, 11)}
+        valores = valoraciones.values(campo).annotate(cantidad=Count('valoracion_alumno_id'))
+        for v in valores:
+            valor = v[campo]
+            if valor and str(valor) in conteo:
+                conteo[str(valor)] = v['cantidad']
+        return [conteo[str(i)] for i in range(1, 11)]
+
+    distribuciones = {
+        'rol_profe': contar_valores_por_pregunta('rol_profe'),
+        'contenido': contar_valores_por_pregunta('contenido'),
+        'plataforma': contar_valores_por_pregunta('plataforma'),
+        'streaming': contar_valores_por_pregunta('streaming'),
+    }
+
+    return JsonResponse({
+        'liked': {
+            'gustó': next((x for x in liked_counts if x['preferencia_clase'] == 'me_gusto'), {'total': 0}),
+            'masomenos': next((x for x in liked_counts if x['preferencia_clase'] == 'mas_o_menos'), {'total': 0}),
+            'nogusto': next((x for x in liked_counts if x['preferencia_clase'] == 'no_me_gusto'), {'total': 0}),
+        },
+        'promedios': promedio,
+        'valoraron_vs_no': {
+            'valoraron': total_valoraron,
+            'no_valoraron': total_no_valoraron
+        },
+        'distribuciones': distribuciones
+    })
+
+#----------------------------------------------------------------------------------------------------
+
+def obtener_clases_opciones(request):
+    clases = ClaseComision.objects.select_related('comision', 'clase').all()
+    opciones = [
+        {'id': c.id, 'nombre': f"{c.comision.id_curso.nombre_curso} - Clase {c.clase.numero_clase}: {c.clase.nombre_clase}"}
+        for c in clases
+    ]
+    return JsonResponse({'clases': opciones})
+#----------------------------------------------------------------------------------------------------------
+from django.http import JsonResponse
+from .models import Curso  # Ajustar si tu modelo se llama diferente
+
+def obtener_cursos(request):
+    cursos = Curso.objects.all().values('id_curso', 'nombre_curso')
+    data = [{'id': c['id_curso'], 'nombre': c['nombre_curso']} for c in cursos]
+    return JsonResponse({'cursos': data})
+
+#----------------------------------------------------------------------------------------------------------
+from .models import Comision
+
+def obtener_comisiones(request):
+    curso_id = request.GET.get('curso')
+    if not curso_id or not curso_id.isdigit():
+        return JsonResponse({'comisiones': []})
+
+    comisiones = Comision.objects.filter(id_curso_id=curso_id).values('id_comision', 'nombre_comision')
+    data = [{'id': c['id_comision'], 'nombre': c['nombre_comision']} for c in comisiones]
+    return JsonResponse({'comisiones': data})
+
+#----------------------------------------------------------------------------------------------------------
+from .models import ClaseComision
+
+def obtener_clases(request):
+    comision_id = request.GET.get('comision')
+    if not comision_id or not comision_id.isdigit():
+        return JsonResponse({'clases': []})
+
+    clases = ClaseComision.objects.select_related('clase').filter(comision_id=comision_id)
+    data = [
+        {
+            'id': c.id,
+            'nombre': f"Clase {c.clase.numero_clase}: {c.clase.nombre_clase}"
+        }
+        for c in clases
+    ]
+    return JsonResponse({'clases': data})
+
+#----------------------------------------------------------------------------------------------------------
+
+
+from django.shortcuts import render
+
+def error_400_view(request, exception):
+    return render(request, 'errors/400.html', status=400)
+
+def error_403_view(request, exception):
+    return render(request, 'errors/403.html', status=403)
+
+def error_404_view(request, exception):
+    return render(request, 'errors/404.html', status=404)
+
+def error_500_view(request):
+    return render(request, 'errors/500.html', status=500)
+
+
+#################################################################################################################
+#################################################################################################################
+#################################################################################################################
+
+from django.shortcuts import render
+from django.db.models import Count
+from .models import InscripcionClaseGratis
+from plataforma.decorators import session_required
+import itertools
+import json
+
+@session_required
+def alumnos_clase1_html(request):
+    qs = InscripcionClaseGratis.objects.all().order_by('-creado')
+
+    def split_counts(lst):
+        flat = list(itertools.chain.from_iterable([x.split(', ') for x in lst if x]))
+        return {k: flat.count(k) for k in set(flat)}
+
+    nivel_pc_counts = qs.values('nivel_pc').annotate(count=Count('nivel_pc')).order_by('nivel_pc')
+    exp_prog_counts = qs.values('exp_programacion').annotate(count=Count('exp_programacion'))
+    nivel_prog_counts = qs.values('nivel_programacion').annotate(count=Count('nivel_programacion')).order_by('nivel_programacion')
+
+    graf_dias = split_counts(qs.values_list('dias', flat=True))
+    graf_horarios = split_counts(qs.values_list('horarios', flat=True))
+    graf_tecnos = split_counts(qs.values_list('tecnologias', flat=True))
+
+    contexto = {
+        "inscripciones": qs,
+
+        "graf_dias_labels": json.dumps(list(graf_dias.keys())),
+        "graf_dias_data": json.dumps(list(graf_dias.values())),
+
+        "graf_horarios_labels": json.dumps(list(graf_horarios.keys())),
+        "graf_horarios_data": json.dumps(list(graf_horarios.values())),
+
+        "graf_nivel_pc_labels": json.dumps([str(item['nivel_pc']) for item in nivel_pc_counts]),
+        "graf_nivel_pc_data": json.dumps([item['count'] for item in nivel_pc_counts]),
+
+        "graf_exp_prog_labels": json.dumps([item['exp_programacion'] for item in exp_prog_counts]),
+        "graf_exp_prog_data": json.dumps([item['count'] for item in exp_prog_counts]),
+
+        "graf_nivel_prog_labels": json.dumps([str(item['nivel_programacion']) for item in nivel_prog_counts]),
+        "graf_nivel_prog_data": json.dumps([item['count'] for item in nivel_prog_counts]),
+
+        "graf_tecnos_labels": json.dumps(list(graf_tecnos.keys())),
+        "graf_tecnos_data": json.dumps(list(graf_tecnos.values())),
+    }
+
+    return render(request, 'administrador/alumnos_clase1.html', contexto)
+
+
+#######################################################################################################################
+#######################################################################################################################
+#######################################################################################################################
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import JsonResponse, HttpResponseBadRequest
+from django.views.decorators.http import require_GET, require_POST
+from .models import Curso, Clase
+from django.db.models import Max
+
+
+# Vista principal
+def alta_clases_de_curso(request):
+    cursos = Curso.objects.all()
+    guardado_exitoso = request.GET.get('guardado') == '1'
+
+    if request.method == 'POST':
+        curso_id = request.POST.get('curso')
+        clase_id = request.POST.get('clase')
+        nombre_clase = request.POST.get('nombre_clase')
+        numero_clase = request.POST.get('numero_clase')
+        estado_clase = request.POST.get('estado_clase')
+        ppt = request.POST.get('ppt')
+        cargar_nueva = request.POST.get('cargar_nueva_clase') == 'on'
+
+        if not curso_id:
+            return render(request, 'educativa/alta_clases_de_curso.html', {
+                'cursos': cursos,
+                'guardado_exitoso': False,
+                'error': 'Debe seleccionar un curso.'
+            })
+
+        if cargar_nueva or not clase_id:
+            # Buscar un ID disponible (el mayor + 1)
+            ultimo_id = Clase.objects.aggregate(Max('id'))['id__max'] or 0
+            nuevo_id = ultimo_id + 1
+
+            Clase.objects.create(
+                id=nuevo_id,
+                curso_id=curso_id,
+                nombre_clase=nombre_clase,
+                numero_clase=numero_clase,
+                estado_clase=estado_clase,
+                ppt=ppt
+            )
+        else:
+            # Editar clase existente
+            try:
+                clase = Clase.objects.get(pk=clase_id)
+                clase.nombre_clase = nombre_clase
+                clase.numero_clase = numero_clase
+                clase.estado_clase = estado_clase
+                clase.ppt = ppt
+                clase.save()
+            except Clase.DoesNotExist:
+                return render(request, 'educativa/alta_clases_de_curso.html', {
+                    'cursos': cursos,
+                    'guardado_exitoso': False,
+                    'error': 'La clase no existe.'
+                })
+
+        return redirect('/alta_clases_de_curso/?guardado=1')
+
+    return render(request, 'educativa/alta_clases_de_curso.html', {
+        'cursos': cursos,
+        'guardado_exitoso': guardado_exitoso
+    })
+
+
+
+# AJAX - Obtener clases por curso
+@require_GET
+def ajax_obtener_clases_de_curso(request):
+    curso_id = request.GET.get('curso_id')
+    if not curso_id:
+        return JsonResponse({'error': 'Falta curso_id'}, status=400)
+
+    try:
+        clases = Clase.objects.filter(curso__id_curso=curso_id).order_by('numero_clase')
+        data = [{"id": c.id, "nombre": c.nombre_clase} for c in clases]
+        return JsonResponse({'clases': data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+# AJAX - Obtener datos de una clase individual
+@require_GET
+def ajax_obtener_datos_clase(request):
+    clase_id = request.GET.get('clase_id')
+    clase = get_object_or_404(Clase, pk=clase_id)
+
+    data = {
+        "id": clase.id,
+        "nombre_clase": clase.nombre_clase,
+        "numero_clase": clase.numero_clase,
+        "estado_clase": clase.estado_clase,
+        "ppt": clase.ppt or ""
+    }
+    return JsonResponse(data)
+
+
+# AJAX - Eliminar una clase
+@require_POST
+def ajax_eliminar_clase(request):
+    clase_id = request.GET.get('clase_id')
+    if not clase_id:
+        return JsonResponse({'error': 'Falta clase_id'}, status=400)
+
+    try:
+        clase = Clase.objects.get(pk=clase_id)
+        clase.delete()
+        return JsonResponse({'mensaje': 'Clase eliminada correctamente'})
+    except Clase.DoesNotExist:
+        return JsonResponse({'error': 'Clase no encontrada'}, status=404)

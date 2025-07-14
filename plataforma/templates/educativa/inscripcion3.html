@@ -585,50 +585,18 @@
 
 
 
-<!-- ########################################################### -->
-<!--           Variables y datos de cursos desde backend       -->
-<!-- ########################################################### -->
+<!-- ######################################################################################################################################## -->
+ <!-- script paso 2? -->
+<!-- ######################################################################################################################################## -->
 <script>
-  // OBJETO CURSOS: datos de cursos con sus comisiones y horarios.
-  // Este objeto debe generarse desde Django con tu contexto.
-  // Ejemplo mínimo (ajusta según tu backend):
-  const cursos = {
-    {% for curso in cursos %}
-      "{{ curso.id }}": {
-        nombre: "{{ curso.nombre_curso|escapejs }}",
-        modalidad: "{{ curso.get_modalidad_display|escapejs }}",
-        comisiones: [
-          {% for com in curso.comisiones %}
-            {
-              numero_comision: "{{ com.numero_comision }}",
-              fecha_inicio: "{{ com.fecha_inicio }}",
-              fecha_fin: "{{ com.fecha_fin }}",
-              dia1: "{{ com.dia1|default:'' }}",
-              dia2: "{{ com.dia2|default:'' }}",
-              dia3: "{{ com.dia3|default:'' }}",
-              horario1: "{{ com.horario1|default:'' }}",
-              horario2: "{{ com.horario2|default:'' }}",
-              horario3: "{{ com.horario3|default:'' }}"
-            },
-          {% endfor %}
-        ]
-      },
-    {% endfor %}
-  };
-</script>
 
-<!-- ########################################################### -->
-<!--              Paso 2: Selección Curso y Comisión            -->
-<!-- ########################################################### -->
-<script>
-  // Referencias a elementos DOM
   const selectCurso = document.getElementById('curso');
   const btnConfirmarCurso = document.getElementById('btnConfirmarCurso');
   const bloqueComisiones = document.getElementById('bloqueComisiones');
   const selectComision = document.getElementById('comision');
   const infoCurso = document.getElementById('infoCurso');
 
-  // Deshabilita botón confirmar si no hay curso seleccionado y oculta bloques de comisión e info.
+  // Al cambiar el curso
   selectCurso.addEventListener('change', () => {
     btnConfirmarCurso.disabled = !selectCurso.value;
     bloqueComisiones.classList.add('d-none');
@@ -640,23 +608,19 @@
     document.getElementById('textoHorario').innerHTML = '';
   });
 
-  // Cuando se confirma el curso, carga sus comisiones en el select de comisiones y muestra info general.
+  // Confirmar curso y cargar comisiones
   btnConfirmarCurso.addEventListener('click', () => {
     const cursoId = selectCurso.value;
-    if (!cursoId || !cursos[cursoId]) return;
+    const cursoSeleccionado = cursos.find(c => String(c.id) === String(cursoId));
+    if (!cursoSeleccionado) return;
 
-    const cursoSeleccionado = cursos[cursoId];
-
-    // Limpiar opciones de comisiones
     selectComision.innerHTML = '<option value="" disabled selected>Elige una comisión</option>';
 
-    // Cargar comisiones
     cursoSeleccionado.comisiones.forEach(comision => {
       const option = document.createElement('option');
       option.value = comision.numero_comision;
       option.textContent = `Comisión ${comision.numero_comision} - Inicio: ${comision.fecha_inicio}`;
 
-      // Guardar datos en dataset para mostrar después
       option.dataset.fechaInicio = comision.fecha_inicio || '';
       option.dataset.fechaFin = comision.fecha_fin || '';
       option.dataset.dia1 = comision.dia1 || '';
@@ -669,17 +633,15 @@
       selectComision.appendChild(option);
     });
 
-    // Mostrar sección comisiones e info del curso
     bloqueComisiones.classList.remove('d-none');
-    infoCurso.classList.remove('d-none');
-    document.getElementById('nombreCurso').textContent = cursoSeleccionado.nombre;
+    document.getElementById('nombreCurso').textContent = cursoSeleccionado.nombre_curso;
     document.getElementById('modalidadCurso').textContent = cursoSeleccionado.modalidad;
-    // Limpiar fecha y horario hasta que seleccione comisión
     document.getElementById('fechaInicio').textContent = '';
     document.getElementById('textoHorario').innerHTML = '';
+    infoCurso.classList.remove('d-none');
   });
 
-  // Cuando se selecciona una comisión, mostrar sus fechas y horarios
+  // Mostrar info de la comisión seleccionada
   selectComision.addEventListener('change', () => {
     const opcion = selectComision.selectedOptions[0];
     if (!opcion) return;
@@ -703,177 +665,242 @@
     document.getElementById('textoHorario').innerHTML = textoHorario.trim();
     infoCurso.classList.remove('d-none');
   });
-</script>
 
-<!-- ########################################################### -->
-<!--                  Función para cambiar pestañas            -->
-<!-- ########################################################### -->
-<script>
-  /**
-   * Cambia la pestaña activa usando Bootstrap 5 Tabs y hace scroll arriba.
-   * @param {string} tabId - ID del tab a activar, por ejemplo 'paso2'
-   */
-  function irA(tabId) {
-    const triggerEl = document.querySelector(`#${tabId}-tab`);
-    if (!triggerEl) {
-      console.warn(`No existe el tab con id ${tabId}-tab`);
-      return;
-    }
-    const tab = new bootstrap.Tab(triggerEl);
-    tab.show();
-
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  }
-</script>
-
-<!-- ########################################################### -->
-<!--               Mostrar formulario según método pago        -->
-<!-- ########################################################### -->
-<script>
-  /**
-   * Muestra el formulario de pago seleccionado y oculta los demás.
-   * @param {string} valor - Método de pago seleccionado ('transferencia', 'debito', 'credito_1', 'credito_cuotas')
-   */
-  function mostrarFormularioPago(valor) {
-    const forms = ['formTransferencia', 'formTarjetaSimple', 'formTarjetaCuotas'];
-    forms.forEach(id => document.getElementById(id).classList.add('d-none'));
-
-    if (valor === 'transferencia') {
-      document.getElementById('formTransferencia').classList.remove('d-none');
-    } else if (valor === 'debito' || valor === 'credito_1') {
-      document.getElementById('formTarjetaSimple').classList.remove('d-none');
-    } else if (valor === 'credito_cuotas') {
-      document.getElementById('formTarjetaCuotas').classList.remove('d-none');
+  // Cambiar paso/tab
+  function irA(paso) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('show', 'active'));
+    const elem = document.getElementById(paso);
+    if (elem) {
+      elem.classList.add('show', 'active');
     }
   }
 </script>
+<!-- ######################################################################################################################################## -->
 
-<!-- ########################################################### -->
-<!--            Validar términos y pasar al siguiente paso      -->
-<!-- ########################################################### -->
-<script>
-  /**
-   * Valida que todos los campos requeridos estén completos y que se acepten los términos.
-   * Si todo es válido, avanza a paso 2.
-   * Si falla, muestra un modal con el mensaje de error.
-   */
-  function validarTerminosYContinuar() {
-    const form = document.getElementById('form-registro');
-    const checkbox = document.getElementById('terminos');
-    const modal = document.getElementById('modalTerminosCustom');
-    const mensaje = document.getElementById('modalMensaje');
+  <script>
+      // Muestra el formulario de pago correspondiente al método seleccionado y oculta los demás formularios. 
+    function mostrarFormularioPago(valor) {
+      const todas = ['formTransferencia', 'formTarjetaSimple', 'formTarjetaCuotas'];
+      todas.forEach(id => document.getElementById(id).classList.add('d-none'));
 
-    let formularioValido = true;
-
-    // Verificar campos requeridos
-    form.querySelectorAll('[required]').forEach(campo => {
-      if (!campo.value.trim()) {
-        formularioValido = false;
-        campo.classList.add('input-invalido'); // opcional: marcar campo inválido
-      } else {
-        campo.classList.remove('input-invalido');
+      if (valor === 'transferencia') {
+        document.getElementById('formTransferencia').classList.remove('d-none');
       }
-    });
-
-    if (!formularioValido) {
-      mensaje.textContent = 'Por favor, completá todos los campos obligatorios correctamente.';
-      modal.style.display = 'flex';
-      return;
-    }
-
-    if (!checkbox.checked) {
-      mensaje.textContent = 'Debes aceptar los términos para continuar.';
-      modal.style.display = 'flex';
-      return;
-    }
-
-    // Si todo está bien, ir a paso2
-    irA('paso2');
-  }
-
-  function cerrarModal() {
-    document.getElementById('modalTerminosCustom').style.display = 'none';
-  }
-</script>
-
-<!-- ########################################################### -->
-<!--                Enviar datos de inscripción (Fetch)         -->
-<!-- ########################################################### -->
-<script>
-  /**
-   * Obtiene el código de la comisión seleccionada.
-   * Esta función debes implementar según tu lógica.
-   */
-  function obtenerCodigoComisionSeleccionada() {
-    const selectComision = document.getElementById('comision');
-    return selectComision.value || null;
-  }
-
-  /**
-   * Envía los datos del formulario de inscripción al backend vía Fetch.
-   * Si es exitoso, avanza al paso 3.
-   */
-  function enviarDatos() {
-    const datos = {
-      nombre: document.getElementById("nombre").value,
-      apellido: document.getElementById("apellido").value,
-      documento: document.getElementById("documento").value,
-      email: document.getElementById("email").value,
-      fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
-      pais: document.getElementById("pais").value,
-      provincia: document.getElementById("provincia").value,
-      telefono: document.getElementById("telefono").value,
-      comision_codigo: obtenerCodigoComisionSeleccionada(),
-    };
-
-    fetch("/guardar_datos_inscripcion/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": getCookie("csrftoken"),
-      },
-      body: JSON.stringify(datos),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "ok") {
-        irA('paso3');
-      } else {
-        alert("Error al guardar: " + data.msg);
+      if (valor === 'debito' || valor === 'credito_1') {
+        document.getElementById('formTarjetaSimple').classList.remove('d-none');
       }
-    })
-    .catch(() => alert("Error de conexión al enviar los datos."));
-  }
-</script>
+      if (valor === 'credito_cuotas') {
+        document.getElementById('formTarjetaCuotas').classList.remove('d-none');
+      }
+    }
+  </script>
+<!-- ######################################################################################################################################## -->
+  <script>
+    // Cambia de pestaña (tab) dentro del sistema de inscripción.
+    //  Utiliza el componente de pestañas de Bootstrap para mostrar el contenido deseado.
+    // Además, realiza un desplazamiento suave al principio de la página.
+    // @param {string} tabId - El ID de la pestaña a la que se desea ir (por ejemplo: 'paso2').
 
-<!-- ########################################################### -->
-<!--                   Librería intl-tel-input                  -->
-<!-- ########################################################### -->
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
-<script>
-  const inputTelefono = document.querySelector("#telefono");
-  window.intlTelInput(inputTelefono, {
-    preferredCountries: ["ar", "uy", "cl", "mx", "es"],
-    initialCountry: "ar",
-    autoPlaceholder: "aggressive",
-    nationalMode: false,
-    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
+    function irA(tabId) {
+      const triggerEl = document.querySelector(`#${tabId}-tab`);
+      const tab = new bootstrap.Tab(triggerEl);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    function reservar() {
+      if (document.getElementById("acepto").checked) {
+        alert("🎉 ¡Tu lugar ha sido reservado exitosamente!\nNos pondremos en contacto contigo a la brevedad.");
+      } else {
+        alert("Por favor, aceptá los términos y condiciones antes de continuar.");
+      }
+    }
+  </script>
+<!-- ######################################################################################################################################## -->
+  <!-- script paso 2 inicio-->
+<!-- ######################################################################################################################################## -->
+  <script>
+const cursos = {
+  {% for curso in cursos %}
+    "{{ curso.id }}": {
+      nombre: "{{ curso.nombre_curso|escapejs }}",
+      modalidad: "{{ curso.get_modalidad_display|escapejs }}",
+      comisiones: [
+        {% for com in curso.comisiones %}
+          {
+            numero_comision: "{{ com.numero_comision }}",
+            fecha_inicio: "{{ com.fecha_inicio}}",
+            fecha_fin: "{{ com.fecha_fin}}",
+            dia1: "{{ com.dia1|default:'' }}",
+            dia2: "{{ com.dia2|default:'' }}",
+            dia3: "{{ com.dia3|default:'' }}",
+            horario1: "{{ com.horario1|default:'' }}",
+            horario2: "{{ com.horario2|default:'' }}",
+            horario3: "{{ com.horario3|default:'' }}"
+          },
+        {% endfor %}
+      ]
+    },
+  {% endfor %}
+};
+
+
+  function actualizarHorariosDesdeBD() {
+    const cursoSelect = document.getElementById("curso");
+    const horarioSelect = document.getElementById("horario");
+    const bloqueHorario = document.getElementById("bloqueHorario");
+    const infoCurso = document.getElementById("infoCurso");
+
+    horarioSelect.innerHTML = '<option value="" disabled selected>Elige un horario</option>';
+    infoCurso.classList.add("d-none");
+
+    const cursoInfo = cursos[cursoSelect.value];
+    if (cursoInfo && cursoInfo.comisiones.length) {
+      cursoInfo.comisiones.forEach((com, idx) => {
+        const dias = [com.dia1,com.dia2,com.dia3].filter(Boolean).join(' / ');
+        const horarios = [com.horario1,com.horario2,com.horario3].filter(Boolean).join(' / ');
+        const opt = document.createElement("option");
+        opt.value = idx;
+        opt.textContent = `${dias} – ${horarios} (Desde ${com.fecha_inicio})`;
+        horarioSelect.appendChild(opt);
+      });
+      bloqueHorario.classList.remove("d-none");
+    } else {
+      bloqueHorario.classList.add("d-none");
+    }
+  }
+
+  function mostrarInfo() {
+    const cursoSelect = document.getElementById("curso");
+    const horarioSelect = document.getElementById("horario");
+    const info = cursos[cursoSelect.value].comisiones[horarioSelect.value];
+    if (!info) return;
+
+    document.getElementById("nombreCurso").textContent = `Curso seleccionado: ${cursos[cursoSelect.value].nombre}`;
+    document.getElementById("fechaInicio").textContent = info.fecha_inicio;
+    document.getElementById("textoHorario").textContent = [info.horario1, info.horario2, info.horario3].filter(Boolean).join(' / ');
+    document.getElementById("infoCurso").classList.remove("d-none");
+  }
+  </script>
+
+<!-- ######################################################################################################################################## -->
+  <script>
+      // Valida que todos los campos requeridos del formulario estén completos 
+      // y que el usuario haya aceptado los términos y condiciones.
+      // Si algo falta, muestra un modal con el mensaje correspondiente.
+      // Si todo está bien, avanza al siguiente paso (paso2).
+
+    function validarTerminosYContinuar() {
+      const form = document.getElementById('form-registro');
+      const checkbox = document.getElementById('terminos');
+      const modal = document.getElementById('modalTerminosCustom');
+      const mensaje = document.getElementById('modalMensaje');
+
+      // Verificamos si los campos requeridos del paso actual están completos
+      const camposRequeridos = form.querySelectorAll('[required]');
+      let formularioValido = true;
+
+      camposRequeridos.forEach(campo => {
+        if (!campo.value.trim()) {
+          formularioValido = false;
+          campo.classList.add('input-invalido'); // opcional: para marcar los campos en rojo
+        } else {
+          campo.classList.remove('input-invalido');
+        }
+      });
+
+      if (!formularioValido) {
+        mensaje.textContent = 'Por favor, completá todos los campos obligatorios correctamente.';
+        modal.style.display = 'flex';
+        return;
+      }
+
+      // Validamos si aceptó los términos y condiciones
+      if (!checkbox.checked) {
+        mensaje.textContent = 'Debes aceptar los términos para continuar.';
+        modal.style.display = 'flex';
+        return;
+      }
+
+      // Si todo está correcto, pasamos al siguiente paso
+      irA('paso2');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalTerminosCustom').style.display = 'none';
+    }
+  </script>
+  <!-- ######################################################################################################################################## -->
+  <!-- script paso 2 fin-->
+<!-- ######################################################################################################################################## -->
+
+<!-- ######################################################################################################################################## -->
+  <!-- enviar datos de inscripcion inicia -->
+<!-- ######################################################################################################################################## -->
+  <script>
+    function enviarDatos() {
+  const datos = {
+    nombre: document.getElementById("nombre").value,
+    apellido: document.getElementById("apellido").value,
+    documento: document.getElementById("documento").value,
+    email: document.getElementById("email").value,
+    fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
+    pais: document.getElementById("pais").value,
+    provincia: document.getElementById("provincia").value,
+    telefono: document.getElementById("telefono").value,
+    comision_codigo: obtenerCodigoComisionSeleccionada(),  // debes tener este dato disponible
+  };
+
+  fetch("/guardar_datos_inscripcion/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken"),
+    },
+    body: JSON.stringify(datos),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === "ok") {
+      irA('paso3');
+    } else {
+      alert("Error al guardar: " + data.msg);
+    }
   });
-</script>
+}
+  </script>
+<!-- ######################################################################################################################################## -->
+  <!-- enviar datos de inscripcion fin -->
+<!-- ######################################################################################################################################## -->
 
-<!-- ########################################################### -->
-<!--               MercadoPago integración para pago            -->
-<!-- ########################################################### -->
-<script>
+<!-- ######################################################################################################################################## -->
+  <!-- libreria de banderas -->
+  <!-- Scripts necesarios -->
+<!-- ######################################################################################################################################## -->
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+  <script>
+    const input = document.querySelector("#telefono");
+    window.intlTelInput(input, {
+      preferredCountries: ["ar", "uy", "cl", "mx", "es"],
+      initialCountry: "ar",
+      autoPlaceholder: "aggressive",
+      nationalMode: false,
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
+    });
+  </script>
+<!-- ######################################################################################################################################## -->
+  <!-- pagos con tarjeta -->
+<!-- ######################################################################################################################################## -->
+  <script>
   const mp = new MercadoPago("TU_PUBLIC_KEY_AQUI", {
     locale: 'es-AR'
   });
 
   const cardForm = mp.cardForm({
-    amount: "92900", // Monto a pagar (deberías setear dinámico si cambia)
+    amount: "92900",
     autoMount: true,
     form: {
       id: "form-pago-mp",
@@ -918,23 +945,17 @@
           const resultado = document.getElementById("resultado-pago");
           if (data.status === "approved") {
             resultado.innerHTML = "<div class='alert alert-success'>✅ ¡Pago aprobado!</div>";
-            irA("paso4"); // Si tienes paso4
+            irA("paso4"); // opcional
           } else {
             resultado.innerHTML = `<div class='alert alert-warning'>⚠ Error: ${data.status_detail}</div>`;
           }
-        })
-        .catch(() => {
-          document.getElementById("resultado-pago").innerHTML = `<div class='alert alert-danger'>Error en la conexión del pago.</div>`;
         });
       }
     }
   });
 </script>
-
-<!-- ########################################################### -->
-<!--                  Bootstrap JS Bundle con Popper             -->
-<!-- ########################################################### -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
+<!-- ######################################################################################################################################## -->
+  <!-- Bootstrap JS Bundle con Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

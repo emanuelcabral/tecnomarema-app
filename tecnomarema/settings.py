@@ -14,6 +14,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Seguridad
 SECRET_KEY = 'django-insecure-y_9!qw9gm#r@)#v!liba3@37%1pjyldyad2ae-vwxd$!%kqcy@'
 DEBUG = True
+# DEBUG = False cambiar a falsse cuando haga el deploy pero no funcionan los errors
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '891a-148-222-130-44.ngrok-free.app']
 

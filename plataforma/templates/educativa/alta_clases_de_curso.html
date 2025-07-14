@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Alta / Edición de Clases de Curso</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #0e0e0e;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            padding-top: 50px;
+        }
+        .container {
+            max-width: 800px;
+        }
+        .form-control, .form-select {
+            background-color: #1a1a1a;
+            border: 1px solid #12f693;
+            color: white;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: #12f693;
+            box-shadow: 0 0 10px #12f69344;
+            outline: none;
+        }
+        label {
+            color: #12f693;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #12f693;
+            border: none;
+            color: #000;
+            font-weight: bold;
+        }
+        .btn-primary:hover {
+            background-color: #0df284;
+        }
+        .card {
+            background-color: #151515;
+            border: 1px solid #12f69333;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 0 10px #12f69311;
+        }
+        .title {
+            text-align: center;
+            color: #12f693;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h1 class="title">Alta / Edición de Clases de Curso</h1>
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="id_curso">Curso</label>
+                <select name="curso" id="id_curso" class="form-select" required>
+                    <option value="">Seleccionar curso</option>
+                    {% for curso in cursos %}
+                        <option value="{{ curso.id_curso }}">{{ curso.nombre_curso }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3 row align-items-center">
+                <div class="col-md-8">
+                    <label for="id_clase">Clase</label>
+                    <select name="clase" id="id_clase" class="form-select" required disabled>
+                        <option value="">Seleccionar clase</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check mt-4">
+                        <input type="checkbox" id="cargar_nueva_clase" class="form-check-input">
+                        <label class="form-check-label" for="cargar_nueva_clase">Cargar clase nueva</label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="form_edicion" style="display:none">
+                <div class="mb-3">
+                    <label for="nombre_clase">Nombre de la Clase</label>
+                    <input type="text" name="nombre_clase" id="nombre_clase" class="form-control">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="numero_clase">Número de Clase</label>
+                        <input type="number" name="numero_clase" id="numero_clase" class="form-control">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="estado_clase">Estado</label>
+                        <select name="estado_clase" id="estado_clase" class="form-select">
+                            <option value="Activo">Activo</option>
+                            <option value="Inactivo">No Activo</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="ppt">URL PPT (Google Slides)</label>
+                    <input type="url" name="ppt" id="ppt" class="form-control" placeholder="https://...">
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <button type="submit" class="btn btn-primary w-50">Guardar cambios</button>
+                    <button type="button" id="btn_eliminar_clase" class="btn btn-danger w-25" style="display:none">Eliminar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Modal de éxito -->
+<div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="modalExitoLabel">¡Formulario guardado!</h5>
+            </div>
+            <div class="modal-body text-center fs-5">
+                ✅ La clase fue registrada con éxito.
+            </div>
+            <div class="modal-footer">
+                <a href="{% url 'alta_clases_de_curso' %}" class="btn btn-success">Cargar otra</a>
+                <a href="{% url 'admin_panel' %}" class="btn btn-outline-success">Volver al inicio</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if guardado_exitoso %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = new bootstrap.Modal(document.getElementById('modalExito'));
+        modal.show();
+    });
+</script>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const cursoSelect = document.getElementById('id_curso');
+    const claseSelect = document.getElementById('id_clase');
+    const formEdicion = document.getElementById('form_edicion');
+    const checkNuevaClase = document.getElementById('cargar_nueva_clase');
+    const eliminarBtn = document.getElementById('btn_eliminar_clase');
+
+    const nombreClase = document.getElementById('nombre_clase');
+    const numeroClase = document.getElementById('numero_clase');
+    const estadoClase = document.getElementById('estado_clase');
+    const ppt = document.getElementById('ppt');
+
+    cursoSelect.addEventListener('change', () => {
+        const cursoId = cursoSelect.value;
+        claseSelect.innerHTML = '<option value="">Cargando clases...</option>';
+        claseSelect.disabled = true;
+        formEdicion.style.display = 'none';
+        eliminarBtn.style.display = 'none';
+        checkNuevaClase.checked = false;
+
+        if (!cursoId) return;
+
+        fetch(`/ajax/obtener_clases_de_curso/?curso_id=${cursoId}`)
+            .then(res => res.json())
+            .then(data => {
+                claseSelect.innerHTML = '<option value="">Seleccionar clase</option>';
+                data.clases.forEach(clase => {
+                    const opt = document.createElement('option');
+                    opt.value = clase.id;
+                    opt.textContent = clase.nombre;
+                    claseSelect.appendChild(opt);
+                });
+                claseSelect.disabled = false;
+            })
+            .catch(() => {
+                claseSelect.innerHTML = '<option>Error al cargar</option>';
+                claseSelect.disabled = true;
+            });
+    });
+
+    claseSelect.addEventListener('change', () => {
+        const claseId = claseSelect.value;
+        formEdicion.style.display = 'none';
+        eliminarBtn.style.display = 'none';
+
+        if (!claseId || checkNuevaClase.checked) return;
+
+        fetch(`/ajax/obtener_datos_clase/?clase_id=${claseId}`)
+            .then(res => res.json())
+            .then(data => {
+                nombreClase.value = data.nombre_clase;
+                numeroClase.value = data.numero_clase;
+                estadoClase.value = data.estado_clase;
+                ppt.value = data.ppt;
+                formEdicion.style.display = 'block';
+                eliminarBtn.style.display = 'inline-block';
+            });
+    });
+
+    checkNuevaClase.addEventListener('change', () => {
+        if (checkNuevaClase.checked) {
+            claseSelect.value = "";
+            formEdicion.style.display = 'block';
+            eliminarBtn.style.display = 'none';
+            nombreClase.value = '';
+            numeroClase.value = '';
+            estadoClase.value = 'Activo';
+            ppt.value = '';
+        } else {
+            formEdicion.style.display = claseSelect.value ? 'block' : 'none';
+            eliminarBtn.style.display = claseSelect.value ? 'inline-block' : 'none';
+        }
+    });
+
+    eliminarBtn.addEventListener('click', () => {
+        const claseId = claseSelect.value;
+        if (!claseId) return;
+
+        if (confirm("¿Estás seguro que deseas eliminar esta clase? Esta acción no se puede deshacer.")) {
+            fetch(`/ajax/eliminar_clase/?clase_id=${claseId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => {
+                if (res.ok) {
+                    alert("Clase eliminada correctamente.");
+                    location.reload();
+                } else {
+                    alert("Error al eliminar la clase.");
+                }
+            });
+        }
+    });
+});
+</script>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+</body>
+</html>

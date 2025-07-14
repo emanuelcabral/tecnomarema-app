@@ -33,6 +33,10 @@
     .navbar {
       background-color: #222;
     }
+
+    .nav-link:hover, .nav-link:hover i, .nav-link[aria-expanded="true"], .nav-link[aria-expanded="true"] i {
+      color:#12f693 !important;
+    }
   </style>
 </head>
 <body>
@@ -41,14 +45,54 @@
     <div class="sidebar p-3">
       <h4 class="text-center mb-4" style="color:#12f693">Admin Panel</h4>
       <ul class="nav flex-column">
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-house me-2"></i>Dashboard</a></li>
-        <li class="nav-item"><a href="{% url 'alta_alumno' %}" class="nav-link"><i class="bi bi-people me-2"></i>Alta Usuarios</a></li>
-        <li class="nav-item"><a href="{% url 'alta_curso' %}" class="nav-link"><i class="bi bi-journal me-2"></i>Alta Cursos</a></li>
-        <li class="nav-item"><a href="{% url 'alta_comision' %}" class="nav-link"><i class="bi bi-journal me-2"></i>Alta Comision</a></li>
-        <li class="nav-item"><a href="{% url 'alta_clase_comision' %}" class="nav-link"><i class="bi bi-calendar me-2"></i>Edición y Alta Clases</a></li>
+        <li class="nav-item"><a href="{% url 'admin_panel' %}" class="nav-link"><i class="bi bi-house me-2"></i>Dashboard</a></li>
+        <li class="nav-item"><a href="{% url 'listado_alumnos' %}" class="nav-link"><i class="bi bi-people me-2"></i>Alumnos</a></li>
+        <li class="nav-item"><a href="{% url 'alumnos_clase1' %}" class="nav-link"><i class="bi bi-people-fill me-2"></i>Inscriptos Gratis</a></li>
+        <li class="nav-item"><a href="{% url 'listado_cursos' %}" class="nav-link"><i class="bi bi-journal me-2"></i>Cursos</a></li>
+        <li class="nav-item"><a href="{% url 'listado_comisiones' %}" class="nav-link"><i class="bi bi-calendar me-2"></i>Comisiones</a></li>
+        <li class="nav-item"><a href="{% url 'listado_clases' %}" class="nav-link"><i class="bi bi-collection me-2"></i>Clases</a></li>
+        <li class="nav-item"><a href="{% url 'listado_profesores' %}" class="nav-link"><i class="bi bi-person-video2 me-2"></i>Profesores</a></li>
+        <li class="nav-item"><a href="{% url 'listado_tutores' %}" class="nav-link"><i class="bi bi-person-badge me-2"></i>Tutores</a></li>
+        <li class="nav-item"><a href="{% url 'listado_admins' %}" class="nav-link"><i class="bi bi-person-gear me-2"></i>Administradores</a></li>
+        <li class="nav-item"><a href="{% url 'vista_chat' %}" class="nav-link"><i class="bi bi-chat me-2"></i>Chat</a></li>
+        <li class="nav-item">
+          <a class="nav-link" data-bs-toggle="collapse" href="#submenuConfiguracion" role="button" aria-expanded="false" aria-controls="submenuConfiguracion">
+            <i class="bi bi-gear me-2"></i>Configuración
+            <i class="bi bi-chevron-down float-end"></i>
+          </a>
+          <div class="collapse ps-3" id="submenuConfiguracion">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'alta_alumno' %}">
+                  <i class="bi bi-people me-2"></i>Alta Usuarios
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'alta_curso' %}">
+                  <i class="bi bi-journal me-2"></i>Alta Cursos
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'alta_comision' %}">
+                  <i class="bi bi-journal me-2"></i>Alta Comisión
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'alta_clases_de_curso' %}">
+                  <i class="bi bi-journal me-2"></i>Alta Clases de curso
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'alta_clase_comision' %}">
+                  <i class="bi bi-calendar me-2"></i>Edición y Alta Clases
+                </a>
+              </li>
+            </ul>
+          </div>
+        </li>
+
         <li class="nav-item"><a href="{% url 'estadisticas' %}" class="nav-link"><i class="bi bi-bar-chart me-2"></i>Estadísticas</a></li>
         <li class="nav-item"><a href="{% url 'entrega_proyecto' comision_id='000001' %}" class="nav-link"><i class="bi bi-upload me-2"></i>Entregas</a></li>
-        <li class="nav-item"><a href="#" class="nav-link"><i class="bi bi-gear me-2"></i>Configuración</a></li>
         <li class="nav-item ">
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
@@ -152,6 +196,16 @@
       </a>
     </div>
     <div class="col-md-3">
+      <a href="{% url 'alumnos_clase1' %}" class="text-decoration-none">
+        <div class="card text-white h-100" style="background-color: indigo">
+          <div class="card-body">
+            <h5 class="card-title text-white">Inscriptos gratis</h5>
+            <p class="card-text display-6 text-white">{{ cantidad_clase1 }}</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    {% comment %} <div class="col-md-3">
       <a href="{% url 'vista_chat' %}" class="text-decoration-none">
         <div class="card text-white bg-light h-100">
           <div class="card-body">
@@ -160,7 +214,7 @@
           </div>
         </div>
       </a>
-    </div>
+    </div> {% endcomment %}
   </div>
 </div>
 

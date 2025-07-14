@@ -44,190 +44,379 @@
 </head>
 <body>
 
-  <h2>Valoraciones Generales de Clase</h2>
+<h2>Valoraciones Generales de Clase</h2>
 
-  <!-- Filtros -->
-  <div class="container mb-4">
-    <div class="row">
-      <div class="col-md-6">
-        <label for="claseSelect">Seleccionar clase:</label>
-        <select class="form-select" id="claseSelect">
-          <option value="general">General</option>
-          <script>
-            for (let i = 0; i <= 20; i++) {
-              document.write(`<option value="clase${i}">Clase ${i}</option>`);
-            }
-          </script>
-        </select>
-      </div>
-      <div class="col-md-6">
-        <label for="ambitoSelect">Ámbito de análisis:</label>
-        <select class="form-select" id="ambitoSelect">
-          <option value="clase">Clase específica</option>
-          <option value="curso">Curso completo (Desarrollo Web)</option>
-          <option value="institucion">Toda la institución (Tecno Marema)</option>
-        </select>
-      </div>
+<!-- Filtros -->
+<!-- <div class="container mb-4">
+  <div class="row">
+    <div class="col-md-3">
+      <label for="ambitoSelect">Ámbito de análisis:</label>
+      <select class="form-select" id="ambitoSelect">
+        <option value="opcion" selected disabled>Elige una opcion</option>
+        <option value="institucion">Toda la institución (Tecno Marema)</option>
+        <option value="curso">Curso completo</option>
+        <option value="comision">Comision completa</option>
+        <option value="clase" >Clase específica</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="claseSelect">Seleccionar curso:</label>
+      <select class="form-select" id="claseSelect">
+        <option value="general" selected>General</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="claseSelect">Seleccionar comision:</label>
+      <select class="form-select" id="claseSelect">
+        <option value="general" selected>General</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="claseSelect">Seleccionar clase:</label>
+      <select class="form-select" id="claseSelect">
+        <option value="general" selected>General</option>
+      </select>
+    </div>
+  </div>
+</div> -->
+
+<div class="container mb-4">
+  <div class="row">
+    <div class="col-md-3">
+      <label for="ambitoSelect">Ámbito de análisis:</label>
+      <select class="form-select" id="ambitoSelect">
+        <option value="opcion" selected disabled>Elige una opción</option>
+        <option value="institucion">Toda la institución (Tecno Marema)</option>
+        <option value="curso">Curso completo</option>
+        <option value="comision">Comisión completa</option>
+        <option value="clase">Clase específica</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="cursoSelect">Seleccionar curso:</label>
+      <select class="form-select" id="cursoSelect" disabled>
+        <option value="">Seleccione un curso</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="comisionSelect">Seleccionar comisión:</label>
+      <select class="form-select" id="comisionSelect" disabled>
+        <option value="">Seleccione una comisión</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="claseSelect">Seleccionar clase:</label>
+      <select class="form-select" id="claseSelect" disabled>
+        <option value="">Seleccione una clase</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+
+<!-- Gráficos Generales -->
+<div class="container">
+  <div class="row">
+    <div class="col-12 chart-container">
+      <canvas id="likedClassChart"></canvas>
     </div>
   </div>
 
-  <!-- Gráficos Generales -->
-  <div class="container">
-    <div class="row">
-      <div class="col-12 chart-container">
-        <canvas id="likedClassChart"></canvas>
-      </div>
+  <div class="row">
+    <div class="col-md-6 chart-container">
+      <canvas id="averageScoreChart"></canvas>
     </div>
-
-    <div class="row">
-      <div class="col-md-6 chart-container">
-        <canvas id="averageScoreChart"></canvas>
-      </div>
-      <div class="col-md-6 chart-container">
-        <canvas id="comparisonChart"></canvas>
-      </div>
+    <div class="col-md-6 chart-container">
+      <canvas id="comparisonChart"></canvas>
     </div>
   </div>
+</div>
 
-  <!-- Gráficos Desglosados -->
-  <h3>Estadísticas por Pregunta</h3>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-6 chart-container">
-        <canvas id="professorRoleChart"></canvas>
-      </div>
-      <div class="col-md-6 chart-container">
-        <canvas id="contentChart"></canvas>
-      </div>
-      <div class="col-md-6 chart-container">
-        <canvas id="platformChart"></canvas>
-      </div>
-      <div class="col-md-6 chart-container">
-        <canvas id="streamingChart"></canvas>
-      </div>
+<!-- Gráficos Desglosados -->
+<h3>Estadísticas por Pregunta</h3>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 chart-container">
+      <canvas id="professorRoleChart"></canvas>
+    </div>
+    <div class="col-md-6 chart-container">
+      <canvas id="contentChart"></canvas>
+    </div>
+    <div class="col-md-6 chart-container">
+      <canvas id="platformChart"></canvas>
+    </div>
+    <div class="col-md-6 chart-container">
+      <canvas id="streamingChart"></canvas>
     </div>
   </div>
+</div>
 
-  <script>
-    // Gráfico "¿Te gustó la clase?"
-    const likedClassLabels = ["Me gustó", "Más o menos", "No me gustó"];
-    const likedClassValues = [60, 25, 15];
-    const likedClassColors = ["#12f693", "#00ffff", "#ff00c8"];
 
-    new Chart(document.getElementById('likedClassChart').getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: likedClassLabels,
-        datasets: [{
-          label: '¿Te gustó la clase?',
-          data: likedClassValues,
-          backgroundColor: likedClassColors,
-          borderColor: '#000',
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return `${context.label}: ${context.raw}%`;
-              }
-            }
-          }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            title: {
-              display: true,
-              text: 'Porcentaje (%)',
-              color: '#fff'
-            },
-            ticks: { color: '#fff' }
-          },
-          x: { ticks: { color: '#fff' } }
-        }
-      }
-    });
+<script>
+  // Variables globales para poder acceder a los charts desde otras funciones
+  let likedChart, promedioChart, comparacionChart;
 
-    // Gráfico Promedio de Puntajes
-    const avgLabels = ["Rol del profe", "Contenido", "Plataforma", "Streaming"];
-    const avgValues = [9.1, 8.7, 9.2, 8.5];
-    const avgColors = ["#12f693", "#12f693", "#12f693", "#12f693"];
+  // --- GRÁFICO 1: ¿Te gustó la clase? ---
+  const likedClassLabels = ["Me gustó", "Más o menos", "No me gustó"];
+  const likedClassColors = ["#12f693", "#00ffff", "#ff00c8"];
 
-    new Chart(document.getElementById('averageScoreChart').getContext('2d'), {
-      type: 'bar',
-      data: {
-        labels: avgLabels,
-        datasets: [{
-          label: 'Valoraciones (1 al 10)',
-          data: avgValues,
-          backgroundColor: avgColors,
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: { display: false }
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 10,
-            title: {
-              display: true,
-              text: 'Puntaje',
-              color: '#fff'
-            },
-            ticks: { color: '#fff' }
-          },
-          x: { ticks: { color: '#fff' } }
-        }
-      }
-    });
-
-    // Comparación: Valoraron vs No
-    const comparisonLabels = ["Valoraron", "No valoraron"];
-    const comparisonValues = [18, 12];
-    const comparisonColors = ["#00ffff", "#333"];
-
-    new Chart(document.getElementById('comparisonChart').getContext('2d'), {
-      type: 'doughnut',
-      data: {
-        labels: comparisonLabels,
-        datasets: [{
-          data: comparisonValues,
-          backgroundColor: comparisonColors
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            labels: {
-              color: '#fff'
+  likedChart = new Chart(document.getElementById('likedClassChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: likedClassLabels,
+      datasets: [{
+        label: '¿Te gustó la clase?',
+        data: [0, 0, 0],  // Inicial vacío
+        backgroundColor: likedClassColors,
+        borderColor: '#000',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return `${context.label}: ${context.raw}`;
             }
           }
         }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Cantidad de respuestas',
+            color: '#fff'
+          },
+          ticks: { color: '#fff' }
+        },
+        x: { ticks: { color: '#fff' } }
       }
-    });
+    }
+  });
 
-    // Gráficos por Pregunta (distribución de respuestas)
-    const professorRoleData = [6, 6, 5, 8, 7, 6, 9, 7, 8, 9];
-    const contentData = [7, 6, 8, 8, 9, 9, 10, 7, 6, 5];
-    const platformData = [7, 8, 6, 9, 8, 9, 7, 8, 7, 6];
-    const streamingData = [8, 9, 7, 7, 8, 9, 8, 9, 9, 10];
+  // --- GRÁFICO 2: Promedio de Puntajes ---
+  const avgLabels = ["Rol del profe", "Contenido", "Plataforma", "Streaming"];
+  const avgColors = ["#12f693", "#12f693", "#12f693", "#12f693"];
 
-    function createChart(ctx, data, label) {
-      new Chart(ctx, {
+  promedioChart = new Chart(document.getElementById('averageScoreChart').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: avgLabels,
+      datasets: [{
+        label: 'Valoraciones (1 al 10)',
+        data: [0, 0, 0, 0],  // Inicial vacío
+        backgroundColor: avgColors,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 10,
+          title: {
+            display: true,
+            text: 'Puntaje',
+            color: '#fff'
+          },
+          ticks: { color: '#fff' }
+        },
+        x: { ticks: { color: '#fff' } }
+      }
+    }
+  });
+
+  // --- GRÁFICO 3: Valoraron vs No Valoraron ---
+  const comparisonLabels = ["Valoraron", "No valoraron"];
+  const comparisonColors = ["#00ffff", "#333"];
+
+  comparacionChart = new Chart(document.getElementById('comparisonChart').getContext('2d'), {
+    type: 'doughnut',
+    data: {
+      labels: comparisonLabels,
+      datasets: [{
+        data: [0, 0],  // Inicial vacío
+        backgroundColor: comparisonColors
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          labels: {
+            color: '#fff'
+          }
+        }
+      }
+    }
+  });
+
+  // --- GRÁFICOS DESGLOSADOS POR PREGUNTA (opcional estático de ejemplo) ---
+  // const professorRoleData = [6, 6, 5, 8, 7, 6, 9, 7, 8, 9];
+  // const contentData = [7, 6, 8, 8, 9, 9, 10, 7, 6, 5];
+  // const platformData = [7, 8, 6, 9, 8, 9, 7, 8, 7, 6];
+  // const streamingData = [8, 9, 7, 7, 8, 9, 8, 9, 9, 10];
+
+  // function createChart(ctx, data, label) {
+  //   new Chart(ctx, {
+  //     type: 'bar',
+  //     data: {
+  //       labels: Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
+  //       datasets: [{
+  //         label: label,
+  //         data: data,
+  //         backgroundColor: '#12f693',
+  //         borderColor: '#12f693',
+  //         borderWidth: 1
+  //       }]
+  //     },
+  //     options: {
+  //       responsive: true,
+  //       plugins: {
+  //         legend: {
+  //           labels: { color: '#fff' }
+  //         }
+  //       },
+  //       scales: {
+  //         y: {
+  //           beginAtZero: true,
+  //           max: 10,
+  //           ticks: { stepSize: 1, color: '#fff' }
+  //         },
+  //         x: {
+  //           ticks: { color: '#fff' }
+  //         }
+  //       }
+  //     }
+  //   });
+  // }
+
+  // createChart(document.getElementById('professorRoleChart').getContext('2d'), professorRoleData, '¿Cómo valoras al profesor?');
+  // createChart(document.getElementById('contentChart').getContext('2d'), contentData, '¿Cómo valoras el contenido?');
+  // createChart(document.getElementById('platformChart').getContext('2d'), platformData, '¿Cómo valoras la plataforma?');
+  // createChart(document.getElementById('streamingChart').getContext('2d'), streamingData, '¿Cómo valoras el streaming?');
+</script>
+
+
+  {% comment %} nuevo script para traer los datos correctamente - inicia {% endcomment %}
+
+<script>
+  // Obtiene referencias a los selects de filtros
+  const claseSelect = document.getElementById('claseSelect');
+  const ambitoSelect = document.getElementById('ambitoSelect');
+
+  // Agrega listeners para actualizar gráficos al cambiar selección
+  claseSelect.addEventListener('change', actualizarEstadisticas);
+  ambitoSelect.addEventListener('change', actualizarEstadisticas);
+
+  // Función principal para actualizar los datos y gráficos
+  async function actualizarEstadisticas() {
+    const clase = claseSelect.value;
+    const ambito = ambitoSelect.value;
+
+    if (!clase) return;  // Si no hay clase seleccionada, no hacer nada
+
+    try {
+      // Petición a la API con filtros de clase y ámbito
+      const response = await fetch(`/api/estadisticas_valoracion/?clase=${clase}&ambito=${ambito}`);
+      const data = await response.json();
+
+      if (!data) {
+        alert("No se pudieron cargar los datos de estadística.");
+        return;
+      }
+
+      // Actualiza cada gráfico con los datos recibidos
+      actualizarGraficoLiked(data.liked);
+      actualizarGraficoPromedio(data.promedios);
+      actualizarGraficoValoracion(data.valoraron_vs_no);
+      actualizarGraficosPorPregunta(data.distribuciones);  // Actualiza gráficos desglosados
+
+    } catch (error) {
+      console.error("Error al obtener estadísticas:", error);
+      alert("Hubo un problema al obtener los datos de valoración.");
+    }
+  }
+
+  // Actualiza gráfico "¿Te gustó la clase?"
+  function actualizarGraficoLiked(data) {
+    likedChart.data.datasets[0].data = [
+      data.gustó?.total || 0,
+      data.masomenos?.total || 0,
+      data.nogusto?.total || 0
+    ];
+    likedChart.update();
+  }
+
+  // Actualiza gráfico de promedios de valoración por categoría
+  function actualizarGraficoPromedio(data) {
+    promedioChart.data.datasets[0].data = [
+      data.profe || 0,
+      data.contenido || 0,
+      data.plataforma || 0,
+      data.streaming || 0
+    ];
+    promedioChart.update();
+  }
+
+  // Actualiza gráfico comparativo valoraron vs no valoraron
+  function actualizarGraficoValoracion(data) {
+    comparacionChart.data.datasets[0].data = [
+      data.valoraron || 0,
+      data.no_valoraron || 0
+    ];
+    comparacionChart.update();
+  }
+
+  // Actualiza los gráficos desglosados por pregunta, destruyendo los previos para recrear con nuevos datos
+  function actualizarGraficosPorPregunta(distribuciones) {
+    const labels = Array.from({ length: 10 }, (_, i) => (i + 1).toString());
+
+    const configs = [
+      {
+        id: 'professorRoleChart',
+        data: distribuciones.rol_profe,
+        label: '¿Cómo valoras al profesor?'
+      },
+      {
+        id: 'contentChart',
+        data: distribuciones.contenido,
+        label: '¿Cómo valoras el contenido?'
+      },
+      {
+        id: 'platformChart',
+        data: distribuciones.plataforma,
+        label: '¿Cómo valoras la plataforma?'
+      },
+      {
+        id: 'streamingChart',
+        data: distribuciones.streaming,
+        label: '¿Cómo valoras el streaming?'
+      }
+    ];
+
+    configs.forEach(({ id, data, label }) => {
+      const ctx = document.getElementById(id).getContext('2d');
+
+      // Destruye chart previo si existe para evitar duplicados y fugas de memoria
+      if (window[id]) {
+        window[id].destroy();
+      }
+
+      // Crea un nuevo gráfico con datos actualizados
+      window[id] = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: Array.from({ length: 10 }, (_, i) => (i + 1).toString()),
+          labels: labels,
           datasets: [{
             label: label,
             data: data,
@@ -246,7 +435,7 @@
           scales: {
             y: {
               beginAtZero: true,
-              max: 10,
+              max: Math.max(...data, 10),
               ticks: { stepSize: 1, color: '#fff' }
             },
             x: {
@@ -255,13 +444,144 @@
           }
         }
       });
+    });
+  }
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ambitoSelect = document.getElementById('ambitoSelect');
+  const cursoSelect = document.getElementById('cursoSelect');
+  const comisionSelect = document.getElementById('comisionSelect');
+  const claseSelect = document.getElementById('claseSelect');
+
+  // Reset y desactivar todos los selects
+  function resetSelects() {
+    cursoSelect.innerHTML = '<option value="">Seleccione un curso</option>';
+    comisionSelect.innerHTML = '<option value="">Seleccione una comisión</option>';
+    claseSelect.innerHTML = '<option value="">Seleccione una clase</option>';
+    cursoSelect.disabled = true;
+    comisionSelect.disabled = true;
+    claseSelect.disabled = true;
+  }
+
+  ambitoSelect.addEventListener('change', function () {
+    const ambito = this.value;
+    resetSelects();
+
+    if (ambito === 'curso' || ambito === 'comision' || ambito === 'clase') {
+      cargarCursos();
     }
 
-    createChart(document.getElementById('professorRoleChart').getContext('2d'), professorRoleData, '¿Cómo valoras al profesor?');
-    createChart(document.getElementById('contentChart').getContext('2d'), contentData, '¿Cómo valoras el contenido?');
-    createChart(document.getElementById('platformChart').getContext('2d'), platformData, '¿Cómo valoras la plataforma?');
-    createChart(document.getElementById('streamingChart').getContext('2d'), streamingData, '¿Cómo valoras el streaming?');
-  </script>
+    if (ambito === 'institucion') {
+      // Lógica para institución completa (puede llamar directamente a actualizarEstadisticas)
+      actualizarEstadisticas('institucion');
+    }
+  });
+
+  cursoSelect.addEventListener('change', function () {
+    const cursoId = this.value;
+    comisionSelect.innerHTML = '<option value="">Seleccione una comisión</option>';
+    claseSelect.innerHTML = '<option value="">Seleccione una clase</option>';
+    comisionSelect.disabled = true;
+    claseSelect.disabled = true;
+
+    if (cursoId && (ambitoSelect.value === 'comision' || ambitoSelect.value === 'clase')) {
+      cargarComisiones(cursoId);
+    }
+
+    if (ambitoSelect.value === 'curso') {
+      actualizarEstadisticas('curso', cursoId);
+    }
+  });
+
+  comisionSelect.addEventListener('change', function () {
+    const comisionId = this.value;
+    claseSelect.innerHTML = '<option value="">Seleccione una clase</option>';
+    claseSelect.disabled = true;
+
+    if (comisionId && ambitoSelect.value === 'clase') {
+      cargarClases(comisionId);
+    }
+
+    if (ambitoSelect.value === 'comision') {
+      actualizarEstadisticas('comision', comisionId);
+    }
+  });
+
+  claseSelect.addEventListener('change', function () {
+    const claseId = this.value;
+    if (claseId && ambitoSelect.value === 'clase') {
+      actualizarEstadisticas('clase', claseId);
+    }
+  });
+
+  // Fetch para cargar cursos
+  function cargarCursos() {
+    fetch('/api/listado_cursos/')
+      .then(response => response.json())
+      .then(data => {
+        cursoSelect.innerHTML = '<option value="">Seleccione un curso</option>';
+        data.forEach(curso => {
+          const option = document.createElement('option');
+          option.value = curso.id;
+          option.textContent = curso.nombre;
+          cursoSelect.appendChild(option);
+        });
+        cursoSelect.disabled = false;
+      });
+  }
+
+  // Fetch para cargar comisiones
+  function cargarComisiones(cursoId) {
+    fetch(`/api/listado_comisiones/?curso=${cursoId}`)
+      .then(response => response.json())
+      .then(data => {
+        comisionSelect.innerHTML = '<option value="">Seleccione una comisión</option>';
+        data.forEach(com => {
+          const option = document.createElement('option');
+          option.value = com.id;
+          option.textContent = com.nombre;
+          comisionSelect.appendChild(option);
+        });
+        comisionSelect.disabled = false;
+      });
+  }
+
+  // Fetch para cargar clases
+  function cargarClases(comisionId) {
+    fetch(`/api/listado_clases/?comision=${comisionId}`)
+      .then(response => response.json())
+      .then(data => {
+        claseSelect.innerHTML = '<option value="">Seleccione una clase</option>';
+        data.forEach(clase => {
+          const option = document.createElement('option');
+          option.value = clase.id;
+          option.textContent = clase.nombre;
+          claseSelect.appendChild(option);
+        });
+        claseSelect.disabled = false;
+      });
+  }
+
+  // Lógica de actualización de estadísticas
+  function actualizarEstadisticas(ambito, id = '') {
+    let url = `/api/estadisticas_valoracion/?ambito=${ambito}`;
+    if (id) url += `&id=${id}`;
+
+    fetch(url)
+      .then(r => r.json())
+      .then(data => {
+        // Acá llamás a tus funciones para actualizar gráficos
+        actualizarGraficoLiked(data.liked);
+        actualizarGraficoPromedio(data.promedios);
+        actualizarGraficoValoracion(data.valoraron_vs_no);
+        actualizarGraficosPorPregunta(data.distribuciones);
+      });
+  }
+});
+</script>
+
+
 
 </body>
 </html>

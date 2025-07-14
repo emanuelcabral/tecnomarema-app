@@ -227,18 +227,49 @@ path("chat/verificar_escribiendo/", views.verificar_escribiendo, name="verificar
 path('ajax/comisiones/<str:id_curso>/', views.obtener_comisiones_por_curso, name='ajax_comisiones'),
 
 
-
-
-
-
 path('ajax/obtener_clases_de_comision/', views.obtener_clases_de_comision, name='obtener_clases_de_comision'),
 path('ajax/obtener_datos_clase_comision/', views.obtener_datos_clase_comision, name='obtener_datos_clase_comision'),
+
+
+
+
+    path('api/estadisticas_valoracion/', views.obtener_estadisticas_valoraciones, name='estadisticas_valoracion'),
+
+    # path('api/clases_opciones/', views.obtener_clases_opciones, name='clases_opciones'),  # comentado
+
+    path('api/listado_cursos/', views.listado_cursos_view, name='listado_cursos'),
+
+    # path('api/listado_comisiones/', views.obtener_comisiones, name='listado_comisiones'),  # comentado
+    path('api/listado_comisiones/', views.listado_comisiones_view, name='listado_comisiones'),
+
+    path('api/listado_clases/', views.listado_clases_view, name='listado_clases'),
+
+    path('api/alumnos_clase1/', views.alumnos_clase1_html, name='alumnos_clase1'),
+
+
+
+
+
+    path('alta_clases_de_curso/', views.alta_clases_de_curso, name='alta_clases_de_curso'),
+    path('ajax/obtener_clases_de_curso/', views.ajax_obtener_clases_de_curso, name='ajax_obtener_clases_de_curso'),
+    path('ajax/obtener_datos_clase/', views.ajax_obtener_datos_clase, name='ajax_obtener_datos_clase'),
+    path('ajax/eliminar_clase/', views.ajax_eliminar_clase, name='ajax_eliminar_clase'),
+
+
+
 
 
 
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# Al final del archivo urls.py del proyecto
+handler400 = 'plataforma.views.error_400_view'
+handler403 = 'plataforma.views.error_403_view'
+handler404 = 'plataforma.views.error_404_view'
+handler500 = 'plataforma.views.error_500_view'
+
 
 
 
