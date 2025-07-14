@@ -54,6 +54,8 @@
         <li class="nav-item"><a href="{% url 'listado_profesores' %}" class="nav-link"><i class="bi bi-person-video2 me-2"></i>Profesores</a></li>
         <li class="nav-item"><a href="{% url 'listado_tutores' %}" class="nav-link"><i class="bi bi-person-badge me-2"></i>Tutores</a></li>
         <li class="nav-item"><a href="{% url 'listado_admins' %}" class="nav-link"><i class="bi bi-person-gear me-2"></i>Administradores</a></li>
+        <li class="nav-item"><a href="{% url 'listado_valoraciones' %}" class="nav-link"><i class="bi bi-journal-check me-2"></i>Valoraciones</a></li>
+        <li class="nav-item"><a href="{% url 'listado_proyectos' %}" class="nav-link"><i class="bi bi-upload me-2"></i>Entregas</a></li>
         <li class="nav-item"><a href="{% url 'vista_chat' %}" class="nav-link"><i class="bi bi-chat me-2"></i>Chat</a></li>
         <li class="nav-item">
           <a class="nav-link" data-bs-toggle="collapse" href="#submenuConfiguracion" role="button" aria-expanded="false" aria-controls="submenuConfiguracion">
@@ -92,7 +94,6 @@
         </li>
 
         <li class="nav-item"><a href="{% url 'estadisticas' %}" class="nav-link"><i class="bi bi-bar-chart me-2"></i>Estadísticas</a></li>
-        <li class="nav-item"><a href="{% url 'entrega_proyecto' comision_id='000001' %}" class="nav-link"><i class="bi bi-upload me-2"></i>Entregas</a></li>
         <li class="nav-item ">
             <form method="post" action="{% url 'logout' %}">
                 {% csrf_token %}

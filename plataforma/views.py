@@ -194,13 +194,6 @@ def asistencia_general(request):
 
 from collections import defaultdict
 from django.db.models import Count
-
-from django.db.models import Count
-from django.shortcuts import render
-from plataforma.decorators import session_required
-from plataforma.models import ValoracionAlumno
-
-from django.db.models import Count
 from django.shortcuts import render
 from plataforma.decorators import session_required
 from plataforma.models import ValoracionAlumno
@@ -3320,7 +3313,7 @@ def alumnos_clase1_html(request):
 
 
 #######################################################################################################################
-#######################################################################################################################
+#####---------------------------Alta y edicion, eliminacion de clases de cursos---------------------------------#######
 #######################################################################################################################
 
 
@@ -3434,3 +3427,23 @@ def ajax_eliminar_clase(request):
         return JsonResponse({'mensaje': 'Clase eliminada correctamente'})
     except Clase.DoesNotExist:
         return JsonResponse({'error': 'Clase no encontrada'}, status=404)
+    
+
+##################################################################################################
+####----------------------------listado de valoraciones---------------------------------------####
+##################################################################################################
+
+from django.shortcuts import render
+from .models import ValoracionAlumno
+
+def listado_valoraciones(request):
+    valoraciones = ValoracionAlumno.objects.all().order_by('-fecha_valoracion')
+    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones})
+
+##################################################################################################
+####----------------------------listado de proyectos---------------------------------------####
+##################################################################################################
+
+def listado_proyectos(request):
+    entregas = EntregaProyecto.objects.select_related("estudiante", "curso", "comision")
+    return render(request, "administrador/listado_proyectos.html", {"entregas": entregas})

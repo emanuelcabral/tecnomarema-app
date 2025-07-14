@@ -256,6 +256,10 @@ path('ajax/obtener_datos_clase_comision/', views.obtener_datos_clase_comision, n
     path('ajax/eliminar_clase/', views.ajax_eliminar_clase, name='ajax_eliminar_clase'),
 
 
+    path('listado_valoraciones/', views.listado_valoraciones, name='listado_valoraciones'),
+
+    path('listado_proyectos/', views.listado_proyectos, name='listado_proyectos'),
+
 
 
 

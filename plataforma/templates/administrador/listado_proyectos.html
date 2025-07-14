@@ -1,0 +1,84 @@
+{% extends "administrador/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Listado de Entregas de Proyectos</h2>
+  <table class="table table-dark table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Estudiante</th>
+        <th>Curso</th>
+        <th>Comisión</th>
+        <th>Título</th>
+        <th>Descripción</th>
+        <th>Enlaces</th>
+        <th>Archivos</th>
+        <th>Multimedia</th>
+        <th>Comentarios</th>
+        <th>Fecha de Entrega</th>
+        <th>Nota</th>
+        <th>Feedback</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entrega in entregas %}
+      <tr>
+        <td>{{ entrega.id }}</td>
+        <td>{{ entrega.estudiante }}</td>
+        <td>{{ entrega.curso.nombre_curso }}</td>
+        <td>{{ entrega.comision }}</td>
+        <td>{{ entrega.titulo }}</td>
+        <td>{{ entrega.descripcion }}</td>
+        <td>
+          {% if entrega.link_github %}
+            <a href="{{ entrega.link_github }}" target="_blank">GitHub</a><br>
+          {% endif %}
+          {% if entrega.link_pages %}
+            <a href="{{ entrega.link_pages }}" target="_blank">Pages</a><br>
+          {% endif %}
+          {% if entrega.link_servidor %}
+            <a href="{{ entrega.link_servidor }}" target="_blank">Servidor</a><br>
+          {% endif %}
+          {% if entrega.link_adicional %}
+            <a href="{{ entrega.link_adicional }}" target="_blank">Adicional</a><br>
+          {% endif %}
+        </td>
+        <td>
+          {% if entrega.archivo_1 %}
+            <a href="{{ entrega.archivo_1.url }}" download>Archivo 1</a><br>
+          {% endif %}
+          {% if entrega.archivo_2 %}
+            <a href="{{ entrega.archivo_2.url }}" download>Archivo 2</a><br>
+          {% endif %}
+          {% if entrega.archivo_3 %}
+            <a href="{{ entrega.archivo_3.url }}" download>Archivo 3</a><br>
+          {% endif %}
+        </td>
+        <td>
+          {% if entrega.imagen %}
+            <img src="{{ entrega.imagen.url }}" alt="Imagen" width="80"><br>
+          {% endif %}
+          {% if entrega.video %}
+            <video width="100" controls>
+              <source src="{{ entrega.video.url }}">
+              Tu navegador no soporta el video.
+            </video><br>
+          {% endif %}
+          {% if entrega.audio %}
+            <audio controls>
+              <source src="{{ entrega.audio.url }}">
+              Tu navegador no soporta el audio.
+            </audio><br>
+          {% endif %}
+        </td>
+        <td>{{ entrega.comentarios_adicionales }}</td>
+        <td>{{ entrega.fecha_entrega|date:"j/n/Y H:i" }}</td>
+        <td>{{ entrega.nota }}</td>
+        <td>{{ entrega.feedback }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "administrador/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Mensajes de Valoraciones</h2>
+  <table class="table table-dark table-striped table-bordered">
+    <thead>
+      <tr>
+        <th>Usuario</th>
+        <th>Curso</th>
+        <th>Clase</th>
+        <th>Preferencia</th>
+        <th>Rol del Profe</th>
+        <th>Contenido</th>
+        <th>Plataforma</th>
+        <th>Streaming</th>
+        <th>Comentario</th>
+        <th>Fecha</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for valoracion in valoraciones %}
+      <tr>
+        <td>{{ valoracion.nombre_usuario }}</td>
+        <td>{{ valoracion.curso_nombre }}</td>
+        <td>{{ valoracion.nombre_clase }}</td>
+        <td>{{ valoracion.get_preferencia_clase_display }}</td>
+        <td>{{ valoracion.rol_profe }}</td>
+        <td>{{ valoracion.contenido }}</td>
+        <td>{{ valoracion.plataforma }}</td>
+        <td>{{ valoracion.streaming }}</td>
+        <td style="word-break: break-word;">{{ valoracion.comentarios|default:"Sin comentarios" }}</td>
+        <td>{{ valoracion.fecha_valoracion|date:"d/m/Y H:i" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
