@@ -428,8 +428,6 @@
   const cursoID_valoracion = "{{ comision.id_curso.id_curso }}";
 </script>
 
-<!-- <p style="color: yellow;">{{ comision.id_curso.id }}</p> -->
-
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark px-3">
   <div class="container-fluid">
@@ -510,7 +508,7 @@
           <div class="d-flex justify-content-around flex-wrap gap-4">
           <!-- iconos de las tecnologias inicia -->
             {% if comision.id_curso.iconos_cargados %}
-            <div class="d-flex align-items-start mb-3" style="gap: 30px;">
+            <div class="d-flex justify-content-center align-items-start mb-3 flex-wrap" style="gap: 30px;">
               {% for icono in comision.id_curso.iconos_cargados %}
               <div class="text-center">
                 <img src="{{ icono.url }}?v={{ timestamp }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}" style="height: 50px;">
@@ -526,26 +524,30 @@
     </div>
   </div>
 
-  <div class="container d-flex atencion">
+  <div class="container d-flex atencion flex-wrap">
 
-    <div class="col-md-6 atencion">
-      <p id="mensaje-curso" class="mt-3" style="color: #12f693; border: 1px solid #12f693; padding: 20px;border-radius: 10px;background-color: #222222;"></p>
-    </div>
+    {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
+      <div class="col-lg-6 atencion">
+        <p id="mensaje-curso" class="mt-3" style="color: #12f693; border: 1px solid #12f693; padding: 20px;border-radius: 10px;background-color: #222222;"></p>
+      </div>
+    {% endif %}
+    {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' %}
+      <div class="col-lg-6 atencion">
+        <p class="mt-3" style="color: #12f693; border: 1px solid #12f693; padding: 20px;border-radius: 10px;background-color: #222222;">📚 Agradecemos tu dedicación y pasión por enseñar 📚✨ Tu labor deja una huella positiva en nuestra comunidad educativa 🙌🎓</p>
+      </div>
+    {% endif %}
+
 
     <!-- sub-menu inicia -->
-    <div class="col-md-4 sub-menu atencion">
+    <div class="col-lg-4 sub-menu atencion">
 
     <div class="asistencia-box">
       <div class="titulo">Asistencia</div>
-<div class="porcentaje">
-  {{ asistencias_en_comision }}/{{ total_clases_comision }}
-</div>
+      <div class="porcentaje">
+        {{ asistencias_en_comision }}/{{ total_clases_comision }}
+      </div>
 
     </div>
-      <!-- <div class="asistencia-box">
-        <div class="titulo">Quizzes</div>
-        <div class="porcentaje">85%</div>
-      </div> -->
 
       <div class="asistencia-box">
         <div class="titulo">Quizzes</div>
@@ -554,28 +556,38 @@
         </div>
       </div>
 
-      <div class="asistencia-box">
-        <div class="titulo">Nota Final</div>
-        <div class="porcentaje">
-          {{ entrega_existente.nota|default:"–" }}
+      {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
+        <div class="asistencia-box">
+          <div class="titulo">Nota Final</div>
+          <div class="porcentaje">
+            {{ entrega_existente.nota|default:"–" }}
+          </div>
         </div>
-      </div>
+      {% endif %}
 
     </div>
     <!-- sub-menu fin -->
 
   </div>
 
-  <div class="container d-flex atencion mt-3">
+  <div class="container d-flex atencion mt-3 flex-wrap">
 
     <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">Ver participantes</a>
     <!-- <a href="{% url 'asistencia_alumnos' %}">Asistencias</a> -->
     <!-- <a href="{% url 'entrega_proyecto' comision.numero_comision %}">Entrega Final</a> -->
-    <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a>
+    <!-- <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a> -->
 
-    <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}">Mi Certificado</a>
+    {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
+      <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a>
+    {% endif %}
 
-    <a href="{% url 'chat_general' %}">chat</a>
+    {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
+      <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}">Mi Certificado</a>
+    {% endif %}
+
+
+
+    <a href="{% url 'chat_general' %}">Chat</a>
 
     <!-- <a href="{% url 'valoraciones' %}">valoraciones</a> -->
 
@@ -584,6 +596,13 @@
         Estadísticas de valoraciones 📊
       </a>
     {% endif %}
+
+    {% if usuario.rol == 'profesor' %}
+      <a href="/curso/{{ comision.id_curso.id_curso }}/comision/{{ comision.id_comision }}/entregas/">
+        Entregas de Proyectos
+      </a>
+    {% endif %}
+
 
   </div>
 
@@ -651,11 +670,14 @@
         {% endif %}
 
 
-        <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
-        <ul>
-          <li><a href="#" target="_blank">Documento guía</a></li>
-          <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
-        </ul>
+        <p class="mt-4"><strong class="badge badge-marema me-2">Fin de la clase:</strong></p>
+          <pre class="p-3 rounded" style="background-color:#111;">¡Felicidades por llegar hasta aquí! 🎉
+Si estás leyendo esto, es porque has logrado ver todo el contenido de esta clase.
+¡Excelente trabajo! 💪 Pero esto no termina aquí… 💡
+
+Te invito a seguir fortaleciendo tus conocimientos.
+Sigue adelante con la misma motivación… ¡y nos vemos pronto! 🚀</pre>
+
 
       {% endwith %}
     {% endwith %}
@@ -827,11 +849,15 @@ ${
       <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
       <a href="{% url 'hub_de_quizzes' curso.id_curso comision.id_comision estudiante.id_estudiante %}" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
 
-      <p class="mt-4"><strong class="badge badge-marema me-2">Enlaces útiles:</strong></p>
-      <ul>
-        <li><a href="#" target="_blank">Documento guía</a></li>
-        <li><a href="#" target="_blank">Ejercicios prácticos</a></li>
-      </ul>
+        <p class="mt-4"><strong class="badge badge-marema me-2">Fin de la clase:</strong></p>
+
+          <pre class="p-3 rounded" style="background-color:#111;">¡Felicidades por llegar hasta aquí! 🎉
+Si estás leyendo esto, es porque has logrado ver todo el contenido de esta clase.
+¡Excelente trabajo! 💪 Pero esto no termina aquí… 💡
+
+Te invito a seguir fortaleciendo tus conocimientos.
+Sigue adelante con la misma motivación… ¡y nos vemos pronto! 🚀</pre>
+
     `;
   }
 
