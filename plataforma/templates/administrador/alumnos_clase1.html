@@ -18,8 +18,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function colorForNivelPC(value) {
-  if(value >= 1 && value <= 4) return '#ff00ff';       // fucsia
-  if(value > 4 && value <= 6) return '#00ffff';        // cyan
+  if(value >= 1 && value <= 4) return '#cf30ff';       // fucsia
+  if(value > 4 && value <= 6) return '#00f7ff';        // cyan
   if(value > 6 && value <= 10) return '#12f693';       // verde
   return '#999999';  // fallback gris
 }
@@ -31,8 +31,8 @@ function colorForNivelProg(value) {
 
 function colorForHorario(label) {
   label = label.toLowerCase();
-  if(label.includes('mañana')) return '#ff00ff'; // fucsia
-  if(label.includes('tarde')) return '#00ffff';  // cyan
+  if(label.includes('mañana')) return '#cf30ff'; // fucsia
+  if(label.includes('tarde')) return '#00f7ff';  // cyan
   if(label.includes('noche')) return '#12f693';  // verde
   return '#999999';  // fallback gris
 }
@@ -43,7 +43,7 @@ function toCX(ctxid, labels, data, title, type="bar") {
 
   if(type === "pie") {
     // Pie fijo para Experiencia en Programación (3 colores fijos)
-    backgroundColors = ['#12f693', '#00ffff', '#ff00ff']; // verde, cyan, fucsia
+    backgroundColors = ['#12f693', '#00f7ff', '#cf30ff']; // verde, cyan, fucsia
     borderColors = ['#0fca7b', '#00cccc', '#cc00cc'];
   }
   else if(ctxid === "chartNivelPC") {
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <div class="container mt-5">
   <h2 class="mb-4 text-success">Inscritos a la Clase Gratuita</h2>
-  <table class="table table-dark table-striped table-bordered">
+  <table id="tabla-inscripciones" class="table table-dark table-striped table-bordered">
     <thead>
       <tr>
         <th>ID</th>
@@ -143,4 +143,21 @@ document.addEventListener('DOMContentLoaded', () => {
     </tbody>
   </table>
 </div>
+
+<script>
+  $(document).ready(function() {
+    $('#tabla-inscripciones').DataTable({
+      "order": [[ 0, "asc" ]],  // Orden inicial por ID
+      "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      "columnDefs": [
+        { "orderable": true, "targets": [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 12] }, // columnas ordenables
+        { "orderable": false, "targets": [3, 11] } // teléfono y tecnologías sin orden
+      ]
+    });
+  });
+</script>
+
+
 {% endblock %}

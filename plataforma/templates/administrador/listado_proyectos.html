@@ -1,9 +1,9 @@
 {% extends "administrador/base.html" %}
 
 {% block content %}
-<div class="container mt-5">
+<div class="container-fluid mt-5">
   <h2 class="mb-4 text-success">Listado de Entregas de Proyectos</h2>
-  <table class="table table-dark table-striped table-bordered">
+  <table id="tabla-entregas" class="table table-dark table-striped table-bordered">
     <thead>
       <tr>
         <th>ID</th>
@@ -81,4 +81,21 @@
     </tbody>
   </table>
 </div>
+
+
+<script>
+  $(document).ready(function() {
+    $('#tabla-entregas').DataTable({
+      "order": [[ 0, "asc" ]],  // Orden inicial por ID
+      "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"  // Opcional, idioma en español
+      },
+      "columnDefs": [
+        { "orderable": true, "targets": [1, 2, 3, 10, 11] }, // columnas ordenables: Estudiante, Curso, Comisión, Fecha, Nota
+      ]
+    });
+  });
+</script>
+
+
 {% endblock %}

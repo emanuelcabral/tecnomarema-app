@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="mb-4 text-success">Listado de Alumnos</h2>
-  <table class="table table-dark table-striped table-bordered">
+  <table id="tabla-alumnos" class="table table-dark table-striped table-bordered">
     <thead>
       <tr>
         <th>ID</th>
@@ -35,4 +35,21 @@
     </tbody>
   </table>
 </div>
+
+<script>
+  $(document).ready(function() {
+    $('#tabla-alumnos').DataTable({
+      "order": [[ 0, "asc" ]],  // Orden por ID al cargar
+      "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      "columnDefs": [
+        { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 8, 9] }, // columnas ordenables
+        { "orderable": false, "targets": [7] } // Teléfono no ordenable
+      ]
+    });
+  });
+</script>
+
+
 {% endblock %}
