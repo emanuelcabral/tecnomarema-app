@@ -318,22 +318,41 @@
         <!-- Botón para confirmar el curso -->
         <button id="btnConfirmarCurso" class="btn btn-primary mb-4" disabled>Confirmar curso</button>
 
-        <!-- Bloque con las comisiones -->
-        <div id="bloqueComisiones" class="mb-4 d-none">
-          <label for="comision" class="form-label">Selecciona una comisión (horario):</label>
-          <select id="comision" class="form-select">
-            <option value="" disabled selected>Elige una comisión</option>
-          </select>
-        </div>
+<!-- Bloque con las comisiones -->
+<div id="bloqueComisiones" class="mb-4 d-none">
+  <label for="comision" class="form-label">Selecciona una comisión (horario):</label>
+  <select id="comision" class="form-select">
+    <option value="" disabled selected>Elige una comisión</option>
+    {% for comision in comisiones %}
+      <option value="{{ comision.id_comision }}"
+              data-nombre="{{ comision.numero_comision }}"
+              data-inicio="{{ comision.fecha_inicio }}"
+              data-fin="{{ comision.fecha_fin }}"
+              data-modalidad="{{ comision.id_curso.get_modalidad_display }}"
+              data-curso="{{ comision.id_curso.nombre_curso }}"
+              data-dia1="{{ comision.dia1 }}"
+              data-horario1="{{ comision.horario1 }}"
+              data-dia2="{{ comision.dia2 }}"
+              data-horario2="{{ comision.horario2 }}"
+              data-dia3="{{ comision.dia3 }}"
+              data-horario3="{{ comision.horario3 }}">
+        Comisión {{ comision.numero_comision }} - Inicio: {{ comision.fecha_inicio|date:"d \d\e F \d\e Y" }}
+      </option>
+    {% endfor %}
+  </select>
+</div>
+
+
 
         <!-- Info detallada -->
-        <div id="infoCurso" class="card p-4 d-none">
-          <h4 class="mb-3" id="nombreCurso"></h4>
-          <p><strong>Modalidad:</strong> <span id="modalidadCurso"></span></p>
-          <p><strong>Fecha de inicio:</strong> <span id="fechaInicio"></span></p>
-          <p><strong>Fecha de fin:</strong> <span id="fechaFin"></span></p>
-          <p><strong>Horarios:</strong><br><span id="textoHorario"></span></p>
-        </div>
+<div id="infoCurso" class="card p-4 d-none">
+  <h4 class="mb-3" id="nombreCurso"></h4>
+  <p><strong>Modalidad:</strong> <span id="modalidadCurso"></span></p>
+  <p><strong>Fecha de inicio:</strong> <span id="fechaInicio"></span></p>
+  <p><strong>Fecha de fin:</strong> <span id="fechaFin"></span></p>
+  <p><strong>Horarios:</strong><br><span id="textoHorario"></span></p>
+</div>
+
       </div>
 
       <button class="btn btn-outline-secondary me-2" onclick="irA('paso1')">Volver</button>
@@ -596,7 +615,7 @@
     {% for curso in cursos %}
       "{{ curso.id }}": {
         nombre: "{{ curso.nombre_curso|escapejs }}",
-        modalidad: "{{ curso.get_modalidad_display|escapejs }}",
+        modalidad: "{{ curso.modalidad|escapejs }}",
         comisiones: [
           {% for com in curso.comisiones %}
             {
@@ -628,7 +647,7 @@
   const selectComision = document.getElementById('comision');
   const infoCurso = document.getElementById('infoCurso');
 
-  // Deshabilita botón confirmar si no hay curso seleccionado y oculta bloques de comisión e info.
+  // Al cambiar el curso
   selectCurso.addEventListener('change', () => {
     btnConfirmarCurso.disabled = !selectCurso.value;
     bloqueComisiones.classList.add('d-none');
@@ -637,26 +656,25 @@
     document.getElementById('nombreCurso').textContent = '';
     document.getElementById('modalidadCurso').textContent = '';
     document.getElementById('fechaInicio').textContent = '';
+    document.getElementById('fechaFin').textContent = '';
     document.getElementById('textoHorario').innerHTML = '';
   });
 
-  // Cuando se confirma el curso, carga sus comisiones en el select de comisiones y muestra info general.
+  // Al confirmar el curso, cargar comisiones disponibles
   btnConfirmarCurso.addEventListener('click', () => {
     const cursoId = selectCurso.value;
     if (!cursoId || !cursos[cursoId]) return;
 
     const cursoSeleccionado = cursos[cursoId];
-
-    // Limpiar opciones de comisiones
     selectComision.innerHTML = '<option value="" disabled selected>Elige una comisión</option>';
 
-    // Cargar comisiones
+    // Cargar las comisiones como options
     cursoSeleccionado.comisiones.forEach(comision => {
       const option = document.createElement('option');
       option.value = comision.numero_comision;
       option.textContent = `Comisión ${comision.numero_comision} - Inicio: ${comision.fecha_inicio}`;
 
-      // Guardar datos en dataset para mostrar después
+      // Dataset para mostrar info luego
       option.dataset.fechaInicio = comision.fecha_inicio || '';
       option.dataset.fechaFin = comision.fecha_fin || '';
       option.dataset.dia1 = comision.dia1 || '';
@@ -669,26 +687,32 @@
       selectComision.appendChild(option);
     });
 
-    // Mostrar sección comisiones e info del curso
-    bloqueComisiones.classList.remove('d-none');
-    infoCurso.classList.remove('d-none');
+    // Mostrar nombre y modalidad del curso ya al confirmar
     document.getElementById('nombreCurso').textContent = cursoSeleccionado.nombre;
     document.getElementById('modalidadCurso').textContent = cursoSeleccionado.modalidad;
-    // Limpiar fecha y horario hasta que seleccione comisión
+
+    // Mostrar bloque de selección de comisiones
+    bloqueComisiones.classList.remove('d-none');
+    infoCurso.classList.add('d-none');  // Esperamos a que elijan una comisión para mostrar fechas
     document.getElementById('fechaInicio').textContent = '';
+    document.getElementById('fechaFin').textContent = '';
     document.getElementById('textoHorario').innerHTML = '';
   });
 
-  // Cuando se selecciona una comisión, mostrar sus fechas y horarios
+  // Al seleccionar una comisión, mostrar fechas y horarios
   selectComision.addEventListener('change', () => {
     const opcion = selectComision.selectedOptions[0];
     if (!opcion) return;
 
-    const fechaInicio = opcion.dataset.fechaInicio || '';
-    const fechaFin = opcion.dataset.fechaFin || '';
-    const textoFechas = fechaFin ? `${fechaInicio} al ${fechaFin}` : fechaInicio;
-    document.getElementById('fechaInicio').textContent = textoFechas;
+    const inicio = opcion.dataset.fechaInicio || '';
+    const fin = opcion.dataset.fechaFin || '';
+    const fechaCompleta = fin ? `${inicio} al ${fin}` : inicio;
 
+    // Mostrar fechas
+    document.getElementById('fechaInicio').textContent = inicio;
+    document.getElementById('fechaFin').textContent = fin;
+
+    // Construir horarios
     let textoHorario = '';
     if (opcion.dataset.dia1 && opcion.dataset.horario1) {
       textoHorario += `${opcion.dataset.dia1} - ${opcion.dataset.horario1}<br>`;

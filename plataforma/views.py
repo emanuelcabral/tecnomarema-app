@@ -76,27 +76,60 @@ def desarrollo_web_compra(request):
 from django.shortcuts import render
 from .models import Curso, Comision
 
+# def inscripcion(request):
+#     cursos_qs = Curso.objects.filter(estado_curso='próximo').order_by('nombre_curso')
+#     cursos = []
+
+#     for curso in cursos_qs:
+#         comisiones = curso.comision_set.filter(estado_comision='próximo').values(
+#             'numero_comision',
+#             'fecha_inicio',
+#             'fecha_fin',
+#             'dia1', 'dia2', 'dia3',
+#             'horario1', 'horario2', 'horario3',
+#             'estado_comision'
+#         )
+#         cursos.append({
+#             'id': curso.id_curso,
+#             'nombre_curso': curso.nombre_curso,
+#             'modalidad': curso.get_modalidad_display(),
+#             'comisiones': list(comisiones)
+#         })
+
+#     return render(request, 'educativa/inscripcion.html', {'cursos': cursos})
+
+
+from .models import Curso, Comision
+
 def inscripcion(request):
-    cursos_qs = Curso.objects.filter(estado_curso='próximo').order_by('nombre_curso')
+    cursos_qs = Curso.objects.filter(estado_curso__in=['proximo', 'próximo']).order_by('nombre_curso')
     cursos = []
 
     for curso in cursos_qs:
-        comisiones = curso.comision_set.filter(estado_comision='próximo').values(
-            'numero_comision',
-            'fecha_inicio',
-            'fecha_fin',
-            'dia1', 'dia2', 'dia3',
-            'horario1', 'horario2', 'horario3',
-            'estado_comision'
-        )
+        comisiones = curso.comision_set.filter(estado_comision__in=['proximo', 'próximo'])
+
         cursos.append({
             'id': curso.id_curso,
             'nombre_curso': curso.nombre_curso,
             'modalidad': curso.get_modalidad_display(),
-            'comisiones': list(comisiones)
+            'comisiones': list(comisiones.values(
+                'numero_comision',
+                'fecha_inicio',
+                'fecha_fin',
+                'dia1', 'dia2', 'dia3',
+                'horario1', 'horario2', 'horario3',
+                'estado_comision'
+            ))
         })
 
-    return render(request, 'educativa/inscripcion.html', {'cursos': cursos})
+    comisiones_global = Comision.objects.select_related('id_curso') \
+        .filter(estado_comision__in=['proximo', 'próximo'])
+
+    return render(request, 'educativa/inscripcion.html', {
+        'cursos': cursos,
+        'comisiones': comisiones_global,
+    })
+
 
 
 def obtener_comisiones_por_curso(request, id_curso):
