@@ -3441,9 +3441,21 @@ def listado_valoraciones(request):
     return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones})
 
 ##################################################################################################
-####----------------------------listado de proyectos---------------------------------------####
+####----------------------------listado de proyectos------------------------------------------####
 ##################################################################################################
 
 def listado_proyectos(request):
     entregas = EntregaProyecto.objects.select_related("estudiante", "curso", "comision")
     return render(request, "administrador/listado_proyectos.html", {"entregas": entregas})
+
+##################################################################################################
+####-----------------------------------listado de pagos---------------------------------------####
+##################################################################################################
+
+# views.py
+from .models import RegistroPago
+
+def listado_pagos(request):
+    pagos = RegistroPago.objects.select_related('estudiante', 'comision').all().order_by('-fecha_pago')
+    return render(request, 'administrador/listado_pagos.html', {'registropago': pagos})
+

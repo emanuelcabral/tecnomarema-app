@@ -509,3 +509,48 @@ class LecturaMensaje(models.Model):
 
     def __str__(self):
         return f"Lectura {self.usuario} en chat {self.chat} hasta {self.ultimo_mensaje_leido}"
+
+##################################################################################################
+####-----------------------------------listado de pagos---------------------------------------####
+##################################################################################################
+
+class RegistroPago(models.Model):
+    id_pago = models.AutoField(primary_key=True)
+    estudiante = models.ForeignKey(DatosDeEstudiantes, on_delete=models.CASCADE)
+    comision = models.ForeignKey(Comision, on_delete=models.SET_NULL, null=True)
+    plataforma = models.CharField(max_length=30)
+    medio_pago = models.CharField(max_length=50)
+    estado_pago = models.CharField(max_length=20)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_pago = models.DateTimeField()
+    id_transaccion = models.CharField(max_length=100)
+    link_comprobante = models.URLField(blank=True, null=True)
+    archivo_comprobante = models.FileField(upload_to='comprobantes/', blank=True, null=True)
+    observaciones = models.TextField(blank=True, null=True)
+    
+    def __str__(self):
+        return f"Pago {self.id_pago} - {self.estudiante.nombre} - {self.monto} - {self.estado_pago}"
+
+# modelo falso que no se almacena en la base sino se utiliza para mostrar la tabla completa
+class VistaRegistroPagoCompleta(models.Model):
+    id_pago = models.IntegerField(primary_key=True)
+    id_estudiante = models.CharField(max_length=6)
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    dni = models.CharField(max_length=20)
+    telefono = models.CharField(max_length=20)
+    email = models.EmailField()
+    plataforma = models.CharField(max_length=30)
+    medio_pago = models.CharField(max_length=50)
+    estado_pago = models.CharField(max_length=20)
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha_pago = models.DateTimeField()
+    id_transaccion = models.CharField(max_length=100)
+    link_comprobante = models.URLField(blank=True, null=True)
+    archivo_comprobante = models.FileField(upload_to='comprobantes/', blank=True, null=True)
+    nombre_comision = models.CharField(max_length=100)
+    observaciones = models.TextField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'vista_registro_pago_completa'

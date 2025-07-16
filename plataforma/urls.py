@@ -259,6 +259,7 @@ path('ajax/obtener_datos_clase_comision/', views.obtener_datos_clase_comision, n
     path('listado_valoraciones/', views.listado_valoraciones, name='listado_valoraciones'),
 
     path('listado_proyectos/', views.listado_proyectos, name='listado_proyectos'),
+    path('listado_pagos/', views.listado_pagos, name='listado_pagos'),
 
 
 

@@ -1,0 +1,89 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+<!-- listado_pagos.html -->
+<div class="container-fluid mt-5" style="padding:0;margin:0;">
+<h2 class="mb-4 text-success">Listado de Pagos</h2>
+<table id="tabla-pagos" class="table table-dark table-striped table-bordered" style="font-size:14px;padding:0;">
+    <thead>
+        <tr>
+            <th>Nº</th>
+            <th>ID Estudiante</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Plataforma</th>
+            <th>Medio de Pago</th>
+            <th>Estado Pago</th>
+            <th>Monto</th>
+            <th>Fecha Pago</th>
+            <th>ID Transacción</th>
+            <th class="text-break">Link Comprobante</th>
+            <th class="text-break">Archivo Comprobante</th>
+            <th>Comisión</th>
+            <th class="text-break">Observaciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for pago in registropago %}
+    <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ pago.estudiante.id_estudiante }}</td>
+        <td>{{ pago.estudiante.nombre }}</td>
+        <td>{{ pago.estudiante.apellido }}</td>
+        <td>{{ pago.estudiante.dni }}</td>
+        <td>{{ pago.estudiante.telefono }}</td>
+        <td class="text-break">{{ pago.estudiante.correo }}</td>
+        <td>{{ pago.plataforma }}</td>
+        <td>{{ pago.medio_pago }}</td>
+        <td>{{ pago.estado_pago }}</td>
+        <td>{{ pago.monto }}</td>
+        <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+        <td>{{ pago.id_transaccion }}</td>
+        <td>
+            {% if pago.link_comprobante %}
+                <a href="{{ pago.link_comprobante }}" target="_blank">Ver</a>
+            {% else %}
+                —
+            {% endif %}
+        </td>
+        <td>
+            {% if pago.archivo_comprobante %}
+                <a href="{{ pago.archivo_comprobante.url }}" target="_blank">Descargar</a>
+            {% else %}
+                —
+            {% endif %}
+        </td>
+        <td>
+            {% if pago.comision %}
+                {{ pago.comision.numero_comision }}
+            {% else %}
+                —
+            {% endif %}
+        </td>
+        <td>{{ pago.observaciones }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="17">No hay registros de pagos</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    $('#tabla-pagos').DataTable({
+      "order": [[ 0, "asc" ]],  // Ordenar por la primera columna al cargar
+      "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      },
+      "columnDefs": [
+        { "orderable": true, "targets": "_all" }  // Todas las columnas ordenables, o ajusta según necesites
+      ]
+    });
+  });
+</script>
+
+{% endblock %}

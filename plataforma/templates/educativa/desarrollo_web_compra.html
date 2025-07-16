@@ -568,11 +568,11 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
           <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
           <li class="nav-item">
-            <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm"><i
+            <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm p-1 px-2"><i
                 class="bi bi-pencil me-1"></i>Inscripción</a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'login' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Login</a>
+            <a href="{% url 'login' %}" class="btn btn-login btn-sm p-1 px-2"><i class="bi bi-person-badge"></i>Login</a>
           </li>
         </ul>
       </div>
@@ -616,7 +616,10 @@
       style="backdrop-filter: blur(5px); background-color: rgba(31, 31, 31, 0.2); border-radius: 15px;">
       <h2 class="text-white mb-4">🚀 ¡Sumate al curso! La primera clase es GRATIS</h2>
       <div class="d-flex justify-content-center gap-3">
-        <a target="_blank" href="https://tally.so/r/w4GKMd" class="btn btn-outline-success btn-lg px-4">
+        <!-- <a target="_blank" href="https://tally.so/r/w4GKMd" class="btn btn-outline-success btn-lg px-4">
+          🙋‍♂️ Inscribirme 1° clase
+        </a> -->
+        <a target="_blank" href="{% url 'formulario_inscripcion' %}" class="btn btn-outline-success btn-lg px-4">
           🙋‍♂️ Inscribirme 1° clase
         </a>
         <a href="{% url 'inscripcion' %}" class="btn btn-success btn-lg px-4">
@@ -1050,7 +1053,7 @@
               placeholder="Tu nombre" required />
             <input type="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
               placeholder="Tu email" required />
-            <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
+            <button type="submit" class="btn w-100 btn-suscribirme p-1" style="font-size: 14px;">
               <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
             </button>
           </form>
