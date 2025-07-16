@@ -112,13 +112,15 @@ def inscripcion(request):
             'id': curso.id_curso,
             'nombre_curso': curso.nombre_curso,
             'modalidad': curso.get_modalidad_display(),
+            'precio_original': curso.precio_original,  # 👈 AGREGue ESTO
+            'precio_final': curso.precio_final,        # 👈 Y ESTO
             'comisiones': list(comisiones.values(
                 'numero_comision',
                 'fecha_inicio',
                 'fecha_fin',
                 'dia1', 'dia2', 'dia3',
                 'horario1', 'horario2', 'horario3',
-                'estado_comision'
+                'estado_comision',
             ))
         })
 

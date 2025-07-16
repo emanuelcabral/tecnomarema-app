@@ -385,7 +385,7 @@
               <label class="list-group-item">
                 <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia" checked
                   onchange="mostrarFormularioPago(this.value)">
-                <strong>Transferencia bancaria</strong> - Precio final: $92.900
+                <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
               </label>
 
               <!-- Tarjeta débito -->
@@ -428,22 +428,25 @@
           <div class="col-md-4 summary-section">
             <div class="info-box">
               <h5>Detalle de la inscripción</h5>
-              <p><strong>Curso de:</strong> Desarrollo Web</p>
-              <p><strong>Modalidad:</strong> {{ curso.modalidad }}</p>
-              <p><del>Precio original: $142.923,08</del></p>
-              <p><span class="text-success">Descuento 35%: -$47.100,00</span></p>
-              <p><strong>Precio final: $92.900,00</strong></p>
+              <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
+              <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
+              <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
+              <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
+              <p><strong>Precio final: $<span class="detallePrecioFinal">-</span></strong></p>
+
               <div class="mt-3">
-                <label for="cupon" class="form-label">Consigue el 20% OFF aplicando el cupón:</label>
-                <input type="text" class="form-control mb-2" id="cupon" value="DESCUENTO">
+                <label for="cupon" class="form-label">Consigue el Descuento aplicando el cupón:</label>
+                <input type="text" class="form-control mb-2" id="cupon" placeholder="DESCUENTO">
                 <button class="btn btn-custom w-100">Aplicar código</button>
               </div>
+
               <hr class="my-4">
               <div class="tick-icon mb-2">Acceso total a la plataforma</div>
               <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
-              <div class="tick-icon mb-2">Puedes Presenciar la primera clase sin costo.</div>
+              <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
             </div>
           </div>
+
 
         </div>
       </div>
@@ -460,7 +463,7 @@
               <label class="list-group-item">
                 <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia" checked
                   onchange="mostrarFormularioPago(this.value)">
-                <strong>Transferencia bancaria</strong> - Precio final: $92.900
+                <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
               </label>
 
               <label class="list-group-item">
@@ -565,7 +568,8 @@
             <div class="form-check mb-3">
               <input class="form-check-input" type="checkbox" id="acepto" required>
               <label class="form-check-label" for="acepto">
-                Acepto los <a href="#" class="text-decoration-underline">términos y condiciones</a>.
+                <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones
+                    del servicio</a>
               </label>
             </div>
 
@@ -577,32 +581,48 @@
           <div class="col-md-4 summary-section">
             <div class="info-box">
               <h5>Detalle de la inscripción</h5>
-              <p><strong>Curso de:</strong> Desarrollo Web</p>
-              <p><strong>Modalidad:</strong> Online en vivo</p>
-              <p><del>Precio original: $142.923,08</del></p>
-              <p><span class="text-success">Descuento 35%: -$47.100,00</span></p>
-              <p><strong>Precio final: $92.900,00</strong></p>
+              <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
+              <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
+              <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
+              <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
+              <p><strong>Precio final: $<span class="detallePrecioFinal">-</span></strong></p>
+
               <div class="mt-3">
-                <label for="cupon" class="form-label">Consigue el 20% OFF aplicando el cupón:</label>
-                <input type="text" class="form-control mb-2" id="cupon" value="DESCUENTO">
+                <label for="cupon" class="form-label">Consigue el Descuento aplicando el cupón:</label>
+                <input type="text" class="form-control mb-2" id="cupon" placeholder="DESCUENTO">
                 <button class="btn btn-custom w-100">Aplicar código</button>
               </div>
+
               <hr class="my-4">
               <div class="tick-icon mb-2">Acceso total a la plataforma</div>
               <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
-              <div class="tick-icon mb-2">Puedes Presenciar la primera clase sin costo.</div>
+              <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
             </div>
           </div>
+
         </div>
       </div>
     </div> <!-- fin tab-content -->
   </div> <!-- fin container -->
+
+
+<!-- ######################################################################################################################################## -->
+      <!-- Ventana modal -->
+<!-- ######################################################################################################################################## -->
+
+      <!-- Modal personalizado -->
+      <div id="modalTerminosCustom" style="display: none;">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <button class="btn-close-custom" aria-label="Cerrar modal" onclick="cerrarModal()">&times;</button>
+          <h2 id="modalTitle" class="modal-title">Importante</h2>
+          <p id="modalMensaje">Debes aceptar los términos para continuar.</p>
+          <button class="btn-aceptar" onclick="cerrarModal()">Aceptar</button>
+        </div>
+      </div>
+
 <!-- ######################################################################################################################################## -->
   <!-- Scripts -->
 <!-- ######################################################################################################################################## -->
-
-
-
 
 <!-- ########################################################### -->
 <!--           Variables y datos de cursos desde backend       -->
@@ -616,6 +636,8 @@
       "{{ curso.id }}": {
         nombre: "{{ curso.nombre_curso|escapejs }}",
         modalidad: "{{ curso.modalidad|escapejs }}",
+        precio_original: "{{ curso.precio_original|default:'' }}",
+        precio_final: "{{ curso.precio_final|default:'' }}",
         comisiones: [
           {% for com in curso.comisiones %}
             {
@@ -647,20 +669,37 @@
   const selectComision = document.getElementById('comision');
   const infoCurso = document.getElementById('infoCurso');
 
+  // Resumen paso 3
+  const detalleNombreCurso = document.querySelectorAll('#detalleNombreCurso, .detalleNombreCurso');
+  const detalleModalidadCurso = document.querySelectorAll('#detalleModalidadCurso, .detalleModalidadCurso');
+  const detallePrecioOriginal = document.querySelectorAll('#detallePrecioOriginal, .detallePrecioOriginal');
+  const detallePrecioFinal  = document.querySelectorAll('#detallePrecioFinal, .detallePrecioFinal');
+
+  const detalleDescuento = document.querySelectorAll('#detalleDescuento, .detalleDescuento');
+
   // Al cambiar el curso
   selectCurso.addEventListener('change', () => {
     btnConfirmarCurso.disabled = !selectCurso.value;
     bloqueComisiones.classList.add('d-none');
     selectComision.innerHTML = '<option value="" disabled selected>Elige una comisión</option>';
     infoCurso.classList.add('d-none');
+
+    // Limpiar info detalle (paso 2)
     document.getElementById('nombreCurso').textContent = '';
     document.getElementById('modalidadCurso').textContent = '';
     document.getElementById('fechaInicio').textContent = '';
     document.getElementById('fechaFin').textContent = '';
     document.getElementById('textoHorario').innerHTML = '';
+
+    // Limpiar resumen (paso 3)
+    detalleNombreCurso.textContent = '-';
+    detalleModalidadCurso.textContent = '-';
+    detallePrecioOriginal.textContent = '-';
+    detallePrecioFinal.textContent = '-';
+    detalleDescuento.textContent = '-';
   });
 
-  // Al confirmar el curso, cargar comisiones disponibles
+  // Al confirmar el curso, cargar comisiones disponibles y mostrar resumen
   btnConfirmarCurso.addEventListener('click', () => {
     const cursoId = selectCurso.value;
     if (!cursoId || !cursos[cursoId]) return;
@@ -668,13 +707,12 @@
     const cursoSeleccionado = cursos[cursoId];
     selectComision.innerHTML = '<option value="" disabled selected>Elige una comisión</option>';
 
-    // Cargar las comisiones como options
+    // Cargar comisiones
     cursoSeleccionado.comisiones.forEach(comision => {
       const option = document.createElement('option');
       option.value = comision.numero_comision;
       option.textContent = `Comisión ${comision.numero_comision} - Inicio: ${comision.fecha_inicio}`;
 
-      // Dataset para mostrar info luego
       option.dataset.fechaInicio = comision.fecha_inicio || '';
       option.dataset.fechaFin = comision.fecha_fin || '';
       option.dataset.dia1 = comision.dia1 || '';
@@ -687,17 +725,49 @@
       selectComision.appendChild(option);
     });
 
-    // Mostrar nombre y modalidad del curso ya al confirmar
+    // Mostrar info general paso 2
     document.getElementById('nombreCurso').textContent = cursoSeleccionado.nombre;
     document.getElementById('modalidadCurso').textContent = cursoSeleccionado.modalidad;
-
-    // Mostrar bloque de selección de comisiones
     bloqueComisiones.classList.remove('d-none');
-    infoCurso.classList.add('d-none');  // Esperamos a que elijan una comisión para mostrar fechas
+    infoCurso.classList.add('d-none');
+
     document.getElementById('fechaInicio').textContent = '';
     document.getElementById('fechaFin').textContent = '';
     document.getElementById('textoHorario').innerHTML = '';
+
+    // 🟢 Mostrar resumen de inscripción (paso 3)
+    const original = parseFloat(cursoSeleccionado.precio_original) ;
+    const final = parseFloat(cursoSeleccionado.precio_final) ;
+    const descuento = original - final;
+
+    detalleNombreCurso.textContent = cursoSeleccionado.nombre;
+    document.querySelectorAll('.detalleNombreCurso').forEach(el => {
+  el.textContent = cursoSeleccionado.nombre;
+});
+
+    detalleModalidadCurso.textContent = cursoSeleccionado.modalidad;
+document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
+  el.textContent = cursoSeleccionado.modalidad;
+});
+
+    detallePrecioOriginal.textContent = original.toLocaleString('es-AR');
+    document.querySelectorAll('.detallePrecioOriginal').forEach(el => {
+  el.textContent = original.toLocaleString('es-AR');
+});
+
+    detallePrecioFinal.textContent = final.toLocaleString('es-AR');
+    document.querySelectorAll('.detallePrecioFinal').forEach(el => {
+  el.textContent = final.toLocaleString('es-AR');
+});
+
+    detalleDescuento.textContent = descuento.toLocaleString('es-AR');
+    document.querySelectorAll('.detalleDescuento').forEach(el => {
+  el.textContent = descuento.toLocaleString('es-AR');
+});
+
+
   });
+  
 
   // Al seleccionar una comisión, mostrar fechas y horarios
   selectComision.addEventListener('change', () => {
@@ -706,13 +776,10 @@
 
     const inicio = opcion.dataset.fechaInicio || '';
     const fin = opcion.dataset.fechaFin || '';
-    const fechaCompleta = fin ? `${inicio} al ${fin}` : inicio;
 
-    // Mostrar fechas
     document.getElementById('fechaInicio').textContent = inicio;
     document.getElementById('fechaFin').textContent = fin;
 
-    // Construir horarios
     let textoHorario = '';
     if (opcion.dataset.dia1 && opcion.dataset.horario1) {
       textoHorario += `${opcion.dataset.dia1} - ${opcion.dataset.horario1}<br>`;
@@ -728,6 +795,7 @@
     infoCurso.classList.remove('d-none');
   });
 </script>
+
 
 <!-- ########################################################### -->
 <!--                  Función para cambiar pestañas            -->

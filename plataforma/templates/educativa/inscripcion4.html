@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+  <head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <title>Inscripción al curso - Desarrollo Web</title>
+    <!-- libreria para banderas form -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.min.css" />
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        background-color: #0a0a0a;
+        color: white;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      .nav-tabs .nav-link.active {
+        background-color: #12f693;
+        color: #0a0a0a;
+        border: none;
+      }
+
+      .nav-tabs .nav-link {
+        color: white;
+        border: 1px solid #12f693;
+        border-radius: 0;
+      }
+
+      .form-check-input:checked {
+        background-color: #12f693;
+        border-color: #12f693;
+      }
+
+      .btn-custom {
+        background-color: #12f693;
+        color: #000;
+      }
+
+      .btn-custom:hover {
+        background-color: #0fd181;
+        color: #000;
+      }
+
+      .info-box {
+        background-color: #1a1a1a;
+        border: 1px solid #12f693;
+        padding: 1.5rem;
+        border-radius: 1rem;
+      }
+
+      .tick-icon::before {
+        content: '\2713';
+        color: #12f693;
+        margin-right: 0.5rem;
+      }
+
+      .tab-pane {
+        padding-top: 2rem;
+      }
+
+      .form-section {
+        max-width: 60%;
+      }
+
+      .summary-section {
+        max-width: 40%;
+      }
+
+      /* paso 2 inicia */
+      .form-select {
+        background-color: #fff !important;
+        color: #000 !important;
+        border: 1px solid #12f693;
+      }
+
+      .form-select:focus {
+        border-color: #12f693;
+        box-shadow: 0 0 0 0.25rem rgba(18, 246, 147, 0.25);
+      }
+
+      .card {
+        background-color: #fff;
+        color: #000;
+        border: 1px solid #12f693;
+        border-radius: 1rem;
+      }
+
+      .highlight {
+        background-color: #12f693;
+        font-weight: bold;
+        border-radius: 7px;
+        padding: 5px
+      }
+
+      ul li {
+        margin-bottom: 0.5rem;
+      }
+
+      #infoCurso {
+        margin-bottom: 20px;
+      }
+
+      /* paso 2 fin */
+
+      /* modal terminos y condiciones paso 2 inicia */
+
+      /* Fondo del modal oscuro translúcido */
+      #modalTerminosCustom {
+        display: none;
+        /* oculto por defecto */
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.85);
+        backdrop-filter: blur(4px);
+        z-index: 1050;
+        justify-content: center;
+        align-items: center;
+      }
+
+      /* Contenido del modal */
+      #modalTerminosCustom .modal-content {
+        background: #121212;
+        color: #12f693;
+        /* verde neón */
+        border-radius: 12px;
+        padding: 1.5rem 2rem;
+        width: 320px;
+        box-shadow: 0 0 10px #12f693aa;
+        text-align: center;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* Título */
+      #modalTerminosCustom .modal-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+        color: #12f693;
+      }
+
+      /* Botón cerrar */
+      #modalTerminosCustom .btn-close-custom {
+        background: none;
+        border: none;
+        color: #12f693;
+        font-size: 1.5rem;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        cursor: pointer;
+        transition: color 0.2s ease;
+      }
+
+      #modalTerminosCustom .btn-close-custom:hover {
+        color: #0fc57f;
+      }
+
+      /* Botón aceptar */
+      #modalTerminosCustom .btn-aceptar {
+        margin-top: 1.2rem;
+        padding: 0.5rem 1.5rem;
+        background: #12f693;
+        border: none;
+        color: #121212;
+        font-weight: 600;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+        font-size: 1rem;
+      }
+
+      #modalTerminosCustom .btn-aceptar:hover {
+        background: #0fc57f;
+      }
+
+      /* modal terminos y condiciones paso 2 fin */
+
+      /* color de la lista de banderas */
+      .iti__country {
+        color: #000 !important;
+      }
+
+      .marco-inscripcion {
+        background-size: cover;
+        background-position: center;
+        /* width: 100%; */
+        height: 100%;
+        min-height: 350px;
+        background-color: #1a1a1a;
+        border: 1px solid #12f693;
+        padding: 1.5rem;
+        border-radius: 1rem;
+      }
+
+      .foto-inscripcion {
+        background-image: url(../../static/img/chico-gamer.jpg);
+
+      }
+
+      .foto-inscripcion2 {
+        background-image: url(../../static/img/software-developer-6521720_1280.jpg);
+      }
+    </style>
+  </head>
+
+<body>
+  <div class="container py-5">
+    <h2 class="text-center mb-4">Proceso de inscripción</h2>
+    <ul class="nav nav-tabs" id="checkoutTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="paso1-tab" data-bs-toggle="tab" data-bs-target="#paso1" type="button"
+          role="tab">1. Tus datos</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="paso2-tab" data-bs-toggle="tab" data-bs-target="#paso2" type="button" role="tab">2.
+          Confirma curso</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="paso3-tab" data-bs-toggle="tab" data-bs-target="#paso3" type="button" role="tab">3.
+          Medio de pago</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="paso4-tab" data-bs-toggle="tab" data-bs-target="#paso4" type="button" role="tab">4.
+          Confirmación</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="checkoutTabsContent">
+      <!-- Paso 1: Cargar datos -->
+      <div class="tab-pane fade show active" id="paso1" role="tabpanel">
+        <div class="d-flex flex-wrap mt-4 gap-4">
+          <div class="form-section">
+            <h4>¿Quieres inscribirte?</h4>
+            <p>Inscripción - Ingresa tus datos</p>
+            <form action="/inscripcion/" method="post" id="form-registro">
+              <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="nombre" name="nombre" value="Carlos" required>
+              </div>
+              <div class="mb-3">
+                <label for="apellido" class="form-label">Apellido/s</label>
+                <input type="text" class="form-control" id="apellido" name="apellido" value="Perez" required>
+              </div>
+              <div class="mb-3">
+                <label for="documento" class="form-label">Número de Documento</label>
+                <input type="text" class="form-control" id="documento" name="dni" value="22000111" required>
+              </div>
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo</label>
+                <input type="email" class="form-control" id="email" name="correo" value="micorreo@gmail.com" required>
+              </div>
+              <div class="mb-3">
+                <label for="fecha_nacimiento" class="form-label">Fecha de nacimiento</label>
+                <input type="date" class="form-control" id="fecha_nacimiento" name="fecha_nacimiento" required>
+              </div>
+
+              <div class="mb-3">
+                <label for="pais" class="form-label">Pais</label>
+                <input type="text" class="form-control" id="pais" name="pais" value="Argentina" required>
+              </div>
+              <div class="mb-3">
+                <label for="provincia" class="form-label">Provincia</label>
+                <input type="text" class="form-control" id="provincia" name="provincia" value="Buenos Aires" required>
+              </div>
+
+              <div class="form-group mb-3">
+                <label for="telefono" class="form-label">Número de teléfono</label><br>
+                <input type="tel" id="telefono" name="telefono" class="form-control" placeholder="Ingrese su número"
+                  value="541122334455" required>
+              </div>
+
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" value="" id="terminos">
+                <label class="form-check-label" for="terminos">
+                  <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones
+                    del servicio</a>
+                </label>
+              </div>
+              <p class="text-warning small">Este sitio está protegido por reCAPTCHA y se aplican la política de
+                privacidad y términos del servicio de Google.</p>
+              <div class="d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary">Volver</button>
+                <!-- <button type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#curso" onclick="irA('paso2')">Continuar</button> -->
+                <!-- <button type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#curso" onclick="validarTerminosYContinuar()">Continuar</button> -->
+                <button id="btnContinuarDatos" type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#paso2" onclick="validarTerminosYContinuar()">Continuar</button>
+
+
+              </div>
+            </form>
+          </div>
+          <div class=" col-xs-12 col-sm-12 col-md-4">
+            <div class="marco-inscripcion foto-inscripcion"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Paso 2: Confirmar curso -->
+      <div class="tab-pane fade" id="paso2" role="tabpanel" aria-labelledby="paso2-tab">
+        <div class="row">
+          <div class="col-md-8">
+            <h5 class="mb-3">Confirmá el curso, la fecha y el horario</h5>
+
+
+            <div class="container">
+              <h2 class="mb-4">Confirmá el curso, la fecha y el horario</h2>
+
+              <!-- Dropdown de Curso -->
+              <div class="mb-4">
+                <label for="curso" class="form-label">Selecciona tu curso:</label>
+                <select id="curso" class="form-select" onchange="actualizarHorarios()">
+                  <option value="" disabled selected>Elige un curso</option>
+                  <option value="desarrollo">Desarrollo Web</option>
+                  <option value="python" disabled>Python Inicial</option>
+                  <option value="ia" disabled>Bases de Inteligencia Artificial</option>
+                  <option value="js" disabled>JavaScript</option>
+                </select>
+              </div>
+
+              <!-- Dropdown de Horario -->
+              <div class="mb-4 d-none" id="bloqueHorario">
+                <label for="horario" class="form-label">Selecciona un horario:</label>
+                <select id="horario" class="form-select" onchange="mostrarInfo()">
+                  <option value="" disabled selected>Elige un horario</option>
+                </select>
+              </div>
+
+              <!-- Info del curso -->
+              <div id="infoCurso" class="card p-4 d-none">
+                <h4 class="mb-3" id="nombreCurso"></h4>
+                <p><span class="highlight">Modalidad:</span> Online en vivo</p>
+                <p><span class="highlight">Fecha de inicio:</span> <span id="fechaInicio"></span></p>
+                <p><span class="highlight">Horario:</span> <span id="textoHorario"></span></p>
+              </div>
+
+
+            </div>
+
+            <button class="btn btn-outline-secondary me-2" onclick="irA('paso1')">Volver</button>
+            <!-- <button class="btn btn-custom" onclick="irA('paso3')">Confirmar</button> -->
+            <!-- <button type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#paso3" onclick="irA('paso3')">Confirmar</button> -->
+            <button class="btn btn-custom" onclick="irA('paso3')">Confirmar</button>
+            <!-- <button type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#paso3">Confirmar</button> -->
+
+
+            <!-- Beneficios -->
+            <hr class="my-4">
+            <h6 class="mb-3">Tu inscripción incluye</h6>
+            <ul class="list-unstyled">
+              <li>✅ Acceso total a la plataforma</li>
+              <li>✅ Acceso al material exclusivo.</li>
+              <li>✅ Clases en vivo y grabadas</li>
+              <li>✅ Garantía de aprendizaje</li>
+            </ul>
+          </div>
+<!-- ---------------------lo que edite recientemente---------------------------------- -->
+
+          <div class=" col-xs-12 col-sm-12 col-md-4">
+            <div class="marco-inscripcion foto-inscripcion2"></div>
+          </div>
+<!-- ---------------------lo que edite recientemente---------------------------------- -->
+
+        </div>
+      </div>
+
+
+      <!-- Modal validar terminos -->
+      <!-- Modal personalizado -->
+      <div id="modalTerminosCustom" style="display: none;">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+          <button class="btn-close-custom" aria-label="Cerrar modal" onclick="cerrarModal()">&times;</button>
+          <h2 id="modalTitle" class="modal-title">Importante</h2>
+          <p id="modalMensaje">Debes aceptar los términos para continuar.</p>
+          <button class="btn-aceptar" onclick="cerrarModal()">Aceptar</button>
+        </div>
+      </div>
+
+
+      <!-- Paso 3: Selección de medio de pago -->
+      <div class="tab-pane fade" id="paso3" role="tabpanel" aria-labelledby="paso3-tab">
+        <div class="row">
+          <div class="col-md-8">
+            <h5 class="mb-4">Elige el medio de pago</h5>
+            <div class="list-group">
+              <label class="list-group-item">
+                <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia" checked>
+                <strong>Transferencia bancaria</strong> - Precio final: $ 92.900,00
+              </label>
+              <!-- <label class="list-group-item">
+                <input class="form-check-input me-2" type="radio" name="medioPago" value="mercadopago">
+                <strong>MercadoPago: Dinero en cuenta</strong> - Precio final: $ 92.900,00
+              </label> -->
+              <!-- <label class="list-group-item">
+                <input class="form-check-input me-2" type="radio" name="medioPago" value="credito">
+                <strong>Tarjeta de crédito</strong> - Hasta 3 cuotas de $ 39,900
+              </label> -->
+              <!-- <label class="list-group-item">
+                <input class="form-check-input me-2" type="radio" name="medioPago" value="debito">
+                <strong>Tarjeta de débito</strong> - Precio final: $ 92.900,00
+              </label> -->
+              <!-- <label class="list-group-item">
+                  <input class="form-check-input me-2" type="radio" name="medioPago" value="efectivo">
+                  <strong>Efectivo</strong> - Precio final: $ 92.900,00
+                </label> -->
+            </div>
+            <div class="mt-4">
+              <button class="btn btn-outline-secondary me-2" onclick="irA('paso2')">Volver</button>
+              <button class="btn btn-success" onclick="irA('paso4')">Continuar</button>
+            </div>
+
+            <hr class="my-4">
+            <h6 class="mb-3">Tu inscripción incluye</h6>
+            <ul class="list-unstyled">
+              <li>✅ Puedes cancelar hasta 48 h antes.</li>
+              <li>✅ Tienes acceso total al Alumni</li>
+              <li>✅ Garantía de aprendizaje</li>
+              <li>✅ El dinero es transferible a otro curso o persona antes del inicio.</li>
+            </ul>
+          </div>
+
+
+
+          <div class="col-md-4 summary-section">
+            <div class="info-box">
+              <h5>Detalle de la inscripción</h5>
+              <p><strong>Curso de:</strong> Desarrollo Web</p>
+              <p><strong>Modalidad:</strong> Online en vivo</p>
+              <p><del>Precio original: $142.923,08</del></p>
+              <p><span class="text-success">Descuento 35%: -$47.100,00</span></p>
+              <p><strong>Precio final: $92.900,00</strong></p>
+              <div class="mt-3">
+                <label for="cupon" class="form-label">Consigue el 20% OFF aplicando el cupón:</label>
+                <input type="text" class="form-control mb-2" id="cupon" value="DESCUENTO">
+                <button class="btn btn-custom w-100">Aplicar código</button>
+              </div>
+              <hr class="my-4">
+              <div class="tick-icon mb-2">Acceso total a la plataforma</div>
+              <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
+              <div class="tick-icon mb-2">Puedes Presenciar la primera clase sin costo.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <!-- Paso 4: Datos de pago / Confirmación -->
+      <div class="tab-pane fade" id="paso4" role="tabpanel" aria-labelledby="paso4-tab">
+        <div class="row">
+          <div class="col-md-8">
+            <h5 class="mb-4">Último paso: Confirmación</h5>
+
+            <div id="infoTransferencia" class="mb-4">
+              <h6>Datos para transferencia bancaria</h6>
+              <p>Alias: <strong>tecnomarema</strong></p>
+              <p>CBU: <strong>0000003100012308471201</strong></p>
+              <p>Banco: <strong>Banco Marema</strong></p>
+              <p>Titular: <strong>Emanuel Cabral</strong></p>
+              <p class="mt-3">Una vez realizada la transferencia, te pediremos que envíes el comprobante al siguiente
+                correo:</p>
+              <p><strong>tecnomarema.ar@gmail.com</strong></p>
+            </div>
+
+            <div class="mb-4">
+              <label for="comprobante" class="form-label">Adjuntá el comprobante de pago:</label>
+              <!-- <input type="file" id="comprobante" class="form-control"> -->
+              <input type="file" class="form-control" name="comprobante" id="comprobante" accept="image/*" required >
+            </div>
+
+            <div class="form-check mb-3">
+              <input class="form-check-input" type="checkbox" id="acepto" required>
+              <label class="form-check-label" for="acepto">
+                Acepto los <a href="#" class="text-decoration-underline">términos y condiciones</a>.
+              </label>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-lg btn-success" onclick="reservar()">✅ Reservar mi lugar</button>
+              <input type="submit">
+            </div>
+          </div>
+
+
+          <div class="col-md-4 summary-section">
+            <div class="info-box">
+              <h5>Detalle de la inscripción</h5>
+              <p><strong>Curso de:</strong> Desarrollo Web</p>
+              <p><strong>Modalidad:</strong> Online en vivo</p>
+              <p><del>Precio original: $142.923,08</del></p>
+              <p><span class="text-success">Descuento 35%: -$47.100,00</span></p>
+              <p><strong>Precio final: $92.900,00</strong></p>
+              <div class="mt-3">
+                <label for="cupon" class="form-label">Consigue el 20% OFF aplicando el cupón:</label>
+                <input type="text" class="form-control mb-2" id="cupon" value="DESCUENTO">
+                <button class="btn btn-custom w-100">Aplicar código</button>
+              </div>
+              <hr class="my-4">
+              <div class="tick-icon mb-2">Acceso total a la plataforma</div>
+              <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
+              <div class="tick-icon mb-2">Puedes Presenciar la primera clase sin costo.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- fin tab-content -->
+  </div> <!-- fin container -->
+  </section>
+
+  <!-- Scripts -->
+  <script>
+    function irA(tabId) {
+      const triggerEl = document.querySelector(`#${tabId}-tab`);
+      const tab = new bootstrap.Tab(triggerEl);
+      tab.show();
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    function reservar() {
+      if (document.getElementById("acepto").checked) {
+        alert("🎉 ¡Tu lugar ha sido reservado exitosamente!\nNos pondremos en contacto contigo a la brevedad.");
+      } else {
+        alert("Por favor, aceptá los términos y condiciones antes de continuar.");
+      }
+    }
+  </script>
+
+  <!-- script paso 2 inicio-->
+  <script>
+    const cursos = {
+      desarrollo: {
+        nombre: "Desarrollo Web",
+        fechas: [{
+            fecha: "30 de Junio, 2025",
+            horario: "Lunes y Miércoles de 20 a 22hs"
+          },
+          // { fecha: "25 de Octubre, 2025", horario: "Martes y Jueves de 19 a 21hs" }
+        ]
+      },
+      python: {
+        nombre: "Python Inicial",
+        fechas: [{
+            fecha: "21 de Mayo, 2025",
+            horario: "Martes y Jueves de 18 a 20hs"
+          },
+          {
+            fecha: "26 de Mayo, 2025",
+            horario: "Sábados de 14 a 17hs"
+          }
+        ]
+      },
+      ia: {
+        nombre: "Bases de Inteligencia Artificial",
+        fechas: [{
+            fecha: "22 de Mayo, 2025",
+            horario: "Martes y Jueves de 19 a 21hs"
+          },
+          {
+            fecha: "27 de Mayo, 2025",
+            horario: "Domingos de 10 a 13hs"
+          }
+        ]
+      },
+      js: {
+        nombre: "JavaScript",
+        fechas: [{
+            fecha: "23 de Mayo, 2025",
+            horario: "Viernes de 18 a 21hs"
+          },
+          {
+            fecha: "28 de Mayo, 2025",
+            horario: "Miércoles de 10 a 13hs"
+          }
+        ]
+      }
+    };
+
+    function actualizarHorarios() {
+      const curso = document.getElementById("curso").value;
+      const horarioSelect = document.getElementById("horario");
+      const bloqueHorario = document.getElementById("bloqueHorario");
+      const info = cursos[curso];
+
+      horarioSelect.innerHTML = '<option value="" disabled selected>Elige un horario</option>';
+
+      if (info) {
+        info.fechas.forEach((opcion, index) => {
+          const option = document.createElement("option");
+          option.value = index;
+          option.textContent = `${opcion.horario} (Desde el ${opcion.fecha})`;
+          horarioSelect.appendChild(option);
+        });
+        bloqueHorario.classList.remove("d-none");
+        document.getElementById("infoCurso").classList.add("d-none");
+      }
+    }
+
+    function mostrarInfo() {
+      const curso = document.getElementById("curso").value;
+      const indexHorario = document.getElementById("horario").value;
+      const info = cursos[curso];
+
+      if (info && info.fechas[indexHorario]) {
+        const seleccion = info.fechas[indexHorario];
+        document.getElementById("nombreCurso").textContent = "Curso seleccionado: " + info.nombre;
+        document.getElementById("fechaInicio").textContent = seleccion.fecha;
+        document.getElementById("textoHorario").textContent = seleccion.horario;
+        document.getElementById("infoCurso").classList.remove("d-none");
+      }
+    }
+  </script>
+
+<!-- -------------------------------------------------------------------------------- -->
+<script>
+  function validarTerminosYContinuar() {
+    const form = document.getElementById('form-registro');
+    const checkbox = document.getElementById('terminos');
+    const modal = document.getElementById('modalTerminosCustom');
+    const mensaje = document.getElementById('modalMensaje');
+
+    // Verificamos si los campos requeridos del paso actual están completos
+    const camposRequeridos = form.querySelectorAll('[required]');
+    let formularioValido = true;
+
+    camposRequeridos.forEach(campo => {
+      if (!campo.value.trim()) {
+        formularioValido = false;
+        campo.classList.add('input-invalido'); // opcional: para marcar los campos en rojo
+      } else {
+        campo.classList.remove('input-invalido');
+      }
+    });
+
+    if (!formularioValido) {
+      mensaje.textContent = 'Por favor, completá todos los campos obligatorios correctamente.';
+      modal.style.display = 'flex';
+      return;
+    }
+
+    // Validamos si aceptó los términos y condiciones
+    if (!checkbox.checked) {
+      mensaje.textContent = 'Debes aceptar los términos para continuar.';
+      modal.style.display = 'flex';
+      return;
+    }
+
+    // Si todo está correcto, pasamos al siguiente paso
+    irA('paso2');
+  }
+
+  function cerrarModal() {
+    document.getElementById('modalTerminosCustom').style.display = 'none';
+  }
+</script>
+
+  <!-- script paso 2 fin-->
+
+  <!-- enviar datos de inscripcion inicia -->
+
+  <script>
+    function enviarDatos() {
+  const datos = {
+    nombre: document.getElementById("nombre").value,
+    apellido: document.getElementById("apellido").value,
+    documento: document.getElementById("documento").value,
+    email: document.getElementById("email").value,
+    fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
+    pais: document.getElementById("pais").value,
+    provincia: document.getElementById("provincia").value,
+    telefono: document.getElementById("telefono").value,
+    comision_codigo: obtenerCodigoComisionSeleccionada(),  // debes tener este dato disponible
+  };
+
+  fetch("/guardar_datos_inscripcion/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCookie("csrftoken"),
+    },
+    body: JSON.stringify(datos),
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.status === "ok") {
+      irA('paso3');
+    } else {
+      alert("Error al guardar: " + data.msg);
+    }
+  });
+}
+  </script>
+
+  <!-- enviar datos de inscripcion fin -->
+
+  <!-- libreria de banderas -->
+  <!-- Scripts necesarios -->
+  <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+  <script>
+    const input = document.querySelector("#telefono");
+    window.intlTelInput(input, {
+      preferredCountries: ["ar", "uy", "cl", "mx", "es"],
+      initialCountry: "ar",
+      autoPlaceholder: "aggressive",
+      nationalMode: false,
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
+    });
+  </script>
+
+  <!-- Bootstrap JS Bundle con Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
