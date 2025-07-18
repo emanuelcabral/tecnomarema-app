@@ -263,6 +263,11 @@ path('ajax/obtener_datos_clase_comision/', views.obtener_datos_clase_comision, n
 
 
 
+path('guardar_datos_inscripcion_paga/', views.guardar_datos_inscripcion_paga, name='guardar_datos_inscripcion_paga'),
+
+
+
+
 
 
 ]

@@ -246,7 +246,7 @@
               </div>
               <div class="mb-3">
                 <label for="documento" class="form-label">Número de Documento</label>
-                <input type="text" class="form-control" id="documento" name="dni" value="22000111" required>
+                <input type="text" class="form-control" id="dni" name="dni" value="22000111" required>
               </div>
               <div class="mb-3">
                 <label for="email" class="form-label">Correo</label>
@@ -266,11 +266,36 @@
                 <input type="text" class="form-control" id="provincia" name="provincia" value="Buenos Aires" required>
               </div>
 
-              <div class="form-group mb-3">
-                <label for="telefono" class="form-label">Número de teléfono</label><br>
-                <input type="tel" id="telefono" name="telefono" class="form-control" placeholder="Ingrese su número"
-                  value="541122334455" required>
+              <div class="row">
+                <div class="form-group col-4 mb-3">
+                  <label for="telefono" class="form-label">Número de teléfono</label><br>
+                  <input type="tel" id="telefono" name="telefono" class="form-control" placeholder="Ingrese su número"
+                    value="541122334455" required>
+                </div>
+
+                <div class="form-group col-4 mb-3">
+                  <label for="genero" class="form-label">Ingrese su genero</label><br>
+                  <select id="genero" name="genero" class="form-control" placeholder="Ingrese su genero"
+                    value="" required>
+                  <option>Masculino</option>
+                  <option>Femenino</option>
+                  <option>Otro</option>
+                  </select>
+                </div>
+
+                <!-- Campo ID de Estudiante con estilo similar al campo genero -->
+                <div class="form-group col-4 mb-3">
+                    <label for="id_estudiante" class="form-label">
+                        ID de Estudiante
+                    </label>
+                    <input type="text" name="id_estudiante" id="id_estudiante"
+                          value="{{ proximo_id }}"
+                          class="form-control"
+                          readonly />
+                </div>
               </div>
+
+
 
               <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" value="" id="terminos">
@@ -574,7 +599,7 @@
             </div>
 
             <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
+              <button type="button" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
             </div>
           </div>
 
@@ -623,6 +648,7 @@
 <!-- ######################################################################################################################################## -->
   <!-- Scripts -->
 <!-- ######################################################################################################################################## -->
+
 
 <!-- ########################################################### -->
 <!--           Variables y datos de cursos desde backend       -->
@@ -805,7 +831,26 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
    * Cambia la pestaña activa usando Bootstrap 5 Tabs y hace scroll arriba.
    * @param {string} tabId - ID del tab a activar, por ejemplo 'paso2'
    */
-  function irA(tabId) {
+  {% comment %} function irA(tabId) {
+    const triggerEl = document.querySelector(`#${tabId}-tab`);
+    if (!triggerEl) {
+      console.warn(`No existe el tab con id ${tabId}-tab`);
+      return;
+    }
+    const tab = new bootstrap.Tab(triggerEl);
+    tab.show();
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  } {% endcomment %}
+    function irA(tabId) {
+    // Si vamos al paso 4, sincronizamos el método de pago
+    if (tabId === 'paso4') {
+      sincronizarMedioPago();
+    }
+
     const triggerEl = document.querySelector(`#${tabId}-tab`);
     if (!triggerEl) {
       console.warn(`No existe el tab con id ${tabId}-tab`);
@@ -912,7 +957,7 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
     const datos = {
       nombre: document.getElementById("nombre").value,
       apellido: document.getElementById("apellido").value,
-      documento: document.getElementById("documento").value,
+      documento: document.getElementById("dni").value,
       email: document.getElementById("email").value,
       fecha_nacimiento: document.getElementById("fecha_nacimiento").value,
       pais: document.getElementById("pais").value,
@@ -1022,6 +1067,114 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
     }
   });
 </script>
+
+
+<!-- ########################################################### -->
+<!--              sincronizacion de botones de radio             -->
+<!-- ########################################################### -->
+
+<script>
+  function sincronizarMedioPago() {
+    // Obtener el valor seleccionado en el paso 3
+    const medioSeleccionado = document.querySelector('#paso3 input[name="medioPago"]:checked');
+    if (!medioSeleccionado) return;
+
+    // Marcar el mismo en paso 4
+    const radioPaso4 = document.querySelector(`#paso4 input[name="medioPago"][value="${medioSeleccionado.value}"]`);
+    if (radioPaso4) {
+      radioPaso4.checked = true;
+      radioPaso4.dispatchEvent(new Event('change')); // para mostrar formulario de pago correspondiente
+    }
+  }
+</script>
+
+<!-- ########################################################### -->
+<!--           script de almacenamiento de formulario            -->
+<!-- ########################################################### -->
+
+<script>
+  function reservar() {
+    const acepto = document.getElementById("acepto").checked;
+    const comprobante = document.getElementById("comprobante").files[0];
+
+if (!acepto) {
+  mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
+  return;
+}
+
+if (!comprobante) {
+  mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
+  return;
+}
+
+
+    // Armamos FormData en lugar de JSON
+    const formData = new FormData();
+    formData.append("nombre", document.getElementById("nombre").value);
+    formData.append("apellido", document.getElementById("apellido").value);
+    formData.append("documento", document.getElementById("dni").value);
+    formData.append("email", document.getElementById("email").value);
+    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento").value);
+    formData.append("pais", document.getElementById("pais").value);
+    formData.append("provincia", document.getElementById("provincia").value);
+    formData.append("telefono", document.getElementById("telefono").value);
+    formData.append("genero", document.getElementById("genero").value);
+    formData.append("curso", document.getElementById("curso").value);
+    formData.append("comision", document.getElementById("comision").value);
+    formData.append("medio_pago", document.querySelector('input[name="medioPago"]:checked').value);
+    formData.append("comprobante", comprobante);
+
+    fetch("/guardar_datos_inscripcion_paga/", {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"), // CSRF token
+      },
+      body: formData,
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "ok") {
+        mostrarModalPersonalizado("🎉 ¡Reserva Exitosa!", "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles.");
+        irA('paso4'); // O cambiar según lo que quieras hacer luego
+      } else {
+        mostrarModalPersonalizado("Error al guardar", data.msg || "No se pudo completar la inscripción.");
+      }
+    })
+    .catch(error => {
+      console.error(error);
+      mostrarModalPersonalizado("Error de conexión", "No se pudo contactar al servidor. Intentalo nuevamente.");
+    });
+  }
+
+  // Función para obtener el CSRF token desde las cookies
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
+
+<!-- ########################################################### -->
+<!--                modal de confirmacion final                  -->
+<!-- ########################################################### -->
+
+<script>
+function mostrarModalPersonalizado(titulo = "Mensaje", mensaje = "Algo ocurrió.") {
+  document.getElementById("modalTitle").innerText = titulo;
+  document.getElementById("modalMensaje").innerText = mensaje;
+  document.getElementById("modalTerminosCustom").style.display = "flex";
+}
+</script>
+
 
 <!-- ########################################################### -->
 <!--                  Bootstrap JS Bundle con Popper             -->

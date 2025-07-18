@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     {% load static %}
+    {% load util_filtros %}
     <meta charset="UTF-8">
     <title>Estado de Cuenta - Mis Pagos</title>
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
@@ -240,88 +241,64 @@
     <div class="container py-5">
         <h1 class="text-center mb-4">💰 Estado de Cuenta</h1>
         <p class="header-subtitle">Tu información financiera, organizada y actualizada.</p>
-        <!-- Curso 1 -->
-        <div class="card">
-            <div class="card-header">
-                Curso: Desarrollo Web <span class="badge badge-green ms-2">En curso</span>
-            </div>
-            <div class="card-body">
-                <p><strong>Fecha de inicio:</strong> 01/05/2025</p>
-                <p><strong>Precio total:</strong> $40.000</p>
+        <p>Total cursos: {{ cursos_inscriptos|length }}</p>
 
-                <table class="table table-dark table-bordered mt-3">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Monto</th>
-                            <th>Método</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>01/05/2025</td>
-                            <td>$20.000</td>
-                            <td>Transferencia</td>
-                            <td><span class="badge bg-success">Acreditado</span></td>
-                        </tr>
-                        <tr>
-                            <td>15/05/2025</td>
-                            <td>$10.000</td>
-                            <td>MercadoPago</td>
-                            <td><span class="badge bg-success">Acreditado</span></td>
-                        </tr>
-                    </tbody>
-                </table>
+{% for inscripcion in cursos_inscriptos %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+            {{ inscripcion.curso.nombre_curso }} - comisión n°{{ inscripcion.comision.numero_comision }}
+        </div>
+        <span class="badge badge-green ms-2">{{ inscripcion.comision.estado_comision }}</span>
+    </div>
+    <div class="card-body">
+        <p><strong>Fecha de inicio:</strong> {{ inscripcion.comision.fecha_inicio|date:"d/m/Y" }}</p>
+        <p><strong>Precio total:</strong> ${{ inscripcion.curso.precio_final|floatformat:2 }} (sin impuestos)</p>
 
-                <p><strong>Total abonado:</strong> $30.000</p>
-                <p><strong>Saldo:</strong> <span class="saldo-neg">$10.000 a pagar</span></p>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-bordered mt-3 mb-3">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Monto</th>
+                        <th>Método</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pago in inscripcion.pagos %}
+                    <tr>
+                        <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+                        <td>${{ pago.monto|floatformat:2 }}</td>
+                        <td>{{ pago.medio_pago }}</td>
+                        <td>
+                            <span class="badge {% if pago.estado_pago == 'Acreditado' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ pago.estado_pago }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted">Sin pagos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
 
-        <!-- Curso 2 -->
-        <div class="card">
-            <div class="card-header">
-                Curso: Diseño UX/UI <span class="badge badge-green ms-2">Finalizado</span>
-            </div>
-            <div class="card-body">
-                <p><strong>Fecha de inicio:</strong> 01/03/2025</p>
-                <p><strong>Precio total:</strong> $35.000</p>
+        <p><strong>Total abonado:</strong> ${{ inscripcion.abonado|floatformat:2 }}</p>
+        <p><strong>Saldo:</strong>
+            {% if inscripcion.saldo > 0 %}
+                <span class="saldo-neg">${{ inscripcion.saldo|floatformat:2 }} a pagar</span>
+            {% else %}
+                <span class="saldo-pos">Al día ✅</span>
+            {% endif %}
+        </p>
+    </div>
+</div>
+{% endfor %}
 
-                <table class="table table-dark table-bordered mt-3">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Monto</th>
-                            <th>Método</th>
-                            <th>Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>01/03/2025</td>
-                            <td>$35.000</td>
-                            <td>Transferencia</td>
-                            <td><span class="badge bg-success">Acreditado</span></td>
-                        </tr>
-                    </tbody>
-                </table>
 
-                <p><strong>Total abonado:</strong> $35.000</p>
-                <p><strong>Saldo:</strong> <span class="saldo-pos">Sin deuda</span></p>
-            </div>
-        </div>
-
-        <!-- Resumen Global -->
-        <div class="card">
-            <div class="card-header text-center">
-                Resumen General
-            </div>
-            <div class="card-body text-center">
-                <p><strong>Total abonado:</strong> $65.000</p>
-                <p><strong>Saldo pendiente:</strong> <span class="saldo-neg">$10.000</span></p>
-            </div>
-        </div>
     </div>
 
     <!-- footer incia -->

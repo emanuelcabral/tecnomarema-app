@@ -204,3 +204,17 @@ def comisiones_del_usuario(estudiante):
         estudiante.cursando4, estudiante.cursando5, estudiante.cursando6,
         estudiante.cursando7, estudiante.cursando8, estudiante.cursando9
     ] if c]
+
+###################################################################################
+# -------------------- Filtro de restas -----------------------
+###################################################################################
+from django import template
+
+register = template.Library()
+
+@register.filter
+def resta(value, arg):
+    try:
+        return float(value) - float(arg)
+    except (ValueError, TypeError):
+        return ''

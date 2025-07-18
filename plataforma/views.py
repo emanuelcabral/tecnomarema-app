@@ -99,7 +99,8 @@ from .models import Curso, Comision
 #     return render(request, 'educativa/inscripcion.html', {'cursos': cursos})
 
 
-from .models import Curso, Comision
+from django.shortcuts import render
+from .models import Curso, Comision, DatosDeEstudiantes
 
 def inscripcion(request):
     cursos_qs = Curso.objects.filter(estado_curso__in=['proximo', 'próximo']).order_by('nombre_curso')
@@ -112,8 +113,8 @@ def inscripcion(request):
             'id': curso.id_curso,
             'nombre_curso': curso.nombre_curso,
             'modalidad': curso.get_modalidad_display(),
-            'precio_original': curso.precio_original,  # 👈 AGREGue ESTO
-            'precio_final': curso.precio_final,        # 👈 Y ESTO
+            'precio_original': curso.precio_original,
+            'precio_final': curso.precio_final,
             'comisiones': list(comisiones.values(
                 'numero_comision',
                 'fecha_inicio',
@@ -127,10 +128,126 @@ def inscripcion(request):
     comisiones_global = Comision.objects.select_related('id_curso') \
         .filter(estado_comision__in=['proximo', 'próximo'])
 
+    # ✅ Calcular próximo ID de estudiante formateado con 6 dígitos
+    try:
+        ultimo = DatosDeEstudiantes.objects.latest('id_estudiante')
+        siguiente_id = int(ultimo.id_estudiante) + 1
+    except (DatosDeEstudiantes.DoesNotExist, ValueError):
+        siguiente_id = 1
+
+    # 👉 Formatear con ceros a la izquierda (6 dígitos)
+    proximo_id = str(siguiente_id).zfill(6)
+
     return render(request, 'educativa/inscripcion.html', {
         'cursos': cursos,
         'comisiones': comisiones_global,
+        'proximo_id': proximo_id,
     })
+#---------------------------------------------------------------------------------
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.utils import timezone
+from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
+
+@csrf_exempt
+def guardar_datos_inscripcion_paga(request):
+    if request.method == "POST":
+        try:
+            nombre = request.POST.get("nombre")
+            apellido = request.POST.get("apellido")
+            documento = request.POST.get("documento")
+            email = request.POST.get("email")
+            fecha_nacimiento = request.POST.get("fecha_nacimiento")
+            pais = request.POST.get("pais")
+            provincia = request.POST.get("provincia")
+            telefono = request.POST.get("telefono")
+            genero = request.POST.get("genero")
+            curso = request.POST.get("curso")
+            medio_pago = request.POST.get("medio_pago")
+            comision_nombre = request.POST.get("comision")
+            comprobante = request.FILES.get("comprobante")
+
+            print("Datos recibidos:", nombre, apellido, documento, email)
+
+            if not comprobante:
+                return JsonResponse({"status": "error", "msg": "No se recibió comprobante"}, status=400)
+
+            # Buscar comisión por su número
+            comision = Comision.objects.filter(numero_comision=comision_nombre).first()
+            if not comision:
+                return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}'"}, status=400)
+
+            # Crear nuevo ID de estudiante
+            ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
+            nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
+
+            estudiante = DatosDeEstudiantes.objects.create(
+                id_estudiante=nuevo_id,
+                nombre=nombre,
+                apellido=apellido,
+                dni=documento,
+                correo=email,
+                fecha_nacimiento=fecha_nacimiento,
+                pais=pais,
+                provincia=provincia,
+                telefono=telefono,
+                genero=genero
+            )
+
+            # Asignar comisión al primer campo cursandoX libre
+            asignado = False
+            for i in range(1, 10):
+                campo = f'cursando{i}'
+                if getattr(estudiante, campo) is None:
+                    setattr(estudiante, campo, comision)
+                    estudiante.save()
+                    asignado = True
+                    break
+
+            if not asignado:
+                return JsonResponse({"status": "error", "msg": "El estudiante ya está inscrito en el máximo de comisiones."}, status=400)
+
+            usuario_id = str(int(PerfilUsuario.objects.order_by('-id_usuario').first().id_usuario) + 1 if PerfilUsuario.objects.exists() else 1).zfill(6)
+
+            usuario = PerfilUsuario.objects.create(
+                id_usuario=usuario_id,
+                id_estudiante=estudiante,
+                nombre_usuario=documento,
+                correo=email,
+                rol="alumno",
+                is_active=True
+            )
+            usuario.set_password("pass1234")
+            usuario.save()
+
+            RegistroPago.objects.create(
+                estudiante=estudiante,
+                comision=comision,
+                plataforma="web",
+                medio_pago=medio_pago,
+                estado_pago="Verificando",
+                monto=0,
+                fecha_pago=timezone.now(),
+                id_transaccion="",
+                archivo_comprobante=comprobante
+            )
+
+            return JsonResponse({"status": "ok", "id_estudiante": nuevo_id, "id_usuario": usuario_id})
+
+        except Exception as e:
+            print("ERROR EN INSCRIPCION:", e)
+            return JsonResponse({"status": "error", "msg": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
+
+
+
+
+
+
+
+
+#-------------------------------------------------------------------------------
 
 
 
@@ -315,9 +432,58 @@ def valoracion_alumno(request):
 def estadisticas(request):
     return render(request, 'educativa/estadisticas.html')
 
+
+#-----------------------------------------------------------------
+
+from django.db.models import Sum
+from django.shortcuts import render, get_object_or_404
+from .models import RegistroPago, DatosDeEstudiantes
+
 @session_required
 def saldo(request):
-    return render(request, 'educativa/saldo.html')
+    usuario_id = request.session.get('usuario_id')
+
+    if not usuario_id:
+        return render(request, 'educativa/saldo.html', {
+            'cursos_inscriptos': [],
+            'nombre_usuario': 'Invitado',
+            'mensaje': 'No hay estudiante identificado en sesión.'
+        })
+
+    # 🔧 CAMBIO ACÁ: usá el nombre correcto del campo PK
+    estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=usuario_id)
+
+    cursos_inscriptos = []
+
+    for i in range(1, 10):
+        comision = getattr(estudiante, f'cursando{i}', None)
+        if comision:
+            curso = comision.id_curso
+            pagos = RegistroPago.objects.filter(estudiante=estudiante, comision=comision)
+            abonado = pagos.aggregate(total=Sum('monto'))['total'] or 0
+            saldo = float(curso.precio_final) - float(abonado)
+
+            cursos_inscriptos.append({
+                'curso': curso,
+                'comision': comision,
+                'pagos': pagos,
+                'abonado': abonado,
+                'saldo': saldo,
+            })
+
+    context = {
+        'cursos_inscriptos': cursos_inscriptos,
+        'nombre_usuario': getattr(estudiante, 'nombre', 'Estudiante'),
+    }
+
+    return render(request, 'educativa/saldo.html', context)
+
+
+
+
+
+#---------------------------------------------------------------------------
+
 
 # @session_required
 def faq(request):
