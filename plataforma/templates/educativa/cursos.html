@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     {% load static %}
+    {% load util_filtros %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
@@ -370,91 +371,58 @@
   </div>
 </nav>
 
+{% comment %} ################################################################################################################# {% endcomment %}
+
     <!-- Título -->
     <div class="container mt-5">
         <h2 class="text-white mb-4">Cursos disponibles</h2>
 
-        <!-- Curso: Desarrollo Web -->
-        <div class="curso-card">
-            <img src="{% static 'img/desarrollo.jpg' %}" class="curso-img" alt="Desarrollo Web">
-            <div class="flex-grow-1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-1">Desarrollo Web</h4>
-                    <span class="badge-proximamente">Próximamente</span>
-                </div>
-                <p>Aprendé HTML, CSS, Sass, Git y Bootstrap para crear sitios web modernos y responsivos.</p>
-                <p style="text-decoration:line-through"><strong>Precio:</strong> $150.900</p>
-                <p><strong>Precio:</strong> $92.900</p>
-                <p><strong>Clases:</strong> 20</p>
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" class="icono-tec" alt="HTML">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" class="icono-tec" alt="CSS">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/sass/sass-original.svg" class="icono-tec" alt="Sass">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" class="icono-tec" alt="Bootstrap">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" class="icono-tec" alt="Git">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" class="icono-tec" alt="GitHub">
-                </div>
-                <!-- <button class="btn btn-comprar">Comprar</button> -->
-                <a href="{% url 'desarrollo_web_compra' %}" class="btn btn-comprar">Comprar</a>
-            </div>
+{% for curso in cursos %}
+<div class="curso-card">
+    <!-- Asumiendo que tienes una imagen en static/img/ que se llama igual que el curso en minúsculas sin espacios -->
+    <img src="{% static 'img/' %}{{ curso.nombre_curso|lower }}.jpg" class="curso-img" alt="{{ curso.nombre_curso }}">
+    
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-1">{{ curso.nombre_curso }}</h4>
+            <span class="badge-proximamente">{{ curso.estado_curso }}</span>
         </div>
 
-        <!-- Curso: JavaScript -->
-        <div class="curso-card">
-            <img src="{% static 'img/js5.jpeg' %}" class="curso-img" alt="JavaScript">
-            <div class="flex-grow-1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-1">JavaScript</h4>
-                    <span class="badge-proximamente">Próximamente</span>
-                </div>
-                <p>Aprendé programación en el navegador y desarrollo de aplicaciones interactivas.</p>
-                <p><strong>Precio:</strong> No disponible</p>
-                <p><strong>Clases:</strong> 18</p>
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" class="icono-tec" alt="JavaScript">
-                </div>
-                <button class="btn btn-comprar disabled">Comprar</button>
-            </div>
+        <p>{{ curso.descripcion }}</p>
+
+        {% if curso.precio_original %}
+        <p style="text-decoration: line-through;"><strong>Precio:</strong> {{ curso.precio_original }}</p>
+        {% endif %}
+        
+        <p><strong>Precio:</strong> {{ curso.precio_final }}</p>
+        <p><strong>Clases:</strong> {{ clases_por_curso|default_if_none:"0"|dict_get:curso.id_curso }}</p>
+
+        <div class="d-flex align-items-center mb-3">
+            {% if curso.iconos_cargados %}
+                {% for icono in curso.iconos_cargados %}
+                <img src="{{ icono.url }}" class="icono-tec" alt="{{ icono.name }}">
+                {% endfor %}
+            {% else %}
+                <!-- Aquí un set fijo de iconos por defecto (ejemplo Desarrollo Web) -->
+                {% comment %} <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" class="icono-tec" alt="HTML">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" class="icono-tec" alt="CSS">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" class="icono-tec" alt="JavaScript"> {% endcomment %}
+            {% endif %}
         </div>
 
-        <!-- Curso: Python -->
-        <div class="curso-card">
-            <img src="{% static 'img/python.png' %}" class="curso-img" alt="Python">
-            <div class="flex-grow-1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-1">Python</h4>
-                    <span class="badge-proximamente">Próximamente</span>
-                </div>
-                <p>Descubrí Python desde cero para automatización, análisis de datos y más.</p>
-                <p><strong>Precio:</strong> No disponible</p>
-                <p><strong>Clases:</strong> 22</p>
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" class="icono-tec" alt="Python">
-                </div>
-                <button class="btn btn-comprar disabled">Comprar</button>
-            </div>
-        </div>
-
-        <!-- Curso: Inteligencia Artificial -->
-        <div class="curso-card">
-            <img src="{% static 'img/IA.jpg' %}" class="curso-img" alt="Inteligencia Artificial">
-            <div class="flex-grow-1">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-1">Inteligencia Artificial</h4>
-                    <span class="badge-proximamente">Próximamente</span>
-                </div>
-                <p>Introducción práctica a IA con aplicaciones reales en distintos sectores.</p>
-                <p><strong>Precio:</strong> No diponible</p>
-                <p><strong>Clases:</strong> 10</p>
-                <div class="d-flex align-items-center mb-3">
-                    <img src="https://cdn-icons-png.flaticon.com/512/4712/4712100.png" class="icono-tec" alt="IA">
-                </div>
-                <button class="btn btn-comprar disabled">Comprar</button>
-            </div>
-        </div>
+        {% if curso.estado_curso == 'Disponible' %}
+            <a href="{% url 'curso_compra' nombre_curso=curso.nombre_curso|lower|replace:' ,_' %}" class="btn btn-comprar">Comprar</a>
+        {% else %}
+            <button class="btn btn-comprar" disabled>Comprar</button>
+        {% endif %}
 
     </div>
+</div>
+{% endfor %}
 
+
+    </div>
+{% comment %} ################################################################################################################################### {% endcomment %}
   <!-- FOOTER -->
   <div class="borde-animado"></div>
   <footer class="bg-black text-white py-5">

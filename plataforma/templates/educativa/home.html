@@ -966,15 +966,23 @@ html {
           <p class="small">
             Suscribite y mantenete al día con novedades, recursos y contenidos exclusivos en tu correo.
           </p>
-          <form>
-            <input type="text" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
-                   placeholder="Tu nombre" required />
-            <input type="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
-                   placeholder="Tu email" required />
-            <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
-              <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
-            </button>
-          </form>
+<form method="post" action="{% url 'newsletter' %}">
+  {% csrf_token %}
+  <input type="text" name="nombre" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+         placeholder="Tu nombre" required />
+  <input type="email" name="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+         placeholder="Tu email" required />
+  <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
+    <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
+  </button>
+</form>
+
+{% if messages %}
+  {% for message in messages %}
+    <div class="mt-2 text-success small">{{ message }}</div>
+  {% endfor %}
+{% endif %}
+
         </div>
 
       </div>

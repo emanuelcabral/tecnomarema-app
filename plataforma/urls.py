@@ -30,7 +30,7 @@ urlpatterns = [
     # path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Cerrar sesión con redirección
 
     path('inscripcion/', views.inscripcion, name='inscripcion'),  # Registro o inscripción - http://127.0.0.1:8000/inscripcion/
-    path('cursos/', views.cursos, name='cursos'),  # Listado de cursos - http://127.0.0.1:8000/cursos/
+    path('cursos/', views.cursos_view, name='cursos'),  # Listado de cursos - http://127.0.0.1:8000/cursos/
     path('desarrollo_web_compra/', views.desarrollo_web_compra, name='desarrollo_web_compra'),  # Compra de curso - http://127.0.0.1:8000/desarrollo_web_compra/
     path('terminos_y_condiciones/', views.terminos_y_condiciones, name='terminos_y_condiciones'),  # Términos y condiciones - http://127.0.0.1:8000/terminos_y_condiciones/
 
@@ -266,7 +266,11 @@ path('ajax/obtener_datos_clase_comision/', views.obtener_datos_clase_comision, n
 path('guardar_datos_inscripcion_paga/', views.guardar_datos_inscripcion_paga, name='guardar_datos_inscripcion_paga'),
 
 
+# En plataforma/urls.py
+path('<slug:nombre_curso>_compra/', views.curso_compra_view, name='curso_compra'),
 
+
+path('newsletter/', views.newsletter_view, name='newsletter'),
 
 
 

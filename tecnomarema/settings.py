@@ -127,7 +127,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'tecnomarema.ar@gmail.com'
-EMAIL_HOST_PASSWORD = 'crzhdkntscrvdabg'
+# EMAIL_HOST_PASSWORD = 'crzhdkntscrvdabg'  #antigua
+EMAIL_HOST_PASSWORD = 'egkq gbyh epby xmlq'
 # DEFAULT_FROM_EMAIL = 'noreply@tecnomarema.com' asi deberia estar despues se debe configurar
 DEFAULT_FROM_EMAIL = 'tecnomarema.ar@gmail.com'
 

@@ -412,10 +412,12 @@ section h3 {
                         {% endif %}
                     {% endwith %}
 
-                    {% if perfil_usuario_logueado and perfil_usuario_logueado.nombre_usuario != alumno.nombre_usuario %}
-                    <br>
-                    <a href="{% url 'chat_privado' alumno.nombre_usuario %}" class="btn btn-success btn-sm" style="font-size:12px">Enviar mensaje</a>
-                    {% endif %}
+{% if perfil_usuario_logueado and perfil_usuario_logueado.nombre_usuario != alumno.nombre_usuario %}
+    {% if perfil_usuario_logueado.rol != "alumno" %}
+        <br>
+        <a href="{% url 'chat_privado' alumno.nombre_usuario %}" class="btn btn-success btn-sm" style="font-size:12px">Enviar mensaje</a>
+    {% endif %}
+{% endif %}
                 </p>
             </div>
             {% endfor %}

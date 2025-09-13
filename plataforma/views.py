@@ -60,12 +60,40 @@ def logout_view(request):
     request.session.flush()
     messages.info(request, 'Sesión cerrada correctamente.')
     return redirect('login')
+#---------------------------------------------------------------------------------------------------
+# def cursos(request):
+#     return render(request, 'educativa/cursos.html')
+#---------------------------------------------------------------------------------------------------
 
-def cursos(request):
-    return render(request, 'educativa/cursos.html')
+from django.shortcuts import render
+from django.db.models import Count
+from .models import Curso, Comision, Clase
 
 def cursos_view(request):
-    return render(request, 'cursos.html') #agregado por la sesion que devuelva usuario
+    cursos = Curso.objects.all().order_by('id_curso')
+    comision = Comision.objects.all()
+
+    # Obtener cantidad de clases por curso_id desde la tabla Clase
+    clases_por_curso = Clase.objects.values('curso_id').annotate(total_clases=Count('numero_clase'))
+    clases_dict = {item['curso_id']: item['total_clases'] for item in clases_por_curso}
+
+    # Agregamos un slug al curso para usarlo en el href
+    for curso in cursos:
+        curso.slug = curso.nombre_curso.lower().replace(" ", "_")
+
+    contexto = {
+        'cursos': cursos,
+        'comision': comision,
+        'clases_por_curso': clases_dict,
+    }
+    return render(request, 'educativa/cursos.html', contexto)
+
+
+
+#----------------------------------------------------------------------------------------------------
+
+# def cursos_view(request):
+#     return render(request, 'cursos.html') #agregado por la sesion que devuelva usuario
 
 def desarrollo_web_compra(request):
     return render(request, 'educativa/desarrollo_web_compra.html')
@@ -73,37 +101,28 @@ def desarrollo_web_compra(request):
 # def inscripcion(request):
 #     return render(request, 'educativa/inscripcion.html')
 
-from django.shortcuts import render
-from .models import Curso, Comision
+#----------------------------------------------------------------------------------------
+from django.shortcuts import render, get_object_or_404
+from .models import Curso
 
-# def inscripcion(request):
-#     cursos_qs = Curso.objects.filter(estado_curso='próximo').order_by('nombre_curso')
-#     cursos = []
+def curso_compra_view(request, nombre_curso):
+    # Verifica que el curso exista
+    curso = get_object_or_404(Curso, nombre_curso__iexact=nombre_curso.replace('_', ' '))
 
-#     for curso in cursos_qs:
-#         comisiones = curso.comision_set.filter(estado_comision='próximo').values(
-#             'numero_comision',
-#             'fecha_inicio',
-#             'fecha_fin',
-#             'dia1', 'dia2', 'dia3',
-#             'horario1', 'horario2', 'horario3',
-#             'estado_comision'
-#         )
-#         cursos.append({
-#             'id': curso.id_curso,
-#             'nombre_curso': curso.nombre_curso,
-#             'modalidad': curso.get_modalidad_display(),
-#             'comisiones': list(comisiones)
-#         })
+    # Nombre del template a cargar (ej: desarrollo_web_compra.html)
+    template_name = f"educativa/{nombre_curso}_compra.html"
 
-#     return render(request, 'educativa/inscripcion.html', {'cursos': cursos})
+    return render(request, template_name, {"curso": curso})
+
+
+#----------------------------------------------------------------------------------------
 
 
 from django.shortcuts import render
 from .models import Curso, Comision, DatosDeEstudiantes
 
 def inscripcion(request):
-    cursos_qs = Curso.objects.filter(estado_curso__in=['proximo', 'próximo']).order_by('nombre_curso')
+    cursos_qs = Curso.objects.filter(estado_curso__in=['proximo', 'próximo', 'disponible', 'Disponible']).order_by('nombre_curso')
     cursos = []
 
     for curso in cursos_qs:
@@ -147,6 +166,8 @@ def inscripcion(request):
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
+from django.core.mail import send_mail
+from django.conf import settings
 from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
 
 @csrf_exempt
@@ -168,6 +189,21 @@ def guardar_datos_inscripcion_paga(request):
             comprobante = request.FILES.get("comprobante")
 
             print("Datos recibidos:", nombre, apellido, documento, email)
+
+            # 🚨 Validar si ya existe un estudiante con ese documento o correo
+            if DatosDeEstudiantes.objects.filter(dni=documento).exists():
+                return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
+
+            if DatosDeEstudiantes.objects.filter(correo=email).exists():
+                return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
+
+            # 🚨 También validamos si el usuario ya está registrado
+            if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
+                return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
+
+            if PerfilUsuario.objects.filter(correo=email).exists():
+                return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
+
 
             if not comprobante:
                 return JsonResponse({"status": "error", "msg": "No se recibió comprobante"}, status=400)
@@ -230,6 +266,31 @@ def guardar_datos_inscripcion_paga(request):
                 fecha_pago=timezone.now(),
                 id_transaccion="",
                 archivo_comprobante=comprobante
+            )
+
+            # 💌 Enviar correo interno al equipo notificando la inscripción
+            mensaje_interno = f"""
+            Nuevo alumno registrado en Tecno Marema:
+
+            👤 Nombre completo: {nombre} {apellido}
+            📧 Email: {email}
+            🆔 DNI: {documento}
+            🎓 Curso: {curso}
+            🕓 Comisión: {comision.numero_comision}
+            🌎 País: {pais}
+            🏙️ Provincia: {provincia}
+            📞 Teléfono: {telefono}
+            💳 Medio de pago: {medio_pago}
+
+            Fecha de inscripción: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
+            """
+
+            send_mail(
+                subject="📥 Nuevo alumno inscripto y compra registrada",
+                message=mensaje_interno,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=["tecnomarema.ar@gmail.com"],
+                fail_silently=False
             )
 
             return JsonResponse({"status": "ok", "id_estudiante": nuevo_id, "id_usuario": usuario_id})
@@ -2084,6 +2145,9 @@ def mi_certificado_redirect(request):
 
     return redirect('mi_certificado', id_estudiante=estudiante.id_estudiante, id_comision=comision.id_comision)
 
+####################################################################################
+####################################################################################
+####################################################################################
 #aca con este codigo muestra las comisiones proximas del curso de desarrollo web
 def desarrollo_web_compra(request):
     desarrollo_web = Curso.objects.filter(nombre_curso__icontains="desarrollo web").first()
@@ -2099,7 +2163,56 @@ def desarrollo_web_compra(request):
     return render(request, 'educativa/desarrollo_web_compra.html', {
         'comisiones': comisiones
     })
+#-------------------------------------------------------------------------------------------
+def inteligencia_artificial_compra(request):
+    inteligencia_artificial = Curso.objects.filter(nombre_curso__icontains="inteligencia_artificial").first()
 
+    if inteligencia_artificial:
+        comisiones = Comision.objects.filter(
+            id_curso=inteligencia_artificial,
+            estado_comision='proximo'
+        ).order_by('fecha_inicio')
+    else:
+        comisiones = []
+
+    return render(request, 'educativa/inteligencia_artificial_compra.html', {
+        'comisiones': comisiones
+    })
+#-------------------------------------------------------------------------------------------
+def python_compra(request):
+    python = Curso.objects.filter(nombre_curso__icontains="python").first()
+
+    if python:
+        comisiones = Comision.objects.filter(
+            id_curso=python,
+            estado_comision='proximo'
+        ).order_by('fecha_inicio')
+    else:
+        comisiones = []
+
+    return render(request, 'educativa/python_compra.html', {
+        'comisiones': comisiones
+    })
+#-------------------------------------------------------------------------------------------
+
+def javascript_compra(request):
+    javascript = Curso.objects.filter(nombre_curso__icontains="javascript").first()
+
+    if javascript:
+        comisiones = Comision.objects.filter(
+            id_curso=javascript,
+            estado_comision='proximo'
+        ).order_by('fecha_inicio')
+    else:
+        comisiones = []
+
+    return render(request, 'educativa/javascript_compra.html', {
+        'comisiones': comisiones
+    })
+
+##########################################################################################
+##########################################################################################
+##########################################################################################
 
 @session_required
 def mi_certificado(request, id_estudiante, id_comision):
@@ -2535,10 +2648,7 @@ def vista_chat_view(request):
 ###------------------------chat-general---------------------------------###
 ###########################################################################
 
-from django.shortcuts import render, redirect
-from .models import Chat, Mensaje, PerfilUsuario
-from django.core.files.uploadedfile import UploadedFile
-
+@session_required
 def chat_general(request):
     nombre_usuario = request.session.get('usuario_logueado')
     if not nombre_usuario:
@@ -2549,7 +2659,8 @@ def chat_general(request):
     except PerfilUsuario.DoesNotExist:
         return redirect('login')
 
-    chat_general_obj, creado = Chat.objects.get_or_create(tipo='general')
+    chat_general_obj, _ = Chat.objects.get_or_create(tipo='general')
+    chat_general_obj.participantes.add(usuario)  # ← por si no estaba
 
     if request.method == 'POST':
         texto = request.POST.get('mensaje', '').strip()
@@ -2563,13 +2674,10 @@ def chat_general(request):
             )
         return redirect('chat_general')
 
+    # 👇 ACTUALIZA LECTURA
+    actualizar_lectura(chat_general_obj, usuario)
+
     mensajes = chat_general_obj.mensajes.select_related('remitente').order_by('creado')
-
-    # Ejemplo: badges vacíos para no romper template
-    badges = {}
-
-    # Ejemplo: chats_comision vacío para que no falle
-    chats_comision = {}
 
     return render(request, 'educativa/chat.html', {
         'chat_general': chat_general_obj,
@@ -2577,9 +2685,10 @@ def chat_general(request):
         'mensajes': mensajes,
         'usuario': usuario,
         'usuarios_destino': [],
-        'badges': badges,
-        'chats_comision': chats_comision,
+        'badges': {},
+        'chats_comision': {},
     })
+
 
 
 #####################################################################################
@@ -2605,6 +2714,8 @@ def obtener_mensajes(request):
             'usuario': m.remitente.nombre_usuario,
             'texto': m.texto,
             'hora': local_time,
+            'fecha': m.creado.isoformat(),  # 👈 AÑADÍ ESTA LÍNEA
+            'creado': m.creado.isoformat(), # 👈 Y TAMBIÉN ESTA SI TU JS LA USA
             'archivo_url': m.archivo.url if m.archivo else None,
             'archivo_name': m.archivo.name.split('/')[-1] if m.archivo else None,
             'destacado': m.destacado,  # 👈 AGREGÁ ESTA LÍNEA
@@ -2869,6 +2980,8 @@ def chat_comision_view(request, id_comision):
     # Mensajes
     mensajes = Mensaje.objects.filter(chat=chat).select_related('remitente').order_by('creado')
 
+    actualizar_lectura(chat, usuario)
+
     return render(request, 'educativa/chat.html', {
         'chat': chat,
         'mensajes': mensajes,
@@ -3013,6 +3126,8 @@ def chat_privado(request, nombre_usuario_destino):
 
     usuarios_destino = set(alumnos).union(tutores).union(profesores)
     usuarios_destino.discard(remitente)
+
+    actualizar_lectura(chat, remitente)
 
     return render(request, 'educativa/chat.html', {
         'chat': chat,
@@ -3268,54 +3383,53 @@ def mensajes_nuevos_view(request):
     except PerfilUsuario.DoesNotExist:
         return JsonResponse({'error': 'usuario inválido'}, status=401)
 
-    chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
-
     data = {
         'general': 0,
         'comisiones': {},
         'privados': {},
     }
 
-    for chat in chats:
-        # Obtener cantidad de nuevos mensajes desde la última lectura
-        lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
-        if lectura and lectura.ultimo_mensaje_leido:
-            nuevos = chat.mensajes.filter(creado__gt=lectura.ultimo_mensaje_leido.creado).count()
-        else:
-            nuevos = chat.mensajes.count()
+    chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
 
-        # Clasificar correctamente los mensajes
+    for chat in chats:
+        lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
+        
+        # Si nunca entró al chat, no hay lectura → no mostrar badge
+        if not lectura:
+            nuevos = 0
+        else:
+            if lectura.ultimo_mensaje_leido:
+                nuevos = chat.mensajes.filter(creado__gt=lectura.ultimo_mensaje_leido.creado).count()
+            else:
+                nuevos = chat.mensajes.count()
+
         if chat.tipo == 'general':
-            data['general'] = nuevos  # solo uno general
+            data['general'] = nuevos
 
         elif chat.tipo == 'comision' and chat.comision:
-            com_id = chat.comision.id_comision
-            data['comisiones'][com_id] = nuevos  # exacto por comision
+            data['comisiones'][chat.comision.id_comision] = nuevos
 
         elif chat.tipo == 'privado':
-            otros = chat.participantes.exclude(id=usuario.id)
-            if otros.exists():
-                otro = otros.first()
-                data['privados'][otro.id_usuario] = nuevos  # por privado exacto
-
-        else:
-            # Si no tiene tipo definido, ignorar para evitar errores
-            continue
+            otro = chat.participantes.exclude(id=usuario.id).first()
+            if otro:
+                data['privados'][otro.id_usuario] = nuevos
 
     return JsonResponse(data)
+
 
 #-------------------------------------------------------------------------------------------------------------------
 
 from .models import LecturaMensaje
 
-def actualizar_lectura(usuario, chat):
+def actualizar_lectura(chat, usuario):
     ultimo = chat.mensajes.order_by('-creado').first()
-    if ultimo:
-        LecturaMensaje.objects.update_or_create(
-            usuario=usuario,
-            chat=chat,
-            defaults={'ultimo_mensaje_leido': ultimo}
-        )
+    if not ultimo:
+        return
+    lectura, _ = LecturaMensaje.objects.get_or_create(usuario=usuario, chat=chat)
+    lectura.ultimo_mensaje_leido = ultimo
+    lectura.save()
+
+
 
 ###################################################################################################################
 ###-----------------------Estadisticas generales, cursos, comisiones y clase------------------------------------###
@@ -3659,4 +3773,24 @@ from .models import RegistroPago
 def listado_pagos(request):
     pagos = RegistroPago.objects.select_related('estudiante', 'comision').all().order_by('-fecha_pago')
     return render(request, 'administrador/listado_pagos.html', {'registropago': pagos})
+
+##################################################################################################
+####--------------------------------------subscriptores---------------------------------------####
+##################################################################################################
+
+from django.shortcuts import render, redirect
+from .forms import SuscriptorForm
+from django.contrib import messages
+
+def newsletter_view(request):
+    if request.method == 'POST':
+        form = SuscriptorForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '¡Gracias por suscribirte!')
+            return redirect('inicio')  # Cambiá esto al nombre real de tu URL o plantilla
+    else:
+        form = SuscriptorForm()
+    
+    return render(request, 'home.html', {'form': form})
 

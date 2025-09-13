@@ -155,23 +155,9 @@
             <p class="text-center text-muted">Aún no hay mensajes en este chat.</p>
         {% endfor %}
         </div>
-          <!-- Ejemplo de mensaje -->
-          <!-- <div class="message from-other">
-            ¡Hola! ¿Ya viste el nuevo módulo de IA?
-          </div>
-          <div class="message from-me">
-            ¡Sí! Me pareció genial cómo explican redes neuronales.
-          </div> -->
+
     </div>
 
-        <!-- Input -->
-        <!-- <form class="message-input" id="message-form">
-          <button type="button" class="file-btn" title="Adjuntar archivo">
-            📎
-          </button>
-          <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
-          <button type="submit">Enviar</button>
-        </form> -->
         <form class="message-input" id="message-form" method="POST">
         {% csrf_token %}
         <button type="button" class="file-btn" title="Adjuntar archivo">
@@ -180,8 +166,6 @@
         <textarea name="mensaje" placeholder="Escribe tu mensaje..." required></textarea>
         <button type="submit">Enviar</button>
         </form>
-
-
 
       </div>
     </div>

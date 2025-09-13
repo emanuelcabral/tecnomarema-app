@@ -203,3 +203,26 @@ class EntregaProyectoForm(forms.ModelForm):
             'link_adicional': forms.URLInput(attrs={'class': 'form-control'}),
             'comentarios_adicionales': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
         }
+
+
+#######################################################################################
+####-----------------------------subscritores--------------------------------------####
+#######################################################################################
+
+from django import forms
+from .models import Suscriptor
+
+class SuscriptorForm(forms.ModelForm):
+    class Meta:
+        model = Suscriptor
+        fields = ['nombre', 'email']
+        widgets = {
+            'nombre': forms.TextInput(attrs={
+                'class': 'form-control mb-2 bg-dark text-white border-secondary',
+                'placeholder': 'Tu nombre'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control mb-2 bg-dark text-white border-secondary',
+                'placeholder': 'Tu email'
+            })
+        }

@@ -5,6 +5,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+<meta property="og:title" content="Certificado de Curso - {{ curso.nombre_curso }}">
+<meta property="og:description" content="¡He completado exitosamente el curso '{{ curso.nombre_curso }}' en Tecno Marema! 🎓">
+<meta property="og:image" content="{{ url_imagen_certificado }}"> <!-- Asegúrate de que sea pública -->
+<meta property="og:url" content="{{ url_certificado }}">
+<meta property="og:type" content="website">
+
+<!-- ✅ Open Graph (Facebook, LinkedIn, etc.) -->
+<meta property="og:title" content="Certificado de Curso - {{ curso.nombre_curso }}">
+<meta property="og:description" content="¡He completado exitosamente el curso '{{ curso.nombre_curso }}' en Tecno Marema! 🎓">
+<meta property="og:image" content="{{ url_imagen_certificado }}">
+<meta property="og:url" content="{{ url_certificado }}">
+<meta property="og:type" content="website">
+
+<!-- ✅ Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Certificado de Curso - {{ curso.nombre_curso }}">
+<meta name="twitter:description" content="¡He completado exitosamente el curso '{{ curso.nombre_curso }}' en Tecno Marema! 🎓">
+<meta name="twitter:image" content="{{ url_imagen_certificado }}">
+<meta name="twitter:url" content="{{ url_certificado }}">
+<meta name="twitter:site" content="@tecnomarema"> <!-- Cambiá esto si tenés un @ real -->
+
+
   <title>Mi Certificado</title>
   <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
