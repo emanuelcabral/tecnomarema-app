@@ -1297,22 +1297,25 @@
   </script>
   <!-- script para buscador de participantes para envio de mensaje privado fin -->
 
-  <!-- cargar notificaciones nuevas para los chat de comisiones y general - inicia -->
-<script>
+
+<!-- cargar notificaciones nuevas para los chat de comisiones y general - inicia -->
+{% comment %} <script>
 function cargarNotificaciones() {
   fetch('/mensajes_nuevos/')
     .then(response => response.json())
     .then(data => {
-      // General
+      // 🔹 GENERAL
       const badgeGeneral = document.getElementById('pill-nuevos');
-      if (data.general > 0) {
-        badgeGeneral.innerText = data.general;
-        badgeGeneral.style.display = 'inline-block';
-      } else {
-        badgeGeneral.style.display = 'none';
+      if (badgeGeneral) {
+        if (data.general > 0) {
+          badgeGeneral.innerText = data.general;
+          badgeGeneral.style.display = 'inline-block';
+        } else {
+          badgeGeneral.style.display = 'none';
+        }
       }
 
-      // Comisiones
+      // 🔹 COMISIONES
       for (const comId in data.comisiones) {
         const badge = document.getElementById(`pill-com-${comId}`);
         if (badge) {
@@ -1322,22 +1325,166 @@ function cargarNotificaciones() {
         }
       }
 
-      // Privados
-      for (const userId in data.privados) {
-        const badge = document.getElementById(`pill-privado-${userId}`);
-        if (badge) {
+      // 🔹 PRIVADOS (versión con creación automática)
+      if (Array.isArray(data.privados)) {
+        const listaPrivados = document.querySelector('.chat-list') || document.querySelector('.lista-privados');
+
+        data.privados.forEach(priv => {
+          const userId = priv.id;
+          const nombre = priv.nombre;
+          const cantidad = priv.nuevos;
+
+          let boton = document.getElementById(`privado-${userId}`);
+          let badge = document.getElementById(`pill-privado-${userId}`);
+
+          // Si el botón no existe, lo creamos dinámicamente
+          if (!boton && listaPrivados) {
+            boton = document.createElement('button');
+            boton.id = `privado-${userId}`;
+            boton.className = 'btn btn-outline-light w-100 text-start mb-1';
+            boton.onclick = () => window.location.href = `/chat/privado/${nombre}/`;
+
+            // Nombre visible
+            boton.innerHTML = `💬 @${nombre} <span id="pill-privado-${userId}" class="badge bg-danger ms-2 pill-privado" style="display:none;"></span>`;
+            listaPrivados.appendChild(boton);
+
+            badge = document.getElementById(`pill-privado-${userId}`);
+          }
+
+          // Si hay badge, actualizamos cantidad
+          if (badge) {
+            badge.innerText = cantidad > 0 ? cantidad : '';
+            badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+          }
+        });
+      } else {
+        // Si tu endpoint devuelve diccionario {id: cantidad}, usa este bloque en su lugar
+        for (const userId in data.privados) {
           const cantidad = data.privados[userId];
-          badge.innerText = cantidad;
-          badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+          const badge = document.getElementById(`pill-privado-${userId}`);
+          if (badge) {
+            badge.innerText = cantidad;
+            badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+          }
         }
       }
+    })
+    .catch(err => console.error('Error cargando notificaciones:', err));
+}
+
+// Ejecutar cada 5 segundos
+cargarNotificaciones();
+setInterval(cargarNotificaciones, 5000);
+</script> {% endcomment %}
+
+<script>
+function cargarNotificaciones() {
+  fetch('/mensajes_nuevos/')
+    .then(r => r.json())
+    .then(data => {
+      // --- General
+      const badgeGeneral = document.getElementById('pill-nuevos');
+      if (badgeGeneral) {
+        if (data.general > 0) {
+          badgeGeneral.innerText = data.general;
+          badgeGeneral.style.display = 'inline-block';
+        } else {
+          badgeGeneral.style.display = 'none';
+        }
+      }
+
+      // --- Comisiones
+      if (data.comisiones) {
+        for (const comId in data.comisiones) {
+          const badge = document.getElementById(`pill-com-${comId}`);
+          if (badge) {
+            const cantidad = data.comisiones[comId];
+            badge.innerText = cantidad;
+            badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+          }
+        }
+      }
+
+      // --- Privados
+      // Preferimos recibir una lista de objetos: [{id, username, display_name, nuevos}, ...]
+      const listaPrivadosContainer = document.querySelector('.chat-list') || document.getElementById('lista-usuarios');
+
+      if (Array.isArray(data.privados)) {
+        data.privados.forEach(priv => {
+          const userId = priv.id;
+          const username = priv.username || priv.nombre || priv.id;
+          const displayName = priv.display_name || priv.nombre || username;
+          const cantidad = priv.nuevos || 0;
+
+          let boton = document.getElementById(`privado-${userId}`);
+          let badge = document.getElementById(`pill-privado-${userId}`);
+
+          // Si el botón no existe, crearlo (lo colocamos en el container disponible)
+          if (!boton && listaPrivadosContainer) {
+            boton = document.createElement('button');
+            boton.id = `privado-${userId}`;
+            boton.className = 'boton-chat w-100 text-start mb-1';
+            boton.type = 'button';
+
+            // estructura interna: icon + span(nombre) + badge
+            const icon = document.createElement('span');
+            icon.textContent = '💬 ';
+            boton.appendChild(icon);
+
+            const nameSpan = document.createElement('span');
+            nameSpan.className = 'priv-name';
+            nameSpan.textContent = displayName;
+            boton.appendChild(nameSpan);
+
+            badge = document.createElement('span');
+            badge.id = `pill-privado-${userId}`;
+            badge.className = 'badge bg-danger ms-2 pill-privado';
+            badge.style.display = 'none';
+            boton.appendChild(badge);
+
+            // click: ir al chat privado usando username
+            boton.onclick = () => window.location.href = `/chat/privado/${username}/`;
+
+            // append en la lista (ajusta si querés otra posición)
+            listaPrivadosContainer.appendChild(boton);
+          } else if (boton) {
+            // actualizar display name si cambió
+            const nameSpan = boton.querySelector('.priv-name');
+            if (nameSpan && nameSpan.textContent !== displayName) {
+              nameSpan.textContent = displayName;
+            }
+          }
+
+          // actualizar badge
+          if (badge) {
+            badge.innerText = cantidad > 0 ? cantidad : '';
+            badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+          }
+        });
+      } else {
+        // backward compatibility: if privados is an object {userId: count}
+        for (const userId in (data.privados || {})) {
+          const cantidad = data.privados[userId];
+          const badge = document.getElementById(`pill-privado-${userId}`);
+          if (badge) {
+            badge.innerText = cantidad;
+            badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+          }
+        }
+      }
+    })
+    .catch(err => {
+      console.error('Error cargando notificaciones:', err);
     });
 }
 
+// Arrancar
 cargarNotificaciones();
-setInterval(cargarNotificaciones, 10000); // cada 10 segundos
+setInterval(cargarNotificaciones, 5000); // cada 5s
 </script>
-  <!-- cargar notificaciones nuevas para los chat de comisiones y general - fin -->
+
+<!-- cargar notificaciones nuevas para los chat de comisiones y general - fin -->
+
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

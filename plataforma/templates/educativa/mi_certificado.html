@@ -6,7 +6,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
 <meta property="og:title" content="Certificado de Curso - {{ curso.nombre_curso }}">
 <meta property="og:description" content="¡He completado exitosamente el curso '{{ curso.nombre_curso }}' en Tecno Marema! 🎓">
 <meta property="og:image" content="{{ url_imagen_certificado }}"> <!-- Asegúrate de que sea pública -->
@@ -279,8 +278,6 @@
   transform: scale(1.05);
 }
 
-
-
   </style>
 </head>
 <body>
@@ -320,11 +317,47 @@
         ← Volver al Curso
       </a>
     </div>
+<!-- script para descargar PNG inicia -->
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+function descargarCertificado() {
+    const certificado = document.getElementById("certificado");
+    const header = certificado.querySelector(".header-certificado");
+
+    // Guardamos el background original
+    const bgOriginal = header.style.backgroundImage;
+
+    // Ocultar solo el fondo del header
+    header.style.backgroundImage = "none";
+
+    html2canvas(certificado, {
+        scale: 2, // buena resolución
+        useCORS: true,
+        backgroundColor: null
+    }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'certificado.png';
+        link.href = canvas.toDataURL("image/png", 1.0);
+        link.click();
+
+        // Restaurar el background original
+        header.style.backgroundImage = bgOriginal;
+    }).catch(err => {
+        console.error("Error al generar el PNG:", err);
+        header.style.backgroundImage = bgOriginal;
+    });
+}
+</script>
+
+
+<!-- script para descargar PNG fin -->
 
     <div class="compartir">
       <h5 class="mt-4 text-center">Imprimi tu logro:</h5>
       <div class="d-flex justify-content-center mt-4">
         <button onclick="window.print()" class="btn btn-outline-success">Imprimir o Guardar como PDF</button>
+        <!-- Botón jpg -->
+        <button class="btn btn-outline-success" onclick="descargarCertificado()">Descargar como PNG</button>
       </div>
 
       <hr>
@@ -344,8 +377,6 @@
         </a>
       </div>
   </div>
-
-  
 
   {% else %}
     <div class="alert alert-warning text-center mt-5">

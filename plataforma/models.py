@@ -466,6 +466,8 @@ class Mensaje(models.Model):
     archivo = models.FileField(upload_to='chat_archivos/', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True)
     destacado = models.BooleanField(default=False)
+    leido = models.BooleanField(default=False)
+
 
     def __str__(self):
         return f"{self.remitente} - {self.creado.strftime('%d/%m %H:%M')}"

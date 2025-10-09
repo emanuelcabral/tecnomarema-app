@@ -166,14 +166,20 @@ def inscripcion(request):
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
-from django.core.mail import send_mail
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from django.conf import settings
 from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
+
 
 @csrf_exempt
 def guardar_datos_inscripcion_paga(request):
     if request.method == "POST":
         try:
+            # ============================
+            # 🔹 Datos del formulario
+            # ============================
             nombre = request.POST.get("nombre")
             apellido = request.POST.get("apellido")
             documento = request.POST.get("documento")
@@ -183,37 +189,46 @@ def guardar_datos_inscripcion_paga(request):
             provincia = request.POST.get("provincia")
             telefono = request.POST.get("telefono")
             genero = request.POST.get("genero")
-            curso = request.POST.get("curso")
+            curso_id = request.POST.get("curso")
             medio_pago = request.POST.get("medio_pago")
             comision_nombre = request.POST.get("comision")
             comprobante = request.FILES.get("comprobante")
 
-            print("Datos recibidos:", nombre, apellido, documento, email)
+            print("Datos recibidos:", nombre, apellido, documento, email, curso_id)
 
-            # 🚨 Validar si ya existe un estudiante con ese documento o correo
+            # ============================
+            # 🔹 Validaciones
+            # ============================
             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
 
             if DatosDeEstudiantes.objects.filter(correo=email).exists():
                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
 
-            # 🚨 También validamos si el usuario ya está registrado
             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
 
             if PerfilUsuario.objects.filter(correo=email).exists():
                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
 
-
             if not comprobante:
                 return JsonResponse({"status": "error", "msg": "No se recibió comprobante"}, status=400)
 
-            # Buscar comisión por su número
-            comision = Comision.objects.filter(numero_comision=comision_nombre).first()
-            if not comision:
-                return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}'"}, status=400)
+            # ============================
+            # 🔹 Curso y comisión
+            # ============================
+            curso_obj = Curso.objects.filter(id_curso=curso_id).first()
+            if not curso_obj:
+                return JsonResponse({"status": "error", "msg": f"No se encontró el curso con ID {curso_id}"}, status=400)
+            curso_nombre = curso_obj.nombre_curso
 
-            # Crear nuevo ID de estudiante
+            comision = Comision.objects.filter(numero_comision=comision_nombre, id_curso=curso_obj).first()
+            if not comision:
+                return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"}, status=400)
+
+            # ============================
+            # 🔹 Crear estudiante
+            # ============================
             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
 
@@ -230,7 +245,7 @@ def guardar_datos_inscripcion_paga(request):
                 genero=genero
             )
 
-            # Asignar comisión al primer campo cursandoX libre
+            # Asignar comisión al primer campo disponible
             asignado = False
             for i in range(1, 10):
                 campo = f'cursando{i}'
@@ -239,10 +254,12 @@ def guardar_datos_inscripcion_paga(request):
                     estudiante.save()
                     asignado = True
                     break
-
             if not asignado:
                 return JsonResponse({"status": "error", "msg": "El estudiante ya está inscrito en el máximo de comisiones."}, status=400)
 
+            # ============================
+            # 🔹 Crear usuario vinculado
+            # ============================
             usuario_id = str(int(PerfilUsuario.objects.order_by('-id_usuario').first().id_usuario) + 1 if PerfilUsuario.objects.exists() else 1).zfill(6)
 
             usuario = PerfilUsuario.objects.create(
@@ -256,6 +273,9 @@ def guardar_datos_inscripcion_paga(request):
             usuario.set_password("pass1234")
             usuario.save()
 
+            # ============================
+            # 🔹 Registrar pago
+            # ============================
             RegistroPago.objects.create(
                 estudiante=estudiante,
                 comision=comision,
@@ -268,31 +288,58 @@ def guardar_datos_inscripcion_paga(request):
                 archivo_comprobante=comprobante
             )
 
-            # 💌 Enviar correo interno al equipo notificando la inscripción
-            mensaje_interno = f"""
-            Nuevo alumno registrado en Tecno Marema:
+            # ============================
+            # 💌 Correo interno (registro_pago.html)
+            # ============================
+            context_interno = {
+                "nombre": nombre,
+                "apellido": apellido,
+                "email": email,
+                "documento": documento,
+                "curso": curso_nombre,
+                "comision": comision.numero_comision,
+                "pais": pais,
+                "provincia": provincia,
+                "telefono": telefono,
+                "medio_pago": medio_pago,
+                "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+            }
+            html_interno = render_to_string("registration/registro_pago.html", context_interno)
+            text_interno = strip_tags(html_interno)
 
-            👤 Nombre completo: {nombre} {apellido}
-            📧 Email: {email}
-            🆔 DNI: {documento}
-            🎓 Curso: {curso}
-            🕓 Comisión: {comision.numero_comision}
-            🌎 País: {pais}
-            🏙️ Provincia: {provincia}
-            📞 Teléfono: {telefono}
-            💳 Medio de pago: {medio_pago}
-
-            Fecha de inscripción: {timezone.now().strftime('%Y-%m-%d %H:%M:%S')}
-            """
-
-            send_mail(
+            email_interno = EmailMultiAlternatives(
                 subject="📥 Nuevo alumno inscripto y compra registrada",
-                message=mensaje_interno,
+                body=text_interno,
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=["tecnomarema.ar@gmail.com"],
-                fail_silently=False
+                to=["tecnomarema.ar@gmail.com"],
             )
+            email_interno.attach_alternative(html_interno, "text/html")
+            email_interno.send()
 
+            # ============================
+            # 💌 Correo alumno (bienvenida_paga.html)
+            # ============================
+            context_bienvenida = {
+                "nombre": f"{nombre} {apellido}",
+                "usuario": documento,
+                "password": "pass1234",
+                "curso": curso_nombre,
+                "comision": comision.numero_comision,
+                "reset_url": "https://tecnomarema.com/reset-password",  # ⚠️ ajustar
+            }
+            html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
+            text_bienvenida = strip_tags(html_bienvenida)
+
+            email_alumno = EmailMultiAlternatives(
+                subject="🎓 Bienvenido/a a tu curso en Tecno Marema",
+                body=text_bienvenida,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[email],
+            )
+            email_alumno.attach_alternative(html_bienvenida, "text/html")
+            email_alumno.send()
+
+            # ============================
             return JsonResponse({"status": "ok", "id_estudiante": nuevo_id, "id_usuario": usuario_id})
 
         except Exception as e:
@@ -300,6 +347,8 @@ def guardar_datos_inscripcion_paga(request):
             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
+
+
 
 
 
@@ -2137,7 +2186,7 @@ def proximas_comisiones_desarrollo_web(request):
 # views.py
 from django.shortcuts import redirect
 
-@session_required
+# @session_required
 def mi_certificado_redirect(request):
     usuario = request.user
     estudiante = usuario.id_estudiante
@@ -2214,7 +2263,7 @@ def javascript_compra(request):
 ##########################################################################################
 ##########################################################################################
 
-@session_required
+# @session_required
 def mi_certificado(request, id_estudiante, id_comision):
     from plataforma.models import DatosDeEstudiantes, Comision, EntregaProyecto, AsistenciaClase, ClaseComision
 
@@ -2684,6 +2733,7 @@ def chat_general(request):
         'chat': chat_general_obj,
         'mensajes': mensajes,
         'usuario': usuario,
+        'nombre_usuario': nombre_usuario,
         'usuarios_destino': [],
         'badges': {},
         'chats_comision': {},
@@ -2986,6 +3036,7 @@ def chat_comision_view(request, id_comision):
         'chat': chat,
         'mensajes': mensajes,
         'usuario': usuario,
+        'nombre_usuario': usuario.nombre_usuario,
         'usuarios_destino': list(usuarios_destino),
         'comision': comision,
     })
@@ -3133,6 +3184,7 @@ def chat_privado(request, nombre_usuario_destino):
         'chat': chat,
         'mensajes': mensajes,
         'usuario': remitente,
+        'nombre_usuario': remitente.nombre_usuario,
         'destinatario': destinatario,
         'usuarios_destino': list(usuarios_destino),
         'comision': None,
@@ -3144,24 +3196,59 @@ def chat_privado(request, nombre_usuario_destino):
 ###---------------------Enviar mensaje a chat privado------------------------------------------###
 ##################################################################################################
 
+# def enviar_mensaje_privado(request, id_usuario):
+#     if request.method == 'POST':
+#         remitente = get_object_or_404(PerfilUsuario, nombre_usuario=request.session['usuario_logueado'])
+#         destinatario = get_object_or_404(PerfilUsuario, id_usuario=id_usuario)
+
+#         # Validar que estén en la misma comisión (opcional)
+#         if not comparten_comision(remitente, destinatario):
+#             return redirect('chat_general')  # O mostrar mensaje de error
+
+#         # Obtener o crear chat privado único
+#         chat = obtener_chat_privado(remitente, destinatario)
+
+#         texto = request.POST.get('mensaje')
+#         archivo = request.FILES.get('archivo')
+
+#         Mensaje.objects.create(chat=chat, remitente=remitente, texto=texto, archivo=archivo)
+
+#         return redirect('chat_privado', nombre_usuario_destino=destinatario.nombre_usuario)
+
+
+@session_required
 def enviar_mensaje_privado(request, id_usuario):
     if request.method == 'POST':
         remitente = get_object_or_404(PerfilUsuario, nombre_usuario=request.session['usuario_logueado'])
         destinatario = get_object_or_404(PerfilUsuario, id_usuario=id_usuario)
 
-        # Validar que estén en la misma comisión (opcional)
+        # ✅ Validar que compartan comisión (opcional)
         if not comparten_comision(remitente, destinatario):
-            return redirect('chat_general')  # O mostrar mensaje de error
+            return redirect('chat_general')
 
-        # Obtener o crear chat privado único
+        # ✅ Obtener o crear el chat privado único entre ambos
         chat = obtener_chat_privado(remitente, destinatario)
 
-        texto = request.POST.get('mensaje')
+        texto = request.POST.get('mensaje', '').strip()
         archivo = request.FILES.get('archivo')
 
-        Mensaje.objects.create(chat=chat, remitente=remitente, texto=texto, archivo=archivo)
+        if not texto and not archivo:
+            return redirect('chat_privado', nombre_usuario_destino=destinatario.nombre_usuario)
 
+        # ✅ Crear mensaje marcado como no leído
+        Mensaje.objects.create(
+            chat=chat,
+            remitente=remitente,
+            texto=texto,
+            archivo=archivo,
+            leido=False  # 👈 Esto es lo que activa el badge
+        )
+
+        # (Opcional) Podés devolver JSON si querés hacerlo sin recargar la página
         return redirect('chat_privado', nombre_usuario_destino=destinatario.nombre_usuario)
+
+    return redirect('chat_general')
+
 
 
 
@@ -3370,7 +3457,104 @@ def obtener_badges(request):
 #-------------------------------------------------------------------------
 
 
+# from django.http import JsonResponse
+# from .models import Chat, LecturaMensaje, PerfilUsuario
+
+# def mensajes_nuevos_view(request):
+#     nombre_usuario = request.session.get('usuario_logueado')
+#     if not nombre_usuario:
+#         return JsonResponse({'error': 'no logueado'}, status=401)
+
+#     try:
+#         usuario = PerfilUsuario.objects.get(nombre_usuario=nombre_usuario)
+#     except PerfilUsuario.DoesNotExist:
+#         return JsonResponse({'error': 'usuario inválido'}, status=401)
+
+#     data = {
+#         'general': 0,
+#         'comisiones': {},
+#         'privados': {},
+#     }
+
+#     chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
+
+#     for chat in chats:
+#         lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
+        
+#         # Si nunca entró al chat, no hay lectura → no mostrar badge
+#         if not lectura:
+#             nuevos = 0
+#         else:
+#             if lectura.ultimo_mensaje_leido:
+#                 nuevos = chat.mensajes.filter(creado__gt=lectura.ultimo_mensaje_leido.creado).count()
+#             else:
+#                 nuevos = chat.mensajes.count()
+
+#         if chat.tipo == 'general':
+#             data['general'] = nuevos
+
+#         elif chat.tipo == 'comision' and chat.comision:
+#             data['comisiones'][chat.comision.id_comision] = nuevos
+
+#         elif chat.tipo == 'privado':
+#             otro = chat.participantes.exclude(id=usuario.id).first()
+#             if otro:
+#                 data['privados'][otro.id_usuario] = nuevos
+
+#     return JsonResponse(data)
+#-----------------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------------------
+# from django.http import JsonResponse
+# from .models import Chat, LecturaMensaje, PerfilUsuario
+
+# def mensajes_nuevos_view(request):
+#     nombre_usuario = request.session.get('usuario_logueado')
+#     if not nombre_usuario:
+#         return JsonResponse({'error': 'no logueado'}, status=401)
+
+#     try:
+#         usuario = PerfilUsuario.objects.get(nombre_usuario=nombre_usuario)
+#     except PerfilUsuario.DoesNotExist:
+#         return JsonResponse({'error': 'usuario inválido'}, status=401)
+
+#     data = {
+#         'general': 0,
+#         'comisiones': {},
+#         'privados': []
+#     }
+
+#     chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
+
+#     for chat in chats:
+#         lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
+#         if not lectura:
+#             nuevos = 0
+#         else:
+#             if lectura.ultimo_mensaje_leido:
+#                 nuevos = chat.mensajes.filter(creado__gt=lectura.ultimo_mensaje_leido.creado).count()
+#             else:
+#                 nuevos = chat.mensajes.count()
+
+#         if chat.tipo == 'general':
+#             data['general'] = nuevos
+
+#         elif chat.tipo == 'comision' and chat.comision:
+#             data['comisiones'][chat.comision.id_comision] = nuevos
+
+#         elif chat.tipo == 'privado':
+#             otro = chat.participantes.exclude(id=usuario.id).first()
+#             if otro:
+#                 data['privados'].append({
+#                     'id': otro.id_usuario,
+#                     'nombre': otro.nombre_usuario,
+#                     'nuevos': nuevos
+#                 })
+
+#     return JsonResponse(data)
+#-----------------------------------------------------------------------------------------------------------
+
 from django.http import JsonResponse
+from django.db.models import Count, Q
 from .models import Chat, LecturaMensaje, PerfilUsuario
 
 def mensajes_nuevos_view(request):
@@ -3386,16 +3570,18 @@ def mensajes_nuevos_view(request):
     data = {
         'general': 0,
         'comisiones': {},
-        'privados': {},
+        'privados': []
     }
 
-    chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
+    # traemos chats donde participa el usuario
+    chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('participantes', 'mensajes')
 
     for chat in chats:
         lectura = LecturaMensaje.objects.filter(usuario=usuario, chat=chat).first()
-        
-        # Si nunca entró al chat, no hay lectura → no mostrar badge
+
         if not lectura:
+            # si nunca abrió el chat, asumimos que todos los mensajes son "nuevos" o 0 según tu regla
+            # aquí prefiero poner 0 (no mostrar) si nunca hubo lectura; ajustá si querés otro comportamiento
             nuevos = 0
         else:
             if lectura.ultimo_mensaje_leido:
@@ -3410,9 +3596,29 @@ def mensajes_nuevos_view(request):
             data['comisiones'][chat.comision.id_comision] = nuevos
 
         elif chat.tipo == 'privado':
+            # obtener el "otro" participante del chat
             otro = chat.participantes.exclude(id=usuario.id).first()
             if otro:
-                data['privados'][otro.id_usuario] = nuevos
+                # construir display_name (priorizar nombre real si existe)
+                display = otro.nombre_usuario
+                try:
+                    if getattr(otro, 'id_estudiante', None):
+                        est = otro.id_estudiante
+                        if getattr(est, 'nombre', None) and getattr(est, 'apellido', None):
+                            display = f"{est.nombre} {est.apellido}"
+                    elif getattr(otro, 'id_empleado', None):
+                        emp = otro.id_empleado
+                        if getattr(emp, 'nombre', None) and getattr(emp, 'apellido', None):
+                            display = f"{emp.nombre} {emp.apellido}"
+                except Exception:
+                    pass
+
+                data['privados'].append({
+                    'id': otro.id_usuario,
+                    'username': otro.nombre_usuario,   # usar en la URL /chat/privado/<username>/
+                    'display_name': display,          # mostrar en la UI
+                    'nuevos': nuevos
+                })
 
     return JsonResponse(data)
 
