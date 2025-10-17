@@ -273,6 +273,9 @@ path('<slug:nombre_curso>_compra/', views.curso_compra_view, name='curso_compra'
 path('newsletter/', views.newsletter_view, name='newsletter'),
 
 
+path('crear_preferencia/', views.crear_preferencia, name='crear_preferencia'),
+
+
 
 ]
 

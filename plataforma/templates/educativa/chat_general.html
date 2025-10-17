@@ -176,5 +176,44 @@
     const messages = document.getElementById('message-list');
     messages.scrollTop = messages.scrollHeight;
   </script>
+
+
+  <!-- actualizar badges inicia -->
+   <script>
+function actualizarBadges() {
+  fetch("{% url 'mensajes_nuevos_view' %}")
+    .then(res => res.json())
+    .then(data => {
+      const contenedor = document.querySelector('.chat-list');
+      contenedor.innerHTML = ''; // limpia
+
+      // Chat general
+      contenedor.innerHTML += `
+        <button class="${data.general > 0 ? 'fw-bold text-success' : ''}">
+          # General
+          ${data.general > 0 ? `<span class="badge bg-danger ms-2">${data.general}</span>` : ''}
+        </button>
+      `;
+
+      // Chats privados
+      data.privados.forEach(p => {
+        contenedor.innerHTML += `
+          <button onclick="location.href='/chat/privado/${p.nombre}/'">
+            @ ${p.nombre}
+            ${p.nuevos > 0 ? `<span class="badge bg-success ms-2">${p.nuevos}</span>` : ''}
+          </button>
+        `;
+      });
+    })
+    .catch(err => console.error('Error actualizando badges:', err));
+}
+
+// Ejecutar cada 3 segundos
+setInterval(actualizarBadges, 3000);
+actualizarBadges();
+</script>
+
+  <!-- actualizar badges fin -->
+
 </body>
 </html>
