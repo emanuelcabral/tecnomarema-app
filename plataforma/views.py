@@ -3455,6 +3455,7 @@ def vista_chat_view(request):
 ###########################################################################
 ###------------------------chat-general---------------------------------###
 ###########################################################################
+from django.core.files.uploadedfile import UploadedFile
 
 @session_required
 def chat_general(request):
