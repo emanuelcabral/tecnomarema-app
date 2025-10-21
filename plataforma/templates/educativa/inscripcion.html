@@ -535,161 +535,356 @@
 <!-- ######################################################################################################################################## -->
       <!-- Paso 4: Datos de pago / Confirmación -->
 <!-- ######################################################################################################################################## -->
-      <div class="tab-pane fade" id="paso4" role="tabpanel" aria-labelledby="paso4-tab">
-        <div class="row">
-          <div class="col-md-8">
-            <h5 class="mb-4">Último paso: Confirmación</h5>
+<div class="tab-pane fade" id="paso4" role="tabpanel" aria-labelledby="paso4-tab">
+  <div class="row">
+    <div class="col-md-8">
+      <h5 class="mb-4">Último paso: Confirmación</h5>
 
-            <!-- Selección del medio de pago - se grego ; actualizarFormularioYValidacion(this.value) 13/10/25 --> 
-            <div class="list-group mb-4">
-              <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia" checked
-                  onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)">
-                <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
-              </label>
+      <!-- Selección del medio de pago -->
+      <div class="list-group mb-4">
+        <label class="list-group-item">
+          <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia" checked
+            onchange="mostrarFormularioPago(this.value);">
+          <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
+        </label>
 
-              <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="debito"
-                  onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)">
-                <strong>Tarjeta de débito</strong> - Pago en 1 cuota
-              </label>
+        <label class="list-group-item">
+          {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="debito"
+            onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)"> {% endcomment %}
+          <input class="form-check-input me-2" type="radio" name="medioPago" value="debito"
+  onchange="mostrarFormularioPago(this.value); inicializarCardForm('simple')">
 
-              <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1"
-                  onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)">
-                <strong>Tarjeta de crédito</strong> - 1 pago
-              </label>
+          <strong>Tarjeta de débito</strong> - Pago en 1 cuota
+        </label>
 
-              <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas"
-                  onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)">
-                <strong>Tarjeta de crédito</strong> - 3 o 6 cuotas con interés
-              </label>
-            </div>
+        <label class="list-group-item">
+          {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1"
+            onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)"> {% endcomment %}
+          <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1"
+  onchange="mostrarFormularioPago(this.value); inicializarCardForm('simple')">
 
-            <!-- Formulario de transferencia -->
-            <div id="formTransferencia" class="formulario-pago">
-              <h6>Datos para transferencia bancaria</h6>
-              <p>Alias: <strong>tecnomarema</strong></p>
-              <p>CBU: <strong>0000003100012308471201</strong></p>
-              <p>Banco: <strong>Banco Marema</strong></p>
-              <p>Titular: <strong>Emanuel Cabral</strong></p>
-              <p class="mt-3">Una vez realizada la transferencia, enviá el comprobante a:</p>
-              <p><strong>tecnomarema.ar@gmail.com</strong></p>
 
-              <div class="mb-4">
-                <label for="comprobante" class="form-label">Adjuntá el comprobante de pago:</label>
-                <input type="file" class="form-control" name="comprobante" id="comprobante" accept="image/*" required>
-              </div>
-            </div>
+          <strong>Tarjeta de crédito</strong> - 1 pago
+        </label>
 
-            <!-- Formulario tarjeta simple: débito o crédito 1 pago -->
-            <div id="formTarjetaSimple" class="formulario-pago d-none">
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label">Número de tarjeta</label>
-                  <input type="text" class="form-control" placeholder="•••• •••• •••• ••••">
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Nombre en la tarjeta</label>
-                  <input type="text" class="form-control" placeholder="Juan Pérez">
-                </div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-md-4">
-                  <label class="form-label">Vencimiento</label>
-                  <input type="text" class="form-control" placeholder="MM/AA">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">CVV</label>
-                  <input type="text" class="form-control" placeholder="123">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">DNI</label>
-                  <input type="text" class="form-control" placeholder="12345678">
-                </div>
-              </div>
-            </div>
+        <label class="list-group-item">
+          {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas"
+            onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)"> {% endcomment %}
+          <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas"
+  onchange="mostrarFormularioPago(this.value); inicializarCardForm('cuotas')">
+          <strong>Tarjeta de crédito</strong> - 3 o 6 cuotas con interés
+        </label>
+      </div>
 
-            <!-- Formulario tarjeta crédito en cuotas -->
-            <div id="formTarjetaCuotas" class="formulario-pago d-none">
-              <div class="row mb-3">
-                <div class="col-md-6">
-                  <label class="form-label">Número de tarjeta</label>
-                  <input type="text" class="form-control" placeholder="•••• •••• •••• ••••">
-                </div>
-                <div class="col-md-6">
-                  <label class="form-label">Nombre en la tarjeta</label>
-                  <input type="text" class="form-control" placeholder="Juan Pérez">
-                </div>
-              </div>
-              <div class="row mb-3">
-                <div class="col-md-4">
-                  <label class="form-label">Vencimiento</label>
-                  <input type="text" class="form-control" placeholder="MM/AA">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">CVV</label>
-                  <input type="text" class="form-control" placeholder="123">
-                </div>
-                <div class="col-md-4">
-                  <label class="form-label">DNI</label>
-                  <input type="text" class="form-control" placeholder="12345678">
-                </div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Elegí la cantidad de cuotas</label>
-                <select class="form-select">
-                  <option value="3">3 cuotas con interés</option>
-                  <option value="6">6 cuotas con interés</option>
-                </select>
-              </div>
-            </div>
+      <!-- Formulario de transferencia -->
+      <div id="formTransferencia" class="formulario-pago">
+        <h6>Datos para transferencia bancaria</h6>
+        <p>Alias: <strong>tecnomarema</strong></p>
+        <p>CBU: <strong>0000003100012308471201</strong></p>
+        <p>Banco: <strong>Banco Marema</strong></p>
+        <p>Titular: <strong>Emanuel Cabral</strong></p>
+        <p class="mt-3">Una vez realizada la transferencia, enviá el comprobante a:</p>
+        <p><strong>tecnomarema.ar@gmail.com</strong></p>
 
-            <!-- Aceptar términos -->
-            <div class="form-check mb-3">
-              <input class="form-check-input" type="checkbox" id="acepto" required>
-              <label class="form-check-label" for="acepto">
-                <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones
-                    del servicio</a>
-              </label>
-            </div>
-
-            <div class="d-grid gap-2">
-              <button type="button" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
-            </div>
-          </div>
-
-          <div class="col-md-4 summary-section">
-            <div class="info-box">
-              <h5>Detalle de la inscripción</h5>
-              <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
-              <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
-              <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
-              <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
-              <p><strong>Precio final: $<span class="detallePrecioFinal">-</span></strong></p>
-
-              <div class="mt-3">
-                <label for="cupon" class="form-label">Consigue el Descuento aplicando el cupón:</label>
-                <input type="text" class="form-control mb-2" id="cupon" placeholder="DESCUENTO">
-                <button class="btn btn-custom w-100">Aplicar código</button>
-              </div>
-
-              <hr class="my-4">
-              <div class="tick-icon mb-2">Acceso total a la plataforma</div>
-              <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
-              <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
-            </div>
-          </div>
-
+        <div class="mb-4">
+          <label for="comprobante" class="form-label">Adjuntá el comprobante de pago:</label>
+          <input type="file" class="form-control" name="comprobante" id="comprobante" accept="image/*" required>
         </div>
       </div>
-    </div> <!-- fin tab-content -->
-  </div> <!-- fin container -->
+
+      <!-- Formulario tarjeta simple: débito o crédito 1 pago -->
+      <div id="formTarjetaSimple" class="formulario-pago d-none">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Número de tarjeta</label>
+            <input type="text" class="form-control" id="cardNumberSimple" placeholder="•••• •••• •••• ••••">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Nombre en la tarjeta</label>
+            <input type="text" class="form-control" id="cardholderNameSimple" placeholder="Juan Pérez">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">Mes</label>
+            <input type="text" class="form-control" id="cardExpirationMonthSimple" placeholder="MM">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Año</label>
+            <input type="text" class="form-control" id="cardExpirationYearSimple" placeholder="AA">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cardSecurityCodeSimple" placeholder="123">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Documento (DNI)</label>
+          <input type="text" class="form-control" id="docNumberSimple" placeholder="12345678">
+        </div>
+
+        <input type="hidden" id="tokenSimple" name="token">
+        <input type="hidden" id="paymentMethodIdSimple" name="paymentMethodId">
+      </div>
+
+      <!-- Formulario tarjeta crédito en cuotas -->
+      <div id="formTarjetaCuotas" class="formulario-pago d-none">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <label class="form-label">Número de tarjeta</label>
+            <input type="text" class="form-control" id="cardNumberCuotas" placeholder="•••• •••• •••• ••••">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Nombre en la tarjeta</label>
+            <input type="text" class="form-control" id="cardholderNameCuotas" placeholder="Juan Pérez">
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <label class="form-label">Mes</label>
+            <input type="text" class="form-control" id="cardExpirationMonthCuotas" placeholder="MM">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Año</label>
+            <input type="text" class="form-control" id="cardExpirationYearCuotas" placeholder="AA">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">CVV</label>
+            <input type="text" class="form-control" id="cardSecurityCodeCuotas" placeholder="123">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Documento (DNI)</label>
+          <input type="text" class="form-control" id="docNumberCuotas" placeholder="12345678">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Elegí la cantidad de cuotas</label>
+          <select class="form-select" id="cuotas">
+            <option value="3">3 cuotas con interés</option>
+            <option value="6">6 cuotas con interés</option>
+          </select>
+        </div>
+        <input type="hidden" id="tokenCuotas" name="token">
+        <input type="hidden" id="paymentMethodIdCuotas" name="paymentMethodId">
+      </div>
+
+      <!-- Aceptar términos -->
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="acepto" required>
+        <label class="form-check-label" for="acepto">
+          <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones del servicio</a>
+        </label>
+      </div>
+
+      <div class="d-grid gap-2">
+        <button type="button" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
+      </div>
+    </div>
+
+    <div class="col-md-4 summary-section">
+      <div class="info-box">
+        <h5>Detalle de la inscripción</h5>
+        <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
+        <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
+        <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
+        <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
+        <p><strong>Precio final: $<span class="detallePrecioFinal">-</span></strong></p>
+
+        <div class="mt-3">
+          <label for="cupon" class="form-label">Consigue el Descuento aplicando el cupón:</label>
+          <input type="text" class="form-control mb-2" id="cupon" placeholder="DESCUENTO">
+          <button class="btn btn-custom w-100">Aplicar código</button>
+        </div>
+
+        <hr class="my-4">
+        <div class="tick-icon mb-2">Acceso total a la plataforma</div>
+        <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
+        <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== Script MercadoPago CardForm ==================== -->
+  {% comment %} <script>
+    const mp = new MercadoPago('{{ MERCADOPAGO_PUBLIC_KEY }}', { locale: 'es-AR' });
+
+    // Configuración CardForm (se reutiliza según el tipo de tarjeta)
+    function inicializarCardForm(tipo) {
+
+      console.log("📦 CardForm inicializado para:", tipo);
 
 
+      const prefix = tipo === 'cuotas' ? 'Cuotas' : 'Simple';
+      const amount = document.querySelector('.detallePrecioFinal').textContent.replace('$', '').trim() || '0.00';
+
+      const formConfig = {
+        amount: amount,
+        form: {
+          cardNumber: { id: `cardNumber${prefix}` },
+          cardholderName: { id: `cardholderName${prefix}` },
+          cardExpirationMonth: { id: `cardExpirationMonth${prefix}` },
+          cardExpirationYear: { id: `cardExpirationYear${prefix}` },
+          securityCode: { id: `cardSecurityCode${prefix}` },
+          identificationNumber: { id: `docNumber${prefix}` },
+
+              // 👇 ESTOS SON LOS DOS CAMPOS QUE FALTABAN
+          token: { id: `token${prefix}` },
+          paymentMethodId: { id: `paymentMethodId${prefix}` },
+
+        },
+        callbacks: {
+          onSubmit: async (event) => {
+            event.preventDefault();
+            showPreloader();
+
+            try {
+              const { token, paymentMethodId } = await cardForm.createCardToken();
 
 
+              console.log("✅ Token generado:", token);
+              console.log("✅ Método de pago:", paymentMethodId);
+
+
+              const form = new FormData(formInscripcion);
+              form.append('token', token);
+              form.append('payment_method_id', paymentMethodId);
+              form.append('medio_pago', tipo === 'cuotas' ? 'credito_cuotas' : 'debito');
+
+              const csrftoken = getCookie('csrftoken');
+              const resp = await fetch("/guardar_datos_inscripcion_paga/", {
+                method: "POST",
+                headers: csrftoken ? { 'X-CSRFToken': csrftoken } : {},
+                body: form
+              });
+
+              const result = await resp.json();
+              hidePreloader();
+
+              if (result.status === "ok") {
+                irA('paso4');
+                mostrarModalExitoInscripcion(result);
+              } else {
+                mostrarErrorInscripcion(result.msg || "Error procesando pago");
+              }
+            } catch (err) {
+              hidePreloader();
+              console.error(err);
+              mostrarErrorInscripcion("Error generando token de pago.");
+            }
+          }
+        }
+      };
+
+      const cardForm = mp.cardForm(formConfig);
+    }
+  </script>
+</div> {% endcomment %}
+
+<script>
+    const mp = new MercadoPago('{{ MERCADOPAGO_PUBLIC_KEY }}', { locale: 'es-AR' });
+
+    // 💡 CRÍTICO: Debe estar declarado globalmente (Asumo que ya tienes esto en tu código)
+    // let cardForm = null; 
+    // const formInscripcion = document.getElementById('form-registro'); 
+    // Asegúrate que tu función 'reservar' fue modificada para llamar a 'cardForm.submit()'
+
+
+    // Configuración CardForm (se reutiliza según el tipo de tarjeta)
+    function inicializarCardForm(tipo) {
+        
+        // 📌 CORRECCIÓN: Destruir la instancia anterior si existe.
+        if (window.cardForm) {
+            try {
+                window.cardForm.unmount();
+                console.log("CardForm anterior desmontado correctamente.");
+            } catch (e) {
+                // Puede fallar si la instancia no está montada, pero lo ignoramos.
+                console.warn("Advertencia al desmontar CardForm:", e);
+            }
+        }
+
+        console.log("📦 CardForm inicializado para:", tipo);
+
+        // Ajustamos las variables para que coincidan con la lógica de tu HTML
+        const prefix = tipo === 'cuotas' ? 'Cuotas' : 'Simple';
+        // Asumiendo que el precio final está en un elemento con la clase .detallePrecioFinal
+        const amountElement = document.querySelector('.detallePrecioFinal');
+        const amountText = amountElement ? amountElement.textContent.replace('$', '').replace(',', '.').trim() : '0.00';
+        const amount = parseFloat(amountText) || 0;
+
+
+        const formConfig = {
+            amount: amount,
+            form: {
+                // Ya no necesitas 'id: "form-registro"' si usas los campos específicos
+                cardNumber: { id: `cardNumber${prefix}` },
+                cardholderName: { id: `cardholderName${prefix}` },
+                cardExpirationMonth: { id: `cardExpirationMonth${prefix}` },
+                cardExpirationYear: { id: `cardExpirationYear${prefix}` },
+                securityCode: { id: `cardSecurityCode${prefix}` },
+                identificationNumber: { id: `docNumber${prefix}` },
+
+                // 👇 Asegúrate que estos ID existan en tu HTML
+                token: { id: `token${prefix}` }, 
+                paymentMethodId: { id: `paymentMethodId${prefix}` },
+            },
+            callbacks: {
+                // Este onSubmit ahora maneja todo el proceso de token y fetch
+                onSubmit: async (event) => {
+                    event.preventDefault();
+                    showPreloader();
+
+                    try {
+                        // 📌 USO DIRECTO: Usa el objeto global para generar el token
+                        const { token, paymentMethodId } = await window.cardForm.createCardToken();
+                        
+                        // Si estás usando formInscripcion, es el formulario principal
+                        const form = new FormData(formInscripcion); 
+                        
+                        // Agrega los datos de pago al FormData
+                        form.append('token', token);
+                        form.append('payment_method_id', paymentMethodId);
+                        
+                        // Ajusta el medio de pago según la lógica de tu prefix
+                        const medioPagoBackend = tipo === 'cuotas' ? 'credito_cuotas' : (tipo === 'simple' ? 'debito' : '');
+                        form.append('medio_pago', medioPagoBackend);
+                        
+                        // Si el prefix es 'Cuotas', envía la cantidad de cuotas seleccionada
+                        if (tipo === 'cuotas') {
+                            const cuotas = document.getElementById("cuotas")?.value || "1";
+                            form.append("cuotas", cuotas);
+                        }
+
+                        // Envío al backend
+                        const csrftoken = getCookie('csrftoken');
+                        const resp = await fetch("/guardar_datos_inscripcion_paga/", {
+                            method: "POST",
+                            headers: csrftoken ? { 'X-CSRFToken': csrftoken } : {},
+                            body: form
+                        });
+
+                        const result = await resp.json();
+                        hidePreloader();
+
+                        if (result.status === "ok") {
+                            irA('paso4');
+                            mostrarModalExitoInscripcion(result); // Asumo que tienes esta función
+                        } else {
+                            mostrarModalPersonalizado("Error al procesar", result.msg || "Error procesando pago."); // Usamos tu función genérica
+                        }
+                    } catch (err) {
+                        hidePreloader();
+                        console.error("Error al generar token/enviar:", err);
+                        mostrarModalPersonalizado("Error de Pago", "No se pudo generar el token de pago o hubo un problema de conexión.");
+                    }
+                }
+            }
+        };
+
+        // 💡 ASIGNACIÓN CRÍTICA: Asigna a la variable GLOBAL 'cardForm'
+        window.cardForm = mp.cardForm(formConfig);
+    }
+</script>
 
 <!-- ######################################################################################################################################## -->
       <!-- prealoader -->
@@ -1113,13 +1308,10 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
   });
 </script>
 
-<!-- ########################################################### -->
+{% comment %} <!-- ########################################################### -->
 <!--               MercadoPago integración para pago            -->
 <!-- ########################################################### -->
 <script>
-  const mp = new MercadoPago("TU_PUBLIC_KEY_AQUI", {
-    locale: 'es-AR'
-  });
 
   const cardForm = mp.cardForm({
     amount: "92900", // Monto a pagar (deberías setear dinámico si cambia)
@@ -1178,7 +1370,7 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
       }
     }
   });
-</script>
+</script> {% endcomment %}
 
 
 <!-- ########################################################### -->
@@ -1204,321 +1396,256 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
 <!--           script de almacenamiento de formulario            -->
 <!-- ########################################################### -->
 
-{% comment %} <script>
-  function reservar() {
-    const acepto = document.getElementById("acepto").checked;
-    const comprobante = document.getElementById("comprobante").files[0];
-
-if (!acepto) {
-  mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
-  return;
-}
-
-if (!comprobante) {
-  mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
-  return;
-}
-
-
-    // Armamos FormData en lugar de JSON
-    const formData = new FormData();
-    formData.append("nombre", document.getElementById("nombre").value);
-    formData.append("apellido", document.getElementById("apellido").value);
-    formData.append("documento", document.getElementById("dni").value);
-    formData.append("email", document.getElementById("email").value);
-    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento").value);
-    formData.append("pais", document.getElementById("pais").value);
-    formData.append("provincia", document.getElementById("provincia").value);
-    formData.append("telefono", document.getElementById("telefono").value);
-    formData.append("genero", document.getElementById("genero").value);
-    formData.append("curso", document.getElementById("curso").value);
-    formData.append("comision", document.getElementById("comision").value);
-    formData.append("medio_pago", document.querySelector('input[name="medioPago"]:checked').value);
-    formData.append("comprobante", comprobante);
-
-    fetch("/guardar_datos_inscripcion_paga/", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": getCookie("csrftoken"), // CSRF token
-      },
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "ok") {
-        mostrarModalPersonalizado("🎉 ¡Reserva Exitosa!", "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles.");
-        irA('paso4'); // O cambiar según lo que quieras hacer luego
-      } else {
-        mostrarModalPersonalizado("Error al guardar", data.msg || "No se pudo completar la inscripción.");
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      mostrarModalPersonalizado("Error de conexión", "No se pudo contactar al servidor. Intentalo nuevamente.");
-    });
-  }
-
-  // Función para obtener el CSRF token desde las cookies
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-</script> {% endcomment %}
-
-
-
-{% comment %} <script>
-  function reservar() {
-    const acepto = document.getElementById("acepto").checked;
-    const medioPagoSeleccionado = document.querySelector('input[name="medioPago"]:checked')?.value;
-    const comprobante = document.getElementById("comprobante").files[0];
-
-    if (!acepto) {
-      mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
-      return;
-    }
-
-    // Validar comprobante solo si el medio de pago es 'transferencia'
-    if (medioPagoSeleccionado === 'transferencia' && !comprobante) {
-      mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
-      return;
-    }
-
-    // Armamos FormData en lugar de JSON
-    const formData = new FormData();
-    formData.append("nombre", document.getElementById("nombre").value);
-    formData.append("apellido", document.getElementById("apellido").value);
-    formData.append("documento", document.getElementById("dni").value);
-    formData.append("email", document.getElementById("email").value);
-    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento").value);
-    formData.append("pais", document.getElementById("pais").value);
-    formData.append("provincia", document.getElementById("provincia").value);
-    formData.append("telefono", document.getElementById("telefono").value);
-    formData.append("genero", document.getElementById("genero").value);
-    formData.append("curso", document.getElementById("curso").value);
-    formData.append("comision", document.getElementById("comision").value);
-    formData.append("medio_pago", medioPagoSeleccionado);
-
-    // Adjuntar comprobante solo si existe
-    if (comprobante) {
-      formData.append("comprobante", comprobante);
-    }
-
-    fetch("/guardar_datos_inscripcion_paga/", {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": getCookie("csrftoken"),
-      },
-      body: formData,
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "ok") {
-        mostrarModalPersonalizado("🎉 ¡Reserva Exitosa!", "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles.");
-        irA('paso4');
-      } else {
-        mostrarModalPersonalizado("Error al guardar", data.msg || "No se pudo completar la inscripción.");
-      }
-    })
-    .catch(error => {
-      console.error(error);
-      mostrarModalPersonalizado("Error de conexión", "No se pudo contactar al servidor. Intentalo nuevamente.");
-    });
-  }
-
-  // Función para obtener el CSRF token desde las cookies
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-</script> {% endcomment %}
-
-<!-- -------------------------------------------------------------------------------------------------------- -->
-
 <script>
-  function reservar() {
-    // checkbox y medio seleccionado (paso 4)
-    const acepto = document.getElementById("acepto")?.checked;
-    const medioPagoSeleccionado = document.querySelector('#paso4 input[name="medioPago"]:checked')?.value
-                                 || document.querySelector('input[name="medioPago"]:checked')?.value;
-    // comprobante (si existe)
-    const comprobanteInput = document.getElementById("comprobante");
-    const comprobante = comprobanteInput ? comprobanteInput.files[0] : null;
+    // =========================================================================
+    //  Nota: Asumimos que 'cardForm' es una variable global (let cardForm;) 
+    //  asignada en 'inicializarCardForm' y 'formInscripcion' es accesible.
+    // =========================================================================
 
-    // 1) Aceptación de términos
-    if (!acepto) {
-      mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
-      return;
-    }
+    // Función auxiliar para construir el FormData (basada en tu punto 5 y 6)
+    function construirFormData(medio_para_backend, comprobante = null, token = null, paymentMethodId = null, medioPagoSeleccionado = null) {
+        // Aunque el form fue movido, tu código manual sigue siendo la forma de recolectar.
+        const formData = new FormData();
+        formData.append("nombre", document.getElementById("nombre")?.value || "");
+        formData.append("apellido", document.getElementById("apellido")?.value || "");
+        formData.append("documento", document.getElementById("dni")?.value || "");
+        formData.append("email", document.getElementById("email")?.value || "");
+        formData.append(
+            "fecha_nacimiento",
+            document.getElementById("fecha_nacimiento")?.value || ""
+        );
+        formData.append("pais", document.getElementById("pais")?.value || "");
+        formData.append("provincia", document.getElementById("provincia")?.value || "");
+        formData.append("telefono", document.getElementById("telefono")?.value || "");
+        formData.append("genero", document.getElementById("genero")?.value || "");
+        formData.append("curso", document.getElementById("curso")?.value || "");
+        formData.append("comision", document.getElementById("comision")?.value || "");
 
-    // 2) Medio seleccionado
-    if (!medioPagoSeleccionado) {
-      mostrarModalPersonalizado("Seleccioná un medio de pago", "Por favor, elegí una opción de pago antes de continuar.");
-      return;
-    }
+        // 6️⃣ Normalizar medio_pago para backend
+        formData.append("medio_pago", medio_para_backend);
 
-    // 3) Si es transferencia => requerir comprobante
-    if (medioPagoSeleccionado === "transferencia" || medioPagoSeleccionado === "transferencia_bancaria") {
-      if (!comprobante) {
-        mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
-        return;
-      }
-    }
+        if (comprobante) formData.append("comprobante", comprobante);
 
-    // 4) Si es tarjeta: validar el formulario de tarjeta visible
-    const esTarjeta = ["debito", "credito_1", "credito_cuotas"].includes(medioPagoSeleccionado);
-    if (esTarjeta) {
-      // Detectar qué formulario mostrar (según tu HTML: formTarjetaSimple o formTarjetaCuotas)
-      // En tu markup los ids son: formTarjetaSimple (para débito/crédito 1 pago) y formTarjetaCuotas (para cuotas).
-      let form = null;
-      if (medioPagoSeleccionado === "debito" || medioPagoSeleccionado === "credito_1") {
-        form = document.getElementById("formTarjetaSimple");
-      } else if (medioPagoSeleccionado === "credito_cuotas") {
-        form = document.getElementById("formTarjetaCuotas");
-      }
+        // 7️⃣ Si es tarjeta, agregamos token y método
+        if (token && paymentMethodId) {
+            formData.append("token", token);
+            formData.append("payment_method_id", paymentMethodId);
 
-      if (!form) {
-        mostrarModalPersonalizado("Error interno", "No se encontró el formulario de tarjeta correspondiente.");
-        return;
-      }
-
-      // Tomamos los inputs de la tarjeta dentro del formulario (en tu HTML usan class="form-control")
-      // asumimos el orden: número, nombre titular, vencimiento, cvv (si hubiese más campos como DNI, los ignoramos)
-      const inputs = Array.from(form.querySelectorAll('input.form-control'));
-      // Buscamos 4 valores útiles: número, nombre, venc, cvv (si no hay, avisamos)
-      const numero = (inputs[0] && inputs[0].value) ? inputs[0].value.trim() : "";
-      const nombreTitular = (inputs[1] && inputs[1].value) ? inputs[1].value.trim() : "";
-      const vencimiento = (inputs[2] && inputs[2].value) ? inputs[2].value.trim() : "";
-      const cvv = (inputs[3] && inputs[3].value) ? inputs[3].value.trim() : "";
-
-      if (!numero || !nombreTitular || !vencimiento || !cvv) {
-        mostrarModalPersonalizado("Faltan datos de tarjeta", "Completá todos los campos obligatorios de la tarjeta antes de continuar.");
-        return;
-      }
-
-      // Validaciones básicas de formato
-      if (!/^\d{13,19}$/.test(numero.replace(/\s+/g, ""))) {
-        mostrarModalPersonalizado("Número inválido", "El número de tarjeta parece inválido (solo dígitos, 13-19).");
-        return;
-      }
-      if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(vencimiento)) {
-        mostrarModalPersonalizado("Vencimiento inválido", "Usá el formato MM/AA en la fecha de vencimiento.");
-        return;
-      }
-      if (!/^\d{3,4}$/.test(cvv)) {
-        mostrarModalPersonalizado("CVV inválido", "El CVV debe tener 3 o 4 dígitos.");
-        return;
-      }
-
-      // Si querés, podés agregar aquí validación Luhn para el número de tarjeta.
-    }
-
-    // 5) Armar FormData (igual que tenías)
-    const formData = new FormData();
-    // Campos personales (asegurate que estos ids existen en tu HTML, están en tu archivo). :contentReference[oaicite:1]{index=1}
-    formData.append("nombre", document.getElementById("nombre")?.value || "");
-    formData.append("apellido", document.getElementById("apellido")?.value || "");
-    formData.append("documento", document.getElementById("dni")?.value || "");
-    formData.append("email", document.getElementById("email")?.value || "");
-    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento")?.value || "");
-    formData.append("pais", document.getElementById("pais")?.value || "");
-    formData.append("provincia", document.getElementById("provincia")?.value || "");
-    formData.append("telefono", document.getElementById("telefono")?.value || "");
-    formData.append("genero", document.getElementById("genero")?.value || "");
-    formData.append("curso", document.getElementById("curso")?.value || "");
-    formData.append("comision", document.getElementById("comision")?.value || "");
-
-    // 6) Normalizar medio_pago para backend (no rompe transferencias)
-    const medio_para_backend = (medioPagoSeleccionado === "transferencia") ? "transferencia_bancaria" : medioPagoSeleccionado;
-    formData.append("medio_pago", medio_para_backend);
-
-    // Adjuntar comprobante si corresponde
-    if (comprobante) formData.append("comprobante", comprobante);
-
-    // Si querés enviar también algunos datos de la tarjeta al backend (no recomendamos enviar CVV sin tokenizar):
-    // Podés enviar solo un indicador que se usó tarjeta, y dejar el procesamiento real a MercadoPago (token).
-    if (esTarjeta) {
-      formData.append("uso_tarjeta", "1");
-      // opcional: agregar último4 y tipo, p.ej. formData.append("tarjeta_ultimos4", numero.slice(-4));
-    }
-
-    //se agrega 17/10 mercadopago card form para obtener el token
-
-    // Si es pago con tarjeta, agregamos los datos de MercadoPago
-    if (["debito", "credito_1", "credito_cuotas"].includes(medioPagoSeleccionado)) {
-      const token = document.getElementById("token").value;  // generado por cardForm
-      const paymentMethod = document.getElementById("paymentMethodId").value; // idem
-
-      if (!token || !paymentMethod) {
-        mostrarModalPersonalizado("Error de pago", "No se pudo procesar la tarjeta. Intentá nuevamente.");
-        return;
-      }
-
-      formData.append("token", token);
-      formData.append("payment_method_id", paymentMethod);
-    }
-
-    //------------------------------------------------------------ fin 17/10
-
-    // 7) Envío por fetch (igual que tenías)
-    fetch("/guardar_datos_inscripcion_paga/", {
-      method: "POST",
-      headers: { "X-CSRFToken": getCookie("csrftoken") },
-      body: formData
-    })
-    .then(resp => resp.json())
-    .then(data => {
-      if (data.status === "ok") {
-        mostrarModalPersonalizado("🎉 ¡Reserva Exitosa!", "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles.");
-        irA("paso4");
-      } else {
-        mostrarModalPersonalizado("Error al guardar", data.msg || "No se pudo completar la inscripción.");
-      }
-    })
-    .catch(err => {
-      console.error(err);
-      mostrarModalPersonalizado("Error de conexión", "No se pudo contactar al servidor. Intentalo nuevamente.");
-    });
-  }
-
-  // getCookie la tenés definida más abajo en tu archivo; si no, mantenela igual.
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + "=")) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
+            // Si es crédito en cuotas, incluir la cantidad seleccionada
+            if (medioPagoSeleccionado === "credito_cuotas") {
+                const cuotas = document.getElementById("cuotas")?.value || "3";
+                formData.append("cuotas", cuotas);
+            }
         }
-      }
+        return formData;
     }
-    return cookieValue;
-  }
+
+    // Función auxiliar para manejar el envío al backend (punto 8)
+    async function enviarFetch(formData) {
+        // [CÓDIGO ORIGINAL ELIMINADO/ADAPTADO] Convertimos el .then().catch() a async/await para mayor legibilidad
+        /*
+        fetch("/guardar_datos_inscripcion_paga/", {
+            method: "POST",
+            headers: { "X-CSRFToken": getCookie("csrftoken") },
+            body: formData,
+        })
+        .then((resp) => resp.json())
+        .then((data) => {
+        // ... (resto de la lógica) ...
+        })
+        .catch((err) => {
+        // ... (resto de la lógica) ...
+        });
+        */
+        
+        showPreloader(); // Muestra el preloader antes del fetch
+        try {
+            const csrftoken = getCookie('csrftoken');
+            const resp = await fetch("/guardar_datos_inscripcion_paga/", {
+                method: "POST",
+                headers: csrftoken ? { "X-CSRFToken": csrftoken } : {},
+                body: formData,
+            });
+
+            const data = await resp.json();
+            hidePreloader(); // Oculta el preloader al recibir respuesta
+
+            if (data.status === "ok") {
+                mostrarModalPersonalizado(
+                    "🎉 ¡Reserva Exitosa!",
+                    "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles."
+                );
+                // Si la lógica de irA('paso4') es para un paso de confirmación final:
+                // irA("paso4"); 
+            } else {
+                mostrarModalPersonalizado(
+                    "Error al guardar",
+                    data.msg || "No se pudo completar la inscripción."
+                );
+            }
+        } catch (err) {
+            hidePreloader();
+            console.error(err);
+            mostrarModalPersonalizado(
+                "Error de conexión",
+                "No se pudo contactar al servidor. Intentalo nuevamente."
+            );
+        }
+    }
+
+
+    // TU FUNCIÓN RESERVAR MODIFICADA: Ahora es ASYNC y usa el SDK
+    async function reservar() {
+        // checkbox y medio seleccionado (paso 4)
+        const acepto = document.getElementById("acepto")?.checked;
+        const medioPagoSeleccionado =
+            document.querySelector('#paso4 input[name="medioPago"]:checked')?.value ||
+            document.querySelector('input[name="medioPago"]:checked')?.value;
+
+        // comprobante (si existe)
+        const comprobanteInput = document.getElementById("comprobante");
+        const comprobante = comprobanteInput ? comprobanteInput.files[0] : null;
+
+        // 1️⃣ Aceptación de términos
+        if (!acepto) {
+            mostrarModalPersonalizado(
+                "Falta aceptar los términos",
+                "Por favor, aceptá los términos y condiciones antes de continuar."
+            );
+            return;
+        }
+
+        // 2️⃣ Medio seleccionado
+        if (!medioPagoSeleccionado) {
+            mostrarModalPersonalizado(
+                "Seleccioná un medio de pago",
+                "Por favor, elegí una opción de pago antes de continuar."
+            );
+            return;
+        }
+
+        // 6️⃣ Normalizar medio_pago para backend
+        const medio_para_backend =
+            medioPagoSeleccionado === "transferencia"
+                ? "transferencia_bancaria"
+                : medioPagoSeleccionado;
+
+
+        // 3️⃣ Si es transferencia => requerir comprobante
+        if (
+            medioPagoSeleccionado === "transferencia" ||
+            medioPagoSeleccionado === "transferencia_bancaria"
+        ) {
+            if (!comprobante) {
+                mostrarModalPersonalizado(
+                    "Falta comprobante",
+                    "Por favor, adjuntá el comprobante de pago para continuar."
+                );
+                return;
+            }
+            // Construimos FormData y enviamos
+            const formData = construirFormData(medio_para_backend, comprobante);
+            enviarFetch(formData);
+            return; // Salimos de la función
+        }
+
+        // 4️⃣ Si es tarjeta: delegar al SDK (CardForm)
+        const esTarjeta = ["debito", "credito_1", "credito_cuotas"].includes(
+            medioPagoSeleccionado
+        );
+
+        if (esTarjeta) {
+            
+            // ====================================================================
+            // CÓDIGO ELIMINADO: VALIDACIÓN MANUAL DE CAMPOS DE TARJETA
+            // Ahora esto lo hace el SDK de MercadoPago con createCardToken()
+            // ====================================================================
+            /*
+            let form = null;
+            if (
+                medioPagoSeleccionado === "debito" ||
+                medioPagoSeleccionado === "credito_1"
+            ) {
+                form = document.getElementById("formTarjetaSimple");
+            } else if (medioPagoSeleccionado === "credito_cuotas") {
+                form = document.getElementById("formTarjetaCuotas");
+            }
+
+            if (!form) {
+                mostrarModalPersonalizado(
+                    "Error interno",
+                    "No se encontró el formulario de tarjeta correspondiente."
+                );
+                return;
+            }
+
+            // [CÓDIGO ELIMINADO] Tomar los campos específicos
+            const numero = form.querySelector('input[id^="cardNumber"]')?.value.trim();
+            const nombreTitular = form
+                .querySelector('input[id^="cardholderName"]')
+                ?.value.trim();
+            const mes = form.querySelector('input[id^="cardExpirationMonth"]')?.value.trim();
+            // ... (resto de campos y validación de campos obligatorios) ...
+            
+            // [CÓDIGO ELIMINADO] Validaciones básicas de formato (REGEX)
+            if (!/^\d{13,19}$/.test(numero.replace(/\s+/g, ""))) {
+                // ... (modal) ...
+                return;
+            }
+            // ... (resto de validaciones de mes, año, cvv) ...
+            */
+            // ====================================================================
+            
+            if (!window.cardForm) { // Verifica si la variable global existe
+                mostrarModalPersonalizado("Error", "El formulario de tarjeta no se inicializó correctamente.");
+                return;
+            }
+
+            // 💡 LLAMADA CRÍTICA AL SDK: crea el token y valida los datos
+            showPreloader();
+            try {
+                const { token, paymentMethodId } = await cardForm.createCardToken();
+
+                // Si el token se crea, construimos FormData y enviamos
+                const formData = construirFormData(medio_para_backend, comprobante, token, paymentMethodId, medioPagoSeleccionado);
+                
+                enviarFetch(formData);
+
+            } catch (err) {
+                // El error ocurre si la tarjeta es rechazada o los datos son inválidos
+                hidePreloader();
+                console.error("Error SDK:", err);
+                // Mostrar un mensaje de error de pago
+                mostrarModalPersonalizado(
+                    "Error de Pago",
+                    "No se pudo procesar la tarjeta. Verificá los datos e intentá nuevamente."
+                );
+            }
+            return; // Salimos de la función principal
+        }
+        
+        // Si no es tarjeta ni transferencia, algo no está bien
+        if (medioPagoSeleccionado !== 'transferencia' && medioPagoSeleccionado !== 'transferencia_bancaria') {
+            mostrarModalPersonalizado("Error", "Medio de pago desconocido o no configurado.");
+        }
+    }
+
+    // Helper para CSRF (idéntico)
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === name + "=") {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
 </script>
-
-
 
 
 <!-- ########################################################### -->
@@ -1533,160 +1660,10 @@ function mostrarModalPersonalizado(titulo = "Mensaje", mensaje = "Algo ocurrió.
 }
 </script>
 
-
 <!-- ########################################################### -->
 <!--                  Bootstrap JS Bundle con Popper             -->
 <!-- ########################################################### -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-
-<!-- ################################################################################### -->
-<!--        el checkout de Mercado Pago se muestre integrado dentro de la página         -->
-<!-- ################################################################################### -->
-{% comment %} <script>
-  const mp = new MercadoPago("{{ public_key }}", { locale: 'es-AR' });
-
-  async function iniciarPago() {
-    const response = await fetch("/crear_preferencia/", { method: "POST" });
-    const data = await response.json();
-
-    if (data.preference_id) {
-      const bricksBuilder = mp.bricks();
-      bricksBuilder.create("cardPayment", "payment_container", {
-        initialization: {
-          amount: 15000, // mismo monto que el backend
-          preferenceId: data.preference_id,
-        },
-        callbacks: {
-          onReady: () => console.log("Checkout listo"),
-          onSubmit: (cardFormData) => console.log("Datos:", cardFormData),
-          onError: (error) => console.error("Error:", error),
-        },
-      });
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", iniciarPago);
-</script>
-
-<div id="payment_container"></div> {% endcomment %}
-<!-- -------------------------------------------------------------------------------------- -->
-
-<div id="payment_container"></div>
-
-<script>
-    // 1. FUNCIONES DE CONTROL DEL PRELOADER
-    const preloader = document.getElementById('preloader');
-    
-    function showPreloader() {
-        if (preloader) {
-            preloader.style.display = "flex";
-            console.log("PRELOADER MOSTRADO."); // 🚨 Log de confirmación
-        }
-    }
-
-    function hidePreloader() {
-        if (preloader) {
-            preloader.style.display = "none";
-            console.log("PRELOADER OCULTADO."); // 🚨 Log de confirmación
-        }
-    }
-
-    // 2. INICIALIZACIÓN DE MERCADO PAGO Y VARIABLES
-    const mp = new MercadoPago("{{ public_key }}", { locale: 'es-AR' });
-    const formInscripcion = document.getElementById('form-registro'); // Usando 'form-registro'
-
-    // 3. FUNCIÓN QUE INICIA EL PAGO
-    async function iniciarPago() {
-        // 🛑 PUNTO 1: Mostrar preloader al inicio de la primera llamada de red
-        showPreloader();
-        
-        let preferenceData;
-        
-        try {
-            // Llamada a /crear_preferencia/
-            const response = await fetch("/crear_preferencia/", { method: "POST" });
-            preferenceData = await response.json();
-
-            if (preferenceData && preferenceData.preference_id) {
-                
-                // 🛑 PUNTO 2: Ocultamos para cargar el Brick
-                hidePreloader(); 
-                
-                const bricksBuilder = mp.bricks();
-                bricksBuilder.create("cardPayment", "payment_container", {
-                    initialization: {
-                        amount: 15000, 
-                        preferenceId: preferenceData.preference_id,
-                    },
-                    callbacks: {
-                        onReady: () => {
-                            console.log("Checkout de Mercado Pago listo.");
-                        },
-                        
-                        onSubmit: async (cardFormData) => {
-                            // 🛑 PUNTO 3: Mostrar preloader para la ESPERA LARGA del registro final
-                            showPreloader();
-                            
-                            const formData = new FormData(formInscripcion);
-                            formData.append('token', cardFormData.token);
-                            formData.append('payment_method_id', cardFormData.payment_method_id);
-                            
-                            const registroResponse = await fetch("/guardar_datos_inscripcion_paga/", {
-                                method: "POST",
-                                body: formData 
-                            });
-
-                            hidePreloader(); // 🛑 Ocultar al finalizar la espera
-                            
-                            const result = await registroResponse.json();
-
-                            if (result.status === "ok") {
-                                alert("✅ ¡Inscripción y registro de pago exitosos!"); 
-                            } else {
-                                alert(`❌ Error de registro: ${result.msg}`);
-                            }
-                        },
-                        onError: (error) => {
-                            console.error("Error de MercadoPago:", error);
-                            hidePreloader(); 
-                            alert("Hubo un error con el pago. Por favor, revisa tus datos.");
-                        },
-                    },
-                });
-            } else {
-                alert("Error al obtener la preferencia de pago.");
-                hidePreloader(); 
-            }
-        } catch (error) {
-            // Captura errores críticos (Garantía de ocultamiento)
-            console.error("Fallo crítico en el proceso de pago:", error);
-            alert("Fallo crítico en la conexión. Por favor, intenta de nuevo.");
-            hidePreloader(); 
-        }
-    }
-    
-    // 4. FUNCIÓN LLAMADA POR TU BOTÓN HTML (onclick="reservar()")
-    function reservar() {
-        // Validación de Checkbox 'acepto'
-        const aceptoCheckbox = document.getElementById('acepto');
-        if (!aceptoCheckbox.checked) {
-            alert("Debes aceptar los términos y condiciones para reservar.");
-            return; 
-        }
-        
-        // 🚀 Si todo es correcto, iniciamos el flujo.
-        iniciarPago();
-    }
-    
-    // 🚫 NO HAY NINGUNA LLAMADA DE EJECUCIÓN AUTOMÁTICA AQUÍ.
-</script>
-
-
-
-<!-- ################################################################################### -->
-<!--        el checkout de Mercado Pago se muestre integrado dentro de la página  - fin  -->
-<!-- ################################################################################### -->
 
 </body>
 </html>
