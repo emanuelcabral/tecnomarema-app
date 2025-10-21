@@ -170,6 +170,7 @@ def inscripcion(request):
         'comisiones': comisiones_global,
         'proximo_id': proximo_id,
         'public_key': settings.MERCADOPAGO_PUBLIC_KEY,
+        "MERCADOPAGO_PUBLIC_KEY": settings.MERCADOPAGO_PUBLIC_KEY
     })
 #---------------------------------------------------------------------------------
 from django.views.decorators.csrf import csrf_exempt
@@ -833,21 +834,315 @@ from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, C
 #     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
 #------------------------------------------------------------------------------- gemini 17/10 -----------------
 
+# # views.py (ADAPTADO Y COMPLETO)
+
+# from django.views.decorators.csrf import csrf_exempt
+# from django.http import JsonResponse
+# from django.utils import timezone
+# from django.core.mail import EmailMultiAlternatives
+# from django.template.loader import render_to_string
+# from django.utils.html import strip_tags
+# from django.conf import settings
+# from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
+# import mercadopago
+
+
+# @csrf_exempt
+# def guardar_datos_inscripcion_paga(request):
+#     if request.method == "POST":
+#         sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+
+#         try:
+#             # ============================
+#             # 🔹 Datos del formulario
+#             # ============================
+#             nombre = request.POST.get("nombre")
+#             apellido = request.POST.get("apellido")
+#             documento = request.POST.get("documento")
+#             email = request.POST.get("email")
+#             fecha_nacimiento = request.POST.get("fecha_nacimiento")
+#             pais = request.POST.get("pais")
+#             provincia = request.POST.get("provincia")
+#             telefono = request.POST.get("telefono")
+#             genero = request.POST.get("genero")
+#             curso_id = request.POST.get("curso")
+#             medio_pago = request.POST.get("medio_pago")
+#             comision_nombre = request.POST.get("comision")
+#             comprobante = request.FILES.get("comprobante")
+
+#             # Datos de pago MercadoPago (CardForm)
+#             token = request.POST.get("token")
+#             payment_method_id = request.POST.get("payment_method_id")
+#             cuotas = int(request.POST.get("cuotas", 1))
+
+#             print("📥 Datos recibidos:", nombre, apellido, documento, email, curso_id, medio_pago)
+
+#             # ===============================================
+#             # 💡 PASO 1: Obtener el Curso y su Precio Dinámico
+#             # ===============================================
+#             curso_obj = Curso.objects.filter(id_curso=curso_id).first()
+#             if not curso_obj:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "msg": f"No se encontró el curso con ID {curso_id}"
+#                 }, status=400)
+
+#             monto_dinamico = float(curso_obj.precio_final)
+#             curso_nombre = curso_obj.nombre_curso
+
+#             # ============================
+#             # 🔹 Validaciones básicas
+#             # ============================
+#             campos_obligatorios = {
+#                 "nombre": nombre, "apellido": apellido, "documento": documento,
+#                 "email": email, "fecha_nacimiento": fecha_nacimiento, "pais": pais,
+#                 "provincia": provincia, "telefono": telefono, "curso": curso_id,
+#                 "comision": comision_nombre, "medio_pago": medio_pago,
+#             }
+
+#             faltantes = [campo for campo, valor in campos_obligatorios.items() if not valor]
+#             if faltantes:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "msg": f"Faltan completar los siguientes campos: {', '.join(faltantes)}"
+#                 }, status=400)
+
+#             # ============================
+#             # 🔹 Validar comprobante o token según medio
+#             # ============================
+#             if medio_pago == "transferencia_bancaria":
+#                 if not comprobante:
+#                     return JsonResponse({
+#                         "status": "error",
+#                         "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago."
+#                     }, status=400)
+
+#             elif medio_pago in ["debito", "credito_1", "credito_cuotas"]:
+#                 if not token or not payment_method_id:
+#                     return JsonResponse({
+#                         "status": "error",
+#                         "msg": "Faltan datos de la tarjeta. Intentá nuevamente."
+#                     }, status=400)
+
+#                 # ============================
+#                 # 🔹 Validar con MercadoPago (CardForm)
+#                 # ============================
+#                 payment_data = {
+#                     "transaction_amount": monto_dinamico,
+#                     "token": token,
+#                     "description": f"Inscripción curso {curso_nombre} - comisión {comision_nombre}",
+#                     "installments": cuotas if medio_pago == "credito_cuotas" else 1,
+#                     "payment_method_id": payment_method_id,
+#                     "payer": {"email": email},
+#                 }
+
+#                 try:
+#                     result = sdk.payment().create(payment_data)
+#                     payment = result.get("response", {})
+#                 except Exception as e:
+#                     print("❌ Error MercadoPago:", e)
+#                     return JsonResponse({
+#                         "status": "error",
+#                         "msg": f"Error comunicándose con MercadoPago: {str(e)}"
+#                     }, status=500)
+
+#                 status_mp = payment.get("status", "").lower()
+#                 id_transaccion = payment.get("id", "")
+#                 detalle_status = payment.get("status_detail", "")
+
+#                 if status_mp != "approved":
+#                     # Registrar como rechazado
+#                     RegistroPago.objects.create(
+#                         estudiante=None,
+#                         comision=None,
+#                         plataforma="web",
+#                         medio_pago=medio_pago,
+#                         estado_pago=status_mp,
+#                         monto=monto_dinamico,
+#                         fecha_pago=timezone.now(),
+#                         id_transaccion=id_transaccion
+#                     )
+#                     return JsonResponse({
+#                         "status": "error",
+#                         "msg": f"Pago rechazado: {detalle_status or 'motivo desconocido'}."
+#                     }, status=400)
+
+#                 print("✅ Pago aprobado por MercadoPago:", id_transaccion)
+#                 estado_pago = "Aprobado"
+
+#             else:
+#                 estado_pago = "Pendiente"
+#                 id_transaccion = ""
+
+#             # ============================
+#             # 🔹 Validaciones duplicados
+#             # ============================
+#             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
+#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
+#             if DatosDeEstudiantes.objects.filter(correo=email).exists():
+#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
+#             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
+#                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
+#             if PerfilUsuario.objects.filter(correo=email).exists():
+#                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
+
+#             # ============================
+#             # 🔹 Buscar comisión
+#             # ============================
+#             comision = Comision.objects.filter(
+#                 numero_comision=comision_nombre, id_curso=curso_obj
+#             ).first()
+#             if not comision:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"
+#                 }, status=400)
+
+#             # ============================
+#             # 🔹 Crear estudiante
+#             # ============================
+#             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
+#             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
+
+#             estudiante = DatosDeEstudiantes.objects.create(
+#                 id_estudiante=nuevo_id,
+#                 nombre=nombre,
+#                 apellido=apellido,
+#                 dni=documento,
+#                 correo=email,
+#                 fecha_nacimiento=fecha_nacimiento,
+#                 pais=pais,
+#                 provincia=provincia,
+#                 telefono=telefono,
+#                 genero=genero
+#             )
+
+#             # Asignar comisión libre
+#             asignado = False
+#             for i in range(1, 10):
+#                 campo = f'cursando{i}'
+#                 if getattr(estudiante, campo) is None:
+#                     setattr(estudiante, campo, comision)
+#                     estudiante.save()
+#                     asignado = True
+#                     break
+#             if not asignado:
+#                 return JsonResponse({
+#                     "status": "error",
+#                     "msg": "El estudiante ya está inscrito en el máximo de comisiones."
+#                 }, status=400)
+
+#             # ============================
+#             # 🔹 Crear usuario vinculado
+#             # ============================
+#             ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
+#             usuario_id = str(int(ultimo_usuario.id_usuario) + 1 if ultimo_usuario else 1).zfill(6)
+
+#             usuario = PerfilUsuario.objects.create(
+#                 id_usuario=usuario_id,
+#                 id_estudiante=estudiante,
+#                 nombre_usuario=documento,
+#                 correo=email,
+#                 rol="alumno",
+#                 is_active=True
+#             )
+#             usuario.set_password("pass1234")
+#             usuario.save()
+
+#             # ============================
+#             # 🔹 Registrar pago
+#             # ============================
+#             RegistroPago.objects.create(
+#                 estudiante=estudiante,
+#                 comision=comision,
+#                 plataforma="web",
+#                 medio_pago=medio_pago,
+#                 estado_pago=estado_pago,
+#                 monto=monto_dinamico,
+#                 fecha_pago=timezone.now(),
+#                 id_transaccion=id_transaccion,
+#                 archivo_comprobante=comprobante
+#             )
+
+#             # ============================
+#             # 💌 Envío de correos
+#             # ============================
+#             context_interno = {
+#                 "nombre": nombre,
+#                 "apellido": apellido,
+#                 "email": email,
+#                 "documento": documento,
+#                 "curso": curso_nombre,
+#                 "comision": comision.numero_comision,
+#                 "pais": pais,
+#                 "provincia": provincia,
+#                 "telefono": telefono,
+#                 "medio_pago": medio_pago,
+#                 "estado_pago": estado_pago,
+#                 "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+#             }
+#             html_interno = render_to_string("registration/registro_pago.html", context_interno)
+#             text_interno = strip_tags(html_interno)
+
+#             email_interno = EmailMultiAlternatives(
+#                 subject="📥 Nuevo alumno inscripto y pago registrado",
+#                 body=text_interno,
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 to=["tecnomarema.ar@gmail.com"],
+#             )
+#             email_interno.attach_alternative(html_interno, "text/html")
+#             email_interno.send()
+
+#             # Correo al alumno
+#             context_bienvenida = {
+#                 "nombre": f"{nombre} {apellido}",
+#                 "usuario": documento,
+#                 "password": "pass1234",
+#                 "curso": curso_nombre,
+#                 "comision": comision.numero_comision,
+#                 "reset_url": "https://tecnomarema.com/reset-password",
+#             }
+#             html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
+#             text_bienvenida = strip_tags(html_bienvenida)
+
+#             email_alumno = EmailMultiAlternatives(
+#                 subject="🎓 Bienvenido/a a tu curso en Tecno Marema",
+#                 body=text_bienvenida,
+#                 from_email=settings.DEFAULT_FROM_EMAIL,
+#                 to=[email],
+#             )
+#             email_alumno.attach_alternative(html_bienvenida, "text/html")
+#             email_alumno.send()
+
+#             # ============================
+#             # 🔹 Respuesta final
+#             # ============================
+#             return JsonResponse({
+#                 "status": "ok",
+#                 "id_estudiante": nuevo_id,
+#                 "id_usuario": usuario_id,
+#                 "estado_pago": estado_pago
+#             })
+
+#         except Exception as e:
+#             print("❌ ERROR EN INSCRIPCIÓN:", e)
+#             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
+
+#     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
+
+
 # views.py (ADAPTADO Y COMPLETO)
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from django.conf import settings
 from django.utils import timezone
+from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.core.mail import EmailMultiAlternatives
+from django.conf import settings
+from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
 import mercadopago
 
-# Asegúrate de que estas importaciones sean correctas según tu models.py
-# (Necesitas Curso, Comision, DatosDeEstudiantes, PerfilUsuario, RegistroPago)
-from .models import Curso, Comision, DatosDeEstudiantes, PerfilUsuario, RegistroPago 
-# Si están en otro archivo de modelos, ajusta la importación.
 
 @csrf_exempt
 def guardar_datos_inscripcion_paga(request):
@@ -872,9 +1167,10 @@ def guardar_datos_inscripcion_paga(request):
             comision_nombre = request.POST.get("comision")
             comprobante = request.FILES.get("comprobante")
 
-            # Datos de pago con MercadoPago (token + método)
+            # Datos de pago MercadoPago (CardForm)
             token = request.POST.get("token")
             payment_method_id = request.POST.get("payment_method_id")
+            cuotas = int(request.POST.get("cuotas", 1))
 
             print("📥 Datos recibidos:", nombre, apellido, documento, email, curso_id, medio_pago)
 
@@ -883,14 +1179,16 @@ def guardar_datos_inscripcion_paga(request):
             # ===============================================
             curso_obj = Curso.objects.filter(id_curso=curso_id).first()
             if not curso_obj:
-                return JsonResponse({"status": "error", "msg": f"No se encontró el curso con ID {curso_id}"}, status=400)
-            
-            # **AQUÍ OBTENEMOS EL MONTO REAL DEL CURSO**
-            monto_dinamico = curso_obj.precio_final
+                return JsonResponse({
+                    "status": "error",
+                    "msg": f"No se encontró el curso con ID {curso_id}"
+                }, status=400)
+
+            monto_dinamico = float(curso_obj.precio_final)
             curso_nombre = curso_obj.nombre_curso
 
             # ============================
-            # 🔹 Validaciones básicas (se mantienen)
+            # 🔹 Validaciones básicas
             # ============================
             campos_obligatorios = {
                 "nombre": nombre, "apellido": apellido, "documento": documento,
@@ -906,76 +1204,115 @@ def guardar_datos_inscripcion_paga(request):
                     "msg": f"Faltan completar los siguientes campos: {', '.join(faltantes)}"
                 }, status=400)
 
+            # ====================================================================
+            # 📌 CORRECCIÓN DEL ERROR 'cannot access local variable estado_pago'
+            # Inicializamos las variables ANTES de la lógica condicional.
+            # ====================================================================
+            estado_pago = "Pendiente" # 👈 CORRECCIÓN: Por defecto es Pendiente
+            id_transaccion = ""
+            
             # ============================
-            # 🔹 Validar comprobante o token según medio de pago (se mantiene)
+            # 🔹 Validar comprobante o token según medio y procesar pago
             # ============================
             if medio_pago == "transferencia_bancaria":
                 if not comprobante:
                     return JsonResponse({
                         "status": "error",
-                        "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago para continuar."
+                        "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago."
                     }, status=400)
+                
+                # Estado de pago ya es 'Pendiente' por la inicialización.
+                pass 
 
             elif medio_pago in ["debito", "credito_1", "credito_cuotas"]:
                 if not token or not payment_method_id:
                     return JsonResponse({
                         "status": "error",
-                        "msg": "No se recibió el token de MercadoPago. Por favor, intentá nuevamente."
+                        "msg": "Faltan datos de la tarjeta. Intentá nuevamente."
                     }, status=400)
 
                 # ============================
-                # 🔹 Validar con MercadoPago
+                # 🔹 Procesar con MercadoPago (CardForm)
                 # ============================
                 payment_data = {
-                    # 👈 CAMBIO CLAVE 2: Usamos monto_dinamico en lugar del fijo 10000
-                    "transaction_amount": float(monto_dinamico), 
-                    
+                    "transaction_amount": monto_dinamico,
                     "token": token,
-                    "description": f"Inscripción curso {curso_id} - comisión {comision_nombre}",
-                    "installments": 1 if medio_pago != "credito_cuotas" else 3,
+                    "description": f"Inscripción curso {curso_nombre} - comisión {comision_nombre}",
+                    "installments": cuotas if medio_pago == "credito_cuotas" else 1,
                     "payment_method_id": payment_method_id,
                     "payer": {"email": email},
                 }
 
-                result = sdk.payment().create(payment_data)
-                payment = result.get("response", {})
-
-                if payment.get("status") != "approved":
+                try:
+                    result = sdk.payment().create(payment_data)
+                    payment = result.get("response", {})
+                except Exception as e:
+                    print("❌ Error MercadoPago:", e)
                     return JsonResponse({
                         "status": "error",
-                        "msg": f"Pago rechazado: {payment.get('status_detail', 'motivo desconocido')}."
+                        "msg": f"Error comunicándose con MercadoPago: {str(e)}"
+                    }, status=500)
+
+                status_mp = payment.get("status", "").lower()
+                id_transaccion = payment.get("id", "")
+                detalle_status = payment.get("status_detail", "")
+
+                if status_mp == "approved":
+                    print("✅ Pago aprobado por MercadoPago:", id_transaccion)
+                    estado_pago = "Aprobado" # 👈 Se reescribe el valor inicial
+                else:
+                    # Registrar pago rechazado (antes de crear estudiante para evitar inconsistencias)
+                    RegistroPago.objects.create(
+                        estudiante=None,
+                        comision=None,
+                        plataforma="web",
+                        medio_pago=medio_pago,
+                        estado_pago=status_mp,
+                        monto=monto_dinamico,
+                        fecha_pago=timezone.now(),
+                        id_transaccion=id_transaccion
+                    )
+                    return JsonResponse({
+                        "status": "error",
+                        "msg": f"Pago rechazado: {detalle_status or 'motivo desconocido'}."
                     }, status=400)
 
-                print("✅ Pago aprobado por MercadoPago:", payment.get("id"))
+            # [CÓDIGO ELIMINADO] El bloque 'else' final que solo asignaba estado_pago y id_transaccion
+            # ---------------------------------------------------------------------------------------
+            # else:
+            #     estado_pago = "Pendiente"
+            #     id_transaccion = ""
+            # Esto se elimina porque ya está manejado por la inicialización de variables.
+            # ---------------------------------------------------------------------------------------
+
 
             # ============================
-            # 🔹 Validaciones de duplicados (se mantienen)
+            # 🔹 Validaciones duplicados
             # ============================
             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
-
             if DatosDeEstudiantes.objects.filter(correo=email).exists():
                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
-
             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
-
             if PerfilUsuario.objects.filter(correo=email).exists():
                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
 
             # ============================
-            # 🔹 Curso y comisión (se adapta, ya buscamos el curso arriba)
+            # 🔹 Buscar comisión
             # ============================
-            
-            # Ahora solo buscamos la comisión, ya tenemos curso_obj
-            comision = Comision.objects.filter(numero_comision=comision_nombre, id_curso=curso_obj).first()
+            comision = Comision.objects.filter(
+                numero_comision=comision_nombre, id_curso=curso_obj
+            ).first()
             if not comision:
-                return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"}, status=400)
+                return JsonResponse({
+                    "status": "error",
+                    "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"
+                }, status=400)
 
             # ============================
-            # 🔹 Crear estudiante (se mantiene)
+            # 🔹 Crear estudiante
             # ============================
-            # ... (Lógica de creación de estudiante DatosDeEstudiantes) ...
             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
 
@@ -992,7 +1329,7 @@ def guardar_datos_inscripcion_paga(request):
                 genero=genero
             )
 
-            # Asignar comisión al primer campo libre
+            # Asignar comisión libre
             asignado = False
             for i in range(1, 10):
                 campo = f'cursando{i}'
@@ -1002,12 +1339,14 @@ def guardar_datos_inscripcion_paga(request):
                     asignado = True
                     break
             if not asignado:
-                return JsonResponse({"status": "error", "msg": "El estudiante ya está inscrito en el máximo de comisiones."}, status=400)
+                return JsonResponse({
+                    "status": "error",
+                    "msg": "El estudiante ya está inscrito en el máximo de comisiones."
+                }, status=400)
 
             # ============================
-            # 🔹 Crear usuario vinculado (se mantiene)
+            # 🔹 Crear usuario vinculado
             # ============================
-            # ... (Lógica de creación de PerfilUsuario) ...
             ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
             usuario_id = str(int(ultimo_usuario.id_usuario) + 1 if ultimo_usuario else 1).zfill(6)
 
@@ -1023,30 +1362,23 @@ def guardar_datos_inscripcion_paga(request):
             usuario.save()
 
             # ============================
-            # 🔹 Registrar pago (según medio)
+            # 🔹 Registrar pago
             # ============================
-            estado_pago = "Pendiente" if medio_pago == "transferencia_bancaria" else "Aprobado"
-            id_transaccion = ""
-            if medio_pago in ["debito", "credito_1", "credito_cuotas"]:
-                id_transaccion = payment.get("id")
-
             RegistroPago.objects.create(
                 estudiante=estudiante,
                 comision=comision,
                 plataforma="web",
                 medio_pago=medio_pago,
-                estado_pago=estado_pago,
-                # 👈 CAMBIO CLAVE 3: Usamos monto_dinamico al guardar en RegistroPago
-                monto=float(monto_dinamico), 
+                estado_pago=estado_pago, # 👈 AHORA ES SEGURO
+                monto=monto_dinamico,
                 fecha_pago=timezone.now(),
-                id_transaccion=id_transaccion,
+                id_transaccion=id_transaccion, # 👈 AHORA ES SEGURO
                 archivo_comprobante=comprobante
             )
 
             # ============================
-            # 💌 Correos (interno + alumno) (se mantienen)
+            # 💌 Envío de correos
             # ============================
-            # ... (Lógica de envío de correos, usar context_interno y context_bienvenida) ...
             context_interno = {
                 "nombre": nombre,
                 "apellido": apellido,
@@ -1095,7 +1427,7 @@ def guardar_datos_inscripcion_paga(request):
             email_alumno.send()
 
             # ============================
-            # 🔹 Respuesta final (se mantiene)
+            # 🔹 Respuesta final
             # ============================
             return JsonResponse({
                 "status": "ok",
@@ -1109,8 +1441,6 @@ def guardar_datos_inscripcion_paga(request):
             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
-
-
 
 
 
