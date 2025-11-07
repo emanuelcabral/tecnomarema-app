@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
     <title>Inscripción al curso - Desarrollo Web</title>
-    <script src="https://sdk.mercadopago.com/js/v2"></script>
+   
     <!-- libreria para banderas form -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -259,6 +259,11 @@
       }
       /*------------prealoader fin---------------------------*/
 
+      .mp-field {
+        min-height: 45px;
+        display: block;
+}
+
 
     </style>
   </head>
@@ -352,8 +357,6 @@
                 </div>
               </div>
 
-
-
               <div class="form-check mb-3">
                 <input class="form-check-input" type="checkbox" value="" id="terminos">
                 <label class="form-check-label" for="terminos">
@@ -365,7 +368,8 @@
                 privacidad y términos del servicio de Google.</p>
               <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary">Volver</button>
-                <button id="btnContinuarDatos" type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#paso2" onclick="validarTerminosYContinuar()">Continuar</button>
+                {% comment %} <button id="btnContinuarDatos" type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#paso2" onclick="validarTerminosYContinuar()">Continuar</button> {% endcomment %}
+                <button id="btnContinuarDatos" type="button" class="btn btn-custom" onclick="validarTerminosYContinuar()">Continuar</button>
               </div>
             </form>
           </div>
@@ -424,8 +428,6 @@
   </select>
 </div>
 
-
-
         <!-- Info detallada -->
 <div id="infoCurso" class="card p-4 d-none">
   <h4 class="mb-3" id="nombreCurso"></h4>
@@ -465,29 +467,29 @@
             <div class="list-group mb-4">
               <!-- Transferencia -->
               <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia_bancaria" checked
-                  onchange="mostrarFormularioPago(this.value)">
+                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia_bancaria" checked onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
+                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="transferencia_bancaria" checked onchange="onMedioPaso3Change(this)">
                 <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
               </label>
 
               <!-- Tarjeta débito -->
               <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="debito"
-                  onchange="mostrarFormularioPago(this.value)">
+                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="debito" onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
+                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="debito" onchange="onMedioPaso3Change(this)">
                 <strong>Tarjeta de débito</strong> - En 1 Pago
               </label>
 
               <!-- Tarjeta crédito (1 pago) -->
               <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1"
-                  onchange="mostrarFormularioPago(this.value)">
+                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1" onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
+                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="credito_1" onchange="onMedioPaso3Change(this)">
                 <strong>Tarjeta de crédito</strong> - En 1 pago
               </label>
 
               <!-- Tarjeta crédito (cuotas) -->
               <label class="list-group-item">
-                <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas"
-                  onchange="mostrarFormularioPago(this.value)">
+                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas" onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
+                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="credito_cuotas" onchange="onMedioPaso3Change(this)">
                 <strong>Tarjeta de crédito</strong> - 3 o 6 cuotas con interés
               </label>
             </div>
@@ -529,11 +531,10 @@
             </div>
           </div>
 
-
         </div>
       </div>
 <!-- ######################################################################################################################################## -->
-      <!-- Paso 4: Datos de pago / Confirmación -->
+<!-- Paso 4: Datos de pago / Confirmación -->
 <!-- ######################################################################################################################################## -->
 <div class="tab-pane fade" id="paso4" role="tabpanel" aria-labelledby="paso4-tab">
   <div class="row">
@@ -543,35 +544,22 @@
       <!-- Selección del medio de pago -->
       <div class="list-group mb-4">
         <label class="list-group-item">
-          <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia" checked
-            onchange="mostrarFormularioPago(this.value);">
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="transferencia" checked onchange="onMedioPaso4Change(this)">
           <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
         </label>
 
         <label class="list-group-item">
-          {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="debito"
-            onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)"> {% endcomment %}
-          <input class="form-check-input me-2" type="radio" name="medioPago" value="debito"
-  onchange="mostrarFormularioPago(this.value); inicializarCardForm('simple')">
-
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="debito" onchange="onMedioPaso4Change(this)"> 
           <strong>Tarjeta de débito</strong> - Pago en 1 cuota
         </label>
 
         <label class="list-group-item">
-          {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1"
-            onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)"> {% endcomment %}
-          <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1"
-  onchange="mostrarFormularioPago(this.value); inicializarCardForm('simple')">
-
-
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="credito_1" onchange="onMedioPaso4Change(this)"> 
           <strong>Tarjeta de crédito</strong> - 1 pago
         </label>
 
         <label class="list-group-item">
-          {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas"
-            onchange="mostrarFormularioPago(this.value); actualizarFormularioYValidacion(this.value)"> {% endcomment %}
-          <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas"
-  onchange="mostrarFormularioPago(this.value); inicializarCardForm('cuotas')">
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="credito_cuotas" onchange="onMedioPaso4Change(this)"> 
           <strong>Tarjeta de crédito</strong> - 3 o 6 cuotas con interés
         </label>
       </div>
@@ -593,69 +581,83 @@
       </div>
 
       <!-- Formulario tarjeta simple: débito o crédito 1 pago -->
-      <div id="formTarjetaSimple" class="formulario-pago d-none">
+      <div id="formTarjetaSimple" class="formulario-pago d-none" data-tipo="simple">
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Número de tarjeta</label>
-            <input type="text" class="form-control" id="cardNumberSimple" placeholder="•••• •••• •••• ••••">
+            <div id="cardNumberSimple" class="mp-field"></div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Nombre en la tarjeta</label>
-            <input type="text" class="form-control" id="cardholderNameSimple" placeholder="Juan Pérez">
+            {% comment %} <div id="cardholderNameSimple" class="mp-field"></div> {% endcomment %}
+            <input type="text" id="cardholderNameSimple" placeholder="Nombre del titular" />
+            {% comment %} <div id="cardholderNameSimple"></div> {% endcomment %}
+
           </div>
         </div>
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">Mes</label>
-            <input type="text" class="form-control" id="cardExpirationMonthSimple" placeholder="MM">
+            <div id="cardExpirationMonthSimple" class="mp-field"></div>
           </div>
           <div class="col-md-4">
             <label class="form-label">Año</label>
-            <input type="text" class="form-control" id="cardExpirationYearSimple" placeholder="AA">
+            <div id="cardExpirationYearSimple" class="mp-field"></div>
           </div>
           <div class="col-md-4">
             <label class="form-label">CVV</label>
-            <input type="text" class="form-control" id="cardSecurityCodeSimple" placeholder="123">
+            <div id="cardSecurityCodeSimple" class="mp-field"></div>
           </div>
         </div>
         <div class="mb-3">
           <label class="form-label">Documento (DNI)</label>
-          <input type="text" class="form-control" id="docNumberSimple" placeholder="12345678">
+          <div id="docNumberSimple" class="mp-field"></div>
         </div>
 
+        <!-- Campos ocultos obligatorios para CardForm -->
         <input type="hidden" id="tokenSimple" name="token">
         <input type="hidden" id="paymentMethodIdSimple" name="paymentMethodId">
+        {% comment %} <input type="hidden" id="issuerSimple" name="issuer"> {% endcomment %}
+        <select id="issuerSimple" class="d-none"></select>
+        <select id="installmentsSimple" class="d-none">
+          <option value="1" selected>1</option>
+        </select>
       </div>
 
       <!-- Formulario tarjeta crédito en cuotas -->
-      <div id="formTarjetaCuotas" class="formulario-pago d-none">
+      <div id="formTarjetaCuotas" class="formulario-pago d-none" data-tipo="cuotas">
         <div class="row mb-3">
           <div class="col-md-6">
             <label class="form-label">Número de tarjeta</label>
-            <input type="text" class="form-control" id="cardNumberCuotas" placeholder="•••• •••• •••• ••••">
+            <div id="cardNumberCuotas" class="mp-field"></div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Nombre en la tarjeta</label>
-            <input type="text" class="form-control" id="cardholderNameCuotas" placeholder="Juan Pérez">
+            {% comment %} <div id="cardholderNameCuotas" class="mp-field"></div> {% endcomment %}
+            {% comment %} <input type="text" id="cardholderName" placeholder="Nombre del titular" /> {% endcomment %}
+            <input type="text" id="cardholderNameCuotas" name="cardholderNameCuotas" placeholder="Nombre en la tarjeta" />
+            {% comment %} <div id="cardholderNameCuotas"></div> {% endcomment %}
+
+
           </div>
         </div>
         <div class="row mb-3">
           <div class="col-md-4">
             <label class="form-label">Mes</label>
-            <input type="text" class="form-control" id="cardExpirationMonthCuotas" placeholder="MM">
+            <div id="cardExpirationMonthCuotas" class="mp-field"></div>
           </div>
           <div class="col-md-4">
             <label class="form-label">Año</label>
-            <input type="text" class="form-control" id="cardExpirationYearCuotas" placeholder="AA">
+            <div id="cardExpirationYearCuotas" class="mp-field"></div>
           </div>
           <div class="col-md-4">
             <label class="form-label">CVV</label>
-            <input type="text" class="form-control" id="cardSecurityCodeCuotas" placeholder="123">
+            <div id="cardSecurityCodeCuotas" class="mp-field"></div>
           </div>
         </div>
         <div class="mb-3">
           <label class="form-label">Documento (DNI)</label>
-          <input type="text" class="form-control" id="docNumberCuotas" placeholder="12345678">
+          <div id="docNumberCuotas" class="mp-field"></div>
         </div>
         <div class="mb-3">
           <label class="form-label">Elegí la cantidad de cuotas</label>
@@ -664,8 +666,13 @@
             <option value="6">6 cuotas con interés</option>
           </select>
         </div>
+
+        <!-- Campos ocultos obligatorios para CardForm -->
         <input type="hidden" id="tokenCuotas" name="token">
         <input type="hidden" id="paymentMethodIdCuotas" name="paymentMethodId">
+        {% comment %} <input type="hidden" id="issuerCuotas" name="issuer"> {% endcomment %}
+        <select id="issuerCuotas" class="d-none"></select>
+        <select id="installmentsCuotas" class="d-none"></select>
       </div>
 
       <!-- Aceptar términos -->
@@ -680,214 +687,13 @@
         <button type="button" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
       </div>
     </div>
-
-    <div class="col-md-4 summary-section">
-      <div class="info-box">
-        <h5>Detalle de la inscripción</h5>
-        <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
-        <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
-        <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
-        <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
-        <p><strong>Precio final: $<span class="detallePrecioFinal">-</span></strong></p>
-
-        <div class="mt-3">
-          <label for="cupon" class="form-label">Consigue el Descuento aplicando el cupón:</label>
-          <input type="text" class="form-control mb-2" id="cupon" placeholder="DESCUENTO">
-          <button class="btn btn-custom w-100">Aplicar código</button>
-        </div>
-
-        <hr class="my-4">
-        <div class="tick-icon mb-2">Acceso total a la plataforma</div>
-        <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
-        <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
-      </div>
-    </div>
   </div>
-
-  <!-- ==================== Script MercadoPago CardForm ==================== -->
-  {% comment %} <script>
-    const mp = new MercadoPago('{{ MERCADOPAGO_PUBLIC_KEY }}', { locale: 'es-AR' });
-
-    // Configuración CardForm (se reutiliza según el tipo de tarjeta)
-    function inicializarCardForm(tipo) {
-
-      console.log("📦 CardForm inicializado para:", tipo);
+</div>
 
 
-      const prefix = tipo === 'cuotas' ? 'Cuotas' : 'Simple';
-      const amount = document.querySelector('.detallePrecioFinal').textContent.replace('$', '').trim() || '0.00';
-
-      const formConfig = {
-        amount: amount,
-        form: {
-          cardNumber: { id: `cardNumber${prefix}` },
-          cardholderName: { id: `cardholderName${prefix}` },
-          cardExpirationMonth: { id: `cardExpirationMonth${prefix}` },
-          cardExpirationYear: { id: `cardExpirationYear${prefix}` },
-          securityCode: { id: `cardSecurityCode${prefix}` },
-          identificationNumber: { id: `docNumber${prefix}` },
-
-              // 👇 ESTOS SON LOS DOS CAMPOS QUE FALTABAN
-          token: { id: `token${prefix}` },
-          paymentMethodId: { id: `paymentMethodId${prefix}` },
-
-        },
-        callbacks: {
-          onSubmit: async (event) => {
-            event.preventDefault();
-            showPreloader();
-
-            try {
-              const { token, paymentMethodId } = await cardForm.createCardToken();
-
-
-              console.log("✅ Token generado:", token);
-              console.log("✅ Método de pago:", paymentMethodId);
-
-
-              const form = new FormData(formInscripcion);
-              form.append('token', token);
-              form.append('payment_method_id', paymentMethodId);
-              form.append('medio_pago', tipo === 'cuotas' ? 'credito_cuotas' : 'debito');
-
-              const csrftoken = getCookie('csrftoken');
-              const resp = await fetch("/guardar_datos_inscripcion_paga/", {
-                method: "POST",
-                headers: csrftoken ? { 'X-CSRFToken': csrftoken } : {},
-                body: form
-              });
-
-              const result = await resp.json();
-              hidePreloader();
-
-              if (result.status === "ok") {
-                irA('paso4');
-                mostrarModalExitoInscripcion(result);
-              } else {
-                mostrarErrorInscripcion(result.msg || "Error procesando pago");
-              }
-            } catch (err) {
-              hidePreloader();
-              console.error(err);
-              mostrarErrorInscripcion("Error generando token de pago.");
-            }
-          }
-        }
-      };
-
-      const cardForm = mp.cardForm(formConfig);
-    }
-  </script>
-</div> {% endcomment %}
-
-<script>
-    const mp = new MercadoPago('{{ MERCADOPAGO_PUBLIC_KEY }}', { locale: 'es-AR' });
-
-    // 💡 CRÍTICO: Debe estar declarado globalmente (Asumo que ya tienes esto en tu código)
-    // let cardForm = null; 
-    // const formInscripcion = document.getElementById('form-registro'); 
-    // Asegúrate que tu función 'reservar' fue modificada para llamar a 'cardForm.submit()'
-
-
-    // Configuración CardForm (se reutiliza según el tipo de tarjeta)
-    function inicializarCardForm(tipo) {
-        
-        // 📌 CORRECCIÓN: Destruir la instancia anterior si existe.
-        if (window.cardForm) {
-            try {
-                window.cardForm.unmount();
-                console.log("CardForm anterior desmontado correctamente.");
-            } catch (e) {
-                // Puede fallar si la instancia no está montada, pero lo ignoramos.
-                console.warn("Advertencia al desmontar CardForm:", e);
-            }
-        }
-
-        console.log("📦 CardForm inicializado para:", tipo);
-
-        // Ajustamos las variables para que coincidan con la lógica de tu HTML
-        const prefix = tipo === 'cuotas' ? 'Cuotas' : 'Simple';
-        // Asumiendo que el precio final está en un elemento con la clase .detallePrecioFinal
-        const amountElement = document.querySelector('.detallePrecioFinal');
-        const amountText = amountElement ? amountElement.textContent.replace('$', '').replace(',', '.').trim() : '0.00';
-        const amount = parseFloat(amountText) || 0;
-
-
-        const formConfig = {
-            amount: amount,
-            form: {
-                // Ya no necesitas 'id: "form-registro"' si usas los campos específicos
-                cardNumber: { id: `cardNumber${prefix}` },
-                cardholderName: { id: `cardholderName${prefix}` },
-                cardExpirationMonth: { id: `cardExpirationMonth${prefix}` },
-                cardExpirationYear: { id: `cardExpirationYear${prefix}` },
-                securityCode: { id: `cardSecurityCode${prefix}` },
-                identificationNumber: { id: `docNumber${prefix}` },
-
-                // 👇 Asegúrate que estos ID existan en tu HTML
-                token: { id: `token${prefix}` }, 
-                paymentMethodId: { id: `paymentMethodId${prefix}` },
-            },
-            callbacks: {
-                // Este onSubmit ahora maneja todo el proceso de token y fetch
-                onSubmit: async (event) => {
-                    event.preventDefault();
-                    showPreloader();
-
-                    try {
-                        // 📌 USO DIRECTO: Usa el objeto global para generar el token
-                        const { token, paymentMethodId } = await window.cardForm.createCardToken();
-                        
-                        // Si estás usando formInscripcion, es el formulario principal
-                        const form = new FormData(formInscripcion); 
-                        
-                        // Agrega los datos de pago al FormData
-                        form.append('token', token);
-                        form.append('payment_method_id', paymentMethodId);
-                        
-                        // Ajusta el medio de pago según la lógica de tu prefix
-                        const medioPagoBackend = tipo === 'cuotas' ? 'credito_cuotas' : (tipo === 'simple' ? 'debito' : '');
-                        form.append('medio_pago', medioPagoBackend);
-                        
-                        // Si el prefix es 'Cuotas', envía la cantidad de cuotas seleccionada
-                        if (tipo === 'cuotas') {
-                            const cuotas = document.getElementById("cuotas")?.value || "1";
-                            form.append("cuotas", cuotas);
-                        }
-
-                        // Envío al backend
-                        const csrftoken = getCookie('csrftoken');
-                        const resp = await fetch("/guardar_datos_inscripcion_paga/", {
-                            method: "POST",
-                            headers: csrftoken ? { 'X-CSRFToken': csrftoken } : {},
-                            body: form
-                        });
-
-                        const result = await resp.json();
-                        hidePreloader();
-
-                        if (result.status === "ok") {
-                            irA('paso4');
-                            mostrarModalExitoInscripcion(result); // Asumo que tienes esta función
-                        } else {
-                            mostrarModalPersonalizado("Error al procesar", result.msg || "Error procesando pago."); // Usamos tu función genérica
-                        }
-                    } catch (err) {
-                        hidePreloader();
-                        console.error("Error al generar token/enviar:", err);
-                        mostrarModalPersonalizado("Error de Pago", "No se pudo generar el token de pago o hubo un problema de conexión.");
-                    }
-                }
-            }
-        };
-
-        // 💡 ASIGNACIÓN CRÍTICA: Asigna a la variable GLOBAL 'cardForm'
-        window.cardForm = mp.cardForm(formConfig);
-    }
-</script>
 
 <!-- ######################################################################################################################################## -->
-      <!-- prealoader -->
+      <!-- prealoader                             1 html -->
 <!-- ######################################################################################################################################## -->
   <!-- Preloader -->
 <div id="preloader">
@@ -899,7 +705,7 @@
 
 
 <!-- ######################################################################################################################################## -->
-      <!-- Ventana modal -->
+      <!-- Ventana modal                          2 html -->
 <!-- ######################################################################################################################################## -->
 
       <!-- Modal personalizado -->
@@ -913,52 +719,268 @@
       </div>
 
 <!-- ######################################################################################################################################## -->
-  <!-- Scripts -->
+  <!-------------------------------------------------------- Scripts --------------------------------------------------------------------------->
 <!-- ######################################################################################################################################## -->
 
 <!-- ########################################################### -->
-<!--                   prealoader inicia                         -->
+<!--                  Bootstrap JS Bundle con Popper             -->
 <!-- ########################################################### -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% comment %} <script src="{% static 'js/inscripcion/bs.js' %}"></script> {% endcomment %}
+
+
+
+<!-- ########################################################### -->
+<!--                   Librería intl-tel-input              14    -->
+<!-- ########################################################### -->
+<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
+{% comment %} <script>
+  const inputTelefono = document.querySelector("#telefono");
+  window.intlTelInput(inputTelefono, {
+    preferredCountries: ["ar", "uy", "cl", "mx", "es"],
+    initialCountry: "ar",
+    autoPlaceholder: "aggressive",
+    nationalMode: false,
+    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
+  });
+</script> {% endcomment %}
 <script>
-// Funciones para mostrar/ocultar preloader
-function showPreloader() {
-  document.getElementById("preloader").style.display = "flex";
-}
-
-function hidePreloader() {
-  document.getElementById("preloader").style.display = "none";
-}
-
-// Ejemplo: integración con tu fetch
-async function enviarFormulario() {
-  showPreloader();
-
-  const formData = new FormData(document.getElementById("formInscripcion"));
-
-  try {
-    const res = await fetch("/guardar_inscripcion/", {
-      method: "POST",
-      body: formData
+  const inputTelefono = document.querySelector("#telefono");
+  if (inputTelefono) {
+    window.intlTelInput(inputTelefono, {
+      preferredCountries: ["ar", "uy", "cl", "mx", "es"],
+      initialCountry: "ar",
+      autoPlaceholder: "aggressive",
+      nationalMode: false,
+      utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
     });
-
-    const data = await res.json();
-    alert(data.msg || "Proceso completado");
-
-  } catch (e) {
-    alert("Error al enviar: " + e);
-  } finally {
-    hidePreloader();
+  } else {
+    console.warn("⚠️ input #telefono no encontrado");
   }
-}
 </script>
 
-<!-- ########################################################### -->
-<!--                   prealoader fin                            -->
-<!-- ########################################################### -->
-
 
 <!-- ########################################################### -->
-<!--           Variables y datos de cursos desde backend       -->
+<!--                      sdk de mercadopago                     -->
+<!-- ########################################################### -->
+ <script src="https://sdk.mercadopago.com/js/v2"></script>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("✅ DOM listo");
+});
+</script>
+
+
+<!-- ######################################################################################################################################## -->
+<!-- ==================== Script MercadoPago CardForm         1° script                                                  ==================== -->
+<!-- ######################################################################################################################################## -->
+
+<script>
+  // ########################### Inicialización SDK MercadoPago ###########################
+  var mp;
+  document.addEventListener("DOMContentLoaded", function() {
+    const key = "{{ MERCADOPAGO_PUBLIC_KEY }}";
+
+    if (!key) {
+      console.error("⚠️ No se recibió la MERCADOPAGO_PUBLIC_KEY.");
+      return;
+    }
+    mp = new MercadoPago(key, { locale: 'es-AR' });
+    console.log("✅ SDK de MercadoPago inicializado correctamente.");
+
+    const medio = document.querySelector('input[name="medioPagoPaso4"]:checked')?.value;
+    if(medio === 'debito' || medio === 'credito_1') inicializarCardForm('simple');
+    else if(medio === 'credito_cuotas') inicializarCardForm('cuotas');
+  });
+
+  // ########################### Función global CardForm ###########################
+  function inicializarCardForm(tipo) {
+    if(!mp) return console.error("⚠️ MercadoPago no inicializado");
+
+    if(window.cardForm) {
+      try { window.cardForm.unmount(); } catch(e) { console.warn(e); }
+    }
+
+    const prefix = tipo === 'cuotas' ? 'Cuotas' : 'Simple';
+
+    const idsNecesarios = [
+      `cardNumber${prefix}`, `cardholderName${prefix}`, `cardExpirationMonth${prefix}`,
+      `cardExpirationYear${prefix}`, `cardSecurityCode${prefix}`, `docNumber${prefix}`,
+      `installments${prefix}`, `issuer${prefix}`, `token${prefix}`, `paymentMethodId${prefix}`
+    ];
+    const faltantes = idsNecesarios.filter(id => !document.getElementById(id));
+    if(faltantes.length) return console.error("Faltan inputs:", faltantes);
+
+    // 🔹 Monto limpio como número (120.000,00 → 120000.00)
+    const amountEl = document.querySelector('.detallePrecioFinal');
+    let amount = 0;
+    if (amountEl) {
+      let text = amountEl.textContent.replace(/\s/g, '');        // quitar espacios
+      text = text.replace('$','');                               // quitar $
+      text = text.replace(/\./g,'');                             // quitar puntos de miles
+      text = text.replace(',', '.');                             // coma decimal a punto
+      amount = parseFloat(text) || 0;
+    }
+    console.log("🔹 Monto para CardForm:", amount);
+
+    // 🔹 Configuración CardForm
+    const formConfig = {
+      //transactionAmount: amount,
+      //amount: amount,
+      amount: amount.toFixed(2),
+      autoMount: true,
+      form: {
+        id: `formTarjeta${prefix}`,
+        cardNumber: { id: `cardNumber${prefix}` },
+        cardholderName: { id: `cardholderName${prefix}` },
+        cardExpirationMonth: { id: `cardExpirationMonth${prefix}` },
+        cardExpirationYear: { id: `cardExpirationYear${prefix}` },
+        securityCode: { id: `cardSecurityCode${prefix}` },
+        identificationNumber: { id: `docNumber${prefix}` },
+        installments: { id: `installments${prefix}` },
+        issuer: { id: `issuer${prefix}` },
+        token: { id: `token${prefix}` },
+        paymentMethodId: { id: `paymentMethodId${prefix}` },
+      },
+      callbacks: {
+        onFormMounted: (error) => error ? console.error(error) : console.log("✅ CardForm montado:", prefix),
+        onSubmit: async (event) => {
+          event.preventDefault();
+          showPreloader();
+          try {
+            const { token, paymentMethodId } = await window.cardForm.createCardToken();
+            const form = new FormData(document.getElementById("form-registro"));
+            form.append('token', token);
+            form.append('payment_method_id', paymentMethodId);
+            form.append('medio_pago', tipo === 'cuotas' ? 'credito_cuotas' : 'debito');
+            if(tipo === 'cuotas') {
+              const cuotas = document.getElementById("cuotas")?.value || "1";
+              form.append('cuotas', cuotas);
+            }
+            const csrftoken = getCookie('csrftoken');
+            const resp = await fetch("/guardar_datos_inscripcion_paga/", {
+              method: "POST",
+              headers: csrftoken ? { 'X-CSRFToken': csrftoken } : {},
+              body: form
+            });
+            const result = await resp.json();
+            hidePreloader();
+            if(result.status==="ok") {
+              irA('paso4'); mostrarModalExitoInscripcion(result);
+            } else mostrarModalPersonalizado("Error", result.msg || "Error procesando pago.");
+          } catch(err) {
+            hidePreloader();
+            console.error("❌ Error token/enviar:", err);
+            mostrarModalPersonalizado("Error de Pago", "No se pudo generar el token o hubo un problema de conexión.");
+          }
+        }
+      }
+    };
+
+    try { window.cardForm = mp.cardForm(formConfig); } 
+    catch(err) { console.error("❌ Error inicializando CardForm:", err); }
+  }
+
+  // ########################### Cambio de medio de pago ###########################
+function onMedioPaso4Change(radio) {
+  const val = radio.value;
+
+  // Ocultar todos los formularios primero
+  document.querySelectorAll('.formulario-pago').forEach(el => el.classList.add('d-none'));
+
+  // Transferencia solo muestra su formulario
+  if (val === 'transferencia') {
+    document.getElementById('formTransferencia').classList.remove('d-none');
+    return;
+  }
+
+  // Determinar tipo y contenedor según el medio de pago
+  let formId = '';
+  let tipo = '';
+
+  if (val === 'debito' || val === 'credito_1') {
+    formId = 'formTarjetaSimple';
+    tipo = 'simple';
+  } else if (val === 'credito_cuotas') {
+    formId = 'formTarjetaCuotas';
+    tipo = 'cuotas';
+  }
+
+  const form = document.getElementById(formId);
+  if (!form) {
+    console.error(`⚠️ No se encontró el contenedor ${formId}`);
+    return;
+  }
+
+  // Mostrar el formulario primero
+  form.classList.remove('d-none');
+
+  // Esperar que el navegador renderice el contenedor antes de inicializar CardForm
+  requestAnimationFrame(() => {
+    console.log(`🚀 Inicializando CardForm para: ${tipo}`);
+    inicializarCardForm(tipo);
+  });
+}
+
+
+
+</script>
+
+
+
+
+
+
+
+<!-- ########################################################### -->
+<!--              Sincronizar radios entre paso 3 y paso 4        -->
+<!-- ########################################################### -->
+{% comment %} <script>
+function sincronizarMedioPago() {
+  console.log("🔄 Sincronizando medios de pago entre paso 3 y 4...");
+
+  // 1️⃣ Obtener el valor seleccionado en el paso 3
+  const medioSeleccionado = document.querySelector('#paso3 input[name="medioPago"]:checked');
+  if (!medioSeleccionado) {
+    console.warn("⚠️ No hay medio de pago seleccionado en paso 3.");
+    return;
+  }
+
+  // 2️⃣ Buscar el mismo radio en el paso 4 y marcarlo
+  const valorMedio = medioSeleccionado.value;
+  const radioPaso4 = document.querySelector(`#paso4 input[name="medioPago"][value="${valorMedio}"]`);
+
+  if (!radioPaso4) {
+    console.warn(`⚠️ No se encontró el radio correspondiente en paso 4 para: ${valorMedio}`);
+    return;
+  }
+
+  // 3️⃣ Marcar el mismo método y disparar el evento 'change' para mostrar el formulario correspondiente
+  radioPaso4.checked = true;
+  radioPaso4.dispatchEvent(new Event('change'));
+  console.log(`✅ Medio de pago sincronizado: ${valorMedio}`);
+
+  // 4️⃣ Si es tarjeta, inicializar el CardForm correspondiente (con pequeña demora para asegurar render)
+  if (valorMedio === 'debito' || valorMedio === 'credito_1') {
+    setTimeout(() => {
+      console.log("💳 Inicializando CardForm simple tras sincronización...");
+      inicializarCardForm('simple');
+    }, 500);
+  } else if (valorMedio === 'credito_cuotas') {
+    setTimeout(() => {
+      console.log("💳 Inicializando CardForm cuotas tras sincronización...");
+      inicializarCardForm('cuotas');
+    }, 500);
+  }
+}
+</script> {% endcomment %}
+
+
+
+<!-- ########################################################### -->
+<!--           Variables y datos de cursos desde backend    12     -->
 <!-- ########################################################### -->
 <script>
   // OBJETO CURSOS: datos de cursos con sus comisiones y horarios.
@@ -992,7 +1014,7 @@ async function enviarFormulario() {
 </script>
 
 <!-- ########################################################### -->
-<!--              Paso 2: Selección Curso y Comisión            -->
+<!--              Paso 2: Selección Curso y Comisión       13     -->
 <!-- ########################################################### -->
 <script>
   // Referencias a elementos DOM
@@ -1083,19 +1105,20 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
   el.textContent = cursoSeleccionado.modalidad;
 });
 
-    detallePrecioOriginal.textContent = original.toLocaleString('es-AR');
-    document.querySelectorAll('.detallePrecioOriginal').forEach(el => {
-  el.textContent = original.toLocaleString('es-AR');
+// Mostrar siempre dos decimales en los precios
+detallePrecioOriginal.textContent = original.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+document.querySelectorAll('.detallePrecioOriginal').forEach(el => {
+  el.textContent = original.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 });
 
-    detallePrecioFinal.textContent = final.toLocaleString('es-AR');
-    document.querySelectorAll('.detallePrecioFinal').forEach(el => {
-  el.textContent = final.toLocaleString('es-AR');
+detallePrecioFinal.textContent = final.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+document.querySelectorAll('.detallePrecioFinal').forEach(el => {
+  el.textContent = final.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 });
 
-    detalleDescuento.textContent = descuento.toLocaleString('es-AR');
-    document.querySelectorAll('.detalleDescuento').forEach(el => {
-  el.textContent = descuento.toLocaleString('es-AR');
+detalleDescuento.textContent = descuento.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+document.querySelectorAll('.detalleDescuento').forEach(el => {
+  el.textContent = descuento.toLocaleString('es-AR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 });
 
 
@@ -1129,52 +1152,239 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
   });
 </script>
 
-
 <!-- ########################################################### -->
-<!--                  Función para cambiar pestañas            -->
+<!--                  Función para cambiar pestañas        10    -->
 <!-- ########################################################### -->
-<script>
-  /**
-   * Cambia la pestaña activa usando Bootstrap 5 Tabs y hace scroll arriba.
-   * @param {string} tabId - ID del tab a activar, por ejemplo 'paso2'
-   */
-  {% comment %} function irA(tabId) {
-    const triggerEl = document.querySelector(`#${tabId}-tab`);
-    if (!triggerEl) {
-      console.warn(`No existe el tab con id ${tabId}-tab`);
-      return;
-    }
-    const tab = new bootstrap.Tab(triggerEl);
-    tab.show();
+{% comment %} <script>
+function irA(tabId) {
+  const triggerEl = document.querySelector(`#${tabId}-tab`);
+  if (!triggerEl) return;
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  } {% endcomment %}
-    function irA(tabId) {
-    // Si vamos al paso 4, sincronizamos el método de pago
-    if (tabId === 'paso4') {
-      sincronizarMedioPago();
-    }
+  // Cambiar pestaña activa
+  const tab = new bootstrap.Tab(triggerEl);
+  tab.show();
 
-    const triggerEl = document.querySelector(`#${tabId}-tab`);
-    if (!triggerEl) {
-      console.warn(`No existe el tab con id ${tabId}-tab`);
-      return;
-    }
-    const tab = new bootstrap.Tab(triggerEl);
-    tab.show();
+  // Scroll arriba suave
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+  // ✅ Cuando llegás al paso 4:
+  if (tabId === 'paso4') {
+    // Sincronizar radios de paso 3 → paso 4
+    sincronizarMedioPago();
+
+    // 🔹 Inicializar CardForm solo si corresponde (tras leve retardo para renderizar)
+    setTimeout(() => {
+      const medioSeleccionado = document.querySelector('#paso3 input[name="medioPago"]:checked');
+      if (!medioSeleccionado) {
+        console.warn("⚠️ No hay medio de pago seleccionado en paso 3.");
+        return;
+      }
+
+      const medio = medioSeleccionado.value;
+      console.log("💳 Medio de pago seleccionado:", medio);
+
+      try {
+        if (medio === 'debito' || medio === 'credito_1') {
+          inicializarCardForm('simple');
+        } else if (medio === 'credito_cuotas') {
+          inicializarCardForm('cuotas');
+        }
+      } catch (err) {
+        console.error("❌ Error al inicializar CardForm:", err);
+      }
+    }, 500);
   }
+}
+</script> {% endcomment %}
+
+{% comment %} <script>
+function irA(tabId) {
+    // 🔹 Obtener el botón/anchor que activa la pestaña
+    const triggerEl = document.querySelector(`#${tabId}-tab`);
+
+    if (!triggerEl) {
+        console.warn("⚠️ triggerEl no encontrado para tabId:", tabId);
+        return;
+    }
+
+    // 🔹 Inicializar y mostrar la pestaña usando Bootstrap Tab
+    try {
+        const tab = new bootstrap.Tab(triggerEl);
+        tab.show();
+    } catch (err) {
+        console.error("❌ Error al mostrar pestaña:", err);
+        return;
+    }
+
+    // 🔹 Scroll suave hacia arriba
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 🔹 Solo para paso4: inicializar CardForm según medio de pago seleccionado
+    if (tabId === 'paso4') {
+        setTimeout(() => {
+            // Elegir radio del paso 3 como referencia
+            const medioSeleccionado = document.querySelector('#paso3 input[name="medioPagoPaso3"]:checked');
+            if (!medioSeleccionado) {
+                console.warn("⚠️ No hay medio de pago seleccionado en paso 3");
+                return;
+            }
+
+            const medio = medioSeleccionado.value;
+            console.log("💳 Inicializando CardForm según medio de pago:", medio);
+
+            try {
+                if (medio === 'debito' || medio === 'credito_1') {
+                    inicializarCardForm('simple');
+                } else if (medio === 'credito_cuotas') {
+                    inicializarCardForm('cuotas');
+                }
+            } catch (err) {
+                console.error("❌ Error al inicializar CardForm:", err);
+            }
+        }, 500);
+    }
+}
+</script> {% endcomment %}
+<script>
+function irA(tabId) {
+    // 🔹 Selecciona el botón correcto que activa la pestaña
+    const triggerEl = document.querySelector(`#${tabId}-tab`);
+
+    if (!triggerEl) {
+        console.warn("⚠️ triggerEl no encontrado para tabId:", tabId);
+        return;
+    }
+
+    // 🔹 Inicializa y muestra la pestaña usando Bootstrap 5
+    try {
+        const tab = new bootstrap.Tab(triggerEl);
+        tab.show();
+    } catch (err) {
+        console.error("❌ Error al mostrar pestaña:", err);
+        return;
+    }
+
+    // 🔹 Scroll suave hacia arriba
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 🔹 Inicializar CardForm solo si es paso4
+    if (tabId === 'paso4') {
+        setTimeout(() => {
+            const medioSeleccionado = document.querySelector('#paso3 input[name="medioPagoPaso3"]:checked');
+            if (!medioSeleccionado) return;
+
+            const medio = medioSeleccionado.value;
+            if (medio === 'debito' || medio === 'credito_1') {
+                inicializarCardForm('simple');
+            } else if (medio === 'credito_cuotas') {
+                inicializarCardForm('cuotas');
+            }
+        }, 500);
+    }
+}
 </script>
 
+
 <!-- ########################################################### -->
-<!--               Mostrar formulario según método pago        -->
+<!--            Sincronización de medios de pago (FIX)           -->
+<!-- ########################################################### -->
+{% comment %} <script>
+  // 🔁 Sincroniza los radios entre Paso 3 y Paso 4
+  function onMedioPaso3Change(radioEl) {
+    const value = radioEl.value;
+    console.log("🔄 Cambio en paso 3 →", value);
+
+    // Buscar y marcar el mismo valor en paso 4
+    const radioPaso4 = document.querySelector(`#paso4 input[name="medioPagoPaso4"][value="${value}"]`);
+    if (radioPaso4) {
+      radioPaso4.checked = true;
+      radioPaso4.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // Mostrar formulario correspondiente
+    mostrarFormularioPago(value === 'transferencia_bancaria' ? 'transferencia' : value);
+  }
+
+  function onMedioPaso4Change(radioEl) {
+    const value = radioEl.value;
+    console.log("🔄 Cambio en paso 4 →", value);
+
+    // Buscar y marcar el mismo valor en paso 3
+    const radioPaso3 = document.querySelector(`#paso3 input[name="medioPagoPaso3"][value="${value}"]`);
+    if (radioPaso3) {
+      radioPaso3.checked = true;
+      radioPaso3.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    // Mostrar formulario correspondiente
+    mostrarFormularioPago(value === 'transferencia' ? 'transferencia' : value);
+  }
+
+  // Se ejecuta al cargar el DOM
+  document.addEventListener('DOMContentLoaded', () => {
+    // Paso 3
+    document.querySelectorAll('#paso3 input[name="medioPagoPaso3"]').forEach(r => {
+      r.addEventListener('change', () => onMedioPaso3Change(r));
+    });
+    // Paso 4
+    document.querySelectorAll('#paso4 input[name="medioPagoPaso4"]').forEach(r => {
+      r.addEventListener('change', () => onMedioPaso4Change(r));
+    });
+    console.log("✅ Sincronización de medios de pago lista");
+  });
+</script> {% endcomment %}
+
+<script>
+let sincronizando = false;
+
+function onMedioPaso3Change(radioEl) {
+    if (sincronizando) return;
+    sincronizando = true;
+
+    const value = radioEl.value;
+    const radioPaso4 = document.querySelector(`#paso4 input[name="medioPagoPaso4"][value="${value}"]`);
+    if (radioPaso4) {
+        radioPaso4.checked = true;
+        radioPaso4.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    mostrarFormularioPago(value === 'transferencia_bancaria' ? 'transferencia' : value);
+
+    sincronizando = false;
+}
+
+function onMedioPaso4Change(radioEl) {
+    if (sincronizando) return;
+    sincronizando = true;
+
+    const value = radioEl.value;
+    const radioPaso3 = document.querySelector(`#paso3 input[name="medioPagoPaso3"][value="${value}"]`);
+    if (radioPaso3) {
+        radioPaso3.checked = true;
+        radioPaso3.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    mostrarFormularioPago(value === 'transferencia' ? 'transferencia' : value);
+
+    sincronizando = false;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('#paso3 input[name="medioPagoPaso3"]').forEach(r => {
+        r.addEventListener('change', () => onMedioPaso3Change(r));
+    });
+    document.querySelectorAll('#paso4 input[name="medioPagoPaso4"]').forEach(r => {
+        r.addEventListener('change', () => onMedioPaso4Change(r));
+    });
+    console.log("✅ Sincronización de medios de pago lista");
+});
+</script>
+
+
+
+
+<!-- ########################################################### -->
+<!--               Mostrar formulario según método pago     5    -->
 <!-- ########################################################### -->
 <script>
   /**
@@ -1196,7 +1406,7 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
 </script>
 
 <!-- ########################################################### -->
-<!--            Validar términos y pasar al siguiente paso      -->
+<!--            Validar términos y pasar al siguiente paso    11  -->
 <!-- ########################################################### -->
 <script>
   /**
@@ -1244,7 +1454,7 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
 </script>
 
 <!-- ########################################################### -->
-<!--                Enviar datos de inscripción (Fetch)         -->
+<!--                Enviar datos de inscripción (Fetch)       16  -->
 <!-- ########################################################### -->
 <script>
   /**
@@ -1294,364 +1504,198 @@ document.querySelectorAll('.detalleModalidadCurso').forEach(el => {
 </script>
 
 <!-- ########################################################### -->
-<!--                   Librería intl-tel-input                  -->
-<!-- ########################################################### -->
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/intlTelInput.min.js"></script>
-<script>
-  const inputTelefono = document.querySelector("#telefono");
-  window.intlTelInput(inputTelefono, {
-    preferredCountries: ["ar", "uy", "cl", "mx", "es"],
-    initialCountry: "ar",
-    autoPlaceholder: "aggressive",
-    nationalMode: false,
-    utilsScript: "https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/js/utils.js"
-  });
-</script>
-
-{% comment %} <!-- ########################################################### -->
-<!--               MercadoPago integración para pago            -->
+<!--           script de utilidades del formulario (6)          -->
 <!-- ########################################################### -->
 <script>
+  // Construcción del FormData con todos los datos del usuario
+  function construirFormData(medio_para_backend, comprobante = null, token = null, paymentMethodId = null, medioPagoSeleccionado = null) {
+    const formData = new FormData();
+    formData.append("nombre", document.getElementById("nombre")?.value || "");
+    formData.append("apellido", document.getElementById("apellido")?.value || "");
+    formData.append("documento", document.getElementById("dni")?.value || "");
+    formData.append("email", document.getElementById("email")?.value || "");
+    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento")?.value || "");
+    formData.append("pais", document.getElementById("pais")?.value || "");
+    formData.append("provincia", document.getElementById("provincia")?.value || "");
+    formData.append("telefono", document.getElementById("telefono")?.value || "");
+    formData.append("genero", document.getElementById("genero")?.value || "");
+    formData.append("curso", document.getElementById("curso")?.value || "");
+    formData.append("comision", document.getElementById("comision")?.value || "");
+    formData.append("medio_pago", medio_para_backend);
 
-  const cardForm = mp.cardForm({
-    amount: "92900", // Monto a pagar (deberías setear dinámico si cambia)
-    autoMount: true,
-    form: {
-      id: "form-pago-mp",
-      cardholderName: { id: "form-cardholderName", placeholder: "Nombre completo" },
-      cardholderEmail: { id: "form-cardholderEmail", placeholder: "Correo" },
-      cardNumber: { id: "form-cardNumber", placeholder: "Número de tarjeta" },
-      expirationDate: { id: "form-expirationDate", placeholder: "MM/AA" },
-      securityCode: { id: "form-securityCode", placeholder: "CVV" },
-      installments: { id: "form-installments", placeholder: "Cuotas" },
-      identificationType: { id: "form-identificationType" },
-      identificationNumber: { id: "form-identificationNumber", placeholder: "DNI" },
-      issuer: { id: "form-issuer" }
-    },
-    callbacks: {
-      onSubmit: async (event) => {
-        event.preventDefault();
-        const datos = cardForm.getCardFormData();
+    if (comprobante) formData.append("comprobante", comprobante);
 
-        fetch("/procesar_pago_mercado/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCookie("csrftoken"),
-          },
-          body: JSON.stringify({
-            token: datos.token,
-            issuer_id: datos.issuerId,
-            payment_method_id: datos.paymentMethodId,
-            transaction_amount: 92900,
-            installments: Number(datos.installments),
-            payer: {
-              email: datos.cardholderEmail,
-              identification: {
-                type: datos.identificationType,
-                number: datos.identificationNumber
-              }
-            }
-          }),
-        })
-        .then(response => response.json())
-        .then(data => {
-          const resultado = document.getElementById("resultado-pago");
-          if (data.status === "approved") {
-            resultado.innerHTML = "<div class='alert alert-success'>✅ ¡Pago aprobado!</div>";
-            irA("paso4"); // Si tienes paso4
-          } else {
-            resultado.innerHTML = `<div class='alert alert-warning'>⚠ Error: ${data.status_detail}</div>`;
-          }
-        })
-        .catch(() => {
-          document.getElementById("resultado-pago").innerHTML = `<div class='alert alert-danger'>Error en la conexión del pago.</div>`;
-        });
+    if (token && paymentMethodId) {
+      formData.append("token", token);
+      formData.append("payment_method_id", paymentMethodId);
+
+      if (medioPagoSeleccionado === "credito_cuotas") {
+        const cuotas = document.getElementById("cuotas")?.value || "3";
+        formData.append("cuotas", cuotas);
       }
     }
-  });
-</script> {% endcomment %}
 
+    return formData;
+  }
+
+  // Helper CSRF
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === name + "=") {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+</script>
 
 <!-- ########################################################### -->
-<!--              sincronizacion de botones de radio             -->
+<!--           script de envío de datos al backend (8)           -->
 <!-- ########################################################### -->
-
 <script>
-  function sincronizarMedioPago() {
-    // Obtener el valor seleccionado en el paso 3
-    const medioSeleccionado = document.querySelector('#paso3 input[name="medioPago"]:checked');
-    if (!medioSeleccionado) return;
+  async function enviarFetch(formData) {
+    showPreloader();
+    try {
+      const csrftoken = getCookie('csrftoken');
+      const resp = await fetch("/guardar_datos_inscripcion_paga/", {
+        method: "POST",
+        headers: csrftoken ? { "X-CSRFToken": csrftoken } : {},
+        body: formData,
+      });
 
-    // Marcar el mismo en paso 4
-    const radioPaso4 = document.querySelector(`#paso4 input[name="medioPago"][value="${medioSeleccionado.value}"]`);
-    if (radioPaso4) {
-      radioPaso4.checked = true;
-      radioPaso4.dispatchEvent(new Event('change')); // para mostrar formulario de pago correspondiente
+      const data = await resp.json();
+      hidePreloader();
+
+      if (data.status === "ok") {
+        mostrarModalPersonalizado(
+          "🎉 ¡Reserva Exitosa!",
+          "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles."
+        );
+        // irA("paso4");
+      } else {
+        mostrarModalPersonalizado("Error al guardar", data.msg || "No se pudo completar la inscripción.");
+      }
+    } catch (err) {
+      hidePreloader();
+      console.error(err);
+      mostrarModalPersonalizado("Error de conexión", "No se pudo contactar al servidor. Intentalo nuevamente.");
     }
   }
 </script>
 
 <!-- ########################################################### -->
-<!--           script de almacenamiento de formulario            -->
+<!--           script principal de reserva (15)                 -->
 <!-- ########################################################### -->
-
 <script>
-    // =========================================================================
-    //  Nota: Asumimos que 'cardForm' es una variable global (let cardForm;) 
-    //  asignada en 'inicializarCardForm' y 'formInscripcion' es accesible.
-    // =========================================================================
+  async function reservar() {
+    const acepto = document.getElementById("acepto")?.checked;
+    const medioPagoSeleccionado =
+      document.querySelector('#paso4 input[name="medioPago"]:checked')?.value ||
+      document.querySelector('input[name="medioPago"]:checked')?.value;
 
-    // Función auxiliar para construir el FormData (basada en tu punto 5 y 6)
-    function construirFormData(medio_para_backend, comprobante = null, token = null, paymentMethodId = null, medioPagoSeleccionado = null) {
-        // Aunque el form fue movido, tu código manual sigue siendo la forma de recolectar.
-        const formData = new FormData();
-        formData.append("nombre", document.getElementById("nombre")?.value || "");
-        formData.append("apellido", document.getElementById("apellido")?.value || "");
-        formData.append("documento", document.getElementById("dni")?.value || "");
-        formData.append("email", document.getElementById("email")?.value || "");
-        formData.append(
-            "fecha_nacimiento",
-            document.getElementById("fecha_nacimiento")?.value || ""
-        );
-        formData.append("pais", document.getElementById("pais")?.value || "");
-        formData.append("provincia", document.getElementById("provincia")?.value || "");
-        formData.append("telefono", document.getElementById("telefono")?.value || "");
-        formData.append("genero", document.getElementById("genero")?.value || "");
-        formData.append("curso", document.getElementById("curso")?.value || "");
-        formData.append("comision", document.getElementById("comision")?.value || "");
+    const comprobanteInput = document.getElementById("comprobante");
+    const comprobante = comprobanteInput ? comprobanteInput.files[0] : null;
 
-        // 6️⃣ Normalizar medio_pago para backend
-        formData.append("medio_pago", medio_para_backend);
-
-        if (comprobante) formData.append("comprobante", comprobante);
-
-        // 7️⃣ Si es tarjeta, agregamos token y método
-        if (token && paymentMethodId) {
-            formData.append("token", token);
-            formData.append("payment_method_id", paymentMethodId);
-
-            // Si es crédito en cuotas, incluir la cantidad seleccionada
-            if (medioPagoSeleccionado === "credito_cuotas") {
-                const cuotas = document.getElementById("cuotas")?.value || "3";
-                formData.append("cuotas", cuotas);
-            }
-        }
-        return formData;
+    if (!acepto) {
+      mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
+      return;
     }
 
-    // Función auxiliar para manejar el envío al backend (punto 8)
-    async function enviarFetch(formData) {
-        // [CÓDIGO ORIGINAL ELIMINADO/ADAPTADO] Convertimos el .then().catch() a async/await para mayor legibilidad
-        /*
-        fetch("/guardar_datos_inscripcion_paga/", {
-            method: "POST",
-            headers: { "X-CSRFToken": getCookie("csrftoken") },
-            body: formData,
-        })
-        .then((resp) => resp.json())
-        .then((data) => {
-        // ... (resto de la lógica) ...
-        })
-        .catch((err) => {
-        // ... (resto de la lógica) ...
-        });
-        */
-        
-        showPreloader(); // Muestra el preloader antes del fetch
-        try {
-            const csrftoken = getCookie('csrftoken');
-            const resp = await fetch("/guardar_datos_inscripcion_paga/", {
-                method: "POST",
-                headers: csrftoken ? { "X-CSRFToken": csrftoken } : {},
-                body: formData,
-            });
-
-            const data = await resp.json();
-            hidePreloader(); // Oculta el preloader al recibir respuesta
-
-            if (data.status === "ok") {
-                mostrarModalPersonalizado(
-                    "🎉 ¡Reserva Exitosa!",
-                    "Tu lugar ha sido reservado correctamente. Te enviaremos un correo con más detalles."
-                );
-                // Si la lógica de irA('paso4') es para un paso de confirmación final:
-                // irA("paso4"); 
-            } else {
-                mostrarModalPersonalizado(
-                    "Error al guardar",
-                    data.msg || "No se pudo completar la inscripción."
-                );
-            }
-        } catch (err) {
-            hidePreloader();
-            console.error(err);
-            mostrarModalPersonalizado(
-                "Error de conexión",
-                "No se pudo contactar al servidor. Intentalo nuevamente."
-            );
-        }
+    if (!medioPagoSeleccionado) {
+      mostrarModalPersonalizado("Seleccioná un medio de pago", "Por favor, elegí una opción de pago antes de continuar.");
+      return;
     }
 
+    const medio_para_backend = medioPagoSeleccionado === "transferencia" ? "transferencia_bancaria" : medioPagoSeleccionado;
 
-    // TU FUNCIÓN RESERVAR MODIFICADA: Ahora es ASYNC y usa el SDK
-    async function reservar() {
-        // checkbox y medio seleccionado (paso 4)
-        const acepto = document.getElementById("acepto")?.checked;
-        const medioPagoSeleccionado =
-            document.querySelector('#paso4 input[name="medioPago"]:checked')?.value ||
-            document.querySelector('input[name="medioPago"]:checked')?.value;
-
-        // comprobante (si existe)
-        const comprobanteInput = document.getElementById("comprobante");
-        const comprobante = comprobanteInput ? comprobanteInput.files[0] : null;
-
-        // 1️⃣ Aceptación de términos
-        if (!acepto) {
-            mostrarModalPersonalizado(
-                "Falta aceptar los términos",
-                "Por favor, aceptá los términos y condiciones antes de continuar."
-            );
-            return;
-        }
-
-        // 2️⃣ Medio seleccionado
-        if (!medioPagoSeleccionado) {
-            mostrarModalPersonalizado(
-                "Seleccioná un medio de pago",
-                "Por favor, elegí una opción de pago antes de continuar."
-            );
-            return;
-        }
-
-        // 6️⃣ Normalizar medio_pago para backend
-        const medio_para_backend =
-            medioPagoSeleccionado === "transferencia"
-                ? "transferencia_bancaria"
-                : medioPagoSeleccionado;
-
-
-        // 3️⃣ Si es transferencia => requerir comprobante
-        if (
-            medioPagoSeleccionado === "transferencia" ||
-            medioPagoSeleccionado === "transferencia_bancaria"
-        ) {
-            if (!comprobante) {
-                mostrarModalPersonalizado(
-                    "Falta comprobante",
-                    "Por favor, adjuntá el comprobante de pago para continuar."
-                );
-                return;
-            }
-            // Construimos FormData y enviamos
-            const formData = construirFormData(medio_para_backend, comprobante);
-            enviarFetch(formData);
-            return; // Salimos de la función
-        }
-
-        // 4️⃣ Si es tarjeta: delegar al SDK (CardForm)
-        const esTarjeta = ["debito", "credito_1", "credito_cuotas"].includes(
-            medioPagoSeleccionado
-        );
-
-        if (esTarjeta) {
-            
-            // ====================================================================
-            // CÓDIGO ELIMINADO: VALIDACIÓN MANUAL DE CAMPOS DE TARJETA
-            // Ahora esto lo hace el SDK de MercadoPago con createCardToken()
-            // ====================================================================
-            /*
-            let form = null;
-            if (
-                medioPagoSeleccionado === "debito" ||
-                medioPagoSeleccionado === "credito_1"
-            ) {
-                form = document.getElementById("formTarjetaSimple");
-            } else if (medioPagoSeleccionado === "credito_cuotas") {
-                form = document.getElementById("formTarjetaCuotas");
-            }
-
-            if (!form) {
-                mostrarModalPersonalizado(
-                    "Error interno",
-                    "No se encontró el formulario de tarjeta correspondiente."
-                );
-                return;
-            }
-
-            // [CÓDIGO ELIMINADO] Tomar los campos específicos
-            const numero = form.querySelector('input[id^="cardNumber"]')?.value.trim();
-            const nombreTitular = form
-                .querySelector('input[id^="cardholderName"]')
-                ?.value.trim();
-            const mes = form.querySelector('input[id^="cardExpirationMonth"]')?.value.trim();
-            // ... (resto de campos y validación de campos obligatorios) ...
-            
-            // [CÓDIGO ELIMINADO] Validaciones básicas de formato (REGEX)
-            if (!/^\d{13,19}$/.test(numero.replace(/\s+/g, ""))) {
-                // ... (modal) ...
-                return;
-            }
-            // ... (resto de validaciones de mes, año, cvv) ...
-            */
-            // ====================================================================
-            
-            if (!window.cardForm) { // Verifica si la variable global existe
-                mostrarModalPersonalizado("Error", "El formulario de tarjeta no se inicializó correctamente.");
-                return;
-            }
-
-            // 💡 LLAMADA CRÍTICA AL SDK: crea el token y valida los datos
-            showPreloader();
-            try {
-                const { token, paymentMethodId } = await cardForm.createCardToken();
-
-                // Si el token se crea, construimos FormData y enviamos
-                const formData = construirFormData(medio_para_backend, comprobante, token, paymentMethodId, medioPagoSeleccionado);
-                
-                enviarFetch(formData);
-
-            } catch (err) {
-                // El error ocurre si la tarjeta es rechazada o los datos son inválidos
-                hidePreloader();
-                console.error("Error SDK:", err);
-                // Mostrar un mensaje de error de pago
-                mostrarModalPersonalizado(
-                    "Error de Pago",
-                    "No se pudo procesar la tarjeta. Verificá los datos e intentá nuevamente."
-                );
-            }
-            return; // Salimos de la función principal
-        }
-        
-        // Si no es tarjeta ni transferencia, algo no está bien
-        if (medioPagoSeleccionado !== 'transferencia' && medioPagoSeleccionado !== 'transferencia_bancaria') {
-            mostrarModalPersonalizado("Error", "Medio de pago desconocido o no configurado.");
-        }
+    // 🏦 Transferencia
+    if (medioPagoSeleccionado === "transferencia" || medioPagoSeleccionado === "transferencia_bancaria") {
+      if (!comprobante) {
+        mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
+        return;
+      }
+      const formData = construirFormData(medio_para_backend, comprobante);
+      enviarFetch(formData);
+      return;
     }
 
-    // Helper para CSRF (idéntico)
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === name + "=") {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
+    // 💳 Tarjetas
+    const esTarjeta = ["debito", "credito_1", "credito_cuotas"].includes(medioPagoSeleccionado);
+    if (esTarjeta) {
+      if (!window.cardForm) {
+        mostrarModalPersonalizado("Error", "El formulario de tarjeta no se inicializó correctamente.");
+        return;
+      }
+
+      showPreloader();
+      try {
+        const { token, paymentMethodId } = await cardForm.createCardToken();
+        const formData = construirFormData(medio_para_backend, comprobante, token, paymentMethodId, medioPagoSeleccionado);
+        enviarFetch(formData);
+      } catch (err) {
+        hidePreloader();
+        console.error("Error SDK:", err);
+        mostrarModalPersonalizado("Error de Pago", "No se pudo procesar la tarjeta. Verificá los datos e intentá nuevamente.");
+      }
+      return;
     }
+
+    mostrarModalPersonalizado("Error", "Medio de pago desconocido o no configurado.");
+  }
 </script>
 
+<!-- ########################################################### -->
+<!--                   prealoader inicia          4              -->
+<!-- ########################################################### -->
+<script>
+// Funciones para mostrar/ocultar preloader
+function showPreloader() {
+  document.getElementById("preloader").style.display = "flex";
+}
+
+function hidePreloader() {
+  document.getElementById("preloader").style.display = "none";
+}
+
+// Ejemplo: integración con tu fetch
+async function enviarFormulario() {
+  showPreloader();
+
+  //const formData = new FormData(document.getElementById("formInscripcion"));
+  //new FormData(document.getElementById("form-registro"))
+  const formData = new FormData(document.getElementById("form-registro"));
+
+
+  try {
+    const res = await fetch("/guardar_inscripcion/", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await res.json();
+    alert(data.msg || "Proceso completado");
+
+  } catch (e) {
+    alert("Error al enviar: " + e);
+  } finally {
+    hidePreloader();
+  }
+}
+</script>
 
 <!-- ########################################################### -->
-<!--                modal de confirmacion final                  -->
+<!--                   prealoader fin             4              -->
 <!-- ########################################################### -->
 
+<!-- ########################################################### -->
+<!--                modal de confirmacion final              4    -->
+<!-- ########################################################### -->
 <script>
 function mostrarModalPersonalizado(titulo = "Mensaje", mensaje = "Algo ocurrió.") {
   document.getElementById("modalTitle").innerText = titulo;
@@ -1659,11 +1703,6 @@ function mostrarModalPersonalizado(titulo = "Mensaje", mensaje = "Algo ocurrió.
   document.getElementById("modalTerminosCustom").style.display = "flex";
 }
 </script>
-
-<!-- ########################################################### -->
-<!--                  Bootstrap JS Bundle con Popper             -->
-<!-- ########################################################### -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
