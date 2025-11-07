@@ -128,6 +128,7 @@ def curso_compra_view(request, nombre_curso):
 
 from django.shortcuts import render
 from .models import Curso, Comision, DatosDeEstudiantes
+from django.conf import settings
 
 def inscripcion(request):
     cursos_qs = Curso.objects.filter(estado_curso__in=['proximo', 'próximo', 'disponible', 'Disponible']).order_by('nombre_curso')
@@ -169,7 +170,7 @@ def inscripcion(request):
         'cursos': cursos,
         'comisiones': comisiones_global,
         'proximo_id': proximo_id,
-        'public_key': settings.MERCADOPAGO_PUBLIC_KEY,
+        # 'public_key': settings.MERCADOPAGO_PUBLIC_KEY,
         "MERCADOPAGO_PUBLIC_KEY": settings.MERCADOPAGO_PUBLIC_KEY
     })
 #---------------------------------------------------------------------------------
