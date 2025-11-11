@@ -8,6 +8,8 @@
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
     <title>Inscripción al curso - Desarrollo Web</title>
    
+    <script src="https://sdk.mercadopago.com/js/v2"></script>
+
     <!-- libreria para banderas form -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@18.1.1/build/css/intlTelInput.min.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -391,7 +393,7 @@
         <!-- Selección de Curso -->
         <div class="mb-4">
           <label for="curso" class="form-label">Selecciona tu curso:</label>
-          <select id="curso" class="form-select">
+          <select id="curso" name="curso_id" class="form-select" required>
             <option value="" disabled selected>Elige un curso</option>
             {% for curso in cursos %}
               <option value="{{ curso.id }}" data-nombre="{{ curso.nombre_curso }}" data-modalidad="{{ curso.modalidad }}">
@@ -459,55 +461,42 @@
 <!-- ######################################################################################################################################## -->
       <!-- Paso 3: Selección de medio de pago -->
 <!-- ######################################################################################################################################## -->
-      <div class="tab-pane fade" id="paso3" role="tabpanel" aria-labelledby="paso3-tab">
-        <div class="row">
-          <div class="col-md-8">
-            <h5 class="mb-4">Elige el medio de pago</h5>
+<!-- Paso 3: Selección de medio de pago -->
+<div class="tab-pane fade" id="paso3" role="tabpanel" aria-labelledby="paso3-tab">
+  <div class="row">
+    <div class="col-md-8">
+      <h5 class="mb-4">Elige el medio de pago</h5>
 
-            <div class="list-group mb-4">
-              <!-- Transferencia -->
-              <label class="list-group-item">
-                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="transferencia_bancaria" checked onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
-                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="transferencia_bancaria" checked onchange="onMedioPaso3Change(this)">
-                <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
-              </label>
+      <div class="list-group mb-4">
+        <!-- Transferencia -->
+        <label class="list-group-item">
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso3"
+                 value="transferencia" checked onchange="onMedioPaso3Change(this)">
+          <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
+        </label>
 
-              <!-- Tarjeta débito -->
-              <label class="list-group-item">
-                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="debito" onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
-                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="debito" onchange="onMedioPaso3Change(this)">
-                <strong>Tarjeta de débito</strong> - En 1 Pago
-              </label>
+        <!-- Mercado Pago -->
+        <label class="list-group-item">
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso3"
+                 value="mercadopago" onchange="onMedioPaso3Change(this)">
+          <strong>Tarjeta / Mercado Pago</strong> - Pagá con débito o crédito
+        </label>
+      </div>
 
-              <!-- Tarjeta crédito (1 pago) -->
-              <label class="list-group-item">
-                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_1" onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
-                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="credito_1" onchange="onMedioPaso3Change(this)">
-                <strong>Tarjeta de crédito</strong> - En 1 pago
-              </label>
+      <div class="mt-4">
+        <button class="btn btn-outline-secondary me-2" onclick="irA('paso2')">Volver</button>
+        <button class="btn btn-success" onclick="irA('paso4')">Continuar</button>
+      </div>
 
-              <!-- Tarjeta crédito (cuotas) -->
-              <label class="list-group-item">
-                {% comment %} <input class="form-check-input me-2" type="radio" name="medioPago" value="credito_cuotas" onchange="mostrarFormularioPago(this.value)"> {% endcomment %}
-                <input class="form-check-input me-2" type="radio" name="medioPagoPaso3" value="credito_cuotas" onchange="onMedioPaso3Change(this)">
-                <strong>Tarjeta de crédito</strong> - 3 o 6 cuotas con interés
-              </label>
-            </div>
-
-            <div class="mt-4">
-              <button class="btn btn-outline-secondary me-2" onclick="irA('paso2')">Volver</button>
-              <button class="btn btn-success" onclick="irA('paso4')">Continuar</button>
-            </div>
-
-            <hr class="my-4">
-            <h6 class="mb-3">Tu inscripción incluye</h6>
-            <ul class="list-unstyled">
-              <li>✅ La primera clase es gratuita.</li>
-              <li>✅ Tienes acceso total a la plataforma</li>
-              <li>✅ Material exclusivo</li>
-              <li>✅ Clases sincrónicas y asincrónicas</li>
-            </ul>
-          </div>
+      <hr class="my-4">
+      <h6 class="mb-3">Tu inscripción incluye</h6>
+      <ul class="list-unstyled">
+        <li>✅ La primera clase es gratuita.</li>
+        <li>✅ Acceso total a la plataforma</li>
+        <li>✅ Material exclusivo</li>
+        <li>✅ Clases sincrónicas y asincrónicas</li>
+      </ul>
+    </div>
 
           <div class="col-md-4 summary-section">
             <div class="info-box">
@@ -530,37 +519,30 @@
               <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
             </div>
           </div>
+    
+  </div>
+</div>
 
-        </div>
-      </div>
 <!-- ######################################################################################################################################## -->
 <!-- Paso 4: Datos de pago / Confirmación -->
 <!-- ######################################################################################################################################## -->
+<!-- Paso 4: Datos de pago / Confirmación -->
 <div class="tab-pane fade" id="paso4" role="tabpanel" aria-labelledby="paso4-tab">
   <div class="row">
     <div class="col-md-8">
       <h5 class="mb-4">Último paso: Confirmación</h5>
 
-      <!-- Selección del medio de pago -->
       <div class="list-group mb-4">
         <label class="list-group-item">
-          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="transferencia" checked onchange="onMedioPaso4Change(this)">
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4"
+                 value="transferencia" checked onchange="onMedioPaso4Change(this)">
           <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
         </label>
 
         <label class="list-group-item">
-          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="debito" onchange="onMedioPaso4Change(this)"> 
-          <strong>Tarjeta de débito</strong> - Pago en 1 cuota
-        </label>
-
-        <label class="list-group-item">
-          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="credito_1" onchange="onMedioPaso4Change(this)"> 
-          <strong>Tarjeta de crédito</strong> - 1 pago
-        </label>
-
-        <label class="list-group-item">
-          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4" value="credito_cuotas" onchange="onMedioPaso4Change(this)"> 
-          <strong>Tarjeta de crédito</strong> - 3 o 6 cuotas con interés
+          <input class="form-check-input me-2" type="radio" name="medioPagoPaso4"
+                 value="mercadopago" onchange="onMedioPaso4Change(this)">
+          <strong>Tarjeta / Mercado Pago</strong>
         </label>
       </div>
 
@@ -571,125 +553,39 @@
         <p>CBU: <strong>0000003100012308471201</strong></p>
         <p>Banco: <strong>Banco Marema</strong></p>
         <p>Titular: <strong>Emanuel Cabral</strong></p>
-        <p class="mt-3">Una vez realizada la transferencia, enviá el comprobante a:</p>
+        <p class="mt-3">Enviá el comprobante a:</p>
         <p><strong>tecnomarema.ar@gmail.com</strong></p>
 
         <div class="mb-4">
-          <label for="comprobante" class="form-label">Adjuntá el comprobante de pago:</label>
+          <label for="comprobante" class="form-label">Adjuntá el comprobante:</label>
           <input type="file" class="form-control" name="comprobante" id="comprobante" accept="image/*" required>
+          
+        <!-- Aceptar términos -->
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="acepto" required>
+          <label class="form-check-label" for="acepto">
+            <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones del servicio</a>
+          </label>
+        </div>
+
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
+        </div>
+
         </div>
       </div>
 
-      <!-- Formulario tarjeta simple: débito o crédito 1 pago -->
-      <div id="formTarjetaSimple" class="formulario-pago d-none" data-tipo="simple">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Número de tarjeta</label>
-            <div id="cardNumberSimple" class="mp-field"></div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Nombre en la tarjeta</label>
-            {% comment %} <div id="cardholderNameSimple" class="mp-field"></div> {% endcomment %}
-            <input type="text" id="cardholderNameSimple" placeholder="Nombre del titular" />
-            {% comment %} <div id="cardholderNameSimple"></div> {% endcomment %}
-
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label">Mes</label>
-            <div id="cardExpirationMonthSimple" class="mp-field"></div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Año</label>
-            <div id="cardExpirationYearSimple" class="mp-field"></div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">CVV</label>
-            <div id="cardSecurityCodeSimple" class="mp-field"></div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Documento (DNI)</label>
-          <div id="docNumberSimple" class="mp-field"></div>
-        </div>
-
-        <!-- Campos ocultos obligatorios para CardForm -->
-        <input type="hidden" id="tokenSimple" name="token">
-        <input type="hidden" id="paymentMethodIdSimple" name="paymentMethodId">
-        {% comment %} <input type="hidden" id="issuerSimple" name="issuer"> {% endcomment %}
-        <select id="issuerSimple" class="d-none"></select>
-        <select id="installmentsSimple" class="d-none">
-          <option value="1" selected>1</option>
-        </select>
-      </div>
-
-      <!-- Formulario tarjeta crédito en cuotas -->
-      <div id="formTarjetaCuotas" class="formulario-pago d-none" data-tipo="cuotas">
-        <div class="row mb-3">
-          <div class="col-md-6">
-            <label class="form-label">Número de tarjeta</label>
-            <div id="cardNumberCuotas" class="mp-field"></div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Nombre en la tarjeta</label>
-            {% comment %} <div id="cardholderNameCuotas" class="mp-field"></div> {% endcomment %}
-            {% comment %} <input type="text" id="cardholderName" placeholder="Nombre del titular" /> {% endcomment %}
-            <input type="text" id="cardholderNameCuotas" name="cardholderNameCuotas" placeholder="Nombre en la tarjeta" />
-            {% comment %} <div id="cardholderNameCuotas"></div> {% endcomment %}
+      <!-- Formulario Mercado Pago -->
+<!-- Formulario Mercado Pago (Payment Brick nuevo) -->
+<form id="formMercadoPago" class="formulario-pago d-none">
+  <h6>Pago con tarjeta o cuenta Mercado Pago</h6>
+  <div id="paymentBrick_container" class="bg-dark border border-success rounded-3 p-3"></div>
+</form>
 
 
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <label class="form-label">Mes</label>
-            <div id="cardExpirationMonthCuotas" class="mp-field"></div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Año</label>
-            <div id="cardExpirationYearCuotas" class="mp-field"></div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">CVV</label>
-            <div id="cardSecurityCodeCuotas" class="mp-field"></div>
-          </div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Documento (DNI)</label>
-          <div id="docNumberCuotas" class="mp-field"></div>
-        </div>
-        <div class="mb-3">
-          <label class="form-label">Elegí la cantidad de cuotas</label>
-          <select class="form-select" id="cuotas">
-            <option value="3">3 cuotas con interés</option>
-            <option value="6">6 cuotas con interés</option>
-          </select>
-        </div>
-
-        <!-- Campos ocultos obligatorios para CardForm -->
-        <input type="hidden" id="tokenCuotas" name="token">
-        <input type="hidden" id="paymentMethodIdCuotas" name="paymentMethodId">
-        {% comment %} <input type="hidden" id="issuerCuotas" name="issuer"> {% endcomment %}
-        <select id="issuerCuotas" class="d-none"></select>
-        <select id="installmentsCuotas" class="d-none"></select>
-      </div>
-
-      <!-- Aceptar términos -->
-      <div class="form-check mb-3">
-        <input class="form-check-input" type="checkbox" id="acepto" required>
-        <label class="form-check-label" for="acepto">
-          <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones del servicio</a>
-        </label>
-      </div>
-
-      <div class="d-grid gap-2">
-        <button type="button" class="btn btn-lg btn-success" onclick="reservar()">👌 Reservar mi lugar</button>
-      </div>
     </div>
   </div>
 </div>
-
 
 
 <!-- ######################################################################################################################################## -->
@@ -763,7 +659,7 @@
 <!-- ########################################################### -->
 <!--                      sdk de mercadopago                     -->
 <!-- ########################################################### -->
- <script src="https://sdk.mercadopago.com/js/v2"></script>
+ {% comment %} <script src="https://sdk.mercadopago.com/js/v2"></script> {% endcomment %}
 
 
 <script>
@@ -777,159 +673,307 @@ document.addEventListener("DOMContentLoaded", function() {
 <!-- ==================== Script MercadoPago CardForm         1° script                                                  ==================== -->
 <!-- ######################################################################################################################################## -->
 
+<!-- ==================== Script MercadoPago Payment Brick (CORREGIDO) ==================== -->
 <script>
-  // ########################### Inicialización SDK MercadoPago ###########################
-  var mp;
-  document.addEventListener("DOMContentLoaded", function() {
-    const key = "{{ MERCADOPAGO_PUBLIC_KEY }}";
+document.addEventListener("DOMContentLoaded", async () => {
+  const publicKey = "{{ MERCADOPAGO_PUBLIC_KEY }}";
+  if (!publicKey) {
+    console.error("No se encontró la MERCADOPAGO_PUBLIC_KEY");
+    return;
+  }
 
-    if (!key) {
-      console.error("⚠️ No se recibió la MERCADOPAGO_PUBLIC_KEY.");
-      return;
+  const mp = new MercadoPago(publicKey, { locale: 'es-AR' });
+  console.log("SDK MercadoPago inicializado");
+
+  // --- Helpers ---
+  function isPaso4Visible() {
+    const paso4 = document.getElementById('paso4');
+    return paso4 && paso4.classList.contains('show');
+  }
+
+  function obtenerDatosCurso() {
+    const cursoSelect = document.getElementById("curso");
+    const comisionSelect = document.getElementById("comision");
+
+    if (!cursoSelect?.value || !comisionSelect?.value) {
+      console.warn("Falta curso o comisión seleccionada");
+      return null;
     }
-    mp = new MercadoPago(key, { locale: 'es-AR' });
-    console.log("✅ SDK de MercadoPago inicializado correctamente.");
 
-    const medio = document.querySelector('input[name="medioPagoPaso4"]:checked')?.value;
-    if(medio === 'debito' || medio === 'credito_1') inicializarCardForm('simple');
-    else if(medio === 'credito_cuotas') inicializarCardForm('cuotas');
-  });
-
-  // ########################### Función global CardForm ###########################
-  function inicializarCardForm(tipo) {
-    if(!mp) return console.error("⚠️ MercadoPago no inicializado");
-
-    if(window.cardForm) {
-      try { window.cardForm.unmount(); } catch(e) { console.warn(e); }
+    const cursoId = cursoSelect.value;
+    const cursoData = cursos[cursoId];
+    if (!cursoData) {
+      console.warn("No existe datos del curso en 'cursos' para id:", cursoId);
+      return null;
     }
 
-    const prefix = tipo === 'cuotas' ? 'Cuotas' : 'Simple';
-
-    const idsNecesarios = [
-      `cardNumber${prefix}`, `cardholderName${prefix}`, `cardExpirationMonth${prefix}`,
-      `cardExpirationYear${prefix}`, `cardSecurityCode${prefix}`, `docNumber${prefix}`,
-      `installments${prefix}`, `issuer${prefix}`, `token${prefix}`, `paymentMethodId${prefix}`
-    ];
-    const faltantes = idsNecesarios.filter(id => !document.getElementById(id));
-    if(faltantes.length) return console.error("Faltan inputs:", faltantes);
-
-    // 🔹 Monto limpio como número (120.000,00 → 120000.00)
-    const amountEl = document.querySelector('.detallePrecioFinal');
-    let amount = 0;
-    if (amountEl) {
-      let text = amountEl.textContent.replace(/\s/g, '');        // quitar espacios
-      text = text.replace('$','');                               // quitar $
-      text = text.replace(/\./g,'');                             // quitar puntos de miles
-      text = text.replace(',', '.');                             // coma decimal a punto
-      amount = parseFloat(text) || 0;
+    const precioFinal = parseFloat(cursoData.precio_final);
+    if (isNaN(precioFinal) || precioFinal <= 0) {
+      console.warn("Precio inválido:", cursoData.precio_final);
+      return null;
     }
-    console.log("🔹 Monto para CardForm:", amount);
 
-    // 🔹 Configuración CardForm
-    const formConfig = {
-      //transactionAmount: amount,
-      //amount: amount,
-      amount: amount.toFixed(2),
-      autoMount: true,
-      form: {
-        id: `formTarjeta${prefix}`,
-        cardNumber: { id: `cardNumber${prefix}` },
-        cardholderName: { id: `cardholderName${prefix}` },
-        cardExpirationMonth: { id: `cardExpirationMonth${prefix}` },
-        cardExpirationYear: { id: `cardExpirationYear${prefix}` },
-        securityCode: { id: `cardSecurityCode${prefix}` },
-        identificationNumber: { id: `docNumber${prefix}` },
-        installments: { id: `installments${prefix}` },
-        issuer: { id: `issuer${prefix}` },
-        token: { id: `token${prefix}` },
-        paymentMethodId: { id: `paymentMethodId${prefix}` },
+    return {
+      curso_id: cursoId,
+      comision_id: comisionSelect.value,
+      monto: precioFinal,
+      nombre_curso: cursoData.nombre
+    };
+  }
+
+  // --- Inicializar / destruir Brick ---
+  async function crearYMontarBrick(datos) {
+    const bricksBuilder = mp.bricks();
+    // destruir si existe
+    if (window.paymentBrickController) {
+      try {
+        await window.paymentBrickController.unmount();
+        console.log("Brick anterior desmontado (crearYMontarBrick)");
+      } catch (e) {
+        console.warn("Error al unmount anterior:", e);
+      }
+    }
+    // crear
+    const settings = {
+      initialization: {
+        amount: datos.monto,
+        currency: 'ARS'
+      },
+      customization: {
+        paymentMethods: { creditCard: "all", debitCard: "all", ticket: "all" },
+        visual: { style: { theme: "dark" } }
       },
       callbacks: {
-        onFormMounted: (error) => error ? console.error(error) : console.log("✅ CardForm montado:", prefix),
-        onSubmit: async (event) => {
-          event.preventDefault();
-          showPreloader();
+        onReady: () => {
+          console.log("🧱 Payment Brick listo");
+          if (typeof hidePreloader === 'function') hidePreloader();
+        },
+        onSubmit: async (formData) => {
+          console.log("🚀 onSubmit ejecutado, datos: ", formData);
+
+          // seguridad: token
+          // —— NUEVO CÓDIGO (permite pago en efectivo) ——
+          const datosBrick = formData?.formData || {};
+          const token = datosBrick.token || null;
+          const paymentMethodId = datosBrick.paymentMethodId || datosBrick.payment_method_id || '';
+
+          // Detectamos si es pago en efectivo (Rapipago, Pago Fácil, etc.)
+          const esPagoEfectivo = !token && paymentMethodId && (
+              paymentMethodId.toLowerCase().includes('rapipago') ||
+              paymentMethodId.toLowerCase().includes('pagofacil') ||
+              paymentMethodId.toLowerCase().includes('provencred')
+          );
+
+          if (!token && !esPagoEfectivo) {
+              console.error("Falta token y NO es pago en efectivo");
+              mostrarModalPersonalizado("Error", "No se pudo procesar la tarjeta. Intentá nuevamente.");
+              return;
+          }
+          // —— FIN DEL NUEVO CÓDIGO ——
+
+           // === CONSTRUCCIÓN DEL FormData (VERSIÓN FINAL - FUNCIONA 100% CON TODO) ===
+          const fd = new FormData();
+
+          // 1. ID ESTUDIANTE → SIEMPRE PRIMERO (obligatorio)
+          const idEstudiante = document.getElementById('id_estudiante')?.value?.trim();
+          if (!idEstudiante) {
+              console.error("FALTA id_estudiante → no se puede continuar");
+              mostrarModalPersonalizado("Error", "Falta información del estudiante. Recargá la página.");
+              if (typeof hidePreloader === 'function') hidePreloader();
+              return;
+          }
+          fd.append('id_estudiante', idEstudiante);
+          console.log("id_estudiante enviado:", idEstudiante);
+
+          // 2. Datos del alumno
+          fd.append('nombre', document.getElementById('nombre')?.value?.trim() || '');
+          fd.append('apellido', document.getElementById('apellido')?.value?.trim() || '');
+
+          // DNI + DOCUMENTO (tu backend pide AMBOS)
+          const dni = document.getElementById('dni')?.value?.trim() || '';
+          fd.append('dni', dni);
+          fd.append('documento', dni); // ESTO ERA LO QUE FALTABA
+
+          fd.append('email', document.getElementById('email')?.value?.trim() || '');
+          fd.append('telefono', document.getElementById('telefono')?.value?.trim() || '');
+          fd.append('genero', document.getElementById('genero')?.value || '');
+          fd.append('fecha_nacimiento', document.getElementById('fecha_nacimiento')?.value || '');
+          fd.append('pais', document.getElementById('pais')?.value || '');
+          fd.append('provincia', document.getElementById('provincia')?.value || '');
+
+          // 3. Curso y comisión
+          fd.append('curso_id', datos.curso_id);
+          fd.append('comision_id', datos.comision_id);
+          fd.append('nombre_curso', datos.nombre_curso);
+          fd.append('monto', datos.monto);
+
+          // 4. Mercado Pago - DATOS COMUNES
+          fd.append('payment_method', 'mercadopago');
+          fd.append('es_pago_efectivo', esPagoEfectivo ? '1' : '0');
+
+          // 5. Datos específicos según medio de pago
+          if (!esPagoEfectivo) {
+              // TARJETA O DÉBITO
+              if (token) fd.append('token', token);
+              fd.append('payment_method_id', paymentMethodId);
+              fd.append('issuer_id', formData.formData?.issuerId || formData.formData?.issuer_id || '');
+              fd.append('installments', formData.formData?.installments || 1);
+          } else {
+              // PAGO FÁCIL / RAPIPAGO
+              fd.append('payment_method_id', paymentMethodId); // 'pagofacil' o 'rapipago'
+          }
+
+
+          // debug console
+          for (let [k, v] of fd.entries()) console.log("  →", k, "=", v);
+
+          if (typeof showPreloader === 'function') showPreloader();
+
           try {
-            const { token, paymentMethodId } = await window.cardForm.createCardToken();
-            const form = new FormData(document.getElementById("form-registro"));
-            form.append('token', token);
-            form.append('payment_method_id', paymentMethodId);
-            form.append('medio_pago', tipo === 'cuotas' ? 'credito_cuotas' : 'debito');
-            if(tipo === 'cuotas') {
-              const cuotas = document.getElementById("cuotas")?.value || "1";
-              form.append('cuotas', cuotas);
-            }
-            const csrftoken = getCookie('csrftoken');
             const resp = await fetch("/guardar_datos_inscripcion_paga/", {
               method: "POST",
-              headers: csrftoken ? { 'X-CSRFToken': csrftoken } : {},
-              body: form
+              body: fd,
+              headers: { "X-CSRFToken": getCookie("csrftoken") }
             });
             const result = await resp.json();
-            hidePreloader();
-            if(result.status==="ok") {
-              irA('paso4'); mostrarModalExitoInscripcion(result);
-            } else mostrarModalPersonalizado("Error", result.msg || "Error procesando pago.");
-          } catch(err) {
-            hidePreloader();
-            console.error("❌ Error token/enviar:", err);
-            mostrarModalPersonalizado("Error de Pago", "No se pudo generar el token o hubo un problema de conexión.");
+            if (typeof hidePreloader === 'function') hidePreloader();
+
+            if (result.status === "ok") {
+              mostrarModalPersonalizado(
+              "¡Inscripción Exitosa!",
+              `¡Felicitaciones! Tu pago de $${datos.monto} fue aprobado.\n\n` +
+              `Curso: ${datos.nombre_curso}\n\n` +
+              `Te enviaremos un correo a ${document.getElementById('email')?.value || 'tu casilla'} con todos los datos de acceso, link de la plataforma y próximos pasos.\n\n` +
+              `¡Nos vemos en clase!`
+            );
+            } else {
+              mostrarModalPersonalizado("Error en el pago", result.msg || "No se pudo procesar el pago.");
+            }
+          } catch (err) {
+            if (typeof hidePreloader === 'function') hidePreloader();
+            console.error("Error en fetch al backend:", err);
+            mostrarModalPersonalizado("Error", "No se pudo conectar al servidor.");
           }
+        },
+        onError: (err) => {
+          console.error("Error Payment Brick:", err);
+          if (typeof hidePreloader === 'function') hidePreloader();
+          mostrarModalPersonalizado("Error en el formulario de pago", err?.message || JSON.stringify(err));
         }
       }
     };
 
-    try { window.cardForm = mp.cardForm(formConfig); } 
-    catch(err) { console.error("❌ Error inicializando CardForm:", err); }
+    try {
+      // limpiar contenedor y crear
+      const container = document.getElementById("paymentBrick_container");
+      if (!container) throw new Error("Contenedor paymentBrick_container no encontrado");
+      container.innerHTML = "";
+      container.style.minHeight = "380px";
+
+      window.paymentBrickController = await bricksBuilder.create("payment", "paymentBrick_container", settings);
+      console.log("✅ Nuevo Payment Brick creado con éxito");
+    } catch (err) {
+      console.error("Error al crear Brick:", err);
+      if (typeof hidePreloader === 'function') hidePreloader();
+    }
   }
 
-  // ########################### Cambio de medio de pago ###########################
-function onMedioPaso4Change(radio) {
-  const val = radio.value;
-
-  // Ocultar todos los formularios primero
-  document.querySelectorAll('.formulario-pago').forEach(el => el.classList.add('d-none'));
-
-  // Transferencia solo muestra su formulario
-  if (val === 'transferencia') {
-    document.getElementById('formTransferencia').classList.remove('d-none');
-    return;
+  // función pública que inicializa (verifica curso/comisión y visibilidad)
+  async function inicializarPaymentBrick() {
+    const datos = obtenerDatosCurso();
+    if (!datos) {
+      mostrarModalPersonalizado("Error", "Debes seleccionar curso y comisión antes de pagar.");
+      return;
+    }
+    // Solo inicializar si el Paso4 está visible (evita crearlo desde Paso3)
+    if (!isPaso4Visible()) {
+      console.log("Paso4 no visible: no inicializo Brick (esperando a que se muestre paso4)");
+      return;
+    }
+    await crearYMontarBrick(datos);
   }
 
-  // Determinar tipo y contenedor según el medio de pago
-  let formId = '';
-  let tipo = '';
+  // --- Escuchas en radios de paso4: mostrar formulario pero SOLO crear Brick si paso4 visible ---
+  document.querySelectorAll('input[name="medioPagoPaso4"]').forEach(radio => {
+    radio.addEventListener("change", async (e) => {
+      const valor = e.target.value;
+      // ocultar todos
+      document.querySelectorAll(".formulario-pago").forEach(f => f.classList.add("d-none"));
 
-  if (val === 'debito' || val === 'credito_1') {
-    formId = 'formTarjetaSimple';
-    tipo = 'simple';
-  } else if (val === 'credito_cuotas') {
-    formId = 'formTarjetaCuotas';
-    tipo = 'cuotas';
-  }
+      if (valor === "mercadopago") {
+        const formMP = document.getElementById("formMercadoPago");
+        if (formMP) formMP.classList.remove("d-none");
 
-  const form = document.getElementById(formId);
-  if (!form) {
-    console.error(`⚠️ No se encontró el contenedor ${formId}`);
-    return;
-  }
-
-  // Mostrar el formulario primero
-  form.classList.remove('d-none');
-
-  // Esperar que el navegador renderice el contenedor antes de inicializar CardForm
-  requestAnimationFrame(() => {
-    console.log(`🚀 Inicializando CardForm para: ${tipo}`);
-    inicializarCardForm(tipo);
+        // Solo inicializar si el panel paso4 está visible
+        if (isPaso4Visible()) {
+          if (typeof showPreloader === 'function') showPreloader();
+          await inicializarPaymentBrick();
+        } else {
+          console.log("mercadopago seleccionado pero paso4 no visible; se pospone la inicialización");
+        }
+      } else if (valor === "transferencia") {
+        const el = document.getElementById("formTransferencia");
+        if (el) el.classList.remove("d-none");
+      }
+    });
   });
-}
 
+  // --- Sincronización entre paso3 y paso4 SIN disparar creación del Brick ---
+  // Cuando usuario elige en paso3, solo marcamos el radio en paso4 pero NO disparamos su change.
+  document.querySelectorAll('#paso3 input[name="medioPagoPaso3"]').forEach(r => {
+    r.addEventListener('change', (ev) => {
+      const value = ev.target.value;
+      const radioPaso4 = document.querySelector(`#paso4 input[name="medioPagoPaso4"][value="${value}"]`);
+      if (radioPaso4) {
+        radioPaso4.checked = true;
+        // NO dispatchEvent('change') para evitar inicializar el Brick mientras estamos en paso3
+      }
+      // además, actualizamos visuales según mostrarFormularioPago (solo local en paso3)
+      mostrarFormularioPago(value === 'transferencia_bancaria' ? 'transferencia' : value);
+    });
+  });
 
+  // --- Cuando se entra al Paso4 por la función irA(...) , inicializamos si mercado está seleccionado ---
+  // Para que esto funcione, reemplazá la parte de irA() donde inicializabas cardForm por esto:
+  // (si querés, parcheo automático no alterando tu irA: en vez de cambiar irA aquí, agrego un observer simple)
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach(m => {
+      // detectar cuando #paso4 obtiene clase 'show'
+      if (m.target && m.target.id === 'paso4') {
+        if (m.target.classList.contains('show')) {
+          // paso4 visible: si mercado seleccionado, inicializar
+          const mercadoSelected = document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]');
+          if (mercadoSelected && mercadoSelected.checked) {
+            console.log("Observer: paso4 visible y MercadoPago seleccionado -> inicializando Brick");
+            if (typeof showPreloader === 'function') showPreloader();
+            inicializarPaymentBrick();
+          }
+        }
+      }
+    });
+  });
 
+  const paso4El = document.getElementById('paso4');
+  if (paso4El) observer.observe(paso4El, { attributes: true, attributeFilter: ['class'] });
+
+  // --- Reinicializar si cambian curso/comisión y paso4 está visible ---
+  document.getElementById("curso")?.addEventListener("change", () => {
+    if (isPaso4Visible() && document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]:checked')) {
+      if (typeof showPreloader === 'function') showPreloader();
+      setTimeout(inicializarPaymentBrick, 250);
+    }
+  });
+
+  document.getElementById("comision")?.addEventListener("change", () => {
+    if (isPaso4Visible() && document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]:checked')) {
+      if (typeof showPreloader === 'function') showPreloader();
+      setTimeout(inicializarPaymentBrick, 250);
+    }
+  });
+
+  console.log("Payment Brick behavior inicializado (no se montará en paso3).");
+});
 </script>
-
-
-
 
 
 
@@ -976,7 +1020,6 @@ function sincronizarMedioPago() {
   }
 }
 </script> {% endcomment %}
-
 
 
 <!-- ########################################################### -->
@@ -1155,96 +1198,7 @@ document.querySelectorAll('.detalleDescuento').forEach(el => {
 <!-- ########################################################### -->
 <!--                  Función para cambiar pestañas        10    -->
 <!-- ########################################################### -->
-{% comment %} <script>
-function irA(tabId) {
-  const triggerEl = document.querySelector(`#${tabId}-tab`);
-  if (!triggerEl) return;
 
-  // Cambiar pestaña activa
-  const tab = new bootstrap.Tab(triggerEl);
-  tab.show();
-
-  // Scroll arriba suave
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // ✅ Cuando llegás al paso 4:
-  if (tabId === 'paso4') {
-    // Sincronizar radios de paso 3 → paso 4
-    sincronizarMedioPago();
-
-    // 🔹 Inicializar CardForm solo si corresponde (tras leve retardo para renderizar)
-    setTimeout(() => {
-      const medioSeleccionado = document.querySelector('#paso3 input[name="medioPago"]:checked');
-      if (!medioSeleccionado) {
-        console.warn("⚠️ No hay medio de pago seleccionado en paso 3.");
-        return;
-      }
-
-      const medio = medioSeleccionado.value;
-      console.log("💳 Medio de pago seleccionado:", medio);
-
-      try {
-        if (medio === 'debito' || medio === 'credito_1') {
-          inicializarCardForm('simple');
-        } else if (medio === 'credito_cuotas') {
-          inicializarCardForm('cuotas');
-        }
-      } catch (err) {
-        console.error("❌ Error al inicializar CardForm:", err);
-      }
-    }, 500);
-  }
-}
-</script> {% endcomment %}
-
-{% comment %} <script>
-function irA(tabId) {
-    // 🔹 Obtener el botón/anchor que activa la pestaña
-    const triggerEl = document.querySelector(`#${tabId}-tab`);
-
-    if (!triggerEl) {
-        console.warn("⚠️ triggerEl no encontrado para tabId:", tabId);
-        return;
-    }
-
-    // 🔹 Inicializar y mostrar la pestaña usando Bootstrap Tab
-    try {
-        const tab = new bootstrap.Tab(triggerEl);
-        tab.show();
-    } catch (err) {
-        console.error("❌ Error al mostrar pestaña:", err);
-        return;
-    }
-
-    // 🔹 Scroll suave hacia arriba
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // 🔹 Solo para paso4: inicializar CardForm según medio de pago seleccionado
-    if (tabId === 'paso4') {
-        setTimeout(() => {
-            // Elegir radio del paso 3 como referencia
-            const medioSeleccionado = document.querySelector('#paso3 input[name="medioPagoPaso3"]:checked');
-            if (!medioSeleccionado) {
-                console.warn("⚠️ No hay medio de pago seleccionado en paso 3");
-                return;
-            }
-
-            const medio = medioSeleccionado.value;
-            console.log("💳 Inicializando CardForm según medio de pago:", medio);
-
-            try {
-                if (medio === 'debito' || medio === 'credito_1') {
-                    inicializarCardForm('simple');
-                } else if (medio === 'credito_cuotas') {
-                    inicializarCardForm('cuotas');
-                }
-            } catch (err) {
-                console.error("❌ Error al inicializar CardForm:", err);
-            }
-        }, 500);
-    }
-}
-</script> {% endcomment %}
 <script>
 function irA(tabId) {
     // 🔹 Selecciona el botón correcto que activa la pestaña
@@ -1288,51 +1242,6 @@ function irA(tabId) {
 <!-- ########################################################### -->
 <!--            Sincronización de medios de pago (FIX)           -->
 <!-- ########################################################### -->
-{% comment %} <script>
-  // 🔁 Sincroniza los radios entre Paso 3 y Paso 4
-  function onMedioPaso3Change(radioEl) {
-    const value = radioEl.value;
-    console.log("🔄 Cambio en paso 3 →", value);
-
-    // Buscar y marcar el mismo valor en paso 4
-    const radioPaso4 = document.querySelector(`#paso4 input[name="medioPagoPaso4"][value="${value}"]`);
-    if (radioPaso4) {
-      radioPaso4.checked = true;
-      radioPaso4.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    // Mostrar formulario correspondiente
-    mostrarFormularioPago(value === 'transferencia_bancaria' ? 'transferencia' : value);
-  }
-
-  function onMedioPaso4Change(radioEl) {
-    const value = radioEl.value;
-    console.log("🔄 Cambio en paso 4 →", value);
-
-    // Buscar y marcar el mismo valor en paso 3
-    const radioPaso3 = document.querySelector(`#paso3 input[name="medioPagoPaso3"][value="${value}"]`);
-    if (radioPaso3) {
-      radioPaso3.checked = true;
-      radioPaso3.dispatchEvent(new Event('change', { bubbles: true }));
-    }
-
-    // Mostrar formulario correspondiente
-    mostrarFormularioPago(value === 'transferencia' ? 'transferencia' : value);
-  }
-
-  // Se ejecuta al cargar el DOM
-  document.addEventListener('DOMContentLoaded', () => {
-    // Paso 3
-    document.querySelectorAll('#paso3 input[name="medioPagoPaso3"]').forEach(r => {
-      r.addEventListener('change', () => onMedioPaso3Change(r));
-    });
-    // Paso 4
-    document.querySelectorAll('#paso4 input[name="medioPagoPaso4"]').forEach(r => {
-      r.addEventListener('change', () => onMedioPaso4Change(r));
-    });
-    console.log("✅ Sincronización de medios de pago lista");
-  });
-</script> {% endcomment %}
 
 <script>
 let sincronizando = false;
@@ -1381,8 +1290,6 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 
-
-
 <!-- ########################################################### -->
 <!--               Mostrar formulario según método pago     5    -->
 <!-- ########################################################### -->
@@ -1393,16 +1300,24 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function mostrarFormularioPago(valor) {
     const forms = ['formTransferencia', 'formTarjetaSimple', 'formTarjetaCuotas'];
-    forms.forEach(id => document.getElementById(id).classList.add('d-none'));
+    
+    forms.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('d-none'); // ✅ solo si existe
+    });
 
     if (valor === 'transferencia') {
-      document.getElementById('formTransferencia').classList.remove('d-none');
+      const el = document.getElementById('formTransferencia');
+      if (el) el.classList.remove('d-none');
     } else if (valor === 'debito' || valor === 'credito_1') {
-      document.getElementById('formTarjetaSimple').classList.remove('d-none');
+      const el = document.getElementById('formTarjetaSimple');
+      if (el) el.classList.remove('d-none');
     } else if (valor === 'credito_cuotas') {
-      document.getElementById('formTarjetaCuotas').classList.remove('d-none');
+      const el = document.getElementById('formTarjetaCuotas');
+      if (el) el.classList.remove('d-none');
     }
   }
+
 </script>
 
 <!-- ########################################################### -->
@@ -1593,62 +1508,75 @@ document.addEventListener('DOMContentLoaded', () => {
 <!--           script principal de reserva (15)                 -->
 <!-- ########################################################### -->
 <script>
-  async function reservar() {
-    const acepto = document.getElementById("acepto")?.checked;
-    const medioPagoSeleccionado =
-      document.querySelector('#paso4 input[name="medioPago"]:checked')?.value ||
-      document.querySelector('input[name="medioPago"]:checked')?.value;
-
-    const comprobanteInput = document.getElementById("comprobante");
-    const comprobante = comprobanteInput ? comprobanteInput.files[0] : null;
-
-    if (!acepto) {
-      mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
-      return;
-    }
-
-    if (!medioPagoSeleccionado) {
-      mostrarModalPersonalizado("Seleccioná un medio de pago", "Por favor, elegí una opción de pago antes de continuar.");
-      return;
-    }
-
-    const medio_para_backend = medioPagoSeleccionado === "transferencia" ? "transferencia_bancaria" : medioPagoSeleccionado;
-
-    // 🏦 Transferencia
-    if (medioPagoSeleccionado === "transferencia" || medioPagoSeleccionado === "transferencia_bancaria") {
-      if (!comprobante) {
-        mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
-        return;
-      }
-      const formData = construirFormData(medio_para_backend, comprobante);
-      enviarFetch(formData);
-      return;
-    }
-
-    // 💳 Tarjetas
-    const esTarjeta = ["debito", "credito_1", "credito_cuotas"].includes(medioPagoSeleccionado);
-    if (esTarjeta) {
-      if (!window.cardForm) {
-        mostrarModalPersonalizado("Error", "El formulario de tarjeta no se inicializó correctamente.");
-        return;
-      }
-
-      showPreloader();
-      try {
-        const { token, paymentMethodId } = await cardForm.createCardToken();
-        const formData = construirFormData(medio_para_backend, comprobante, token, paymentMethodId, medioPagoSeleccionado);
-        enviarFetch(formData);
-      } catch (err) {
-        hidePreloader();
-        console.error("Error SDK:", err);
-        mostrarModalPersonalizado("Error de Pago", "No se pudo procesar la tarjeta. Verificá los datos e intentá nuevamente.");
-      }
-      return;
-    }
-
-    mostrarModalPersonalizado("Error", "Medio de pago desconocido o no configurado.");
+async function reservar() {
+  // 1. Aceptar términos
+  const acepto = document.getElementById("acepto")?.checked;
+  if (!acepto) {
+    mostrarModalPersonalizado("Falta aceptar los términos", "Por favor, aceptá los términos y condiciones antes de continuar.");
+    return;
   }
+
+  // 2. Medio de pago seleccionado
+  const medioPagoSeleccionado = document.querySelector('#paso4 input[name="medioPagoPaso4"]:checked')?.value;
+  if (!medioPagoSeleccionado) {
+    mostrarModalPersonalizado("Seleccioná un medio de pago", "Por favor, elegí una opción de pago antes de continuar.");
+    return;
+  }
+
+  // 3. COMISIÓN SELECCIONADA (AQUÍ ESTABA EL ERROR)
+  const selectComision = document.getElementById("comision");
+  const comisionId = selectComision?.value;
+
+  if (!comisionId || comisionId === "" || selectComision?.selectedIndex === 0) {
+    mostrarModalPersonalizado("Falta comisión", "Por favor, seleccioná la comisión del curso antes de continuar.");
+    return;
+  }
+
+  // 4. Curso seleccionado
+  const cursoId = document.getElementById("curso")?.value;
+  if (!cursoId) {
+    mostrarModalPersonalizado("Falta curso", "Por favor, seleccioná un curso antes de continuar.");
+    return;
+  }
+
+  // 5. TRANSFERENCIA BANCARIA
+  if (medioPagoSeleccionado === "transferencia") {
+    const comprobanteInput = document.getElementById("comprobante");
+    const comprobante = comprobanteInput?.files[0];
+
+    if (!comprobante) {
+      mostrarModalPersonalizado("Falta comprobante", "Por favor, adjuntá el comprobante de pago para continuar.");
+      return;
+    }
+
+    const formData = construirFormData("transferencia_bancaria", comprobante);
+    
+    // Agregar curso y comisión explícitamente (por si el backend los necesita con esos nombres)
+    formData.append("curso_id", cursoId);
+    formData.append("comision_id", comisionId);
+
+    await enviarFetch(formData);
+    return;
+  }
+
+  // 6. MERCADO PAGO (Payment Brick) → ya está manejado en el onSubmit del Brick
+  // Aquí no hacemos nada porque el Brick ya envía todo automáticamente
+  if (medioPagoSeleccionado === "mercadopago") {
+    // Trigger manual del submit del Brick (por si el usuario hace clic en "Reservar" en vez del botón del Brick)
+    if (window.paymentBrickController) {
+      const submitButton = document.querySelector("#paymentBrick_container button[type='submit']");
+      if (submitButton) submitButton.click();
+      else mostrarModalPersonalizado("Error", "No se encontró el botón de pago. Intentá de nuevo.");
+    } else {
+      mostrarModalPersonalizado("Error", "El formulario de pago no está listo. Volvé a seleccionar Mercado Pago.");
+    }
+    return;
+  }
+
+  mostrarModalPersonalizado("Error", "Medio de pago no reconocido.");
+}
 </script>
+
 
 <!-- ########################################################### -->
 <!--                   prealoader inicia          4              -->

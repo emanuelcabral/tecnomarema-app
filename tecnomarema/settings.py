@@ -308,7 +308,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Seguridad
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True  # Cambiar a False en producción
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app', 'testserver']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://tu-dominio1.com',
@@ -396,9 +396,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('EMAIL_USER')
+# luego cambiarlos por el .env########################################################################
+EMAIL_HOST_USER = 'tecnomarema.ar@gmail.com'
+EMAIL_HOST_PASSWORD = 'egkq gbyh epby xmlq'
+DEFAULT_FROM_EMAIL = 'tecnomarema.ar@gmail.com'
 
 # Login/logout
 AUTH_USER_MODEL = 'plataforma.PerfilUsuario'
