@@ -1154,300 +1154,233 @@ def guardar_datos_inscripcion_paga(request):
 
     try:
         # ============================
-        # RECEPCIÓN DE DATOS DEL FORM
+        # RECEPCIÓN DE DATOS
         # ============================
         nombre = request.POST.get("nombre", "").strip()
         apellido = request.POST.get("apellido", "").strip()
         documento = request.POST.get("documento", "").strip() or request.POST.get("dni", "").strip()
-        dni = documento  # mantener compatibilidad interna
         email = request.POST.get("email", "").strip()
         fecha_nacimiento = request.POST.get("fecha_nacimiento", "")
         pais = request.POST.get("pais", "")
         provincia = request.POST.get("provincia", "")
         telefono = request.POST.get("telefono", "").strip()
         genero = request.POST.get("genero", "")
+        curso_id = request.POST.get("curso_id") or request.POST.get("curso")
+        comision_id = request.POST.get("comision_id") or request.POST.get("comision")
+        monto_dinamico = float(request.POST.get("monto", 0)) or 0.0
+        id_estudiante_front = request.POST.get("id_estudiante", "").strip()
 
-        curso_id = request.POST.get("curso_id")
-        comision_id = request.POST.get("comision_id")
-        nombre_curso = request.POST.get("nombre_curso", "")
-        monto_dinamico = float(request.POST.get("monto", 0))
-
-        # Datos de MercadoPago
+        # Mercado Pago
         token = request.POST.get("token")
         payment_method_id = request.POST.get("payment_method_id", "")
-        issuer_id = request.POST.get("issuer_id", "")
-        installments = request.POST.get("installments", "1")
-        try:
-            installments = int(installments)
-        except (ValueError, TypeError):
-            installments = 1
+        installments = int(request.POST.get("installments", 1))
 
-        # NUEVO: campos del frontend
-        id_estudiante_front = request.POST.get("id_estudiante", "").strip()
-        es_pago_efectivo = request.POST.get("es_pago_efectivo") == "1"
-
-        # Comprobante para transferencia
+        # Transferencia
         comprobante = request.FILES.get("comprobante")
 
-        print("Datos recibidos (FormData):", {
-            "id_estudiante": id_estudiante_front,
-            "nombre": nombre, 
-            "email": email, 
-            "curso_id": curso_id,
-            "comision_id": comision_id, 
-            "payment_method_id": payment_method_id,
-            "es_pago_efectivo": es_pago_efectivo,
-            "token": bool(token)
-        })
+        # ============================
+        # VALIDACIONES BÁSICAS
+        # ============================
+        if not all([nombre, apellido, documento, email, curso_id, comision_id, id_estudiante_front]):
+            return JsonResponse({"status": "error", "msg": "Faltan datos obligatorios"}, status=400)
 
         # ============================
-        # Validaciones básicas
-        # ============================
-        campos_obligatorios = {
-            "nombre": nombre,
-            "apellido": apellido,
-            "documento": documento,
-            "email": email,
-            "fecha_nacimiento": fecha_nacimiento,
-            "pais": pais,
-            "provincia": provincia,
-            "telefono": telefono,
-            "curso_id": curso_id,
-            "comision_id": comision_id,
-        }
-
-        if not id_estudiante_front:
-            return JsonResponse({"status": "error", "msg": "Falta id_estudiante"}, status=400)
-
-        faltantes = [campo for campo, valor in campos_obligatorios.items() if not valor]
-        if faltantes:
-            return JsonResponse({
-                "status": "error",
-                "msg": f"Faltan completar: {', '.join(faltantes)}"
-            }, status=400)
-
-        # ============================
-        # Obtener Curso y Comision
+        # CURSO Y COMISIÓN
         # ============================
         try:
             curso_obj = Curso.objects.get(id_curso=curso_id)
         except Curso.DoesNotExist:
-            return JsonResponse({
-                "status": "error",
-                "msg": f"No se encontró el curso con ID {curso_id}"
-            }, status=400)
+            return JsonResponse({"status": "error", "msg": "Curso no encontrado"}, status=400)
 
         try:
-            comision = Comision.objects.get(numero_comision=comision_id)
+            comision = Comision.objects.get(numero_comision=comision_id, id_curso=curso_obj)
         except Comision.DoesNotExist:
-            return JsonResponse({
-                "status": "error",
-                "msg": f"No se encontró la comisión '{comision_id}' para el curso {curso_obj.nombre_curso}"
-            }, status=400)
+            return JsonResponse({"status": "error", "msg": "Comisión no encontrada"}, status=400)
 
         # ============================
-        # Validaciones duplicados
+        # VALIDAR DUPLICADOS
         # ============================
         if DatosDeEstudiantes.objects.filter(dni=documento).exists():
-            return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
+            return JsonResponse({"status": "error", "msg": "DNI ya registrado"}, status=400)
         if DatosDeEstudiantes.objects.filter(correo=email).exists():
-            return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
+            return JsonResponse({"status": "error", "msg": "Email ya registrado"}, status=400)
         if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
-            return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
+            return JsonResponse({"status": "error", "msg": "DNI ya es usuario"}, status=400)
         if PerfilUsuario.objects.filter(correo=email).exists():
-            return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
+            return JsonResponse({"status": "error", "msg": "Email ya es usuario"}, status=400)
 
         # ============================
-        # Determinar tipo de pago (CORREGIDO)
+        # DETERMINAR MEDIO DE PAGO
         # ============================
+        medio_pago_db = "mercadopago"  # valor por defecto
+        medio_pago_texto = "Mercado Pago"
         estado_pago = "Pendiente"
         id_transaccion = ""
-        medio_pago = "transferencia_bancaria"
 
-        if es_pago_efectivo:
-            # PAGO EN EFECTIVO (Rapipago / Pago Fácil)
-            medio_pago = "mercadopago"
-            estado_pago = "pending"
-            print("Pago en efectivo detectado:", payment_method_id)
+        if comprobante and not token:
+            # TRANSFERENCIA
+            medio_pago_db = "transferencia_bancaria"
+            medio_pago_texto = "Transferencia bancaria"
+            estado_pago = "Verificando"
 
-        elif token:
-            # PAGO CON TARJETA
-            medio_pago = "mercadopago"
+        elif token and payment_method_id:
+            # TARJETA O EFECTIVO
+            if payment_method_id in ["rapipago", "pagofacil"]:
+                medio_pago_db = payment_method_id
+                medio_pago_texto = "Rapipago" if payment_method_id == "rapipago" else "Pago Fácil"
+                estado_pago = "pendiente"
+
+            elif payment_method_id.lower().startswith("deb"):
+                medio_pago_db = "debito"
+                medio_pago_texto = "Débito"
+                estado_pago = "Aprobado"
+
+            else:
+                cuotas = max(1, installments)
+                medio_pago_db = f"credito_{cuotas}"
+                medio_pago_texto = f"Crédito en {cuotas} cuota{'s' if cuotas > 1 else ''}"
+                estado_pago = "Aprobado"
+
+            # PROCESAR PAGO CON MERCADO PAGO
             payment_data = {
                 "transaction_amount": monto_dinamico,
                 "token": token,
-                "description": f"Inscripción curso {curso_obj.nombre_curso} - comisión {comision_id}",
+                "description": f"Inscripción {curso_obj.nombre_curso} - Comisión {comision_id}",
                 "installments": installments,
                 "payment_method_id": payment_method_id,
-                "issuer_id": issuer_id or None,
-                "payer": {"email": email},
+                "payer": {"email": email}
             }
 
-            try:
-                result = sdk.payment().create(payment_data)
-                payment = result.get("response", {})
-            except Exception as e:
-                print("Error MercadoPago:", e)
+            result = sdk.payment().create(payment_data)
+            payment = result["response"]
+
+            status_mp = payment["status"]
+
+            # --- PAGOS EN EFECTIVO (Rapipago, Pago Fácil) ---
+            if payment_method_id in ["rapipago", "pagofacil"] and status_mp == "pending" and payment.get("status_detail") == "pending_waiting_payment":
+                # ÉXITO: el cliente debe pagar en efectivo
+                id_transaccion = str(payment["id"])
+                estado_pago = "pendiente"
+                medio_pago_db = payment_method_id
+                medio_pago_texto = "Rapipago" if payment_method_id == "rapipago" else "Pago Fácil"
+
+            # --- TARJETA APROBADA ---
+            elif status_mp == "approved":
+                id_transaccion = str(payment["id"])
+                estado_pago = "Aprobado"
+
+            # --- CUALQUIER OTRO ESTADO (rechazado, error, etc.) ---
+            else:
                 return JsonResponse({
                     "status": "error",
-                    "msg": f"Error con MercadoPago: {str(e)}"
-                }, status=500)
-
-            status_mp = payment.get("status", "").lower()
-            id_transaccion = str(payment.get("id", ""))
-            detalle_status = payment.get("status_detail", "")
-
-            if status_mp != "approved":
-                RegistroPago.objects.create(
-                    estudiante=None,
-                    comision=None,
-                    plataforma="web",
-                    medio_pago="mercadopago",
-                    estado_pago=status_mp,
-                    monto=monto_dinamico,
-                    fecha_pago=timezone.now(),
-                    id_transaccion=id_transaccion
-                )
-                return JsonResponse({
-                    "status": "error",
-                    "msg": f"Pago rechazado: {detalle_status or 'motivo desconocido'}."
+                    "msg": f"Pago no aprobado: {payment.get('status_detail', status_mp)}"
                 }, status=400)
 
+            id_transaccion = str(payment["id"])
             estado_pago = "Aprobado"
 
+        # ============================
+        # GENERAR ID ESTUDIANTE
+        # ============================
+        if id_estudiante_front.startswith('TEMP') or not id_estudiante_front.isdigit():
+            ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
+            nuevo_id = str(int(ultimo.id_estudiante) + 1).zfill(6) if ultimo else "000001"
         else:
-            # TRANSFERENCIA BANCARIA
-            if not comprobante:
-                return JsonResponse({
-                    "status": "error",
-                    "msg": "Falta comprobante. Adjuntá el comprobante de pago."
-                }, status=400)
-            medio_pago = "transferencia_bancaria"
+            nuevo_id = id_estudiante_front
+
+        while DatosDeEstudiantes.objects.filter(id_estudiante=nuevo_id).exists():
+            nuevo_id = str(int(nuevo_id) + 1).zfill(6)
 
         # ============================
-        # Crear estudiante (usando id del frontend)
+        # CREAR ESTUDIANTE
         # ============================
         estudiante = DatosDeEstudiantes.objects.create(
-            id_estudiante=id_estudiante_front,  # ← CAMBIADO: usa el del frontend
-            nombre=nombre,
-            apellido=apellido,
-            dni=documento,
-            correo=email,
-            fecha_nacimiento=fecha_nacimiento,
-            pais=pais,
-            provincia=provincia,
-            telefono=telefono,
-            genero=genero
+            id_estudiante=nuevo_id,
+            nombre=nombre, apellido=apellido, dni=documento, correo=email,
+            fecha_nacimiento=fecha_nacimiento, pais=pais, provincia=provincia,
+            telefono=telefono, genero=genero
         )
 
-        # Asignar comisión libre
-        asignado = False
+        # Asignar a comisión
         for i in range(1, 10):
-            campo = f'cursando{i}'
-            if getattr(estudiante, campo) is None:
-                setattr(estudiante, campo, comision)
+            if getattr(estudiante, f'cursando{i}') is None:
+                setattr(estudiante, f'cursando{i}', comision)
                 estudiante.save()
-                asignado = True
                 break
-        if not asignado:
-            return JsonResponse({
-                "status": "error",
-                "msg": "El estudiante ya está inscrito en el máximo de comisiones."
-            }, status=400)
+        else:
+            estudiante.delete()
+            return JsonResponse({"status": "error", "msg": "Máximo de comisiones alcanzado"}, status=400)
 
         # ============================
-        # Crear usuario vinculado
+        # CREAR USUARIO
         # ============================
         ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
-        usuario_id = str(int(ultimo_usuario.id_usuario) + 1 if ultimo_usuario else 1).zfill(6)
+        usuario_id = str(int(ultimo_usuario.id_usuario) + 1).zfill(6) if ultimo_usuario else "000001"
 
         usuario = PerfilUsuario.objects.create(
-            id_usuario=usuario_id,
-            id_estudiante=estudiante,
-            nombre_usuario=documento,
-            correo=email,
-            rol="alumno",
-            is_active=True
+            id_usuario=usuario_id, id_estudiante=estudiante,
+            nombre_usuario=documento, correo=email, rol="alumno", is_active=True
         )
         usuario.set_password("pass1234")
         usuario.save()
 
         # ============================
-        # Registrar pago
+        # REGISTRAR PAGO
         # ============================
         RegistroPago.objects.create(
-            estudiante=estudiante,
-            comision=comision,
-            plataforma="web",
-            medio_pago=medio_pago,
-            estado_pago=estado_pago,
-            monto=monto_dinamico,
-            fecha_pago=timezone.now(),
-            id_transaccion=id_transaccion,
-            archivo_comprobante=comprobante
+            estudiante=estudiante, comision=comision, plataforma="web",
+            medio_pago=medio_pago_db, estado_pago=estado_pago,
+            monto=monto_dinamico, fecha_pago=timezone.now(),
+            id_transaccion=id_transaccion, archivo_comprobante=comprobante
         )
 
         # ============================
-        # Envío de correos
+        # CORREO INTERNO
         # ============================
         context_interno = {
-            "nombre": nombre,
-            "apellido": apellido,
-            "email": email,
-            "documento": documento,
-            "curso": curso_obj.nombre_curso,
-            "comision": comision.numero_comision,
-            "pais": pais,
-            "provincia": provincia,
-            "telefono": telefono,
-            "medio_pago": medio_pago,
-            "estado_pago": estado_pago,
-            "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
+            "nombre": nombre, "apellido": apellido, "email": email,
+            "documento": documento, "curso": curso_obj.nombre_curso,
+            "comision": comision.numero_comision, "pais": pais,
+            "provincia": provincia, "telefono": telefono,
+            "medio_pago": medio_pago_texto,  # ← Texto legible
+            "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
         }
         html_interno = render_to_string("registration/registro_pago.html", context_interno)
-        text_interno = strip_tags(html_interno)
         email_interno = EmailMultiAlternatives(
-            subject="Nuevo alumno inscripto y pago registrado",
-            body=text_interno,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=["tecnomarema.ar@gmail.com"],
+            "Nuevo alumno inscripto", strip_tags(html_interno),
+            settings.DEFAULT_FROM_EMAIL, ["tecnomarema.ar@gmail.com"]
         )
         email_interno.attach_alternative(html_interno, "text/html")
         email_interno.send()
 
+        # ============================
+        # CORREO AL ALUMNO
+        # ============================
         context_bienvenida = {
-            "nombre": f"{nombre} {apellido}",
-            "usuario": documento,
-            "password": "pass1234",
-            "curso": curso_obj.nombre_curso,
+            "nombre": f"{nombre} {apellido}", "usuario": documento,
+            "password": "pass1234", "curso": curso_obj.nombre_curso,
             "comision": comision.numero_comision,
-            "reset_url": "https://tecnomarema.com/reset-password",
+            "reset_url": "https://tecnomarema.com/reset-password"
         }
         html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
-        text_bienvenida = strip_tags(html_bienvenida)
         email_alumno = EmailMultiAlternatives(
-            subject="Bienvenido/a a tu curso en Tecno Marema",
-            body=text_bienvenida,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            to=[email],
+            "Bienvenido/a a Tecno Marema", strip_tags(html_bienvenida),
+            settings.DEFAULT_FROM_EMAIL, [email]
         )
         email_alumno.attach_alternative(html_bienvenida, "text/html")
         email_alumno.send()
 
         return JsonResponse({
             "status": "ok",
-            "id_estudiante": id_estudiante_front,
+            "id_estudiante": nuevo_id,
             "id_usuario": usuario_id,
-            "estado_pago": estado_pago,
-            "id_transaccion": id_transaccion
+            "medio_pago": medio_pago_texto
         })
 
     except Exception as e:
-        print("ERROR EN INSCRIPCIÓN:", e)
-        import traceback
-        traceback.print_exc()
-        return JsonResponse({"status": "error", "msg": "Error interno del servidor."}, status=500)
-
+        print("ERROR:", e)
+        import traceback; traceback.print_exc()
+        return JsonResponse({"status": "error", "msg": "Error del servidor"}, status=500)
 
 
 #-------------------------------------------------------------------------------

@@ -352,11 +352,31 @@
                     <label for="id_estudiante" class="form-label">
                         ID de Estudiante
                     </label>
-                    <input type="text" name="id_estudiante" id="id_estudiante"
-                          value="{{ proximo_id }}"
-                          class="form-control"
-                          readonly />
+                    {% comment %} <input type="text" name="id_estudiante" id="id_estudiante" value="{{ proximo_id }}" class="form-control" readonly /> {% endcomment %}
                 </div>
+
+                  <input type="hidden" id="id_estudiante" name="id_estudiante">
+
+                  <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                      // Obtener último ID desde el backend (vía contexto)
+                      let proximoId = {{ proximo_id|safe }};  // ← TU VARIABLE DE DJANGO
+
+                      // Si no hay conexión o error, fallback a 000001
+                      if (!proximoId || isNaN(proximoId)) {
+                          proximoId = 1;
+                      }
+
+                      const nuevoId = String(proximoId).padStart(6, '0');  // ← 000001, 000002...
+                      
+                      const input = document.getElementById('id_estudiante');
+                      if (input) {
+                          input.value = nuevoId;
+                          console.log("ID asignado (solo números):", nuevoId);
+                      }
+                  });
+                  </script>
+
               </div>
 
               <div class="form-check mb-3">
@@ -673,7 +693,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <!-- ==================== Script MercadoPago CardForm         1° script                                                  ==================== -->
 <!-- ######################################################################################################################################## -->
 
-<!-- ==================== Script MercadoPago Payment Brick (CORREGIDO) ==================== -->
+<!-- ==================== Script MercadoPago Payment Brick (FINAL - TODO FUNCIONA) ==================== -->
 <script>
 document.addEventListener("DOMContentLoaded", async () => {
   const publicKey = "{{ MERCADOPAGO_PUBLIC_KEY }}";
@@ -696,14 +716,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     const comisionSelect = document.getElementById("comision");
 
     if (!cursoSelect?.value || !comisionSelect?.value) {
-      console.warn("Falta curso o comisión seleccionada");
+      console.warn("Falta curso o comisión");
       return null;
     }
 
     const cursoId = cursoSelect.value;
     const cursoData = cursos[cursoId];
     if (!cursoData) {
-      console.warn("No existe datos del curso en 'cursos' para id:", cursoId);
+      console.warn("Curso no encontrado en 'cursos':", cursoId);
       return null;
     }
 
@@ -721,114 +741,119 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
   }
 
+  // --- Construcción del FormData (USADO POR BRICK Y TRANSFERENCIA) ---
+  function construirFormData(medio_para_backend, comprobante = null, token = null, paymentMethodId = null, installments = 1) {
+    const formData = new FormData();
+
+    // DATOS DEL FORMULARIO
+    formData.append("nombre", document.getElementById("nombre")?.value || "");
+    formData.append("apellido", document.getElementById("apellido")?.value || "");
+    formData.append("documento", document.getElementById("dni")?.value || "");
+    formData.append("email", document.getElementById("email")?.value || "");
+    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento")?.value || "");
+    formData.append("pais", document.getElementById("pais")?.value || "");
+    formData.append("provincia", document.getElementById("provincia")?.value || "");
+    formData.append("telefono", document.getElementById("telefono")?.value || "");
+    formData.append("genero", document.getElementById("genero")?.value || "");
+    formData.append("curso_id", document.getElementById("curso")?.value || "");
+    formData.append("comision_id", document.getElementById("comision")?.value || "");
+    formData.append("id_estudiante", document.getElementById("id_estudiante")?.value || "");
+    formData.append("monto", document.getElementById("monto")?.value || "0");
+
+    if (comprobante) formData.append("comprobante", comprobante);
+
+    let medio_pago_db = medio_para_backend;
+    let medio_pago_texto = "Mercado Pago";
+
+    if (medio_para_backend === "mercadopago" && paymentMethodId) {
+      const cuotas = Math.max(1, parseInt(installments) || 1);
+
+      if (paymentMethodId === "rapipago") {
+        medio_pago_db = "rapipago";
+        medio_pago_texto = "Rapipago";
+      } else if (paymentMethodId === "pagofacil") {
+        medio_pago_db = "pagofacil";
+        medio_pago_texto = "Pago Fácil";
+      } else if (paymentMethodId.toLowerCase().includes("deb")) {
+        medio_pago_db = "debito";
+        medio_pago_texto = "Débito";
+      } else {
+        medio_pago_db = `credito_${cuotas}`;
+        medio_pago_texto = `Crédito en ${cuotas} cuota${cuotas > 1 ? 's' : ''}`;
+      }
+
+      formData.append("token", token);
+      formData.append("payment_method_id", paymentMethodId);
+      formData.append("installments", cuotas);
+    } else if (medio_para_backend === "transferencia_bancaria") {
+      medio_pago_db = "transferencia_bancaria";
+      medio_pago_texto = "Transferencia bancaria";
+    }
+
+    formData.append("medio_pago_db", medio_pago_db);
+    formData.append("medio_pago_texto", medio_pago_texto);
+
+    return formData;
+  }
+
   // --- Inicializar / destruir Brick ---
   async function crearYMontarBrick(datos) {
     const bricksBuilder = mp.bricks();
-    // destruir si existe
     if (window.paymentBrickController) {
-      try {
-        await window.paymentBrickController.unmount();
-        console.log("Brick anterior desmontado (crearYMontarBrick)");
-      } catch (e) {
-        console.warn("Error al unmount anterior:", e);
-      }
+      try { await window.paymentBrickController.unmount(); } catch (e) { console.warn(e); }
     }
-    // crear
+
     const settings = {
-      initialization: {
-        amount: datos.monto,
-        currency: 'ARS'
-      },
+      initialization: { amount: datos.monto, currency: 'ARS' },
       customization: {
         paymentMethods: { creditCard: "all", debitCard: "all", ticket: "all" },
         visual: { style: { theme: "dark" } }
       },
       callbacks: {
         onReady: () => {
-          console.log("🧱 Payment Brick listo");
+          console.log("Payment Brick listo");
           if (typeof hidePreloader === 'function') hidePreloader();
         },
         onSubmit: async (formData) => {
-          console.log("🚀 onSubmit ejecutado, datos: ", formData);
+          console.log("onSubmit Brick:", formData);
 
-          // seguridad: token
-          // —— NUEVO CÓDIGO (permite pago en efectivo) ——
           const datosBrick = formData?.formData || {};
           const token = datosBrick.token || null;
           const paymentMethodId = datosBrick.paymentMethodId || datosBrick.payment_method_id || '';
+          const installments = datosBrick.installments || 1;
 
-          // Detectamos si es pago en efectivo (Rapipago, Pago Fácil, etc.)
           const esPagoEfectivo = !token && paymentMethodId && (
-              paymentMethodId.toLowerCase().includes('rapipago') ||
-              paymentMethodId.toLowerCase().includes('pagofacil') ||
-              paymentMethodId.toLowerCase().includes('provencred')
+            paymentMethodId.toLowerCase().includes('rapipago') ||
+            paymentMethodId.toLowerCase().includes('pagofacil')
           );
 
           if (!token && !esPagoEfectivo) {
-              console.error("Falta token y NO es pago en efectivo");
-              mostrarModalPersonalizado("Error", "No se pudo procesar la tarjeta. Intentá nuevamente.");
-              return;
-          }
-          // —— FIN DEL NUEVO CÓDIGO ——
-
-           // === CONSTRUCCIÓN DEL FormData (VERSIÓN FINAL - FUNCIONA 100% CON TODO) ===
-          const fd = new FormData();
-
-          // 1. ID ESTUDIANTE → SIEMPRE PRIMERO (obligatorio)
-          const idEstudiante = document.getElementById('id_estudiante')?.value?.trim();
-          if (!idEstudiante) {
-              console.error("FALTA id_estudiante → no se puede continuar");
-              mostrarModalPersonalizado("Error", "Falta información del estudiante. Recargá la página.");
-              if (typeof hidePreloader === 'function') hidePreloader();
-              return;
-          }
-          fd.append('id_estudiante', idEstudiante);
-          console.log("id_estudiante enviado:", idEstudiante);
-
-          // 2. Datos del alumno
-          fd.append('nombre', document.getElementById('nombre')?.value?.trim() || '');
-          fd.append('apellido', document.getElementById('apellido')?.value?.trim() || '');
-
-          // DNI + DOCUMENTO (tu backend pide AMBOS)
-          const dni = document.getElementById('dni')?.value?.trim() || '';
-          fd.append('dni', dni);
-          fd.append('documento', dni); // ESTO ERA LO QUE FALTABA
-
-          fd.append('email', document.getElementById('email')?.value?.trim() || '');
-          fd.append('telefono', document.getElementById('telefono')?.value?.trim() || '');
-          fd.append('genero', document.getElementById('genero')?.value || '');
-          fd.append('fecha_nacimiento', document.getElementById('fecha_nacimiento')?.value || '');
-          fd.append('pais', document.getElementById('pais')?.value || '');
-          fd.append('provincia', document.getElementById('provincia')?.value || '');
-
-          // 3. Curso y comisión
-          fd.append('curso_id', datos.curso_id);
-          fd.append('comision_id', datos.comision_id);
-          fd.append('nombre_curso', datos.nombre_curso);
-          fd.append('monto', datos.monto);
-
-          // 4. Mercado Pago - DATOS COMUNES
-          fd.append('payment_method', 'mercadopago');
-          fd.append('es_pago_efectivo', esPagoEfectivo ? '1' : '0');
-
-          // 5. Datos específicos según medio de pago
-          if (!esPagoEfectivo) {
-              // TARJETA O DÉBITO
-              if (token) fd.append('token', token);
-              fd.append('payment_method_id', paymentMethodId);
-              fd.append('issuer_id', formData.formData?.issuerId || formData.formData?.issuer_id || '');
-              fd.append('installments', formData.formData?.installments || 1);
-          } else {
-              // PAGO FÁCIL / RAPIPAGO
-              fd.append('payment_method_id', paymentMethodId); // 'pagofacil' o 'rapipago'
+            mostrarModalPersonalizado("Error", "No se pudo procesar el pago. Intentá de nuevo.");
+            return;
           }
 
+          // USAR construirFormData
+          const fd = construirFormData(
+            "mercadopago",
+            null,
+            token,
+            paymentMethodId,
+            installments
+          );
 
-          // debug console
-          for (let [k, v] of fd.entries()) console.log("  →", k, "=", v);
+          // DATOS DEL CURSO
+          const datosCurso = obtenerDatosCurso();
+          if (!datosCurso) {
+            mostrarModalPersonalizado("Error", "Falta curso o comisión.");
+            return;
+          }
 
-          if (typeof showPreloader === 'function') showPreloader();
+          fd.append("curso_id", datosCurso.curso_id);
+          fd.append("comision_id", datosCurso.comision_id);
+          fd.append("nombre_curso", datosCurso.nombre_curso);
+          fd.append("monto", datosCurso.monto);
 
+          showPreloader();
           try {
             const resp = await fetch("/guardar_datos_inscripcion_paga/", {
               method: "POST",
@@ -836,80 +861,75 @@ document.addEventListener("DOMContentLoaded", async () => {
               headers: { "X-CSRFToken": getCookie("csrftoken") }
             });
             const result = await resp.json();
-            if (typeof hidePreloader === 'function') hidePreloader();
+            hidePreloader();
 
             if (result.status === "ok") {
-              mostrarModalPersonalizado(
-              "¡Inscripción Exitosa!",
-              `¡Felicitaciones! Tu pago de $${datos.monto} fue aprobado.\n\n` +
-              `Curso: ${datos.nombre_curso}\n\n` +
-              `Te enviaremos un correo a ${document.getElementById('email')?.value || 'tu casilla'} con todos los datos de acceso, link de la plataforma y próximos pasos.\n\n` +
-              `¡Nos vemos en clase!`
-            );
+              const email = document.getElementById('email')?.value || 'tu correo';
+              if (esPagoEfectivo) {
+                mostrarModalPersonalizado(
+                  "¡Inscripción Confirmada!",
+                  `Revisá tu correo ${email} para abonar y confirmar tu lugar.`
+                );
+              } else {
+                mostrarModalPersonalizado(
+                  "¡Pago Aprobado!",
+                  `¡Listo! Pago de $${datosCurso.monto} aprobado.\n\nCurso: ${datosCurso.nombre_curso}\n\nTe enviamos todo a ${email}.`
+                );
+              }
+              localStorage.removeItem('id_estudiante_temp');
             } else {
-              mostrarModalPersonalizado("Error en el pago", result.msg || "No se pudo procesar el pago.");
+              mostrarModalPersonalizado("Error", result.msg || "No se pudo procesar.");
             }
           } catch (err) {
-            if (typeof hidePreloader === 'function') hidePreloader();
-            console.error("Error en fetch al backend:", err);
-            mostrarModalPersonalizado("Error", "No se pudo conectar al servidor.");
+            hidePreloader();
+            console.error("Error:", err);
+            mostrarModalPersonalizado("Error", "No se pudo conectar.");
           }
         },
         onError: (err) => {
-          console.error("Error Payment Brick:", err);
+          console.error("Error Brick:", err);
           if (typeof hidePreloader === 'function') hidePreloader();
-          mostrarModalPersonalizado("Error en el formulario de pago", err?.message || JSON.stringify(err));
+          mostrarModalPersonalizado("Error", err?.message || "Error en el pago.");
         }
       }
     };
 
     try {
-      // limpiar contenedor y crear
       const container = document.getElementById("paymentBrick_container");
-      if (!container) throw new Error("Contenedor paymentBrick_container no encontrado");
+      if (!container) throw new Error("Contenedor no encontrado");
       container.innerHTML = "";
       container.style.minHeight = "380px";
 
       window.paymentBrickController = await bricksBuilder.create("payment", "paymentBrick_container", settings);
-      console.log("✅ Nuevo Payment Brick creado con éxito");
+      console.log("Brick creado");
     } catch (err) {
       console.error("Error al crear Brick:", err);
       if (typeof hidePreloader === 'function') hidePreloader();
     }
   }
 
-  // función pública que inicializa (verifica curso/comisión y visibilidad)
   async function inicializarPaymentBrick() {
     const datos = obtenerDatosCurso();
     if (!datos) {
-      mostrarModalPersonalizado("Error", "Debes seleccionar curso y comisión antes de pagar.");
+      mostrarModalPersonalizado("Error", "Seleccioná curso y comisión.");
       return;
     }
-    // Solo inicializar si el Paso4 está visible (evita crearlo desde Paso3)
-    if (!isPaso4Visible()) {
-      console.log("Paso4 no visible: no inicializo Brick (esperando a que se muestre paso4)");
-      return;
-    }
+    if (!isPaso4Visible()) return;
     await crearYMontarBrick(datos);
   }
 
-  // --- Escuchas en radios de paso4: mostrar formulario pero SOLO crear Brick si paso4 visible ---
+  // --- Radios de pago en paso4 ---
   document.querySelectorAll('input[name="medioPagoPaso4"]').forEach(radio => {
     radio.addEventListener("change", async (e) => {
       const valor = e.target.value;
-      // ocultar todos
       document.querySelectorAll(".formulario-pago").forEach(f => f.classList.add("d-none"));
 
       if (valor === "mercadopago") {
         const formMP = document.getElementById("formMercadoPago");
         if (formMP) formMP.classList.remove("d-none");
-
-        // Solo inicializar si el panel paso4 está visible
         if (isPaso4Visible()) {
           if (typeof showPreloader === 'function') showPreloader();
           await inicializarPaymentBrick();
-        } else {
-          console.log("mercadopago seleccionado pero paso4 no visible; se pospone la inicialización");
         }
       } else if (valor === "transferencia") {
         const el = document.getElementById("formTransferencia");
@@ -918,63 +938,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  // --- Sincronización entre paso3 y paso4 SIN disparar creación del Brick ---
-  // Cuando usuario elige en paso3, solo marcamos el radio en paso4 pero NO disparamos su change.
+  // --- Sincronización paso3 → paso4 ---
   document.querySelectorAll('#paso3 input[name="medioPagoPaso3"]').forEach(r => {
     r.addEventListener('change', (ev) => {
       const value = ev.target.value;
       const radioPaso4 = document.querySelector(`#paso4 input[name="medioPagoPaso4"][value="${value}"]`);
-      if (radioPaso4) {
-        radioPaso4.checked = true;
-        // NO dispatchEvent('change') para evitar inicializar el Brick mientras estamos en paso3
-      }
-      // además, actualizamos visuales según mostrarFormularioPago (solo local en paso3)
+      if (radioPaso4) radioPaso4.checked = true;
       mostrarFormularioPago(value === 'transferencia_bancaria' ? 'transferencia' : value);
     });
   });
 
-  // --- Cuando se entra al Paso4 por la función irA(...) , inicializamos si mercado está seleccionado ---
-  // Para que esto funcione, reemplazá la parte de irA() donde inicializabas cardForm por esto:
-  // (si querés, parcheo automático no alterando tu irA: en vez de cambiar irA aquí, agrego un observer simple)
+  // --- Observer para paso4 visible ---
   const observer = new MutationObserver((mutations) => {
     mutations.forEach(m => {
-      // detectar cuando #paso4 obtiene clase 'show'
-      if (m.target && m.target.id === 'paso4') {
-        if (m.target.classList.contains('show')) {
-          // paso4 visible: si mercado seleccionado, inicializar
-          const mercadoSelected = document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]');
-          if (mercadoSelected && mercadoSelected.checked) {
-            console.log("Observer: paso4 visible y MercadoPago seleccionado -> inicializando Brick");
-            if (typeof showPreloader === 'function') showPreloader();
-            inicializarPaymentBrick();
-          }
+      if (m.target.id === 'paso4' && m.target.classList.contains('show')) {
+        const mercadoChecked = document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]:checked');
+        if (mercadoChecked) {
+          console.log("Paso4 visible + MercadoPago → inicializando");
+          if (typeof showPreloader === 'function') showPreloader();
+          inicializarPaymentBrick();
         }
       }
     });
   });
-
   const paso4El = document.getElementById('paso4');
   if (paso4El) observer.observe(paso4El, { attributes: true, attributeFilter: ['class'] });
 
-  // --- Reinicializar si cambian curso/comisión y paso4 está visible ---
-  document.getElementById("curso")?.addEventListener("change", () => {
-    if (isPaso4Visible() && document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]:checked')) {
-      if (typeof showPreloader === 'function') showPreloader();
-      setTimeout(inicializarPaymentBrick, 250);
-    }
+  // --- Cambios en curso/comisión ---
+  ["curso", "comision"].forEach(id => {
+    document.getElementById(id)?.addEventListener("change", () => {
+      if (isPaso4Visible() && document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]:checked')) {
+        if (typeof showPreloader === 'function') showPreloader();
+        setTimeout(inicializarPaymentBrick, 250);
+      }
+    });
   });
 
-  document.getElementById("comision")?.addEventListener("change", () => {
-    if (isPaso4Visible() && document.querySelector('#paso4 input[name="medioPagoPaso4"][value="mercadopago"]:checked')) {
-      if (typeof showPreloader === 'function') showPreloader();
-      setTimeout(inicializarPaymentBrick, 250);
-    }
-  });
-
-  console.log("Payment Brick behavior inicializado (no se montará en paso3).");
+  console.log("Payment Brick listo (se activa en paso4)");
 });
 </script>
-
 
 
 
@@ -1422,53 +1424,88 @@ document.addEventListener('DOMContentLoaded', () => {
 <!--           script de utilidades del formulario (6)          -->
 <!-- ########################################################### -->
 <script>
-  // Construcción del FormData con todos los datos del usuario
-  function construirFormData(medio_para_backend, comprobante = null, token = null, paymentMethodId = null, medioPagoSeleccionado = null) {
-    const formData = new FormData();
-    formData.append("nombre", document.getElementById("nombre")?.value || "");
-    formData.append("apellido", document.getElementById("apellido")?.value || "");
-    formData.append("documento", document.getElementById("dni")?.value || "");
-    formData.append("email", document.getElementById("email")?.value || "");
-    formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento")?.value || "");
-    formData.append("pais", document.getElementById("pais")?.value || "");
-    formData.append("provincia", document.getElementById("provincia")?.value || "");
-    formData.append("telefono", document.getElementById("telefono")?.value || "");
-    formData.append("genero", document.getElementById("genero")?.value || "");
-    formData.append("curso", document.getElementById("curso")?.value || "");
-    formData.append("comision", document.getElementById("comision")?.value || "");
-    formData.append("medio_pago", medio_para_backend);
+    function construirFormData(medio_para_backend, comprobante = null, token = null, paymentMethodId = null, installments = 1) {
+      const formData = new FormData();
 
-    if (comprobante) formData.append("comprobante", comprobante);
+      // DATOS DEL FORMULARIO
+      formData.append("nombre", document.getElementById("nombre")?.value || "");
+      formData.append("apellido", document.getElementById("apellido")?.value || "");
+      formData.append("documento", document.getElementById("dni")?.value || "");
+      formData.append("email", document.getElementById("email")?.value || "");
+      formData.append("fecha_nacimiento", document.getElementById("fecha_nacimiento")?.value || "");
+      formData.append("pais", document.getElementById("pais")?.value || "");
+      formData.append("provincia", document.getElementById("provincia")?.value || "");
+      formData.append("telefono", document.getElementById("telefono")?.value || "");
+      formData.append("genero", document.getElementById("genero")?.value || "");
+      formData.append("curso_id", document.getElementById("curso")?.value || "");
+      formData.append("comision_id", document.getElementById("comision")?.value || "");
+      formData.append("id_estudiante", document.getElementById("id_estudiante")?.value || "");
+      formData.append("monto", document.getElementById("monto")?.value || "0");
 
-    if (token && paymentMethodId) {
-      formData.append("token", token);
-      formData.append("payment_method_id", paymentMethodId);
+      // Comprobante de transferencia
+      if (comprobante) formData.append("comprobante", comprobante);
 
-      if (medioPagoSeleccionado === "credito_cuotas") {
-        const cuotas = document.getElementById("cuotas")?.value || "3";
-        formData.append("cuotas", cuotas);
-      }
-    }
+      // VALORES POR DEFECTO
+      let medio_pago_db = medio_para_backend;
+      let medio_pago_texto = "Mercado Pago";
 
-    return formData;
-  }
+      // MERCADO PAGO: TARJETA O EFECTIVO
+      if (medio_para_backend === "mercadopago" && paymentMethodId) {
+        const cuotas = Math.max(1, parseInt(installments) || 1);
 
-  // Helper CSRF
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";");
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === name + "=") {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
+        if (paymentMethodId === "rapipago") {
+          medio_pago_db = "rapipago";
+          medio_pago_texto = "Rapipago";
+        } else if (paymentMethodId === "pagofacil") {
+          medio_pago_db = "pagofacil";
+          medio_pago_texto = "Pago Fácil";
+        } else if (paymentMethodId.toLowerCase().includes("deb")) {
+          medio_pago_db = "debito";
+          medio_pago_texto = "Débito";
+        } else {
+          medio_pago_db = `credito_${cuotas}`;
+          medio_pago_texto = `Crédito en ${cuotas} cuota${cuotas > 1 ? 's' : ''}`;
         }
+
+        // DATOS PARA MERCADO PAGO
+        formData.append("token", token);
+        formData.append("payment_method_id", paymentMethodId);
+        formData.append("installments", cuotas); // Siempre se envía
+
+      } else if (medio_para_backend === "transferencia_bancaria") {
+        medio_pago_db = "transferencia_bancaria";
+        medio_pago_texto = "Transferencia bancaria";
       }
+
+      // ENVÍO FINAL AL BACKEND
+      formData.append("medio_pago_db", medio_pago_db);         // Para la DB
+      formData.append("medio_pago_texto", medio_pago_texto);   // Para el correo
+
+      return formData;
+    }
+</script>
+
+
+
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
     }
     return cookieValue;
-  }
+}
 </script>
+
+
 
 <!-- ########################################################### -->
 <!--           script de envío de datos al backend (8)           -->
