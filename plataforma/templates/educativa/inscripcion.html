@@ -266,6 +266,15 @@
         display: block;
 }
 
+.mercadopago {
+  /* background-image: url(../../static/img/mercado.png);
+  background-position: center;
+  background-size: cover; */
+  height: 30px;
+  width: 30px;
+  object-fit: cover;
+}
+
 
     </style>
   </head>
@@ -386,8 +395,7 @@
                     del servicio</a>
                 </label>
               </div>
-              <p class="text-warning small">Este sitio está protegido por reCAPTCHA y se aplican la política de
-                privacidad y términos del servicio de Google.</p>
+              <p class="text-warning small"><img src="../../static/img/mercado.png" class="mercadopago" > Pago 100% Seguro. ✅🔒 La protección de tus datos está garantizada por Mercado Pago.</p>
               <div class="d-flex justify-content-between">
                 <button type="button" class="btn btn-secondary">Volver</button>
                 {% comment %} <button id="btnContinuarDatos" type="button" class="btn btn-custom" data-bs-toggle="tab" data-bs-target="#paso2" onclick="validarTerminosYContinuar()">Continuar</button> {% endcomment %}
@@ -406,7 +414,7 @@
 <div class="tab-pane fade" id="paso2" role="tabpanel" aria-labelledby="paso2-tab">
   <div class="row">
     <div class="col-md-8">
-      <h5 class="mb-3">Confirmá el curso, la fecha y el horario</h5>
+      <h5 class="mb-3">Confirmación de Curso</h5>
       <div class="container">
         <h2 class="mb-4">Confirmá el curso, la fecha y el horario</h2>
 
@@ -581,7 +589,7 @@
           <input type="file" class="form-control" name="comprobante" id="comprobante" accept="image/*" required>
           
         <!-- Aceptar términos -->
-        <div class="form-check mb-3">
+        <div class="form-check mb-3 mt-3">
           <input class="form-check-input" type="checkbox" id="acepto" required>
           <label class="form-check-label" for="acepto">
             <a style="color:#12f693;" href="{% url 'terminos_y_condiciones' %}">Acepto los términos y condiciones del servicio</a>
