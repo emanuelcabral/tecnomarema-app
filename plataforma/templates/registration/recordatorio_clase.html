@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>🔔 Recordatorio: ¡Hoy Tienes Clase de {{ curso }}! </title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff;">
+  <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px #12f693;color: #fff;">
+    
+    <h1 style="color: #12f693; text-align: center; margin-bottom: 30px; font-size: 28px;">
+      📣 ¡Recordatorio: Hoy Tienes Clase!
+    </h1>
+
+    <p style="font-size: 18px; text-align: center;">
+      Hola, <strong style="color:#12f693;">{{ nombre }}</strong>.
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
+
+    <p style="font-size: 18px; text-align: center; font-weight: bold;">
+      ¡Prepárate! Hoy es el día de la clase **{{ nombre_clase }}**.
+    </p>
+
+    <h2 style="color: #fff; text-align: center; margin: 30px 0; font-size: 24px; background-color: #000; padding: 10px; border-radius: 4px; box-shadow: 0 0 5px #12f693;">
+      ⏰ Hora de Inicio: {{ hora_inicio }}
+    </h2>
+    <p style="font-size: 16px; text-align: center;">
+      Curso: <strong style="color:#12f693;">{{ curso }}</strong> | Comisión: <strong style="color:#12f693;">{{ comision }}</strong>
+    </p>
+    
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <h3 style="color: #12f693; text-align: center; margin-bottom: 20px;">
+        Link para unirte
+    </h3>
+
+    <p style="font-size: 18px; text-align: center; margin-bottom: 30px;">
+        Te compartimos el link de la clase para que puedas sumarte:
+    </p>
+
+    <p style="text-align: center; margin: 40px 0;">
+      <a href="{{ link_clase }}"
+         style="background-color: #12f693; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 20px; box-shadow: 0 0 10px #12f693; display: inline-block;">
+        ▶️ UNIRSE A LA CLASE AHORA
+      </a>
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <p style="font-size: 14px; text-align: center;">¡Esperamos verte allí! <strong style="color: #12f693;">Tecno Marema</strong> te desea un excelente aprendizaje.</p>
+    <p style="font-size: 14px; text-align: center;"><em>El equipo de Tecno Marema</em></p>
+  </div>
+</body>
+</html>
