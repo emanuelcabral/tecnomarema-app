@@ -126,11 +126,19 @@ urlpatterns = [
     path('administrador/profesores/', views.listado_profesores_view, name='listado_profesores'),
     path('administrador/tutores/', views.listado_tutores_view, name='listado_tutores'),
     path('administrador/admins/', views.listado_admins_view, name='listado_admins'),
+
+
+    path("administrador/chat/", views.chat_estadisticas, name="chat_estadisticas"),
+
+
+
     path('administrador/chat/', views.vista_chat_view, name='vista_chat'),
 
 
+    path('administrador/chat/ver-mensajes-comision/<str:comision_id>/',  views.ver_mensajes_comision, name='ver_mensajes_comision'),
+    path('administrador/chat/ver-mensajes/<str:usuario_id>/',  views.ver_mensajes_usuario, name='ver_mensajes_usuario'),
 
-
+    path('administrador/mensajes/ver-general/', views.ver_mensajes_general, name='ver_mensajes_general'),
 
     #  path('mis-cursos/', views.mis_cursos_view, name='mis_cursos'), #con este path no me anda el login
 
@@ -274,6 +282,9 @@ path('newsletter/', views.newsletter_view, name='newsletter'),
 
 
 path('crear_preferencia/', views.crear_preferencia, name='crear_preferencia'),
+
+
+
 
 
 

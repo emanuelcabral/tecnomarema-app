@@ -412,7 +412,7 @@
     <hr style="border-color: #444;">
 
     <!-- 🔸 Chats Privados Existentes -->
-    <h6 class="text-white mt-2">Chats privados</h6>
+    {% comment %} <h6 class="text-white mt-2">Chats privados</h6>
     {% for item in chats_privados_existentes %}
       {% for participante in item.participantes.all %}
         {% if participante != usuario %}
@@ -434,7 +434,7 @@
       <div class="text-secondary small px-2">Aún no tenés chats privados</div>
     {% endfor %}
 
-    <hr style="border-color: #444;">
+    <hr style="border-color: #444;"> {% endcomment %}
 
     <!-- 🔸 Iniciar nuevo chat privado -->
     <h6 class="text-white mt-2">Iniciar chat privado con:</h6>

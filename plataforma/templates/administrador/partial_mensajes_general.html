@@ -1,0 +1,9 @@
+{% for m in mensajes %}
+<div class="border-bottom border-secondary py-2 px-3">
+  <small class="text-muted">{{ m.creado|date:"d/m H:i" }}</small>
+  <strong class="text-info"> {{ m.remitente.nombre_usuario }}</strong>:
+  <span class="text-light">{{ m.texto }}</span>
+</div>
+{% empty %}
+<p class="text-muted text-center py-3">No hay mensajes en el chat general.</p>
+{% endfor %}

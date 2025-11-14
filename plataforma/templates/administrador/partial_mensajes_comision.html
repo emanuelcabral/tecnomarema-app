@@ -1,0 +1,25 @@
+<!-- partial_mensajes_comision.html -->
+<div class="table-responsive mt-2">
+  <table class="table table-sm table-dark table-striped mb-0">
+    <thead class="bg-success text-white">
+      <tr>
+        <th>Fecha</th>
+        <th>Usuario</th>
+        <th>Mensaje</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in mensajes %}
+      <tr>
+        <td>{{ m.creado|date:"d/m H:i" }}</td>
+        <td>
+          <small>@{{ m.remitente.nombre_usuario }}</small>
+        </td>
+        <td>{{ m.texto|truncatechars:70 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="3" class="text-center text-muted">Sin mensajes</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

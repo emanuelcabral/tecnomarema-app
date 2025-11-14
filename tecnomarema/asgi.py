@@ -7,10 +7,23 @@ For more information on this file, see
 https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
+# import os
+
+# from django.core.asgi import get_asgi_application
+
+# os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tecnomarema.settings')
+
+# application = get_asgi_application()
+
+
 import os
-
 from django.core.asgi import get_asgi_application
+from channels.routing import ProtocolTypeRouter, URLRouter
+from channels.auth import AuthMiddlewareStack
+import plataforma.routing  # Crea routing.py
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tecnomarema.settings')
-
-application = get_asgi_application()
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'tu_proyecto.settings')
+application = ProtocolTypeRouter({
+    'http': get_asgi_application(),
+    'websocket': AuthMiddlewareStack(URLRouter(plataforma.routing.websocket_urlpatterns)),
+})
