@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Tu Curso {{ curso }} está por Finalizar - Consigna Final</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff;">
+  <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px #12f693;color: #fff;">
+    
+    <h1 style="color: #12f693; text-align: center; margin-bottom: 30px; font-size: 28px;">
+      Tu Curso Está Por Finalizar
+    </h1>
+
+    <p style="font-size: 18px; text-align: center;">
+      Hola, <strong style="color:#12f693;">{{ nombre }}</strong>.
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
+
+    <p style="font-size: 18px; text-align: center; font-weight: bold;">
+      Este es un recordatorio importante sobre la finalización del curso y la entrega del Proyecto Final.
+    </p>
+
+    <h2 style="color: #fff; text-align: center; margin: 30px 0; font-size: 24px; background-color: #000; padding: 10px; border-radius: 4px; box-shadow: 0 0 5px #12f693;">
+      🔴 PLAZO LÍMITE DE ENTREGA: {{ fecha_limite_entrega }}
+    </h2>
+    
+    <p style="font-size: 16px; text-align: center;">
+      Curso: <strong style="color:#12f693;">{{ curso }}</strong> | Comisión: <strong style="color:#12f693;">{{ comision }}</strong>
+    </p>
+    
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <h3 style="color: #12f693; text-align: center; margin-bottom: 20px;">
+        Información Clave sobre tu Proyecto Final
+    </h3>
+
+    <ul style="font-size: 16px; list-style: none; padding-left: 0;">
+      <li style="margin-bottom: 10px;">✅ Recuerda que la consigna de la <strong>entrega final del proyecto</strong> se mencionó en la última clase.</li>
+      <li style="margin-bottom: 10px;">⏳ Tienes un plazo de <strong>10 días</strong> para realizar la entrega a partir de la fecha de la última clase.</li>
+      <li style="margin-bottom: 10px; color: #ff0000; font-weight: bold;">🚨 IMPORTANTE: Una vez vencido el plazo de {{ fecha_limite_entrega }}, el estudiante no podrá realizar la entrega del mismo y <strong>no se le otorgará el certificado</strong> de finalización.</li>
+    </ul>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <p style="font-size: 14px; text-align: center;">¡Te deseamos muchos éxitos en la entrega! <strong style="color: #12f693;">Tecno Marema</strong>.</p>
+    <p style="font-size: 14px; text-align: center;"><em>El equipo de Tecno Marema</em></p>
+  </div>
+</body>
+</html>
