@@ -651,6 +651,15 @@ document.getElementById('message-form').addEventListener('submit', function(e) {
   }
   // NO HAY preventDefault() → se envía el form normal
 });
+
+// Enviar con Enter (Shift+Enter = nueva línea)
+document.getElementById('mensaje-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    this.closest('form').requestSubmit();
+  }
+});
+
 </script>
 
     </div>
