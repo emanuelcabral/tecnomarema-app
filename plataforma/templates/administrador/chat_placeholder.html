@@ -1,7 +1,426 @@
 {% extends "administrador/base.html" %}
+{% load static %}
+
+{% block title %}Chat - Estadísticas{% endblock %}
+
 {% block content %}
-<div class="container mt-5 text-center text-white">
-  <h2 class="text-warning">🛠️ Chat en construcción</h2>
-  <p class="mt-3">Próximamente podrás gestionar mensajes, archivos y notificaciones desde aquí.</p>
+<div class="container-fluid mt-4">
+
+  <h2 class="mb-4 text-success fw-bold">Resumen General</h2>
+
+  <!-- PRIMERA FILA -->
+  <div class="row g-4">
+    <div class="col-md-3">
+      <div class="card text-white bg-primary h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Chat General</h5>
+          <p class="card-text display-5 fw-bold">{{ mensajes_general|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-success h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Comisiones</h5>
+          <p class="card-text display-5 fw-bold">{{ mensajes_comisiones|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-warning h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Privados</h5>
+          <p class="card-text display-5 fw-bold">{{ mensajes_privados|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-danger h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Total Mensajes</h5>
+          <p class="card-text display-5 fw-bold">{{ total_mensajes|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEGUNDA FILA -->
+  <div class="row g-4 mt-3">
+    <div class="col-md-3">
+      <div class="card text-white bg-info h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Profesores</h5>
+          <p class="card-text display-5 fw-bold">{{ profesores|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-secondary h-100 shadow-sm border-0">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Tutores</h5>
+          <p class="card-text display-5 fw-bold">{{ tutores|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white bg-dark border-light h-100 shadow-sm">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Alumnos Activos</h5>
+          <p class="card-text display-5 fw-bold">{{ alumnos_activos|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card text-white h-100 shadow-sm border-0" style="background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0 text-white">Mensajes Hoy</h5>
+          <p class="card-text display-5 fw-bold text-white">{{ mensajes_hoy|default:0 }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA: MENSAJES GENERAL -->
+<div class="mt-5">
+  <div class="card bg-dark text-white shadow-lg border-0">
+    <div class="card-header bg-primary text-white fw-bold fs-5 text-center">
+      Chat General - Todos los Mensajes
+    </div>
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table id="tabla-general" class="table table-dark table-striped mb-0">
+          <thead class="bg-black text-primary">
+            <tr>
+              <th class="dt-control"></th>
+              <th class="text-center">Total Mensajes</th>
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-chat-type="general">
+              <td></td>
+              <td class="text-center"><span class="badge bg-light text-dark fs-5 px-4 py-2">{{ mensajes_general|default:0 }}</span></td>
+              <td class="text-center">
+                <button class="btn btn-sm btn-outline-light">
+                  <i class="bi bi-eye"></i> Ver Mensajes
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
+
+  <!-- TABLA: MENSAJES POR COMISIÓN -->
+  <div class="mt-5">
+    <div class="card bg-dark text-white shadow-lg border-0">
+      <div class="card-header bg-success text-dark fw-bold fs-5 text-center">
+        Mensajes por Comisión
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table id="tabla-comisiones" class="table table-dark table-striped table-hover mb-0 align-middle">
+            <thead class="bg-black text-success">
+              <tr>
+                <th class="text-center dt-control"></th>
+                <th class="text-center">ID</th>
+                <th>Curso</th>
+                <th class="text-center">Comisión</th>
+                <th class="text-center">Mensajes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for c in mensajes_por_comision %}
+              <tr data-comision-id="{{ c.chat__comision__id_comision }}">
+                <td></td>
+                <td class="text-center"><span class="badge bg-primary fs-6">{{ c.chat__comision__id_comision }}</span></td>
+                <td class="text-light"><strong>{{ c.chat__comision__id_curso__nombre_curso|default:"Sin curso" }}</strong></td>
+                <td class="text-center"><span class="badge bg-danger fs-5 fw-bold px-3 py-2">{{ c.chat__comision__numero_comision }}</span></td>
+                <td class="text-center"><span class="badge bg-warning text-dark fs-5 fw-bold px-3 py-2">{{ c.total }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="5" class="text-center text-muted py-4"><em>No hay mensajes en comisiones</em></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ALUMNOS -->
+  <div class="mt-5">
+    <div class="card bg-dark text-white shadow-lg border-0">
+      <div class="card-header bg-primary text-dark fw-bold fs-5 text-center">
+        Alumnos - Mensajes Enviados
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table id="tabla-alumnos" class="table table-dark table-striped mb-0">
+            <thead class="bg-black text-info">
+              <tr>
+                <th class="dt-control"></th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th class="text-center">Mensajes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for a in alumnos_mensajes %}
+              <tr data-usuario-id="{{ a.remitente__id_usuario }}">
+                <td></td>
+                <td><span class="badge bg-primary">{{ a.remitente__id_usuario }}</span></td>
+                <td class="text-light">
+                  <strong>{{ a.remitente__id_estudiante__nombre }} {{ a.remitente__id_estudiante__apellido }}</strong>
+                  <small class="text-primary d-block">@{{ a.remitente__nombre_usuario }}</small>
+                </td>
+                <td class="text-center"><span class="badge bg-primary fs-5 px-3 py-2">{{ a.total }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-danger">Sin mensajes</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROFESORES -->
+  <div class="mt-5">
+    <div class="card bg-dark text-white shadow-lg border-0">
+      <div class="card-header bg-warning text-dark fw-bold fs-5 text-center">
+        Profesores - Mensajes Enviados
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table id="tabla-profesores" class="table table-dark table-striped mb-0">
+            <thead class="bg-black text-warning">
+              <tr>
+                <th class="dt-control"></th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th class="text-center">Mensajes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in profesores_mensajes %}
+              <tr data-usuario-id="{{ p.remitente__id_usuario }}">
+                <td></td>
+                <td><span class="badge bg-warning">{{ p.remitente__id_usuario }}</span></td>
+                <td class="text-light">
+                  <strong>{{ p.remitente__id_estudiante__nombre }} {{ p.remitente__id_estudiante__apellido }}</strong>
+                  <small class="text-warning d-block">@{{ p.remitente__nombre_usuario }}</small>
+                </td>
+                <td class="text-center"><span class="badge bg-warning text-dark fs-5 px-3 py-2">{{ p.total }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-muted">Sin mensajes</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TUTORES -->
+  <div class="mt-5">
+    <div class="card bg-dark text-white shadow-lg border-0">
+      <div class="card-header bg-danger text-white fw-bold fs-5 text-center">
+        Tutores - Mensajes Enviados
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table id="tabla-tutores" class="table table-dark table-striped mb-0">
+            <thead class="bg-black text-secondary">
+              <tr>
+                <th class="dt-control"></th>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th class="text-center">Mensajes</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for t in tutores_mensajes %}
+              <tr data-usuario-id="{{ t.remitente__id_usuario }}">
+                <td></td>
+                <td><span class="badge bg-danger">{{ t.remitente__id_usuario }}</span></td>
+                <td class="text-light">
+                  <strong>{{ t.remitente__id_estudiante__nombre }} {{ t.remitente__id_estudiante__apellido }}</strong>
+                  <small class="text-danger d-block">@{{ t.remitente__nombre_usuario }}</small>
+                </td>
+                <td class="text-center"><span class="badge bg-danger text-white fs-5 px-3 py-2">{{ t.total }}</span></td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="text-center text-danger">Sin mensajes</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  console.log("JS CARGADO: ¡ESTOY VIVO!");
+
+  // === FUNCIÓN PARA FORMATEAR FILA ===
+  function formatComision(id) {
+    return `
+      <div class="p-3 bg-dark-subtle" id="mensajes-comision-${id}">
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function formatUsuario(id) {
+    return `
+      <div class="p-3 bg-info-subtle" id="mensajes-usuario-${id}">
+        <div class="text-center">
+          <div class="spinner-border text-info" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // === INICIALIZAR TABLAS ===
+  setTimeout(() => {
+    // === GENERAL ===
+    // === CHAT GENERAL ===
+// === CHAT GENERAL ===
+const tableGeneral = $('#tabla-general').DataTable({
+  paging: false,
+  searching: false,
+  info: false,
+  columnDefs: [
+    { className: 'dt-control', orderable: false, targets: 0 }
+  ]
+});
+
+$('#tabla-general tbody').on('click', 'tr', function () {
+  const tr = $(this);
+  const row = tableGeneral.row(tr);
+
+  if (row.child.isShown()) {
+    row.child.hide();
+    tr.removeClass('shown');
+  } else {
+    const formatGeneral = () => `
+      <div class="p-3 bg-dark" id="mensajes-general">
+        <div class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+        </div>
+      </div>
+    `;
+    row.child(formatGeneral()).show();
+    tr.addClass('shown');
+
+    fetch('/administrador/mensajes/ver-general/')
+      .then(r => r.ok ? r.text() : Promise.reject())
+      .then(html => {
+        const container = document.getElementById('mensajes-general');
+        if (container) container.innerHTML = html;
+      })
+      .catch(() => {
+        const container = document.getElementById('mensajes-general');
+        if (container) container.innerHTML = '<p class="text-danger">Error al cargar el chat general</p>';
+      });
+  }
+});
+    // === COMISIONES ===
+    const tableComisiones = $('#tabla-comisiones').DataTable({
+      pageLength: 10,
+      language: {
+        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+      },
+      order: [[4, "desc"]],
+      columnDefs: [
+        { className: 'dt-control', orderable: false, targets: 0 }
+      ]
+    });
+
+    $('#tabla-comisiones tbody').on('click', 'tr', function () {
+      const tr = $(this);
+      const row = tableComisiones.row(tr);
+      const id = tr.data('comision-id');
+
+      if (row.child.isShown()) {
+        row.child.hide();
+        tr.removeClass('shown');
+      } else {
+        row.child(formatComision(id)).show();
+        tr.addClass('shown');
+        fetch(`/administrador/chat/ver-mensajes-comision/${id}/`)
+          .then(r => r.ok ? r.text() : Promise.reject(r.status))
+          .then(html => {
+            const container = document.getElementById(`mensajes-comision-${id}`);
+            if (container) container.innerHTML = html;
+          })
+          .catch(() => {
+            const container = document.getElementById(`mensajes-comision-${id}`);
+            if (container) container.innerHTML = '<p class="text-danger">Error al cargar</p>';
+          });
+      }
+    });
+
+    // === ALUMNOS, PROFESORES, TUTORES (sin DataTables) ===
+    ['alumnos', 'profesores', 'tutores'].forEach(tipo => {
+      const tableId = `#tabla-${tipo}`;
+      $(tableId + ' tbody').on('click', 'tr', function () {
+        const tr = $(this);
+        const id = tr.data('usuario-id');
+        const containerId = `mensajes-usuario-${id}`;
+        const existing = document.getElementById(containerId);
+
+        if (existing && existing.parentElement) {
+          tr.next('tr.details').remove();
+          return;
+        }
+
+        const detailsRow = `
+          <tr class="details">
+            <td colspan="4" class="p-0 border-0">
+              <div class="p-3 bg-info-subtle" id="${containerId}">
+                <div class="text-center">
+                  <div class="spinner-border text-info" role="status">
+                    <span class="visually-hidden">Cargando...</span>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
+        tr.after(detailsRow);
+
+        fetch(`/administrador/chat/ver-mensajes/${id}/`)
+          .then(r => r.ok ? r.text() : Promise.reject())
+          .then(html => {
+            const container = document.getElementById(containerId);
+            if (container) container.innerHTML = html;
+          })
+          .catch(() => {
+            const container = document.getElementById(containerId);
+            if (container) container.innerHTML = '<p class="text-danger">Error al cargar</p>';
+          });
+      });
+    });
+  }, 100);
+});
+</script>
 {% endblock %}

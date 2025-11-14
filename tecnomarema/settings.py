@@ -325,7 +325,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'plataforma',
+    'channels',
+
 ]
+#channels para chats en tiempo real
+# Configuración de Channels
+ASGI_APPLICATION = 'tu_proyecto.asgi.application'  # Crea asgi.py si no existe
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {'hosts': [('127.0.0.1', 6379)], },  # Redis local; usa hosted en prod
+    },
+}
 
 # Middlewares
 MIDDLEWARE = [

@@ -5110,4 +5110,125 @@ def crear_preferencia(request):
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Método no permitido"}, status=405)
 
+#---------------------------------------------------------------------------------------------
 
+# views.py
+from django.db.models import Count
+from django.utils import timezone
+from plataforma.models import Mensaje, PerfilUsuario
+
+
+def chat_estadisticas(request):
+    print("ENTRAMOS A chat_estadisticas")
+
+    # === CONTADORES ===
+    mensajes_general = Mensaje.objects.filter(chat__tipo='general').count()
+    mensajes_comisiones = Mensaje.objects.filter(chat__tipo='comision').count()
+    mensajes_privados = Mensaje.objects.filter(chat__tipo='privado').count()
+    total_mensajes = Mensaje.objects.count()
+    mensajes_hoy = Mensaje.objects.filter(creado__date=timezone.localdate()).count()
+
+    profesores = PerfilUsuario.objects.filter(rol='profesor').count()
+    tutores = PerfilUsuario.objects.filter(rol='tutor').count()
+    alumnos_activos = PerfilUsuario.objects.filter(rol='alumno', is_active=True).count()
+
+    # === MENSAJES POR COMISIÓN ===
+    mensajes_por_comision = (
+        Mensaje.objects
+        .filter(chat__tipo='comision')
+        .values('chat__comision__id_comision', 'chat__comision__id_curso__nombre_curso', 'chat__comision__numero_comision')
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+
+    # === ALUMNOS: TOTAL DE MENSAJES EN PRIVADOS ===
+    alumnos_mensajes = (
+        Mensaje.objects
+        .filter(chat__tipo='privado', remitente__rol='alumno')
+        .values(
+            'remitente__id_usuario',
+            'remitente__id_estudiante__nombre',
+            'remitente__id_estudiante__apellido',
+            'remitente__nombre_usuario'
+        )
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+
+    # === PROFESORES ===
+    profesores_mensajes = (
+        Mensaje.objects
+        .filter(chat__tipo='privado', remitente__rol='profesor')
+        .values(
+            'remitente__id_usuario',
+            'remitente__id_estudiante__nombre',
+            'remitente__id_estudiante__apellido',
+            'remitente__nombre_usuario'
+        )
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+
+    # === TUTORES ===
+    tutores_mensajes = (
+        Mensaje.objects
+        .filter(chat__tipo='privado', remitente__rol='tutor')
+        .values(
+            'remitente__id_usuario',
+            'remitente__id_estudiante__nombre',
+            'remitente__id_estudiante__apellido',
+            'remitente__nombre_usuario'
+        )
+        .annotate(total=Count('id'))
+        .order_by('-total')
+    )
+
+    contexto = {
+        "mensajes_general": mensajes_general,
+        "mensajes_comisiones": mensajes_comisiones,
+        "mensajes_privados": mensajes_privados,
+        "total_mensajes": total_mensajes,
+        "mensajes_hoy": mensajes_hoy,
+        "profesores": profesores,
+        "tutores": tutores,
+        "alumnos_activos": alumnos_activos,
+
+        "mensajes_por_comision": list(mensajes_por_comision),
+        "alumnos_mensajes": list(alumnos_mensajes),
+        "profesores_mensajes": list(profesores_mensajes),
+        "tutores_mensajes": list(tutores_mensajes),
+    }
+
+    return render(request, "administrador/chat_placeholder.html", contexto)
+
+
+#-----------------------------------------------------------------------------
+
+# === VER MENSAJES DE UN USUARIO (privado) ===
+def ver_mensajes_usuario(request, usuario_id):
+    mensajes = Mensaje.objects.filter(
+        chat__tipo='privado',
+        remitente__id_usuario=usuario_id
+    ).select_related('chat').order_by('-creado')
+
+    return render(request, 'administrador/partial_mensajes_usuario.html', {
+        'mensajes': mensajes,
+    })
+
+# === VER MENSAJES DE UNA COMISIÓN ===
+def ver_mensajes_comision(request, comision_id):
+    mensajes = Mensaje.objects.filter(
+        chat__tipo='comision',
+        chat__comision__id_comision=comision_id
+    ).select_related('remitente', 'chat__comision').order_by('-creado')
+
+    return render(request, 'administrador/partial_mensajes_comision.html', {
+        'mensajes': mensajes,
+        'comision_id': comision_id,
+    })
+
+
+# === VER MENSAJES GENERAL ===
+def ver_mensajes_general(request):
+    mensajes = Mensaje.objects.filter(chat__tipo='general').order_by('-creado')
+    return render(request, 'administrador/partial_mensajes_general.html', {'mensajes': mensajes})

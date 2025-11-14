@@ -452,7 +452,7 @@ class Chat(models.Model):
         ('privado', 'Chat Privado'),
     ]
     tipo = models.CharField(max_length=10, choices=TIPO_CHAT)
-    comision = models.ForeignKey('Comision', null=True, blank=True, on_delete=models.CASCADE)
+    comision = models.ForeignKey('Comision', null=True, blank=True, on_delete=models.CASCADE , related_name='chats')
     participantes = models.ManyToManyField(settings.AUTH_USER_MODEL)
     creado = models.DateTimeField(auto_now_add=True)
 
