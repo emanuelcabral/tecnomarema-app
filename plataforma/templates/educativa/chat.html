@@ -543,7 +543,7 @@
 <!-- Indicador de escritura -->
 <div id="typing-box" class="text-muted small px-3" style="color: #12f693 !important;"></div>
 
-<!-- Formulario de envío de mensaje -->
+{% comment %} <!-- Formulario de envío de mensaje -->
 <form class="message-input" id="message-form" method="POST" enctype="multipart/form-data"
   action="{% if chat.tipo == 'comision' %}
             {% url 'enviar_mensaje_comision' chat.comision.id_comision %}
@@ -569,7 +569,89 @@
 
   <!-- Botón de envío -->
   <button type="submit"><i class="bi bi-send"></i> Enviar</button><br>
+</form> {% endcomment %}
+
+<!-- Formulario de envío de mensaje -->
+<form class="message-input" id="message-form" method="POST" enctype="multipart/form-data"
+  action="{% if chat.tipo == 'comision' %}
+            {% url 'enviar_mensaje_comision' chat.comision.id_comision %}
+          {% elif chat.tipo == 'privado' %}
+            {% url 'enviar_mensaje_privado' destinatario.id_usuario %}
+          {% else %}
+            {% url 'enviar_mensaje_general' %}
+          {% endif %}">
+  {% csrf_token %}
+
+  <!-- Input oculto para archivos (opcional) -->
+  <input type="file" name="archivo" id="file-input" style="display: none;"
+    accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.ppt,.pptx,.zip,.rar">
+
+  <!-- Botón para adjuntar archivo -->
+  <button type="button" class="file-btn" title="Adjuntar archivo"
+    onclick="document.getElementById('file-input').click();">
+    <i class="bi bi-paperclip"></i>
+  </button>
+
+  <!-- Caja de texto -->
+  <textarea name="mensaje" id="mensaje-input" placeholder="Escribe o pega una captura (Ctrl + V)..." rows="1"
+    style="resize: none; flex: 1; margin: 0 8px; background: #333; color: #fff; border: none; border-radius: 10px; padding: 0.5rem;"></textarea>
+
+  <!-- Vista previa de imagen pegada -->
+  <div id="preview-container" style="display: none; margin: 5px 15px; max-width: 200px; position: relative;box-shadow: 2px 2px 5px 5px #000"><img id="preview-img" style="max-width: 100%; border-radius: 8px;" />
+      <button type="button" id="remove-preview" style="background:#cf30ff;color:#fff;border:2px solid #000;border-radius:50%;width:26px;height:26px;font-size:20px;font-weight:bold;cursor:pointer;box-shadow:0 4px 8px rgba(0,0,0,0.25);display:flex;justify-content:center;align-items:center;position:absolute;top:0;right:0;transform:translate(50%,-50%);">×</button>
+  </div>
+
+  <!-- Botón de envío -->
+  <button type="submit" id="send-btn"><i class="bi bi-send"></i> Enviar</button>
 </form>
+
+<script>
+let imagenBlob = null;
+
+// Pegar con Ctrl+V
+document.getElementById('mensaje-input').addEventListener('paste', e => {
+  const items = e.clipboardData.items;
+  for (let i of items) {
+    if (i.type.startsWith('image/')) {
+      const blob = i.getAsFile();
+      mostrarPreview(blob);
+      e.preventDefault();
+      break;
+    }
+  }
+});
+
+function mostrarPreview(blob) {
+  const cont = document.getElementById('preview-container');
+  const img = document.getElementById('preview-img');
+  const rm = document.getElementById('remove-preview');
+  const url = URL.createObjectURL(blob);
+  img.src = url;
+  cont.style.display = 'block';
+  imagenBlob = blob;
+  rm.onclick = () => {
+    cont.style.display = 'none';
+    URL.revokeObjectURL(url);
+    imagenBlob = null;
+  };
+}
+
+// Enviar con submit normal (NO AJAX)
+document.getElementById('message-form').addEventListener('submit', function(e) {
+  if (imagenBlob) {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.name = 'archivo';
+    input.style.display = 'none';
+    this.appendChild(input);
+
+    const dt = new DataTransfer();
+    dt.items.add(new File([imagenBlob], 'captura.png', { type: 'image/png' }));
+    input.files = dt.files;
+  }
+  // NO HAY preventDefault() → se envía el form normal
+});
+</script>
 
     </div>
   </div>
