@@ -190,26 +190,27 @@
         .saldo-neg {
             color: #ff4b4b;
         }
+        
+        /* Estilos para que las columnas nuevas no sean tan anchas */
+        .table-responsive table {
+            min-width: 1000px; /* Asegura que la tabla no se colapse demasiado */
+        }
     </style>
 </head>
 
 <body>
 
-        <!-- NAVBAR -->
-<nav class="navbar navbar-expand-lg navbar-dark px-3">
+        <nav class="navbar navbar-expand-lg navbar-dark px-3">
   <div class="container-fluid">
-    <!-- LOGO -->
     <a class="navbar-brand" href="#">
       <span class="white">Tecno</span><span class="green">Marema</span>
       <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
     </a>
 
-    <!-- HAMBURGUESA -->
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
       <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
     </button>
 
-    <!-- MENÚ -->
     <div class="collapse navbar-collapse" id="navbarContenido">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
         <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
@@ -220,8 +221,7 @@
         <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
         <li class="nav-item">
-          <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
-                       <form action="{% url 'logout' %}" method="post" class="d-inline">
+          <form action="{% url 'logout' %}" method="post" class="d-inline">
     {% csrf_token %}
     <button type="submit" class="btn btn-login btn-sm">
         <i class="bi bi-person-badge"></i>
@@ -253,7 +253,7 @@
     </div>
     <div class="card-body">
         <p><strong>Fecha de inicio:</strong> {{ inscripcion.comision.fecha_inicio|date:"d/m/Y" }}</p>
-        <p><strong>Precio total:</strong> ${{ inscripcion.curso.precio_final|floatformat:2 }} (sin impuestos)</p>
+        <p><strong>Precio total:</strong> ${{ inscripcion.curso.precio_final|floatformat:2 }} (con impuestos)</p>
 
         <div class="table-responsive">
             <table class="table table-dark table-bordered mt-3 mb-3">
@@ -263,6 +263,10 @@
                         <th>Monto</th>
                         <th>Método</th>
                         <th>Estado</th>
+                        <th>ID Transacción</th>
+                        <th>Link Comprobante</th>
+                        <th>Archivo Comprobante</th>
+                        <th>Observaciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -276,10 +280,26 @@
                                 {{ pago.estado_pago }}
                             </span>
                         </td>
+                        <td>{{ pago.id_transaccion|default:'—' }}</td>
+                        <td>
+                            {% if pago.link_comprobante %}
+                                <a href="{{ pago.link_comprobante }}" target="_blank">Ver</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if pago.archivo_comprobante %}
+                                <a href="{{ pago.archivo_comprobante.url }}" target="_blank">Descargar</a>
+                            {% else %}
+                                —
+                            {% endif %}
+                        </td>
+                        <td style="font-size: 0.9em;">{{ pago.observaciones|default:'—' }}</td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="text-center text-muted">Sin pagos registrados</td>
+                        <td colspan="8" class="text-center text-muted">Sin pagos registrados</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -301,15 +321,12 @@
 
     </div>
 
-    <!-- footer incia -->
     <footer style="background-color: #111; color: #888; text-align: center; font-size: 0.9rem; padding: 1.2rem 0; position: relative; border-top: 3px solid transparent;">
     <div style="position: absolute; top: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(90deg, #12f693, #cf30ff, #12f693); background-size: 200% auto; animation: neonGlow 4s linear infinite;"></div>
     <div class="container">
         <small>© {% now "Y" %} Tecnomarema · Todos los derechos reservados</small>
     </div>
     </footer>
-    <!-- footer fin -->
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
