@@ -1,89 +1,402 @@
 {% extends "administrador/base.html" %}
 {% block content %}
-<!-- listado_pagos.html -->
+<style>
+    /* Estilos para que los elementos de edición se vean mejor en la tabla oscura */
+    .editable-select, .editable-input, .editable-textarea {
+        width: 100%;
+        padding: 5px;
+        box-sizing: border-box;
+        border: 1px solid #6c757d;
+        background-color: #343a40;
+        color: #fff;
+    }
+    .editable-select:focus, .editable-input:focus, .editable-textarea:focus {
+        border-color: #28a745;
+        box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+    }
+    .editing-cell {
+        padding: 0 !important;
+        white-space: normal; /* Permitir que el contenido se ajuste */
+    }
+    .file-upload-control {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 5px;
+        box-sizing: border-box;
+    }
+    .obs-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 5px;
+    }
+</style>
+
+
 <div class="container-fluid mt-5" style="padding:0;margin:0;">
-<h2 class="mb-4 text-success">Listado de Pagos</h2>
-<table id="tabla-pagos" class="table table-dark table-striped table-bordered" style="font-size:14px;padding:0;">
-    <thead>
-        <tr>
-            <th>Nº</th>
-            <th>ID Estudiante</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>DNI</th>
-            <th>Teléfono</th>
-            <th>Email</th>
-            <th>Plataforma</th>
-            <th>Medio de Pago</th>
-            <th>Estado Pago</th>
-            <th>Monto</th>
-            <th>Fecha Pago</th>
-            <th>ID Transacción</th>
-            <th class="text-break">Link Comprobante</th>
-            <th class="text-break">Archivo Comprobante</th>
-            <th>Comisión</th>
-            <th class="text-break">Observaciones</th>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-success">Listado de Pagos</h2>
+        <p class="text-info">Se deben verificar los pagos con tranferencia y efectivo. Se deben aprobar y ademas dejar la constancia por archivo adjunto o link</p>
+        <button id="toggle-edit-btn" class="btn btn-success">
+            <i class="fas fa-edit"></i> Editar Tabla
+        </button>
+    </div>
+
+    <table id="tabla-pagos" class="table table-dark table-striped table-bordered" style="font-size:14px;padding:0;">
+        <thead>
+            <tr>
+                <th>Nº</th>
+                <th>ID Estudiante</th>
+                <th>Nombre</th>
+                <th>Apellido</th>
+                <th>DNI</th>
+                <th>Teléfono</th>
+                <th>Email</th>
+                <th>Plataforma</th>
+                <th>Medio de Pago</th>
+                <th>Estado Pago</th>
+                <th>Monto</th>
+                <th>Fecha Pago</th>
+                <th>ID Transacción</th>
+                <th class="text-break">Link Comprobante</th>
+                <th class="text-break">Archivo Comprobante</th>
+                <th>Comisión</th>
+                <th class="text-break">Observaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for pago in registropago %}
+        <tr data-pago-id="{{ pago.id_pago }}">
+            <td>{{ forloop.counter }}</td>
+            <td>{{ pago.estudiante.id_estudiante }}</td>
+            <td>{{ pago.estudiante.nombre }}</td>
+            <td>{{ pago.estudiante.apellido }}</td>
+            <td>{{ pago.estudiante.dni }}</td>
+            <td>{{ pago.estudiante.telefono }}</td>
+            <td class="text-break">{{ pago.estudiante.correo }}</td>
+            <td>{{ pago.plataforma }}</td>
+            <td>{{ pago.medio_pago }}</td>
+            <td class="estado-pago">{{ pago.estado_pago }}</td>
+            <td class="monto">{{ pago.monto }}</td> 
+            <td class="fecha-pago">{{ pago.fecha_pago|date:"d/m/Y" }}</td> 
+            <td>{{ pago.id_transaccion }}</td>
+            <td class="link-comprobante">
+                {% if pago.link_comprobante %}
+                    <a href="{{ pago.link_comprobante }}" target="_blank">Ver</a>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td class="archivo-comprobante">
+                {% if pago.archivo_comprobante %}
+                    <a href="{{ pago.archivo_comprobante.url }}" target="_blank">Descargar</a>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>
+                {% if pago.comision %}
+                    {{ pago.comision.numero_comision }}
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td class="observaciones">{{ pago.observaciones }}</td> 
         </tr>
-    </thead>
-    <tbody>
-    {% for pago in registropago %}
-    <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ pago.estudiante.id_estudiante }}</td>
-        <td>{{ pago.estudiante.nombre }}</td>
-        <td>{{ pago.estudiante.apellido }}</td>
-        <td>{{ pago.estudiante.dni }}</td>
-        <td>{{ pago.estudiante.telefono }}</td>
-        <td class="text-break">{{ pago.estudiante.correo }}</td>
-        <td>{{ pago.plataforma }}</td>
-        <td>{{ pago.medio_pago }}</td>
-        <td>{{ pago.estado_pago }}</td>
-        <td>{{ pago.monto }}</td>
-        <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
-        <td>{{ pago.id_transaccion }}</td>
-        <td>
-            {% if pago.link_comprobante %}
-                <a href="{{ pago.link_comprobante }}" target="_blank">Ver</a>
-            {% else %}
-                —
-            {% endif %}
-        </td>
-        <td>
-            {% if pago.archivo_comprobante %}
-                <a href="{{ pago.archivo_comprobante.url }}" target="_blank">Descargar</a>
-            {% else %}
-                —
-            {% endif %}
-        </td>
-        <td>
-            {% if pago.comision %}
-                {{ pago.comision.numero_comision }}
-            {% else %}
-                —
-            {% endif %}
-        </td>
-        <td>{{ pago.observaciones }}</td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="17">No hay registros de pagos</td></tr>
-    {% endfor %}
-    </tbody>
-</table>
+        {% empty %}
+        <tr><td colspan="17">No hay registros de pagos</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 
 <script>
-  $(document).ready(function() {
-    $('#tabla-pagos').DataTable({
-      "order": [[ 0, "asc" ]],  // Ordenar por la primera columna al cargar
-      "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-      },
-      "columnDefs": [
-        { "orderable": true, "targets": "_all" }  // Todas las columnas ordenables, o ajusta según necesites
-      ]
+    // Función helper para obtener el CSRF token del cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith(name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    const csrfToken = getCookie('csrftoken');
+
+
+    $(document).ready(function() {
+        const estadoOpciones = ['Aprobado', 'Verificando', 'Denegado', 'Cancelado'];
+
+        const tablaPagos = $('#tabla-pagos').DataTable({
+            "order": [[ 0, "asc" ]],
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            }
+        });
+
+        let isEditing = false;
+        const $toggleEditBtn = $('#toggle-edit-btn');
+
+
+        // --- 1. FUNCIÓN PARA ALTERNAR EL MODO DE EDICIÓN ---
+        function toggleEditMode() {
+            isEditing = !isEditing;
+            
+            if (isEditing) {
+                $toggleEditBtn.removeClass('btn-success').addClass('btn-danger').html('<i class="fas fa-times"></i> Salir Edición');
+            } else {
+                // RESTAURAR AL MODO DE VISTA (Lógica de restauración simplificada)
+                tablaPagos.rows().every(function() {
+                    const $row = $(this.node());
+                    
+                    const restoreCell = ($cell) => {
+                         // Usamos el original-html para restaurar el estado inicial (link/descargar)
+                        const originalHtml = $cell.data('original-html');
+                        if (originalHtml !== undefined) {
+                            $cell.removeClass('editing-cell').html(originalHtml);
+                            $cell.removeData('original-html');
+                        }
+                    };
+
+                    restoreCell($row.find('td:eq(9)')); // Estado
+                    restoreCell($row.find('td:eq(10)')); // Monto
+                    restoreCell($row.find('td:eq(13)')); // Link Comprobante
+                    restoreCell($row.find('td:eq(14)')); // Archivo Comprobante
+                    restoreCell($row.find('td:eq(16)')); // Observaciones
+                });
+
+                $toggleEditBtn.removeClass('btn-danger').addClass('btn-success').html('<i class="fas fa-edit"></i> Editar Tabla');
+                tablaPagos.draw(false);
+                return;
+            }
+            
+            // TRANSICIÓN AL MODO DE EDICIÓN
+            tablaPagos.rows().every(function() {
+                const $row = $(this.node());
+
+                // --- Columna ESTADO PAGO (Índice 9) --- 
+                const $estadoCell = $row.find('td:eq(9)');
+                const currentEstado = $estadoCell.text().trim();
+                $estadoCell.addClass('editing-cell');
+                let selectHtml = `<select class="editable-select form-select form-select-sm" data-original-value="${currentEstado}">`;
+                estadoOpciones.forEach(opcion => {
+                    const selected = (opcion === currentEstado) ? 'selected' : '';
+                    selectHtml += `<option value="${opcion}" ${selected}>${opcion}</option>`;
+                });
+                selectHtml += `</select>`;
+                $estadoCell.data('original-html', $estadoCell.html()).html(selectHtml);
+                
+                // --- Columna MONTO (Índice 10) ---
+                const $montoCell = $row.find('td:eq(10)');
+                const currentMonto = $montoCell.text().trim();
+                $montoCell.addClass('editing-cell');
+                const montoHtml = `<input type="number" step="0.01" class="editable-input form-control form-control-sm" value="${currentMonto}" data-original-value="${currentMonto}" style="width:100%">`;
+                $montoCell.data('original-html', currentMonto).html(montoHtml);
+                
+                // --- Columna LINK COMPROBANTE (Índice 13) ---
+                const $linkCell = $row.find('td:eq(13)');
+                const currentLink = $linkCell.find('a').attr('href') || '';
+                $linkCell.addClass('editing-cell');
+                const linkHtml = `<input type="url" class="editable-input form-control form-control-sm" name="link_comprobante" value="${currentLink}" placeholder="http:// o https://">`;
+                $linkCell.data('original-html', $linkCell.html()).html(linkHtml);
+
+                // --- Columna ARCHIVO COMPROBANTE (Índice 14) --- <--- MODIFICADO
+                const $archivoCell = $row.find('td:eq(14)');
+                const originalHtmlArchivo = $archivoCell.html(); // Guardar el HTML original (Descargar/—)
+                $archivoCell.addClass('editing-cell');
+
+                // Determina si hay un archivo cargado actualmente para mostrar el botón de eliminación
+                const hasExistingFile = originalHtmlArchivo.includes('Descargar'); 
+
+                const archivoHtml = `
+                    <div class="file-upload-control file-control">
+                        <div class="d-flex justify-content-between align-items-center w-100">
+                            <div class="current-file-display me-2">${originalHtmlArchivo}</div>
+                            ${hasExistingFile 
+                                ? `<button type="button" class="btn btn-sm btn-outline-danger delete-archivo-btn" title="Eliminar archivo cargado"><i class="fas fa-trash"></i></button>` 
+                                : ''
+                            }
+                        </div>
+                        <input type="file" class="form-control form-control-sm mt-1 archivo-input" name="archivo_comprobante" accept="image/*, application/pdf">
+                        <input type="hidden" name="delete_archivo_comprobante" value="0" class="delete-archivo-flag">
+                        <small class="text-muted mt-1 file-help-text">Sube nuevo archivo o elimina el existente.</small>
+                    </div>
+                `;
+                $archivoCell.data('original-html', originalHtmlArchivo).html(archivoHtml);
+
+
+                // --- Columna OBSERVACIONES (Índice 16) ---
+                const $obsCell = $row.find('td:eq(16)');
+                const currentObs = $obsCell.text().trim();
+                const obsText = (currentObs === 'None' || currentObs === '—') ? '' : currentObs;
+                $obsCell.addClass('editing-cell');
+                
+                const obsHtml = `
+                    <div class="obs-controls">
+                        <textarea class="editable-textarea form-control form-control-sm mb-1" style="width:100%;" rows="2" data-original-value="${obsText}">${obsText}</textarea>
+                        <div class="obs-actions">
+                            <button class="btn btn-sm btn-success set-status-btn me-1" data-new-status="APRO" title="Aprobar"><i class="fas fa-check"></i> APRO</button>
+                            <button class="btn btn-sm btn-danger set-status-btn me-3" data-new-status="DENY" title="Denegar"><i class="fas fa-times"></i> DENY</button>
+                            
+                            <button class="btn btn-sm btn-primary save-row-btn me-1" title="Guardar cambios"><i class="fas fa-save"></i></button>
+                            <button class="btn btn-sm btn-secondary cancel-row-btn" title="Descartar cambios"><i class="fas fa-undo"></i></button>
+                        </div>
+                    </div>
+                `;
+                $obsCell.data('original-html', currentObs).html(obsHtml);
+                
+                // Las demás columnas no se tocan.
+            });
+
+            tablaPagos.draw();
+        }
+
+        $toggleEditBtn.on('click', toggleEditMode);
+
+
+        // --- 2. EVENTO PARA LOS BOTONES APRO / DENY ---
+        $('#tabla-pagos').on('click', '.set-status-btn', function() {
+            const $row = $(this).closest('tr');
+            const newStatus = $(this).data('new-status'); 
+            const $obsInput = $row.find('td:eq(16) textarea');
+            
+            $obsInput.val(newStatus);
+        });
+
+        // --- 3. EVENTO PARA ELIMINAR ARCHIVO COMPROBANTE <--- NUEVO MANEJADOR
+        $('#tabla-pagos').on('click', '.delete-archivo-btn', function() {
+            const $row = $(this).closest('tr');
+            const $cell = $(this).closest('.archivo-comprobante');
+            
+            // 1. Activar la bandera oculta para que se envíe al backend
+            $cell.find('.delete-archivo-flag').val('1');
+            
+            // 2. Deshabilitar y limpiar la subida de archivos 
+            $cell.find('.archivo-input').prop('disabled', true).val('');
+            
+            // 3. Ocultar el botón de eliminación y mostrar un mensaje de estado
+            $(this).hide();
+            $cell.find('.current-file-display').html('<span class="text-danger"><i class="fas fa-trash-alt"></i> ELIMINADO</span>');
+            $cell.find('.file-help-text').text('El archivo será eliminado al guardar. Haz clic en guardar o cancelar.');
+            
+            alert('Archivo marcado para eliminación. Pulsa el botón Guardar para confirmar el cambio.');
+        });
+
+
+        // --- 4. EVENTO PARA GUARDAR CAMBIOS POR FILA (AJAX) --- <--- MODIFICADO
+        $('#tabla-pagos').on('click', '.save-row-btn', function() {
+            const $row = $(this).closest('tr');
+            const pagoId = $row.data('pago-id'); 
+            
+            // 1. Obtener los nuevos valores
+            const newEstado = $row.find('td:eq(9) select').val();
+            const newMonto = $row.find('td:eq(10) input').val(); 
+            const newLink = $row.find('td:eq(13) input[name="link_comprobante"]').val(); 
+            const newArchivo = $row.find('td:eq(14) input[name="archivo_comprobante"]')[0].files[0]; 
+            const deleteArchivoFlag = $row.find('td:eq(14) .delete-archivo-flag').val(); // <-- Capturamos la bandera de eliminación
+            const newObs = $row.find('td:eq(16) textarea').val(); 
+            
+            // Validación de Monto simple en el frontend
+            if (isNaN(newMonto) || newMonto.trim() === '' || parseFloat(newMonto) <= 0) {
+                alert('Por favor, ingresa un monto válido y positivo.');
+                return;
+            }
+
+            // 2. Preparar FormData para la petición POST
+            const formData = new FormData();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+            formData.append('estado_pago', newEstado);
+            formData.append('monto', newMonto);
+            formData.append('observaciones', newObs); 
+            
+            // Campos de comprobantes
+            formData.append('link_comprobante', newLink);
+            formData.append('delete_archivo_comprobante', deleteArchivoFlag); // <-- Añadir la bandera de eliminación
+
+            if (newArchivo) {
+                formData.append('archivo_comprobante', newArchivo);
+            }
+
+            // 3. Ejecutar la llamada AJAX
+            $.ajax({
+                url: `/administrador/pagos/actualizar/${pagoId}/`, 
+                method: 'POST',
+                data: formData,
+                processData: false, 
+                contentType: false, 
+                success: function(response) {
+                    const $estadoCell = $row.find('td:eq(9)');
+                    const $montoCell = $row.find('td:eq(10)');
+                    const $linkCell = $row.find('td:eq(13)');
+                    const $archivoCell = $row.find('td:eq(14)');
+                    const $obsCell = $row.find('td:eq(16)');
+
+                    $estadoCell.text(newEstado).removeClass('editing-cell').removeData('original-html');
+                    $montoCell.text(parseFloat(newMonto).toFixed(2)).removeClass('editing-cell').removeData('original-html'); 
+                    $obsCell.text(newObs || '—').removeClass('editing-cell').removeData('original-html');
+                    
+                    // Actualización de Link (Mostrar el enlace real si existe)
+                    const displayLink = newLink 
+                                        ? `<a href="${newLink}" target="_blank">Ver</a>` 
+                                        : '—';
+                    $linkCell.html(displayLink).removeClass('editing-cell').removeData('original-html');
+
+                    // Actualización de Archivo (Usamos la URL que viene del backend o un guion)
+                    let displayArchivo;
+                    if (response.archivo_url) {
+                        displayArchivo = `<a href="${response.archivo_url}" target="_blank">Descargar</a>`;
+                    } else {
+                        displayArchivo = '—';
+                    }
+
+                    $archivoCell.html(displayArchivo).removeClass('editing-cell').removeData('original-html');
+                    
+                    // Mensaje de éxito
+                    $obsCell.append('<span class="text-success ms-2"><i class="fas fa-check"></i> OK</span>');
+                    tablaPagos.row($row).invalidate().draw(false); 
+                    
+                    // Sugerencia: Recargar la página para una consistencia total, especialmente con archivos.
+                    // location.reload();
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON && xhr.responseJSON.error ? xhr.responseJSON.error : 'Error desconocido al guardar.';
+                    alert('Error al guardar el pago: ' + errorMessage);
+                    $row.find('.obs-actions').append('<span class="text-danger ms-2">Fallo</span>');
+                }
+            });
+        });
+
+
+        // --- 5. EVENTO PARA CANCELAR CAMBIOS POR FILA ---
+        $('#tabla-pagos').on('click', '.cancel-row-btn', function() {
+            const $row = $(this).closest('tr');
+            
+            // Función para restaurar celdas al HTML original
+            const revertCell = ($cell) => {
+                const originalHtml = $cell.data('original-html');
+                if (originalHtml !== undefined) {
+                    $cell.removeClass('editing-cell').html(originalHtml);
+                }
+            };
+            
+            revertCell($row.find('td:eq(9)')); // Estado
+            revertCell($row.find('td:eq(10)')); // Monto
+            revertCell($row.find('td:eq(13)')); // Link
+            revertCell($row.find('td:eq(14)')); // Archivo
+            revertCell($row.find('td:eq(16)')); // Observaciones
+            
+            // Quitar botones de Acciones y mostrar mensaje de cancelación
+            $row.find('.obs-actions').html('<span class="text-warning"><i class="fas fa-undo"></i> Cancelado</span>');
+        });
+
     });
-  });
 </script>
 
 {% endblock %}

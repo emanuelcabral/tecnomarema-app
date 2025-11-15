@@ -1574,6 +1574,7 @@ def estadisticas(request):
 from django.db.models import Sum
 from django.shortcuts import render, get_object_or_404
 from .models import RegistroPago, DatosDeEstudiantes
+from plataforma.decorators import session_required # Asegúrate de que esta importación exista
 
 @session_required
 def saldo(request):
@@ -1586,8 +1587,8 @@ def saldo(request):
             'mensaje': 'No hay estudiante identificado en sesión.'
         })
 
-    # 🔧 CAMBIO ACÁ: usá el nombre correcto del campo PK
     estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=usuario_id)
+    nombre_usuario = getattr(estudiante, 'nombre', 'Estudiante') # Obtenemos el nombre del estudiante
 
     cursos_inscriptos = []
 
@@ -1595,25 +1596,36 @@ def saldo(request):
         comision = getattr(estudiante, f'cursando{i}', None)
         if comision:
             curso = comision.id_curso
-            pagos = RegistroPago.objects.filter(estudiante=estudiante, comision=comision)
-            abonado = pagos.aggregate(total=Sum('monto'))['total'] or 0
+            
+            # 1. Filtramos y ordenamos los pagos.
+            pagos_qs = RegistroPago.objects.filter(
+                estudiante=estudiante, 
+                comision=comision
+            ).order_by('fecha_pago')
+            
+            # 2. **CORRECCIÓN CRÍTICA (LÓGICA):** El total abonado debe sumar SÓLO los pagos acreditados.
+            # Usamos 'Acreditado' para ser consistentes con la lógica de tu plantilla (badge verde).
+            pagos_acreditados_qs = pagos_qs.filter(estado_pago='Acreditado')
+            
+            # 3. Calculamos la sumatoria solo de los acreditados
+            abonado = pagos_acreditados_qs.aggregate(total=Sum('monto'))['total'] or 0
+            
             saldo = float(curso.precio_final) - float(abonado)
 
             cursos_inscriptos.append({
                 'curso': curso,
                 'comision': comision,
-                'pagos': pagos,
+                'pagos': list(pagos_qs), # **CORRECCIÓN CRÍTICA (FUGAS DE DATOS):** Convertir el QuerySet a lista (list())
                 'abonado': abonado,
                 'saldo': saldo,
             })
 
     context = {
         'cursos_inscriptos': cursos_inscriptos,
-        'nombre_usuario': getattr(estudiante, 'nombre', 'Estudiante'),
+        'nombre_usuario': nombre_usuario, # Pasamos el nombre correcto
     }
 
     return render(request, 'educativa/saldo.html', context)
-
 
 
 
@@ -5289,3 +5301,81 @@ def verificar_nombre_usuario(request):
         # Esto ya no debería fallar si la corrección se aplicó correctamente
         print(f"Error grave en verificar_nombre_usuario: {e}") 
         return JsonResponse({'error': 'Error interno del servidor.'}, status=500)
+    
+    #------------------------------------------------------------------------------------------
+    # actualizar el listado de pagos del admiinistrador
+    #------------------------------------------------------------------------------------------
+
+# En tu archivo views.py
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from decimal import Decimal, InvalidOperation 
+# Asegúrate de que esta importación sea correcta
+from plataforma.models import RegistroPago 
+
+
+@require_POST
+def actualizar_pago(request, pago_id):
+    # NOTA: Asegúrate de tener la lógica de permisos adecuada aquí si es necesario.
+
+    try:
+        pago = get_object_or_404(RegistroPago, pk=pago_id)
+        
+        # 1. Obtener datos de POST (incluye estado, monto, observaciones, link y la bandera de eliminación)
+        new_estado = request.POST.get('estado_pago')
+        new_monto_str = request.POST.get('monto')
+        new_obs = request.POST.get('observaciones', '').strip()
+        new_link = request.POST.get('link_comprobante', '').strip() # <-- Link Comprobante
+        delete_archivo_flag = request.POST.get('delete_archivo_comprobante') == '1' # <-- Bandera de Eliminación
+
+        # 2. Obtener el archivo de FILES
+        new_archivo = request.FILES.get('archivo_comprobante') # <-- Archivo Comprobante
+        
+        # --- Validación del Estado ---
+        if not new_estado:
+            return JsonResponse({'success': False, 'error': 'El estado de pago no puede estar vacío.'}, status=400)
+            
+        # --- Validación y Conversión del Monto (CRUCIAL) ---
+        try:
+            new_monto = Decimal(new_monto_str)
+            if new_monto <= 0:
+                 return JsonResponse({'success': False, 'error': 'El monto debe ser un valor positivo.'}, status=400)
+        except (InvalidOperation, TypeError):
+             return JsonResponse({'success': False, 'error': 'El formato del monto es inválido. Debe ser un número.'}, status=400)
+        
+        # 3. Actualizar los campos del modelo
+        pago.estado_pago = new_estado
+        pago.monto = new_monto
+        
+        # Actualizar Observaciones
+        pago.observaciones = new_obs if new_obs and new_obs.lower() != 'none' else None
+        
+        # Actualizar Link Comprobante: Se asigna None si el campo se vacía
+        pago.link_comprobante = new_link if new_link else None
+        
+        # Actualizar Archivo Comprobante: Manejamos las tres posibilidades (Eliminar, Subir nuevo, Mantener)
+        if delete_archivo_flag:
+            # Opción 1: Eliminación explícita (establece el campo en None, lo que borra el archivo anterior)
+            pago.archivo_comprobante = None
+        elif new_archivo:
+            # Opción 2: Subida de nuevo archivo (reemplaza el anterior)
+            pago.archivo_comprobante = new_archivo
+        # Opción 3 (implícita): Si no hay bandera de eliminación ni nuevo archivo, el valor existente se mantiene.
+        
+        # 4. Guardar en la base de datos
+        pago.save()
+        
+        # Devolver la URL del archivo subido (si existe) para confirmación en el frontend
+        archivo_url = pago.archivo_comprobante.url if pago.archivo_comprobante else None
+        
+        return JsonResponse({
+            'success': True, 
+            'message': 'Pago actualizado exitosamente.',
+            'archivo_url': archivo_url
+        })
+        
+    except RegistroPago.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Registro de Pago no encontrado.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Error interno del servidor: {str(e)}'}, status=500)

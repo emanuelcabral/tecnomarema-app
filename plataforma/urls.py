@@ -287,6 +287,7 @@ path('crear_preferencia/', views.crear_preferencia, name='crear_preferencia'),
 
 path('verificar_nombre_usuario/', views.verificar_nombre_usuario, name='verificar_nombre_usuario'),
 
+path('administrador/pagos/actualizar/<int:pago_id>/', views.actualizar_pago, name='actualizar_pago'),
 
 ]
 
