@@ -22,6 +22,15 @@
             position: relative;
             z-index: 99;
         }
+
+        .form-control:disabled{
+            background-color: #1e1e1e;
+            color: #ccc;
+        }
+
+        .input-group-text{
+            background-color: #12f693;
+        }
     </style>
 </head>
 <body>
@@ -75,69 +84,117 @@
     <div class="container mt-4">
         <div class="row">
             <!-- Datos personales -->
-            <div class="col-md-6">
-                <div class="card p-4 rounded-4">
-                    <h4 class="text-success mb-4">Datos personales</h4>
-                    <form method="POST" action="{% url 'editar_perfil' %}">
-                        {% csrf_token %}
-                        <div class="row mb-3">
-                            <div class="col"><input class="form-control" name="nombre" placeholder="Nombre"
-                                    value="{{ usuario.id_estudiante.nombre }}"></div>
-                            <div class="col"><input class="form-control" name="apellido" placeholder="Apellido"
-                                    value="{{ usuario.id_estudiante.apellido }}"></div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col"><input class="form-control" name="nombre_usuario"
-                                    placeholder="Nombre de usuario" value="{{ usuario.nombre_usuario }}"></div>
-                            <div class="col"><input class="form-control" name="correo" placeholder="Correo electrónico"
-                                    value="{{ usuario.email }}"></div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col"><input class="form-control" name="fecha_nacimiento" type="date"
-                                    placeholder="Fecha de nacimiento"
-                                    value="{{ usuario.id_estudiante.fecha_nacimiento|date:'Y-m-d' }}"></div>
-                            <div class="col"><input class="form-control" name="pais" placeholder="País"
-                                    value="{{ usuario.id_estudiante.pais }}">
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <div class="col"><input class="form-control" name="provincia" placeholder="Provincia"
-                                    value="{{ usuario.id_estudiante.provincia }}"></div>
-                            <div class="col"><input class="form-control" name="telefono" placeholder="Teléfono"
-                                    value="{{ usuario.id_estudiante.telefono }}"></div>
-                        </div>
-                        <div class="row mb-3">
-                            <!-- <div class="col"><input class="form-control" placeholder="Género"></div> -->
-                            <div class="col">
-                                <select class="form-control" name="genero" id="genero">
-                                    <option value="" disabled
-                                        {% if not usuario.id_estudiante.genero %}selected{% endif %}>Género</option>
-                                    <option value="femenino"
-                                        {% if usuario.id_estudiante.genero == "femenino" %}selected{% endif %}>
-                                        Femenino</option>
-                                    <option value="masculino"
-                                        {% if usuario.id_estudiante.genero == "masculino" %}selected{% endif %}>
-                                        Masculino</option>
-                                    <option value="otro"
-                                        {% if usuario.id_estudiante.genero == "otro" %}selected{% endif %}>Otro</option>
-
-                                </select>
-                            </div>
-                            <div class="col"><input class="form-control" name="dni" placeholder="DNI"
-                                    value="{{ usuario.id_estudiante.dni }}">
-                            </div>
-                        </div>
-                        <div class="mb-3">
-                            <textarea class="form-control" rows="2" name="biografia" placeholder="Biografía..."
-                                value="{{ usuario.id_estudiante.biografia }}">{{ usuario.id_estudiante.biografia }}</textarea>
-                        </div>
-                        <!-- Botón para guardar cambios -->
-                        <div class="text-end">
-                            <button type="submit" class="btn btn-green">Guardar cambios</button>
-                        </div>
-                    </form>
+<div class="col-md-6">
+    <div class="card p-4 rounded-4">
+        <h4 class="text-success mb-4">Datos personales</h4>
+        <form method="POST" action="{% url 'editar_perfil' %}">
+            {% csrf_token %}
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                        <input class="form-control" name="nombre" placeholder="Nombre"
+                            value="{{ usuario.id_estudiante.nombre }}" disabled>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+                        <input class="form-control" name="apellido" placeholder="Apellido"
+                            value="{{ usuario.id_estudiante.apellido }}" disabled>
+                    </div>
                 </div>
             </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input class="form-control" name="nombre_usuario" id="nombreUsuarioInput"
+                            placeholder="Nombre de usuario" value="{{ usuario.nombre_usuario }}">
+                    </div>
+                    <small id="disponibilidadMensaje" class="form-text mt-1 d-block"></small>
+                </div>
+                
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                        <input class="form-control" name="correo" placeholder="Correo electrónico"
+                            value="{{ usuario.email }}">
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                        <input class="form-control" name="fecha_nacimiento" type="date"
+                            placeholder="Fecha de nacimiento" disabled
+                            value="{{ usuario.id_estudiante.fecha_nacimiento|date:'Y-m-d' }}">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-globe"></i></span>
+                        <input class="form-control" name="pais" placeholder="País"
+                            value="{{ usuario.id_estudiante.pais }}">
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+                        <input class="form-control" name="provincia" placeholder="Provincia"
+                            value="{{ usuario.id_estudiante.provincia }}">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-phone"></i></span>
+                        <input class="form-control" name="telefono" placeholder="Teléfono"
+                            value="{{ usuario.id_estudiante.telefono }}">
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-gender-ambiguous"></i></span>
+                        <select class="form-control" name="genero" id="genero">
+                            <option value="" disabled
+                                {% if not usuario.id_estudiante.genero %}selected{% endif %}>Género</option>
+                            <option value="femenino"
+                                {% if usuario.id_estudiante.genero == "femenino" %}selected{% endif %}>
+                                Femenino</option>
+                            <option value="masculino"
+                                {% if usuario.id_estudiante.genero == "masculino" %}selected{% endif %}>
+                                Masculino</option>
+                            <option value="otro"
+                                {% if usuario.id_estudiante.genero == "otro" %}selected{% endif %}>Otro</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-file-earmark-person"></i></span>
+                        <input class="form-control" name="dni" placeholder="DNI" disabled
+                            value="{{ usuario.id_estudiante.dni }}">
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                    <textarea class="form-control" rows="2" name="biografia" placeholder="Biografía..."
+                        value="{{ usuario.id_estudiante.biografia }}">{{ usuario.id_estudiante.biografia }}</textarea>
+                </div>
+            </div>
+            <div class="text-end">
+                <button type="submit" id="botonGuardarPerfil" class="btn btn-green">Guardar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
 
             <div class="col-md-6">
 
@@ -299,7 +356,104 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 
+
+
+
     <!-- modal confirmacion de eliminacion de cuenta fin -->
+
+    <!-- validacion nombre de usuario inicia -->
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const inputNombreUsuario = document.getElementById('nombreUsuarioInput');
+    const mensaje = document.getElementById('disponibilidadMensaje'); 
+    // 1. OBTENEMOS EL BOTÓN POR SU ID (Asegúrate que el botón HTML tiene id="botonGuardarPerfil")
+    const botonGuardar = document.getElementById('botonGuardarPerfil'); 
+
+    // Solo continuar si los elementos esenciales existen
+    if (!inputNombreUsuario || !mensaje || !botonGuardar) return; 
+
+    // Se obtiene el token CSRF desde el meta tag para las peticiones POST de Django
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+    // Almacenamos el valor inicial para evitar verificar si no ha cambiado
+    const nombreUsuarioActual = inputNombreUsuario.value.trim();
+    let timeout = null;
+
+    // Lógica inicial: Si el valor es distinto al original al cargar, deshabilitar.
+    if (inputNombreUsuario.value.trim() !== nombreUsuarioActual) {
+         botonGuardar.disabled = true;
+    }
+
+    inputNombreUsuario.addEventListener('input', function() {
+        // Limpiar cualquier timeout o mensaje anterior
+        clearTimeout(timeout);
+        mensaje.textContent = '';
+        mensaje.className = 'form-text mt-1 d-block'; // Restablecer estilos
+        
+        // 2. DESHABILITAR INMEDIATAMENTE al empezar a escribir
+        botonGuardar.disabled = true; 
+
+        const nombreUsuario = this.value.trim();
+
+        // 3. Si el nombre vuelve al original, habilitar y salir
+        if (nombreUsuario === nombreUsuarioActual) {
+            botonGuardar.disabled = false; // HABILITAR: Es el nombre original
+            return;
+        }
+
+        // Si está vacío, no hacer nada más
+        if (nombreUsuario.length === 0) {
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        mensaje.textContent = 'Verificando disponibilidad...';
+        mensaje.style.color = '#fff'; 
+
+        // Esperar 700ms antes de enviar la petición al servidor
+        timeout = setTimeout(function() {
+            verificarDisponibilidad(nombreUsuario);
+        }, 700); 
+    });
+
+    async function verificarDisponibilidad(nombreUsuario) {
+        try {
+            const response = await fetch('/verificar_nombre_usuario/', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ nombre_usuario: nombreUsuario })
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en el servidor al verificar el nombre de usuario.');
+            }
+
+            const data = await response.json();
+
+            if (data.disponible) {
+                mensaje.textContent = '¡Nombre de usuario disponible! ✅';
+                mensaje.style.color = '#12f693'; // Color verde
+                botonGuardar.disabled = false; // 4. HABILITAR: ¡Disponible!
+            } else {
+                mensaje.textContent = 'Este nombre de usuario ya está en uso. ❌';
+                mensaje.style.color = '#f61212'; // Color rojo
+                botonGuardar.disabled = true; // 5. DESHABILITAR: ¡No disponible!
+            }
+            
+        } catch (error) {
+            console.error('Error de verificación:', error);
+            mensaje.textContent = 'Error al intentar verificar. Inténtalo de nuevo.';
+            mensaje.style.color = '#ffaa00'; // Color de advertencia
+            botonGuardar.disabled = true; // Bloquear en caso de error
+        }
+    }
+});
+</script>
+
+    <!-- validacion nombre de usuario fin -->
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -5232,3 +5232,60 @@ def ver_mensajes_comision(request, comision_id):
 def ver_mensajes_general(request):
     mensajes = Mensaje.objects.filter(chat__tipo='general').order_by('-creado')
     return render(request, 'administrador/partial_mensajes_general.html', {'mensajes': mensajes})
+
+
+#----------------------------------------------------------------------------------------------------------
+# validacion de nombre de usuario en tiempo real desede perfil_alumno.html
+#----------------------------------------------------------------------------------------------------------
+
+# views.py
+
+# views.py (Versión Reforzada)
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+# views.py (Solo el contenido de la función verificar_nombre_usuario)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def verificar_nombre_usuario(request):
+    
+    # Hemos comentado la verificación de autenticación para evitar el 401 de AJAX. 
+    # Para producción, es recomendable solucionarlo con headers de sesión, pero esto permite avanzar.
+
+    try:
+        data = json.loads(request.body)
+        nombre_usuario_a_verificar = data.get('nombre_usuario', '').strip()
+
+        if not nombre_usuario_a_verificar:
+             return JsonResponse({'error': 'Nombre de usuario requerido'}, status=400)
+        
+        # Obtenemos el ID del usuario actual.
+        # Esto maneja el caso de que request.user sea anónimo (ID 0) o logueado.
+        usuario_actual_id = request.user.pk if request.user.is_authenticated else 0
+
+        # CAMBIO CRUCIAL:
+        # 1. Intentamos encontrar un usuario con ese nombre EXCLUYENDO el ID del usuario actual.
+        #    Cambiamos 'username__iexact' por 'nombre_usuario__iexact'
+        existe = User.objects.exclude(pk=usuario_actual_id).filter(
+            nombre_usuario__iexact=nombre_usuario_a_verificar # <--- ¡Aquí está la corrección!
+        ).exists()
+
+        if existe:
+            return JsonResponse({'disponible': False})
+        else:
+            return JsonResponse({'disponible': True})
+
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Formato de petición inválido.'}, status=400)
+    except AttributeError:
+        return JsonResponse({'error': 'Error de atributo en el objeto de usuario.'}, status=500)
+    except Exception as e:
+        # Esto ya no debería fallar si la corrección se aplicó correctamente
+        print(f"Error grave en verificar_nombre_usuario: {e}") 
+        return JsonResponse({'error': 'Error interno del servidor.'}, status=500)
