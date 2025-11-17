@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <title>Asistencias - Curso de Desarrollo Web</title>
+  <title>Asistencias - {{ curso.nombre }}</title>
 
   <style>
     body {
@@ -58,6 +58,9 @@
     thead {
       background-color: #12f693;
       color: #000;
+      position: sticky; /* Sticky header para mejor UX */
+      top: 0;
+      z-index: 10;
     }
 
     tbody tr:hover {
@@ -77,246 +80,271 @@
 
     .scroll-tabla {
       overflow-x: auto;
+      max-width: 100vw; /* Ajuste para tablas muy anchas */
     }
 
     .total-col {
       font-weight: bold;
-      background-color: #333;
+      background-color: #333 !important; /* Forzar color de fondo */
+    }
+
+    /* Estilo para la primera columna pegajosa */
+    .sticky-col {
+        position: sticky;
+        left: 0;
+        z-index: 2;
+        background-color: #111; 
+        border-right: 2px solid #12f693; /* Separador */
     }
 
     .table-dark{
-        --bs-table-bg: #12f693;
-        --bs-table-color: #000;
-        /* --bs-table-striped-bg: #222; */
-        /* --bs-table-bg-type: #55016f; */
+        --bs-table-bg: #111;
+        --bs-table-color: #fff;
     }
 
-    
-.table-striped>tbody>tr:nth-of-type(odd)>* {
-    --bs-table-bg-type: #55016f;
+    .table-striped>tbody>tr:nth-of-type(odd)>* {
+        --bs-table-bg-type: #55016f; /* Color de fondo para filas impares */
+    }
+
+    /* navbar inicio */
+        /* NAVBAR BASE */
+    .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    /* EFECTO NEÓN CYBERPUNK */
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .navbar::after {
+      background-size: 200% auto;
+    }
+
+    /* LOGO */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand span.white {
+      color: #fff;
+    }
+
+    .navbar-brand span.green {
+      color: #12f693;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    /* LINKS */
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #12f693 !important;
+    }
+
+/* eliminar borde outline del menu hamburguesa */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+    outline: none;
+    box-shadow: none;
 }
+
+    /* BOTÓN LOGIN */
+    .btn-login {
+      margin-left: 10px;
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    /* BOTÓN INSCRIPCIÓN */
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: #cf30ff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .navbar-toggler {
+      border-color: #12f693;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+        .barra-bienvenida {
+    background-color: #121212;
+    color: #12f693;
+    text-align: center;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    border-bottom: 2px solid #12f693;
+    position: relative;
+    z-index: 99;
+  }
+
+    /* navbar fin */
+
 
   </style>
 </head>
 
 <body>
 
-  <!-- Navbar -->
-  <nav class="navbar navbar-dark px-4 py-3">
-    <span class="navbar-brand fw-bold text-white">Asistencias</span>
-    <div>
-      <a class="nav-link d-inline-block mx-3 active" href="#">Inicio</a>
-      <a class="nav-link d-inline-block mx-3" href="#">Mis cursos</a>
-      <a class="nav-link d-inline-block mx-3" href="#">Perfil</a>
-      <a class="nav-link d-inline-block mx-3" href="#">Cerrar sesión</a>
+<script>
+  const cursoID = "{{ comision.id_curso.nombre_curso }}";
+  const cursoID_valoracion = "{{ comision.id_curso.id_curso }}";
+</script>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.id_comision %}">Volver al curso</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        <li class="nav-item">
+        <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+        <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i>
+                Cerrar sesión
+            </button>
+        </form>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <!-- Contenido -->
-  <div class="container">
+<div class="barra-bienvenida">
+    Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+</div>
 
-    <!-- Título -->
+  <div class="container-fluid px-4">
+
     <div class="row">
       <div class="col-12">
-        <h2 class="titulo-principal">Asistencias del Curso de Desarrollo Web</h2>
+        <h2 class="titulo-principal mb-4">Asistencias de la Comisión: {{ comision.numero_comision }}</h2>
       </div>
     </div>
 
-    <!-- Tabla de Asistencias -->
     <div class="scroll-tabla">
-        <table class="table table-dark table-bordered align-middle table-striped" id="tabla-asistencias">
+      <table class="table table-dark table-bordered align-middle table-striped" id="tabla-asistencias">
+        
         <thead>
           <tr>
-            <th>Listado de Estudiantes</th>
-            <!-- Clases -->
-            <th>Clase 0</th>
-            <th>Clase 1</th>
-            <th>Clase 2</th>
-            <th>Clase 3</th>
-            <th>Clase 4</th>
-            <th>Clase 5</th>
-            <th>Clase 6</th>
-            <th>Clase 7</th>
-            <th>Clase 8</th>
-            <th>Clase 9</th>
-            <th>Clase 10</th>
-            <th>Clase 11</th>
-            <th>Clase 12</th>
-            <th>Clase 13</th>
-            <th>Clase 14</th>
-            <th>Clase 15</th>
-            <th>Clase 16</th>
-            <th>Clase 17</th>
-            <th>Clase 18</th>
-            <th>Clase 19</th>
-            <th>Clase 20</th>
-            <th>Total Presentes</th> <!-- Nueva columna -->
-          </tr>
+            <th class="sticky-col">Listado de Estudiantes</th>
+            {% for clase in clases %}
+              <th>Clase {{ clase.numero_clase }}</th>
+            {% endfor %}
+            <th>Total Presentes</th> </tr>
         </thead>
+        
         <tbody>
-          <!-- Fila Alumno 1 -->
-          <tr>
-            <td>Juan Pérez</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="total-col">16</td> <!-- Total presentes -->
-          </tr>
+          {% for registro in datos_tabla %}
+            <tr>
+                <td class="sticky-col text-start">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="white-space: normal;">
+                            {{ registro.nombre_completo }}
+                            {% if registro.rol == 'profesor' %}
+                                <span class="badge bg-danger ms-2">PROFESOR</span>
+                            {% elif registro.rol == 'tutor' %}
+                                <span class="badge bg-info ms-2">TUTOR</span>
+                            {% elif registro.rol == 'alumno' %}
+                                <span class="badge bg-success ms-2">ALUMNO</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </td>
 
-          <!-- Fila Alumno 2 -->
-          <tr>
-            <td>María García</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="total-col">19</td> <!-- Total presentes -->
-          </tr>
+              {% for status in registro.clase_statuses %}
+                  {% if status == '✅' %}
+                      <td class="presente">{{ status }}</td>
+                  {% else %}
+                      <td class="ausente">{{ status }}</td>
+                  {% endif %}
+              {% endfor %}
 
-          <!-- Fila Alumno 3 -->
-          <tr>
-            <td>Carlos López</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="total-col">16</td> <!-- Total presentes -->
-          </tr>
+              <td class="total-col">{{ registro.total_presente }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="{{ total_clases|add:2 }}" class="text-center">No hay estudiantes inscriptos en esta comisión o el filtro no coincidió.</td>
+            </tr>
+          {% endfor %}
 
-          <!-- Fila Alumno 4 -->
-          <tr>
-            <td>Ana Torres</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="total-col">19</td> <!-- Total presentes -->
-          </tr>
-
-
-          <!-- Fila Alumno 5 -->
-          <tr>
-            <td>Diego Maxwell</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="ausente">❌</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="presente">✅</td>
-            <td class="total-col">19</td> <!-- Total presentes -->
-          </tr>
-
-          <!-- Agrega más filas aquí siguiendo el patrón -->
-
-          <!-- Fila Final de Totales -->
-          <tr>
-            <td class="total-col">Totales por Clase</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">2</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">2</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-            <td class="total-col">2</td>
-            <td class="total-col">3</td>
-            <td class="total-col">2</td>
-            <td class="total-col">3</td>
-            <td class="total-col">3</td>
-          </tr>
+          <tr id="fila-totales">
+            <td class="total-col sticky-col">Totales por Clase</td>
+            {% for clase in clases %}
+                <td class="total-col">0</td> 
+            {% endfor %}
+            <td class="total-col"></td> </tr>
 
         </tbody>
       </table>
@@ -325,43 +353,42 @@
   </div>
 
 
-    <!-- Script JavaScript para calcular totales -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-          const tabla = document.getElementById('tabla-asistencias');
-          const filas = tabla.getElementsByTagName('tr');
-    
-          // Calcular total de presentes por fila
-          for (let i = 1; i < filas.length - 1; i++) { // Ignoramos la cabecera y la fila de totales
+      document.addEventListener('DOMContentLoaded', function () {
+        const tabla = document.getElementById('tabla-asistencias');
+        // El total de clases se inyecta desde Django
+        const totalClases = parseInt('{{ total_clases }}', 10); 
+
+        // Si no hay clases (o hay un error), salimos
+        if (!totalClases || totalClases === 0) return;
+
+        const filas = tabla.getElementsByTagName('tr');
+        
+        // Array para almacenar el conteo de presentes para cada clase
+        const totalesClase = Array(totalClases).fill(0); 
+
+        // Iterar sobre las filas de estudiantes (ignorar cabecera y la fila de totales)
+        for (let i = 1; i < filas.length - 1; i++) { 
             const celdas = filas[i].getElementsByTagName('td');
-            let totalPresentes = 0;
-    
-            for (let j = 1; j < celdas.length - 1; j++) { // Ignoramos el nombre y la columna de totales
-              if (celdas[j].classList.contains('presente')) {
-                totalPresentes++;
-              }
+            
+            // Recorrer las celdas de asistencia (empieza en 1 para ignorar el nombre, termina antes del total-col)
+            for (let j = 1; j < celdas.length - 1; j++) { 
+                if (celdas[j].classList.contains('presente')) {
+                    // El índice del array (totalesClase) es la posición de la columna - 1
+                    totalesClase[j - 1]++;
+                }
             }
-    
-            celdas[celdas.length - 1].innerText = totalPresentes; // Insertar el total de presentes
-          }
-    
-          // Calcular totales por clase
-          const totalesClase = Array(21).fill(0); // Array para contar los presentes por cada clase
-          for (let i = 1; i < filas.length - 1; i++) {
-            const celdas = filas[i].getElementsByTagName('td');
-            for (let j = 1; j < celdas.length - 1; j++) {
-              if (celdas[j].classList.contains('presente')) {
-                totalesClase[j]++;
-              }
-            }
-          }
-    
-          const filaTotales = filas[filas.length - 1].getElementsByTagName('td');
-          for (let i = 1; i < filaTotales.length - 1; i++) {
-            filaTotales[i].innerText = totalesClase[i]; // Insertar los totales de cada clase
-          }
-        });
-      </script>
+        }
+        
+        // Insertar los totales calculados en la última fila (Fila Final de Totales)
+        const filaTotales = filas[filas.length - 1].getElementsByTagName('td');
+        
+        // Empezamos en i=1 en filaTotales para saltar la columna "Totales por Clase"
+        for (let i = 0; i < totalClases; i++) {
+            filaTotales[i + 1].innerText = totalesClase[i]; 
+        }
+      });
+    </script>
 
 </body>
 
