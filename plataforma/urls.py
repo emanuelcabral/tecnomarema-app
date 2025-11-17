@@ -289,6 +289,12 @@ path('verificar_nombre_usuario/', views.verificar_nombre_usuario, name='verifica
 
 path('administrador/pagos/actualizar/<int:pago_id>/', views.actualizar_pago, name='actualizar_pago'),
 
+# path('comisiones/<int:comision_id>/asistencia_general/', views.asistencia_general_view, name='asistencia_general'),
+path('comisiones/<str:comision_id>/asistencia_general/', views.asistencia_general_view, name='asistencia_general'),
+
+# path('asistencia/estudiante/<str:estudiante_id>/comision/<int:comision_id>/', views.mi_asistencia_estudiante, name='mi_asistencia'),
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

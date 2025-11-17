@@ -572,33 +572,40 @@
 
   <div class="container d-flex atencion mt-3 flex-wrap">
 
-    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}">Ver participantes</a>
+    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}" class="btn btn-outline-info">Ver participantes</a>
     <!-- <a href="{% url 'asistencia_alumnos' %}">Asistencias</a> -->
     <!-- <a href="{% url 'entrega_proyecto' comision.numero_comision %}">Entrega Final</a> -->
     <!-- <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a> -->
 
-    {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
-      <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a>
+        {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' %}
+      <a href="{% url 'asistencia_general' comision.numero_comision %}" 
+        class="btn btn-outline-info">
+          Asistencia General
+      </a>
     {% endif %}
 
     {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
-      <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}">Mi Certificado</a>
+      <a href="{% url 'entrega_proyecto' comision.id_comision %}" class="btn btn-outline-info">Entrega Final</a>
+    {% endif %}
+
+    {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
+      <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}" class="btn btn-outline-info">Mi Certificado</a>
     {% endif %}
 
 
 
-    <a href="{% url 'chat_general' %}">Chat</a>
+    <a href="{% url 'chat_general' %}" class="btn btn-outline-info">Chat</a>
 
     <!-- <a href="{% url 'valoraciones' %}">valoraciones</a> -->
 
     {% if usuario.rol == 'profesor' %}
-      <a href="{% url 'valoraciones_filtradas' curso_id=comision.id_curso.id_curso comision_id=comision.id_comision %}">
+      <a href="{% url 'valoraciones_filtradas' curso_id=comision.id_curso.id_curso comision_id=comision.id_comision %}" class="btn btn-outline-info">
         Estadísticas de valoraciones 📊
       </a>
     {% endif %}
 
     {% if usuario.rol == 'profesor' %}
-      <a href="/curso/{{ comision.id_curso.id_curso }}/comision/{{ comision.id_comision }}/entregas/">
+      <a href="/curso/{{ comision.id_curso.id_curso }}/comision/{{ comision.id_comision }}/entregas/" class="btn btn-outline-info">
         Entregas de Proyectos
       </a>
     {% endif %}
@@ -627,6 +634,8 @@
         <h4>Clase {{ clase.numero_clase }} - {{ clase.nombre_clase }}</h4>
         <span class="badge-fecha p-1 rounded" id="fecha_clase">{{ cc.fecha|date:"j F Y"|default:"Fecha por definir" }}</span>
         <span class="badge-horario p-1 rounded">{{ cc.horario|default:"Horario por definir" }} {{ cc.hora_fin|default:"Horario por definir" }}</span>
+
+        <p class="mt-3">La asistencia se podrá registrar <strong style="color:#cf30ff"> desde 10 minutos antes </strong> de la hora de inicio de la clase <strong style="color:#cf30ff"> hasta 20 minutos después </strong> de la misma.</p>
 
       <!-- ASISTENCIA (solo desde JS ahora, se eliminó la logica de Django para evitar conflictos) -->
 
@@ -807,6 +816,8 @@ function mostrarClase(index) {
       <span class="badge-fecha p-1 rounded">${clase.fecha}</span>
       <span class="badge-horario p-1 rounded">${clase.horario} a ${clase.hora_fin} hs Arg.</span>
       ${asistenciaHTML}
+
+<p class="mt-3">La asistencia se podrá registrar <strong style="color:#cf30ff"> desde 10 minutos antes </strong> de la hora de inicio de la clase <strong style="color:#cf30ff"> hasta 20 minutos después </strong> de la misma.</p>
 
 <p class="mt-3"><strong class="badge badge-marema me-2">Valoración de la clase:</strong></p>
 ${

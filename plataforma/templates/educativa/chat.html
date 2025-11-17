@@ -340,6 +340,12 @@
   </style>
 </head>
 <body>
+
+<script>
+  const cursoID = "{{ comision.id_curso.nombre_curso }}";
+  const cursoID_valoracion = "{{ comision.id_curso.id_curso }}";
+</script>
+
 <!-- NAVBAR -->
 <nav class="navbar navbar-expand-lg navbar-dark px-3">
   <div class="container-fluid">
@@ -357,6 +363,7 @@
     <!-- MENÚ -->
     <div class="collapse navbar-collapse" id="navbarContenido">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.curso.id_curso %}">Volver al curso</a></li> {% endcomment %}
         <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>

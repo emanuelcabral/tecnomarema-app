@@ -1343,7 +1343,8 @@ def guardar_datos_inscripcion_paga(request):
             "comision": comision.numero_comision, "pais": pais,
             "provincia": provincia, "telefono": telefono,
             "medio_pago": medio_pago_texto,  # ← Texto legible
-            "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            # "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            "fecha": timezone.now()
         }
         html_interno = render_to_string("registration/registro_pago.html", context_interno)
         email_interno = EmailMultiAlternatives(
@@ -3771,6 +3772,7 @@ def chat_general(request):
         'chat_general': chat_general_obj,
         'chat': chat_general_obj,
         'mensajes': mensajes,
+        'comision': comision,
         'usuario': usuario,
         'nombre_usuario': nombre_usuario,
         'usuarios_destino': [],
@@ -5379,3 +5381,115 @@ def actualizar_pago(request, pago_id):
         return JsonResponse({'success': False, 'error': 'Registro de Pago no encontrado.'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Error interno del servidor: {str(e)}'}, status=500)
+
+#-------------------------------------------------------------------------------------------------------------------
+# Asistencia general view
+#-------------------------------------------------------------------------------------------------------------------
+
+from django.shortcuts import render, get_object_or_404
+from django.db.models import Q, Prefetch
+# Asegúrate de importar todos los modelos necesarios
+from .models import Comision, DatosDeEstudiantes, Clase, AsistenciaClase, Curso, PerfilUsuario
+
+def asistencia_general_view(request, comision_id):
+    
+    # 1. BÚSQUEDA ROBUSTA DE LA COMISIÓN
+    # -------------------------------------------------------------------------
+    try:
+        id_busqueda_int = int(comision_id)
+    except ValueError:
+        id_busqueda_int = None
+
+    id_busqueda_relleno = str(comision_id).zfill(6)
+
+    try:
+        filtro = Q(id_comision=id_busqueda_relleno)
+        if id_busqueda_int is not None:
+            filtro |= Q(numero_comision=id_busqueda_int)
+        comision = Comision.objects.get(filtro)
+    except Comision.DoesNotExist:
+        # Si no se encuentra, devuelve un 404
+        return get_object_or_404(Comision, pk=None) 
+
+    # 2. OBTENER CURSO Y CLASES
+    # -------------------------
+    curso = comision.id_curso
+    clases = Clase.objects.filter(curso=curso).order_by('numero_clase')
+
+    # 3. FILTRADO DE ESTUDIANTES POR COMISIÓN (select_related CORREGIDO)
+    # ------------------------------------------------------------------
+    estudiantes_qs = DatosDeEstudiantes.objects.filter(
+        Q(cursando1=comision) | Q(cursando2=comision) | Q(cursando3=comision) |
+        Q(cursando4=comision) | Q(cursando5=comision) | Q(cursando6=comision) |
+        Q(cursando7=comision) | Q(cursando8=comision) | Q(cursando9=comision)
+    ).order_by('apellido', 'nombre').select_related('perfilusuario').prefetch_related( # <--- CORREGIDO: 'perfilusuario'
+        Prefetch(
+            'asistenciaclase_set',
+            queryset=AsistenciaClase.objects.filter(comision=comision).select_related('clase'),
+            to_attr='asistencias_comision'
+        )
+    )
+
+    # 4. PROCESAR ASISTENCIAS (AÑADIENDO EL ROL CORREGIDO)
+    # ----------------------------------------------------
+    datos_tabla = []
+    for estudiante in estudiantes_qs:
+        
+        # OBTENER ROL: Accediendo a la relación corregida
+        try:
+            rol_usuario = estudiante.perfilusuario.rol.lower() # <--- CORREGIDO: .perfilusuario
+        except AttributeError:
+            rol_usuario = 'alumno'  # Fallback seguro
+
+        registro_asistencia = {
+            'id_estudiante': estudiante.id_estudiante,
+            'nombre_completo': f"{estudiante.nombre} {estudiante.apellido}",
+            'rol': rol_usuario, # Campo clave para el ordenamiento
+            'clase_statuses': [],
+            'total_presente': 0
+        }
+
+        asistencias_map = {
+            asistencia.clase_id: 'presente'
+            for asistencia in estudiante.asistencias_comision
+        }
+
+        total_presente = 0
+        for clase in clases:
+            estado = asistencias_map.get(clase.id, 'ausente')
+            if estado == 'presente':
+                registro_asistencia['clase_statuses'].append('✅')
+                total_presente += 1
+            else:
+                registro_asistencia['clase_statuses'].append('❌')
+
+        registro_asistencia['total_presente'] = total_presente
+        datos_tabla.append(registro_asistencia)
+
+    # 5. LÓGICA DE ORDENAMIENTO POR ROL (Profesor > Tutor > Alumno)
+    # --------------------------------------------------------------
+    def obtener_orden_rol(registro):
+        """Asigna un número para ordenar: 1 (Profesor) > 2 (Tutor) > 3 (Alumno)"""
+        rol = registro.get('rol', 'alumno')
+        if rol == 'profesor':
+            return 1 
+        elif rol == 'tutor':
+            return 2 
+        else:
+            return 3 
+
+    # Aplicamos el ordenamiento
+    datos_tabla_ordenada = sorted(datos_tabla, key=obtener_orden_rol)
+    # --------------------------------------------------------------
+
+    # 6. CONTEXTO Y RENDER
+    # --------------------
+    contexto = {
+        'curso': curso,
+        'comision': comision,
+        'clases': clases,
+        'datos_tabla': datos_tabla_ordenada, # Se pasa la lista ORDENADA
+        'total_clases': clases.count(),
+        'usuario': request.user,
+    }
+    return render(request, 'educativa/asistencia_general.html', contexto)

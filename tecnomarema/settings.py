@@ -342,6 +342,10 @@ CHANNEL_LAYERS = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+# 🚨 SOLUCIÓN 1: LocaleMiddleware DEBE IR AQUÍ 
+    'django.middleware.locale.LocaleMiddleware', 
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -392,7 +396,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internacionalización
 LANGUAGE_CODE = 'es'
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Argentina/Buenos_Aires' 
 USE_I18N = True
 USE_TZ = True
 
@@ -402,15 +407,26 @@ STATICFILES_DIRS = [BASE_DIR / 'plataforma' / 'static']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Configuración de email
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-# luego cambiarlos por el .env########################################################################
-EMAIL_HOST_USER = 'tecnomarema.ar@gmail.com'
-EMAIL_HOST_PASSWORD = 'egkq gbyh epby xmlq'
-DEFAULT_FROM_EMAIL = 'tecnomarema.ar@gmail.com'
+# # Configuración de email
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# # luego cambiarlos por el .env########################################################################
+# EMAIL_HOST_USER = 'tecnomarema.ar@gmail.com'
+# EMAIL_HOST_PASSWORD = 'egkq gbyh epby xmlq'
+# DEFAULT_FROM_EMAIL = 'tecnomarema.ar@gmail.com'
+
+# --- Configuración de email ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' # Opcional mover al .env
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com') # Leer del .env
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587)) # Leer del .env
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true' # Leer del .env
+
+# CREDENCIALES (Siempre del .env)
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
 # Login/logout
 AUTH_USER_MODEL = 'plataforma.PerfilUsuario'
