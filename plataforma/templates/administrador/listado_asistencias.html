@@ -1,0 +1,81 @@
+{% extends "administrador/base.html" %}
+
+{% load static %}
+
+{% block content %}
+<style>
+    /* Estilos personalizados para las tarjetas, asumiendo que el fondo y body ya están en base.html */
+    .card {
+        background-color: #111;
+        border: 1px solid #12f693;
+        box-shadow: 0 0 10px #12f69350;
+    }
+
+    .card-header {
+        background-color: #12f693;
+        color: #000;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .list-group-item {
+        background-color: #1a1a1a;
+        color: #fff;
+        border-color: #222;
+        transition: background-color 0.2s;
+    }
+
+    .list-group-item:hover {
+        background-color: #2a2a2a;
+    }
+    
+    .btn-check-asistencia {
+        background-color: #cf30ff;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-check-asistencia:hover {
+        background-color: #a120cc;
+        color: #fff;
+    }
+
+    .titulo-principal {
+        color: #fff;
+        margin-bottom: 30px;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="titulo-principal text-center text-info">📊 Listado de Comisiones para Asistencia</h2>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    Comisiones Activas
+                </div>
+                <ul class="list-group list-group-flush">
+                    
+                    {% for comision in comisiones %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1 text-info">{{ comision.id_curso.nombre_curso }}</h5>
+                                <small class="text-secondary">Comisión N°: <strong>{{ comision.numero_comision }}</strong> (ID: {{ comision.id_comision }})</small>
+                            </div>
+                            <a href="{% url 'asistencia_general' comision.id_comision %}" 
+                               class="btn btn-check-asistencia btn-sm">
+                                <i class="bi bi-eye me-1"></i> Ver Asistencias
+                            </a>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item text-center text-secondary">
+                            No hay comisiones disponibles para revisar.
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

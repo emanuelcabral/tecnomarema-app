@@ -292,6 +292,8 @@ path('administrador/pagos/actualizar/<int:pago_id>/', views.actualizar_pago, nam
 # path('comisiones/<int:comision_id>/asistencia_general/', views.asistencia_general_view, name='asistencia_general'),
 path('comisiones/<str:comision_id>/asistencia_general/', views.asistencia_general_view, name='asistencia_general'),
 
+path('listado_asistencias/', views.listado_asistencias_view, name='listado_asistencias'),
+
 # path('asistencia/estudiante/<str:estudiante_id>/comision/<int:comision_id>/', views.mi_asistencia_estudiante, name='mi_asistencia'),
 
 

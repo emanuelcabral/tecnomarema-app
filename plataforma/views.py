@@ -5043,12 +5043,37 @@ def ajax_eliminar_clase(request):
 ####----------------------------listado de valoraciones---------------------------------------####
 ##################################################################################################
 
-from django.shortcuts import render
-from .models import ValoracionAlumno
+# plataforma/views.py (Revisa esta función)
 
+from .models import ValoracionAlumno, Comision # ¡Asegúrate de importar Comision!
+
+# ... (otras funciones y vistas) ...
+
+@session_required 
 def listado_valoraciones(request):
-    valoraciones = ValoracionAlumno.objects.all().order_by('-fecha_valoracion')
-    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones})
+    
+    valoraciones_qs = ValoracionAlumno.objects.all().order_by('-fecha_valoracion')
+    valoraciones_procesadas = []
+    
+    # Este bucle es NECESARIO porque 'comision_id' es un CharField
+    for valoracion in valoraciones_qs:
+        numero_comision = 'N/A' 
+        
+        if valoracion.comision_id:
+            try:
+                # Buscamos en la tabla Comision usando el ID guardado
+                comision_obj = Comision.objects.get(id_comision=valoracion.comision_id)
+                numero_comision = comision_obj.numero_comision
+            except Comision.DoesNotExist:
+                numero_comision = 'ID Inválido'
+            except Exception:
+                numero_comision = 'Error'
+        
+        # Creamos el nuevo atributo que SÍ podemos usar en el template
+        valoracion.numero_comision_display = numero_comision 
+        valoraciones_procesadas.append(valoracion)
+        
+    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones_procesadas})
 
 ##################################################################################################
 ####----------------------------listado de proyectos------------------------------------------####
@@ -5493,3 +5518,36 @@ def asistencia_general_view(request, comision_id):
         'usuario': request.user,
     }
     return render(request, 'educativa/asistencia_general.html', contexto)
+
+    #----------------------------------------------------------------------------------------------------------
+    # listado de asistencias
+    #----------------------------------------------------------------------------------------------------------
+
+
+# plataforma/views.py
+
+from django.shortcuts import render
+from .models import Comision 
+from plataforma.decorators import session_required 
+# ... (otras importaciones)
+
+# ----------------------------------------------------------------------
+# VISTA PARA EL LISTADO ADMINISTRATIVO DE ASISTENCIAS
+# ----------------------------------------------------------------------
+
+@session_required 
+def listado_asistencias_view(request):
+    """
+    Muestra un listado de todas las comisiones activas.
+    """
+    
+    # 1. Obtener todas las comisiones
+    comisiones = Comision.objects.all().select_related('id_curso').order_by('id_curso__nombre_curso', '-numero_comision')
+    
+    # Contexto simplificado, solo se pasan las comisiones
+    contexto = {
+        'comisiones': comisiones,
+    }
+    
+    # Usando la ruta 'administrador/listado_asistencias.html'
+    return render(request, 'administrador/listado_asistencias.html', contexto)
