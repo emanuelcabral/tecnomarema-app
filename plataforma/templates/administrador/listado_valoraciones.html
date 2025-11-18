@@ -2,55 +2,57 @@
 
 {% block content %}
 <div class="container mt-5">
-  <h2 class="mb-4 text-success">Mensajes de Valoraciones</h2>
-  <table id="tabla-valoraciones" class="table table-dark table-striped table-bordered">
-    <thead>
-      <tr>
-        <th>Usuario</th>
-        <th>Curso</th>
-        <th>Clase</th>
-        <th>Preferencia</th>
-        <th>Rol del Profe</th>
-        <th>Contenido</th>
-        <th>Plataforma</th>
-        <th>Streaming</th>
-        <th>Comentario</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for valoracion in valoraciones %}
-      <tr>
-        <td>{{ valoracion.nombre_usuario }}</td>
-        <td>{{ valoracion.curso_nombre }}</td>
-        <td>{{ valoracion.nombre_clase }}</td>
-        <td>{{ valoracion.get_preferencia_clase_display }}</td>
-        <td>{{ valoracion.rol_profe }}</td>
-        <td>{{ valoracion.contenido }}</td>
-        <td>{{ valoracion.plataforma }}</td>
-        <td>{{ valoracion.streaming }}</td>
-        <td style="word-break: break-word;">{{ valoracion.comentarios|default:"Sin comentarios" }}</td>
-        <td>{{ valoracion.fecha_valoracion|date:"d/m/Y H:i" }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+    <h2 class="mb-4 text-success">Mensajes de Valoraciones</h2>
+    <table id="tabla-valoraciones" class="table table-dark table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Comisión</th> 
+                <th>Usuario</th>
+                <th>Curso</th>
+                <th>Clase</th>
+                <th>Preferencia</th>
+                <th>Rol del Profe</th>
+                <th>Contenido</th>
+                <th>Plataforma</th>
+                <th>Streaming</th>
+                <th>Comentario</th>
+                <th>Fecha</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for valoracion in valoraciones %}
+            <tr>
+                <td>{{ valoracion.numero_comision_display }}</td> 
+                
+                <td>{{ valoracion.nombre_usuario }}</td>
+                <td>{{ valoracion.curso_nombre }}</td>
+                <td>{{ valoracion.nombre_clase }}</td>
+                <td>{{ valoracion.get_preferencia_clase_display }}</td>
+                <td>{{ valoracion.rol_profe }}</td>
+                <td>{{ valoracion.contenido }}</td>
+                <td>{{ valoracion.plataforma }}</td>
+                <td>{{ valoracion.streaming }}</td>
+                <td style="word-break: break-word;">{{ valoracion.comentarios|default:"Sin comentarios" }}</td>
+                <td>{{ valoracion.fecha_valoracion|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 <script>
-  $(document).ready(function() {
-    $('#tabla-valoraciones').DataTable({
-      "order": [[ 9, "desc" ]],  // Orden inicial por Fecha descendente
-      "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-      },
-      "columnDefs": [
-        { "orderable": true, "targets": [0, 1, 2, 4, 5, 6, 7, 9] }, // columnas ordenables
-        { "orderable": false, "targets": [3, 8] }  // sin orden en preferencia y comentarios
-      ]
+    $(document).ready(function() {
+        $('#tabla-valoraciones').DataTable({
+            "order": [[ 10, "desc" ]],  
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            },
+            "columnDefs": [
+                { "orderable": true, "targets": [0, 1, 2, 3, 5, 6, 7, 8, 10] }, 
+                { "orderable": false, "targets": [4, 9] }  
+            ]
+        });
     });
-  });
 </script>
-
 
 {% endblock %}
