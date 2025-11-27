@@ -475,24 +475,86 @@ class Mensaje(models.Model):
 ####################################################################################################
 #                           inscripcion gratis a desarrollo web
 ####################################################################################################
+# from django.db import models
+
+# class InscripcionClaseGratis(models.Model):
+#     nombre = models.CharField(max_length=100)
+#     apellido = models.CharField(max_length=100)
+#     telefono = models.CharField(max_length=20)
+#     pais = models.CharField(max_length=100)
+#     email = models.EmailField()
+#     dias = models.CharField(max_length=255)  # se puede guardar como texto plano
+#     horarios = models.CharField(max_length=255)
+#     nivel_pc = models.IntegerField()
+#     exp_programacion = models.CharField(max_length=100)
+#     nivel_programacion = models.IntegerField()
+#     tecnologias = models.CharField(max_length=500)
+#     creado = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"{self.nombre} {self.apellido} - {self.email}"
+
+
 from django.db import models
+from django.utils import timezone
+
 
 class InscripcionClaseGratis(models.Model):
+    # === DATOS PERSONALES (todos con default para no romper migraciones) ===
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    telefono = models.CharField(max_length=20)
-    pais = models.CharField(max_length=100)
-    email = models.EmailField()
-    dias = models.CharField(max_length=255)  # se puede guardar como texto plano
-    horarios = models.CharField(max_length=255)
-    nivel_pc = models.IntegerField()
-    exp_programacion = models.CharField(max_length=100)
-    nivel_programacion = models.IntegerField()
-    tecnologias = models.CharField(max_length=500)
-    creado = models.DateTimeField(auto_now_add=True)
+    
+    # Campos NUEVOS → con valores por defecto para que las migraciones pasen sin drama
+    dni = models.CharField(max_length=12, blank=True, null=True, unique=True,
+                           default='00000000', help_text="DNI o pasaporte")
+    fecha_nacimiento = models.DateField(blank=True, null=True, default='2000-01-01')
+    genero = models.CharField(
+        max_length=30,
+        choices=[
+            ('Masculino', 'Masculino'),
+            ('Femenino', 'Femenino'),
+            ('Otro', 'Otro'),
+            ('Prefiero no decir', 'Prefiero no decir'),
+        ],
+        blank=True,
+        default='Prefiero no decir'
+    )
+    
+    telefono = models.CharField(max_length=30)
+    email = models.EmailField(max_length=100)
+
+    # === UBICACIÓN ===
+    pais = models.CharField(max_length=100, default='Argentina')
+    provincia = models.CharField(max_length=100, blank=True, null=True)
+
+    # === PREFERENCIAS ===
+    dias = models.CharField(max_length=200, blank=True, default='')
+    horarios = models.CharField(max_length=200, blank=True, default='')
+
+    # === NIVELES (con choices y valores por defecto seguros) ===
+    nivel_pc = models.IntegerField(
+        choices=[(i, str(i)) for i in range(1, 11)],
+        default=5
+    )
+    exp_programacion = models.CharField(max_length=100, default='No tengo experiencia.')
+    nivel_programacion = models.IntegerField(
+        choices=[(i, str(i)) for i in range(1, 11)],
+        default=1
+    )
+
+    # === TECNOLOGÍAS ===
+    tecnologias = models.CharField(max_length=500, blank=True, default='')
+
+    # === METADATA ===
+    creado = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name_plural = "Inscripciones Clase Gratuita - Desarrollo Web"
+        ordering = ['-creado']
 
     def __str__(self):
         return f"{self.nombre} {self.apellido} - {self.email}"
+
 ##################################################################################
 ###------------------badges para comisiones general y privado------------------###
 ##################################################################################
@@ -569,3 +631,113 @@ class Suscriptor(models.Model):
 
     def __str__(self):
         return f"{self.nombre} - {self.email}"
+    
+
+#--------------------------------------------------------------------------------------------------------------------------------------
+# =====================================================
+# NUEVA TABLA: Inscripciones al curso Intro IA Promo
+# =====================================================
+# class InscripcionIAPromo(models.Model):
+#     nombre = models.CharField(max_length=100)
+#     apellido = models.CharField(max_length=100)
+#     telefono = models.CharField(max_length=20)
+#     pais = models.CharField(max_length=100)
+#     email = models.EmailField(unique=True)
+    
+#     # Checkboxes → se guardan como texto separado por comas
+#     dias = models.CharField(max_length=255, help_text="Ej: Lunes,Miércoles")
+#     horarios = models.CharField(max_length=255, help_text="Ej: Mañana,Tarde")
+    
+#     nivel_pc = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)])
+#     exp_programacion = models.CharField(max_length=120, choices=[
+#         ('Sí, tengo experiencia.', 'Sí, tengo experiencia.'),
+#         ('He aprendido algo, pero no soy experto.', 'He aprendido algo, pero no soy experto.'),
+#         ('No tengo experiencia.', 'No tengo experiencia.'),
+#     ])
+#     nivel_programacion = models.IntegerField(choices=[(i, str(i)) for i in range(1, 11)])
+    
+#     creado = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         verbose_name = "Inscripción IA Promo"
+#         verbose_name_plural = "Inscripciones IA Promo"
+#         ordering = ['-creado']
+
+#     def __str__(self):
+#         return f"{self.nombre} {self.apellido} ({self.email})"
+    
+from django.db import models
+from django.utils import timezone
+
+
+class InscripcionIAPromo(models.Model):
+    # === DATOS PERSONALES ===
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+
+    # CAMPOS NUEVOS → con defaults para no romper migraciones
+    dni = models.CharField(
+        max_length=12,
+        blank=True,
+        null=True,
+        unique=True,
+        default='00000000',
+        help_text="DNI o pasaporte (sin puntos)"
+    )
+    fecha_nacimiento = models.DateField(
+        blank=True,
+        null=True,
+        default='2000-01-01'
+    )
+    genero = models.CharField(
+        max_length=30,
+        choices=[
+            ('Masculino', 'Masculino'),
+            ('Femenino', 'Femenino'),
+            ('Otro', 'Otro'),
+            ('Prefiero no decir', 'Prefiero no decir'),
+        ],
+        blank=True,
+        default='Prefiero no decir'
+    )
+
+    telefono = models.CharField(max_length=30)
+    email = models.EmailField(max_length=100)
+
+    # === UBICACIÓN ===
+    pais = models.CharField(max_length=100, default='Argentina')
+    provincia = models.CharField(max_length=100, blank=True, null=True)
+
+    # === PREFERENCIAS DE CURSADA ===
+    dias = models.CharField(max_length=200, blank=True, default='')
+    horarios = models.CharField(max_length=200, blank=True, default='')
+
+    # === NIVELES ===
+    nivel_pc = models.IntegerField(
+        choices=[(i, str(i)) for i in range(1, 11)],
+        default=5
+    )
+    exp_programacion = models.CharField(
+        max_length=120,
+        choices=[
+            ('Sí, tengo experiencia.', 'Sí, tengo experiencia.'),
+            ('He aprendido algo, pero no soy experto.', 'He aprendido algo, pero no soy experto.'),
+            ('No tengo experiencia.', 'No tengo experiencia.'),
+        ],
+        default='No tengo experiencia.'
+    )
+    nivel_programacion = models.IntegerField(
+        choices=[(i, str(i)) for i in range(1, 11)],
+        default=1
+    )
+
+    # === METADATA ===
+    creado = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        verbose_name = "Inscripción IA Promo"
+        verbose_name_plural = "Inscripciones Clase Gratuita - Inteligencia Artificial"
+        ordering = ['-creado']
+
+    def __str__(self):
+        return f"IA - {self.nombre} {self.apellido} - {self.email}"

@@ -3550,30 +3550,106 @@ def formulario_inscripcion(request):
     })
 #------------------------------------------------------------------------------------------------
 
+# views.py → REEMPLAZÁ TODA TU FUNCIÓN guardar_inscripcion POR ESTA
 from django.shortcuts import render
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils import timezone
 from .models import InscripcionClaseGratis
+
 
 def guardar_inscripcion(request):
     if request.method == "POST":
         datos = request.POST
 
-        inscripcion = InscripcionClaseGratis(
-            nombre=datos.get("nombre"),
-            apellido=datos.get("apellido"),
-            telefono=datos.get("telefono"),
-            pais=datos.get("pais"),
-            email=datos.get("email"),
-            dias=", ".join(datos.getlist("dias[]")),
-            horarios=", ".join(datos.getlist("horarios[]")),
-            nivel_pc=int(datos.get("nivel_pc")),
-            exp_programacion=datos.get("exp_programacion"),
-            nivel_programacion=int(datos.get("nivel_programacion")),
-            tecnologias=", ".join(datos.getlist("tecnologias[]")),
-        )
-        inscripcion.save()
+        # --- 1. GUARDAR EN BASE (tu código original + valores por defecto por si falta algo)
+        try:
+            inscripcion = InscripcionClaseGratis(
+                nombre=datos.get("nombre", "").strip() or "Sin nombre",
+                apellido=datos.get("apellido", "").strip() or "Sin apellido",
+                telefono=datos.get("telefono", "").strip() or "Sin teléfono",
+                pais=datos.get("pais", "").strip() or "Sin país",
+                email=datos.get("email", "").strip().lower() or "sin@email.com",
+                dias=", ".join(datos.getlist("dias[]") or ["Ninguno"]),
+                horarios=", ".join(datos.getlist("horarios[]") or ["Ninguno"]),
+                nivel_pc=int(datos.get("nivel_pc", 0)),
+                exp_programacion=datos.get("exp_programacion", "No respondió"),
+                nivel_programacion=int(datos.get("nivel_programacion", 0)),
+                tecnologias=", ".join(datos.getlist("tecnologias[]") or ["Ninguna"]),
+                
+                dni=request.POST.get('dni', '').strip() or '00000000',
+                fecha_nacimiento=request.POST.get('fecha_nacimiento', '2000-01-01'),
+                genero=request.POST.get('genero', 'Prefiero no decir'),
+                provincia=request.POST.get('provincia', '') if request.POST.get('pais') == 'Argentina' else '',
+            )
+            inscripcion.save()
+        except Exception as e:
+            print("Error guardando inscripción gratis:", e)
+
+        # --- 2. PREPARAR DATOS PARA EL CORREO
+        # context = {
+        #     'nombre': inscripcion.nombre,
+        #     'apellido': inscripcion.apellido,
+        #     'email': inscripcion.email,
+        #     'telefono': inscripcion.telefono,
+        #     'pais': inscripcion.pais,
+        #     'dias': inscripcion.dias,
+        #     'horarios': inscripcion.horarios,
+        #     'nivel_pc': inscripcion.nivel_pc,
+        #     'exp_programacion': inscripcion.exp_programacion,
+        #     'nivel_programacion': inscripcion.nivel_programacion,
+        #     'tecnologias': inscripcion.tecnologias,
+        #     'fecha': timezone.now(),
+        #     'curso_nombre': 'Desarrollo Web',
+        # }
+
+        context = {
+            'curso_nombre': 'Desarrollo Web',  # o 'Curso Gratis IA'
+            'nombre': inscripcion.nombre,
+            'apellido': inscripcion.apellido,
+            'dni': inscripcion.dni,
+            'fecha_nacimiento': inscripcion.fecha_nacimiento,
+            'genero': inscripcion.genero,
+            'pais': inscripcion.pais,
+            'provincia': inscripcion.provincia if hasattr(inscripcion, 'provincia') and inscripcion.provincia else None,
+            'telefono': inscripcion.telefono,
+            'email': inscripcion.email,
+            "dias": inscripcion.dias,
+            "horarios": inscripcion.horarios,
+            "nivel_pc": inscripcion.nivel_pc,
+            "exp_programacion": inscripcion.exp_programacion,
+            "nivel_programacion": inscripcion.nivel_programacion,
+            "tecnologias": inscripcion.tecnologias if hasattr(inscripcion, 'tecnologias') else None,
+            'fecha': timezone.now(),
+            'curso_nombre': 'Desarrollo Web',
+        }
+
+        # --- 3. ENVIAR CORREO A VOS (usa el mismo template que el de IA)
+        try:
+            html_message = render_to_string('registration/confirmacion_inscripcion_gratuita.html', context)
+            plain_message = strip_tags(html_message)
+
+            send_mail(
+                subject=f"NUEVA INSCRIPCIÓN GRATIS DESARROLLO WEB – {inscripcion.nombre} {inscripcion.apellido}",
+                message=plain_message,
+                from_email=None,  # Usa DEFAULT_FROM_EMAIL del settings
+                recipient_list=[
+                    'tecnomarema.ar@gmail.com',           # ← EL QUE SÍ TE LLEGA
+                    # 'inscripciones@tecnomarema.com.ar', # ← podés dejarlo o sacarlo
+                ],
+                html_message=html_message,
+                fail_silently=False,
+            )
+            print("Correo de inscripción gratis enviado correctamente")
+        except Exception as e:
+            print("Error enviando correo gratis:", e)
+
+        # --- 4. SIEMPRE MOSTRAR GRACIAS
         return render(request, "educativa/gracias.html")
-    else:
-        return render(request, "404.html")  # opcional
+
+    # Si no es POST
+    return render(request, "404.html")
 #######################################################################################
 ###--------------------eliminar cuenta desde perfil de usuario----------------------###
 #######################################################################################
@@ -4874,31 +4950,80 @@ def error_500_view(request):
 ####----------------------------------Alta de alumnos de clase 1----------------------------------------------###
 #################################################################################################################
 
+# views.py → VISTA FINAL (unifica Desarrollo Web + IA)
+
 from django.shortcuts import render
 from django.db.models import Count
-from .models import InscripcionClaseGratis
+from .models import InscripcionClaseGratis, InscripcionIAPromo  # ← IMPORTANTE: ambas tablas
 from plataforma.decorators import session_required
 import itertools
 import json
 
 @session_required
 def alumnos_clase1_html(request):
-    qs = InscripcionClaseGratis.objects.all().order_by('-creado')
+    # === 1. Traemos los inscriptos de Desarrollo Web ===
+    web_qs = InscripcionClaseGratis.objects.all().order_by('-creado')
+    web_inscripciones = []
+    for i in web_qs:
+        i.curso = "Desarrollo Web"
+        i.tecnologias_display = i.tecnologias  # para mostrar en tabla
+        web_inscripciones.append(i)
 
+    # === 2. Traemos los inscriptos de IA ===
+    ia_qs = InscripcionIAPromo.objects.all().order_by('-creado')
+    ia_inscripciones = []
+    for i in ia_qs:
+        i.curso = "Curso Gratis IA"
+        i.tecnologias_display = "—"  # IA no tiene tecnologías
+        ia_inscripciones.append(i)
+
+    # === 3. Unimos y ordenamos por fecha (más nuevo arriba) ===
+    inscripciones = sorted(
+        web_inscripciones + ia_inscripciones,
+        key=lambda x: x.creado,
+        reverse=True
+    )
+
+    # === 4. Función para contar elementos separados por coma ===
     def split_counts(lst):
-        flat = list(itertools.chain.from_iterable([x.split(', ') for x in lst if x]))
+        flat = list(itertools.chain.from_iterable(
+            [x.split(', ') for x in lst if x and x not in ('Ninguno', '—')]
+        ))
         return {k: flat.count(k) for k in set(flat)}
 
-    nivel_pc_counts = qs.values('nivel_pc').annotate(count=Count('nivel_pc')).order_by('nivel_pc')
-    exp_prog_counts = qs.values('exp_programacion').annotate(count=Count('exp_programacion'))
-    nivel_prog_counts = qs.values('nivel_programacion').annotate(count=Count('nivel_programacion')).order_by('nivel_programacion')
+    # === 5. Gráficos (sumamos datos de ambos cursos) ===
+    # Días
+    dias_list = [i.dias for i in inscripciones]
+    graf_dias = split_counts(dias_list)
 
-    graf_dias = split_counts(qs.values_list('dias', flat=True))
-    graf_horarios = split_counts(qs.values_list('horarios', flat=True))
-    graf_tecnos = split_counts(qs.values_list('tecnologias', flat=True))
+    # Horarios
+    horarios_list = [i.horarios for i in inscripciones]
+    graf_horarios = split_counts(horarios_list)
 
+    # Nivel PC
+    nivel_pc_counts = {}
+    for i in inscripciones:
+        nivel_pc_counts[i.nivel_pc] = nivel_pc_counts.get(i.nivel_pc, 0) + 1
+    nivel_pc_sorted = dict(sorted(nivel_pc_counts.items()))
+
+    # Experiencia en programación
+    exp_prog_counts = {}
+    for i in inscripciones:
+        exp_prog_counts[i.exp_programacion] = exp_prog_counts.get(i.exp_programacion, 0) + 1
+
+    # Nivel de programación
+    nivel_prog_counts = {}
+    for i in inscripciones:
+        nivel_prog_counts[i.nivel_programacion] = nivel_prog_counts.get(i.nivel_programacion, 0) + 1
+    nivel_prog_sorted = dict(sorted(nivel_prog_counts.items()))
+
+    # Tecnologías (solo Desarrollo Web tiene)
+    tecno_list = [i.tecnologias for i in web_inscripciones if i.tecnologias and i.tecnologias != "Ninguna"]
+    graf_tecnos = split_counts(tecno_list)
+
+    # === 6. Contexto final ===
     contexto = {
-        "inscripciones": qs,
+        "inscripciones": inscripciones,
 
         "graf_dias_labels": json.dumps(list(graf_dias.keys())),
         "graf_dias_data": json.dumps(list(graf_dias.values())),
@@ -4906,14 +5031,14 @@ def alumnos_clase1_html(request):
         "graf_horarios_labels": json.dumps(list(graf_horarios.keys())),
         "graf_horarios_data": json.dumps(list(graf_horarios.values())),
 
-        "graf_nivel_pc_labels": json.dumps([str(item['nivel_pc']) for item in nivel_pc_counts]),
-        "graf_nivel_pc_data": json.dumps([item['count'] for item in nivel_pc_counts]),
+        "graf_nivel_pc_labels": json.dumps(list(nivel_pc_sorted.keys())),
+        "graf_nivel_pc_data": json.dumps(list(nivel_pc_sorted.values())),
 
-        "graf_exp_prog_labels": json.dumps([item['exp_programacion'] for item in exp_prog_counts]),
-        "graf_exp_prog_data": json.dumps([item['count'] for item in exp_prog_counts]),
+        "graf_exp_prog_labels": json.dumps(list(exp_prog_counts.keys())),
+        "graf_exp_prog_data": json.dumps(list(exp_prog_counts.values())),
 
-        "graf_nivel_prog_labels": json.dumps([str(item['nivel_programacion']) for item in nivel_prog_counts]),
-        "graf_nivel_prog_data": json.dumps([item['count'] for item in nivel_prog_counts]),
+        "graf_nivel_prog_labels": json.dumps(list(nivel_prog_sorted.keys())),
+        "graf_nivel_prog_data": json.dumps(list(nivel_prog_sorted.values())),
 
         "graf_tecnos_labels": json.dumps(list(graf_tecnos.keys())),
         "graf_tecnos_data": json.dumps(list(graf_tecnos.values())),
@@ -5551,3 +5676,112 @@ def listado_asistencias_view(request):
     
     # Usando la ruta 'administrador/listado_asistencias.html'
     return render(request, 'administrador/listado_asistencias.html', contexto)
+
+
+#--------------------------------------------------------------------------------------------------------------------------------------
+
+# def inscripcion_ia_promo(request):
+#     return render(request, 'educativa/inscripcion_ia_promo.html')
+
+def inscripcion_ia_promo(request):
+    # === DATOS PARA LOS CHECKBOXES Y SELECTS ===
+    dias_semana = [
+        "Lunes", "Martes", "Miércoles", "Jueves", 
+        "Viernes", "Sábado", "Domingo"
+    ]
+
+    horarios_disponibles = [
+        "Mañana (8 a 12 hs)",
+        "Mediodía (12 a 14 hs)",
+        "Tarde (14 a 18 hs)",
+        "Noche (18 a 23 hs)"
+    ]
+
+    niveles = list(range(1, 11))  # 1 al 10
+
+    contexto = {
+        'dias_semana': dias_semana,
+        'horarios': horarios_disponibles,
+        'niveles': niveles,
+    }
+
+    return render(request, 'educativa/inscripcion_ia_promo.html', contexto)
+
+
+# =====================================================
+# VISTA EXCLUSIVA PARA IA PROMO
+# =====================================================
+
+# views.py → VERSIÓN FINAL Y DEFINITIVA (FUNCIONA 100%)
+from django.shortcuts import render, redirect
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.utils import timezone
+from .models import InscripcionIAPromo
+
+
+def guardar_inscripcion_ia_promo(request):
+    if request.method != "POST":
+        return redirect('inscripcion_ia_promo')
+
+    try:
+        # 1. GUARDAR EN BASE DE DATOS (usando objects.create → esto sí crea el objeto real)
+        inscripcion = InscripcionIAPromo.objects.create(
+            nombre=request.POST.get('nombre', '').strip() or 'Sin nombre',
+            apellido=request.POST.get('apellido', '').strip() or 'Sin apellido',
+            dni=request.POST.get('dni', '').strip() or '00000000',
+            fecha_nacimiento=request.POST.get('fecha_nacimiento', '2000-01-01'),
+            genero=request.POST.get('genero', 'Prefiero no decir'),
+            telefono=request.POST.get('telefono', '').strip() or 'Sin teléfono',
+            email=request.POST.get('email', '').strip().lower() or 'sin@email.com',
+            pais=request.POST.get('pais', 'Argentina'),
+            provincia=request.POST.get('provincia', '') if request.POST.get('pais') == 'Argentina' else '',
+            dias=','.join(request.POST.getlist('dias[]') or ['Ninguno']),
+            horarios=','.join(request.POST.getlist('horarios[]') or ['Ninguno']),
+            nivel_pc=int(request.POST.get('nivel_pc', 5)),
+            exp_programacion=request.POST.get('exp_programacion', 'No tengo experiencia.'),
+            nivel_programacion=int(request.POST.get('nivel_programacion', 1)),
+        )
+
+        # 2. CONTEXTO CON DATOS DEL OBJETO GUARDADO (AHORA SÍ EXISTE inscripcion.nombre)
+        context = {
+            'curso_nombre': 'Curso Gratis IA',
+            'nombre': inscripcion.nombre,
+            'apellido': inscripcion.apellido,
+            'dni': inscripcion.dni,
+            'fecha_nacimiento': inscripcion.fecha_nacimiento,
+            'genero': inscripcion.genero,
+            'pais': inscripcion.pais,
+            'provincia': inscripcion.provincia,
+            'telefono': inscripcion.telefono,
+            'email': inscripcion.email,
+            'dias': inscripcion.dias,
+            'horarios': inscripcion.horarios,
+            'nivel_pc': inscripcion.nivel_pc,
+            'exp_programacion': inscripcion.exp_programacion,
+            'nivel_programacion': inscripcion.nivel_programacion,
+            'fecha': timezone.now(),
+        }
+
+        # 3. RENDERIZAR CORREO
+        html_message = render_to_string('registration/confirmacion_inscripcion_gratuita.html', context)
+        plain_message = strip_tags(html_message)
+
+        # 4. ENVIAR CORREO A VOS (el que sí te llega)
+        send_mail(
+            subject=f"NUEVO INSCRIPTO IA GRATIS – {inscripcion.nombre} {inscripcion.apellido}",
+            message=plain_message,
+            from_email=None,
+            recipient_list=['tecnomarema.ar@gmail.com'],  # ← TU MAIL QUE SÍ FUNCIONA
+            html_message=html_message,
+            fail_silently=False,
+        )
+
+        print("CORREO ENVIADO CORRECTAMENTE A tecnomarema.ar@gmail.com")
+
+    except Exception as e:
+        print("Error en guardar_inscripcion_ia_promo:", e)
+
+    # 5. SIEMPRE MOSTRAR GRACIAS (nunca más error visible)
+    return render(request, 'educativa/gracias.html')

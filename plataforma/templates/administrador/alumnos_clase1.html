@@ -1,91 +1,58 @@
 {% extends "administrador/base.html" %}
 
-
 {% block content %}
 <div class="container">
-    <h2>Estadísticas - Inscriptos Clase 1</h2>
+    <h2 class="text-center mb-4">Estadísticas - Inscriptos Clases Gratuitas</h2>
     <div class="row">
-        <div class="col-md-6 border"><canvas id="chartDias"></canvas></div>
-        <div class="col-md-6 border"><canvas id="chartHorarios"></canvas></div>
-        <div class="col-md-6 border"><canvas id="chartNivelPC"></canvas></div>
-        <div class="col-md-6 border"><canvas id="chartExpProg" style="max-height:400px;"></canvas></div>
-        <div class="col-md-6 border"><canvas id="chartNivelProg"></canvas></div>
-        <div class="col-md-6 border"><canvas id="chartTecnos"></canvas></div>
+        <div class="col-md-6 border p-3"><canvas id="chartDias"></canvas></div>
+        <div class="col-md-6 border p-3"><canvas id="chartHorarios"></canvas></div>
+        <div class="col-md-6 border p-3"><canvas id="chartNivelPC"></canvas></div>
+        <div class="col-md-6 border p-3"><canvas id="chartExpProg" style="max-height:400px;"></canvas></div>
+        <div class="col-md-6 border p-3"><canvas id="chartNivelProg"></canvas></div>
+        <div class="col-md-6 border p-3"><canvas id="chartTecnos"></canvas></div>
     </div>
 </div>
 
-<!-- Chart.js CDN -->
+<!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 function colorForNivelPC(value) {
-  if(value >= 1 && value <= 4) return '#cf30ff';       // fucsia
-  if(value > 4 && value <= 6) return '#00f7ff';        // cyan
-  if(value > 6 && value <= 10) return '#12f693';       // verde
-  return '#999999';  // fallback gris
-}
-
-function colorForNivelProg(value) {
-  // Igual regla que NivelPC
-  return colorForNivelPC(value);
+  if(value >= 1 && value <= 4) return '#cf30ff';
+  if(value > 4 && value <= 6) return '#00f7ff';
+  if(value > 6 && value <= 10) return '#12f693';
+  return '#999999';
 }
 
 function colorForHorario(label) {
   label = label.toLowerCase();
-  if(label.includes('mañana')) return '#cf30ff'; // fucsia
-  if(label.includes('tarde')) return '#00f7ff';  // cyan
-  if(label.includes('noche')) return '#12f693';  // verde
-  return '#999999';  // fallback gris
+  if(label.includes('mañana')) return '#cf30ff';
+  if(label.includes('tarde')) return '#00f7ff';
+  if(label.includes('noche')) return '#12f693';
+  return '#999999';
 }
 
 function toCX(ctxid, labels, data, title, type="bar") {
-  let backgroundColors;
-  let borderColors;
+  let bg = '#12f693';
+  let border = '#140693';
 
-  if(type === "pie") {
-    // Pie fijo para Experiencia en Programación (3 colores fijos)
-    backgroundColors = ['#12f693', '#00f7ff', '#cf30ff']; // verde, cyan, fucsia
-    borderColors = ['#0fca7b', '#00cccc', '#cc00cc'];
-  }
-  else if(ctxid === "chartNivelPC") {
-    // Colores según valor numérico
-    backgroundColors = labels.map(label => colorForNivelPC(Number(label)));
-    borderColors = backgroundColors.map(c => c);
-  }
-  else if(ctxid === "chartNivelProg") {
-    backgroundColors = labels.map(label => colorForNivelProg(Number(label)));
-    borderColors = backgroundColors.map(c => c);
-  }
-  else if(ctxid === "chartHorarios") {
-    backgroundColors = labels.map(label => colorForHorario(label));
-    borderColors = backgroundColors.map(c => c);
-  }
-  else {
-    // Default color para barras y otros gráficos
-    backgroundColors = '#12f693';
-    borderColors = '#140693';
+  if (ctxid === "chartNivelPC" || ctxid === "chartNivelProg") {
+    bg = labels.map(l => colorForNivelPC(Number(l)));
+    border = bg;
+  } else if (ctxid === "chartHorarios") {
+    bg = labels.map(colorForHorario);
+    border = bg;
+  } else if (type === "pie") {
+    bg = ['#12f693', '#00f7ff', '#cf30ff'];
+    border = ['#0fca7b', '#00cccc', '#cc00cc'];
   }
 
   new Chart(document.getElementById(ctxid), {
     type: type,
-    data: {
-      labels: labels,
-      datasets: [{
-        label: title,
-        data: data,
-        backgroundColor: backgroundColors,
-        borderColor: borderColors,
-        borderWidth: 1
-      }]
-    },
+    data: { labels, datasets: [{ label: title, data, backgroundColor: bg, borderColor: border, borderWidth: 1 }] },
     options: {
       responsive: true,
-      plugins: {
-        legend: { display: true },
-        title: { display: true, text: title }
-      },
-      scales: type === "bar" ? {
-        y: { beginAtZero: true }
-      } : {}
+      plugins: { legend: { display: true }, title: { display: true, text: title } },
+      scales: type === "bar" ? { y: { beginAtZero: true } } : {}
     }
   });
 }
@@ -96,68 +63,82 @@ document.addEventListener('DOMContentLoaded', () => {
   toCX("chartNivelPC", {{ graf_nivel_pc_labels|safe }}, {{ graf_nivel_pc_data|safe }}, "Nivel de PC");
   toCX("chartExpProg", {{ graf_exp_prog_labels|safe }}, {{ graf_exp_prog_data|safe }}, "Experiencia en Programación", "pie");
   toCX("chartNivelProg", {{ graf_nivel_prog_labels|safe }}, {{ graf_nivel_prog_data|safe }}, "Nivel de Programación");
-  toCX("chartTecnos", {{ graf_tecnos_labels|safe }}, {{ graf_tecnos_data|safe }}, "Tecnologías usadas", "bar");
+  toCX("chartTecnos", {{ graf_tecnos_labels|safe }}, {{ graf_tecnos_data|safe }}, "Tecnologías conocidas", "bar");
 });
 </script>
 
-
-
-<div class="container mt-5">
-  <h2 class="mb-4 text-success">Inscritos a la Clase Gratuita</h2>
-  <table id="tabla-inscripciones" class="table table-dark table-striped table-bordered">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Apellido</th>
-        <th>Teléfono</th>
-        <th>País</th>
-        <th>Email</th>
-        <th>Días</th>
-        <th>Horarios</th>
-        <th>Nivel PC</th>
-        <th>Experiencia en Programación</th>
-        <th>Nivel de Programación</th>
-        <th>Tecnologías</th>
-        <th>Fecha de Registro</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for inscripcion in inscripciones %}
-      <tr>
-        <td>{{ inscripcion.id }}</td>
-        <td>{{ inscripcion.nombre }}</td>
-        <td>{{ inscripcion.apellido }}</td>
-        <td>{{ inscripcion.telefono }}</td>
-        <td>{{ inscripcion.pais }}</td>
-        <td>{{ inscripcion.email }}</td>
-        <td>{{ inscripcion.dias }}</td>
-        <td>{{ inscripcion.horarios }}</td>
-        <td>{{ inscripcion.nivel_pc }}</td>
-        <td>{{ inscripcion.exp_programacion }}</td>
-        <td>{{ inscripcion.nivel_programacion }}</td>
-        <td>{{ inscripcion.tecnologias }}</td>
-        <td>{{ inscripcion.creado|date:"d/m/Y H:i" }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="container-fluid mt-5">
+  <h2 class="mb-4 text-success">Todos los Inscriptos a Clases Gratuitas</h2>
+  
+  <div class="table-responsive">
+    <table id="tabla-inscripciones" class="table table-dark table-striped table-bordered">
+      <thead class="table-success">
+        <tr>
+          <th>ID</th>
+          <th>Curso</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>DNI</th>              <!-- NUEVO -->
+          <th>F. Nacimiento</th>     <!-- NUEVO -->
+          <th>Provincia</th>         <!-- NUEVO -->
+          <th>Género</th>             <!-- NUEVO -->
+          <th>Teléfono</th>
+          <th>País</th>
+          <th>Email</th>
+          <th>Días</th>
+          <th>Horarios</th>
+          <th>Nivel PC</th>
+          <th>Experiencia</th>
+          <th>Nivel Prog.</th>
+          <th>Tecnologías</th>
+          <th>Fecha Inscr.</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for i in inscripciones %}
+        <tr>
+          <td>{{ i.id }}</td>
+          <td>
+            {% if i.curso == "Desarrollo Web" %}
+              <span class="badge bg-info text-dark">Web</span>
+            {% else %}
+              <span class="badge bg-success">IA</span>
+            {% endif %}
+          </td>
+          <td>{{ i.nombre }}</td>
+          <td>{{ i.apellido }}</td>
+          
+          <!-- Campos nuevos: por ahora vacíos (se llenarán después) -->
+          <td>{{ i.dni|default:"—" }}</td>
+          <td>{{ i.fecha_nacimiento|date:"d/m/Y"|default:"—" }}</td>
+          <td>{{ i.provincia|default:"—" }}</td>
+          <td>{{ i.genero|default:"—" }}</td>
+          
+          <td>{{ i.telefono }}</td>
+          <td>{{ i.pais }}</td>
+          <td>{{ i.email }}</td>
+          <td>{{ i.dias }}</td>
+          <td>{{ i.horarios }}</td>
+          <td>{{ i.nivel_pc }}</td>
+          <td>{{ i.exp_programacion }}</td>
+          <td>{{ i.nivel_programacion }}</td>
+          <td>{{ i.tecnologias_display|default:"—" }}</td>
+          <td>{{ i.creado|date:"d/m H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <script>
   $(document).ready(function() {
     $('#tabla-inscripciones').DataTable({
-      "order": [[ 0, "asc" ]],  // Orden inicial por ID
-      "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-      },
-      "columnDefs": [
-        { "orderable": true, "targets": [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 12] }, // columnas ordenables
-        { "orderable": false, "targets": [3, 11] } // teléfono y tecnologías sin orden
-      ]
+      order: [[17, "desc"]],  // ahora la fecha es la columna 17
+      language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
+      pageLength: 25
     });
   });
 </script>
-
 
 {% endblock %}

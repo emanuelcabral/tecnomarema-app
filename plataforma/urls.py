@@ -32,6 +32,10 @@ urlpatterns = [
     path('inscripcion/', views.inscripcion, name='inscripcion'),  # Registro o inscripción - http://127.0.0.1:8000/inscripcion/
     path('cursos/', views.cursos_view, name='cursos'),  # Listado de cursos - http://127.0.0.1:8000/cursos/
     path('desarrollo_web_compra/', views.desarrollo_web_compra, name='desarrollo_web_compra'),  # Compra de curso - http://127.0.0.1:8000/desarrollo_web_compra/
+    path('inteligencia_artificial_compra/', views.inteligencia_artificial_compra, name='inteligencia_artificial_compra'),  # Compra de curso - http://127.0.0.1:8000/inteligencia_artificial_compra/
+    # === NUEVAS URLs para IA Promo ===
+    path('inscripcion_ia_promo/', views.inscripcion_ia_promo, name='inscripcion_ia_promo'),
+    path('guardar_inscripcion_ia_promo/', views.guardar_inscripcion_ia_promo, name='guardar_inscripcion_ia_promo'),
     path('terminos_y_condiciones/', views.terminos_y_condiciones, name='terminos_y_condiciones'),  # Términos y condiciones - http://127.0.0.1:8000/terminos_y_condiciones/
 
     # ---------- PRIVADAS (requieren sesión) ----------
