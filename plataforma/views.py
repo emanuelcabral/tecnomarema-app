@@ -6149,6 +6149,7 @@ def enviar_correos_clase1(request):
 
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .models import Clase, Curso, Pregunta
 from .forms import PreguntaForm  # Asume que lo tienes
 from django.contrib import messages
@@ -6184,7 +6185,9 @@ def alta_quiz_view(request):
                 messages.error(request, 'Pregunta no encontrada.')
             # Mantén filtros en redirect
             params = request.GET.copy()
-            return redirect(f"?{params.urlencode()}")
+            query_string = params.urlencode()
+            redirect_url = reverse('alta_quiz') + ('?' + query_string if query_string else '')
+            return redirect(redirect_url)
 
         pregunta_id = request.POST.get('id_pregunta')
         if pregunta_id:
@@ -6199,9 +6202,14 @@ def alta_quiz_view(request):
         if form.is_valid():
             pregunta = form.save()
             messages.success(request, 'Pregunta guardada/actualizada con éxito.')
-            # Mantén filtros en redirect
+            # Mantén filtros en redirect, pero limpia edit_id si existe (para volver a lista después de editar)
             params = request.GET.copy()
-            return redirect(f"?{params.urlencode()}&guardado=1")
+            if 'edit_id' in params:
+                del params['edit_id']
+            params['guardado'] = '1'
+            query_string = params.urlencode()
+            redirect_url = reverse('alta_quiz') + ('?' + query_string if query_string else '')
+            return redirect(redirect_url)
         else:
             print(form.errors)  # Debug
 
