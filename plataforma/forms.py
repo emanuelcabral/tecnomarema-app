@@ -226,3 +226,25 @@ class SuscriptorForm(forms.ModelForm):
                 'placeholder': 'Tu email'
             })
         }
+
+#######################################################################################
+####-----------------------------quizzies admin------------------------------------####
+#######################################################################################
+
+# 1. En plataforma/forms.py (agrega o reemplaza PreguntaForm)
+from django import forms
+from .models import Pregunta
+
+class PreguntaForm(forms.ModelForm):
+    class Meta:
+        model = Pregunta
+        fields = ['clase', 'texto', 'opcion_a', 'opcion_b', 'opcion_c', 'opcion_d', 'respuesta_correcta']
+        widgets = {
+            'clase': forms.Select(attrs={'class': 'form-control'}),
+            'texto': forms.Textarea(attrs={'class': 'form-control', 'rows': 4, 'placeholder': 'Escribe la pregunta aquí'}),
+            'opcion_a': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opción A'}),
+            'opcion_b': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opción B'}),
+            'opcion_c': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opción C'}),
+            'opcion_d': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Opción D'}),
+            'respuesta_correcta': forms.Select(attrs={'class': 'form-control'}),
+        }
