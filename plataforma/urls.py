@@ -299,6 +299,9 @@ path('comisiones/<str:comision_id>/asistencia_general/', views.asistencia_genera
 path('listado_asistencias/', views.listado_asistencias_view, name='listado_asistencias'),
 
 # path('asistencia/estudiante/<str:estudiante_id>/comision/<int:comision_id>/', views.mi_asistencia_estudiante, name='mi_asistencia'),
+path('asignar_pago_gratis/', views.asignar_pago_gratis, name='asignar_pago_gratis'),
+
+path('enviar_correos_clase1/', views.enviar_correos_clase1, name='enviar_correos_clase1'),
 
 
 ]
