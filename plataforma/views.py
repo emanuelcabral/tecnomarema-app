@@ -6142,3 +6142,89 @@ def enviar_correos_clase1(request):
     except Exception as e:
         print(f"❌ Error general: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+
+#---------------------------------------------------------------------------------------------------------#
+#-------------------------------------------quiz admin----------------------------------------------------#
+#---------------------------------------------------------------------------------------------------------#
+
+
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import Clase, Curso, Pregunta
+from .forms import PreguntaForm  # Asume que lo tienes
+from django.contrib import messages
+from .decorators import session_required  # Tu decorator
+
+@session_required  # Tu auth custom con session
+def alta_quiz_view(request):
+    cursos = Curso.objects.all()
+    clases = Clase.objects.all().order_by('curso__nombre_curso', 'numero_clase')
+    pregunta_existente = None
+    form = PreguntaForm()
+
+    # Lista de preguntas con filtros GET
+    preguntas = Pregunta.objects.all().order_by('clase__curso__nombre_curso', 'clase__numero_clase')
+    curso_id = request.GET.get('curso')
+    clase_id = request.GET.get('clase')
+    print(f"DEBUG: curso_id = '{curso_id}', clase_id = '{clase_id}'")  # Debug para consola
+    if curso_id:
+        preguntas = preguntas.filter(clase__curso__id_curso=curso_id)  # Corregido: __id_curso si el PK es id_curso
+        print(f"DEBUG: Filtrando preguntas por curso_id = '{curso_id}' – Total: {preguntas.count()}")  # Debug
+    if clase_id:
+        preguntas = preguntas.filter(clase_id=clase_id)
+        print(f"DEBUG: Filtrando preguntas por clase_id = '{clase_id}' – Total: {preguntas.count()}")  # Debug
+
+    if request.method == 'POST':
+        delete_id = request.POST.get('delete_id')
+        if delete_id:
+            try:
+                pregunta = Pregunta.objects.get(id=delete_id)
+                pregunta.delete()
+                messages.success(request, 'Pregunta eliminada con éxito.')
+            except Pregunta.DoesNotExist:
+                messages.error(request, 'Pregunta no encontrada.')
+            # Mantén filtros en redirect
+            params = request.GET.copy()
+            return redirect(f"?{params.urlencode()}")
+
+        pregunta_id = request.POST.get('id_pregunta')
+        if pregunta_id:
+            try:
+                pregunta_existente = Pregunta.objects.get(id=pregunta_id)
+                form = PreguntaForm(request.POST, instance=pregunta_existente)
+            except Pregunta.DoesNotExist:
+                form = PreguntaForm(request.POST)
+        else:
+            form = PreguntaForm(request.POST)
+
+        if form.is_valid():
+            pregunta = form.save()
+            messages.success(request, 'Pregunta guardada/actualizada con éxito.')
+            # Mantén filtros en redirect
+            params = request.GET.copy()
+            return redirect(f"?{params.urlencode()}&guardado=1")
+        else:
+            print(form.errors)  # Debug
+
+    # Edición si ID en GET
+    pregunta_id = request.GET.get('edit_id')
+    if pregunta_id:
+        try:
+            pregunta_existente = Pregunta.objects.get(id=pregunta_id)
+            form = PreguntaForm(instance=pregunta_existente)
+        except Pregunta.DoesNotExist:
+            pass
+
+    guardado_exitoso = request.GET.get('guardado') == '1'
+
+    contexto = {
+        'cursos': cursos,
+        'clases': clases,
+        'preguntas': preguntas,
+        'pregunta_existente': pregunta_existente,
+        'form': form,
+        'guardado_exitoso': guardado_exitoso,
+        'filtro_curso': curso_id,
+        'filtro_clase': clase_id,
+    }
+
+    return render(request, 'administrador/alta_quiz.html', contexto)

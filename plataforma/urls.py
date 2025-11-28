@@ -304,6 +304,9 @@ path('asignar_pago_gratis/', views.asignar_pago_gratis, name='asignar_pago_grati
 path('enviar_correos_clase1/', views.enviar_correos_clase1, name='enviar_correos_clase1'),
 
 
+path('administrador/alta_quiz/', views.alta_quiz_view, name='alta_quiz'),
+
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
