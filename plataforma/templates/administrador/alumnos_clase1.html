@@ -1,5 +1,7 @@
 {% extends "administrador/base.html" %}
 
+{% load static %}
+
 {% block content %}
 <div class="container">
     <h2 class="text-center mb-4">Estadísticas - Inscriptos Clases Gratuitas</h2>
@@ -70,75 +72,285 @@ document.addEventListener('DOMContentLoaded', () => {
 <div class="container-fluid mt-5">
   <h2 class="mb-4 text-success">Todos los Inscriptos a Clases Gratuitas</h2>
   
-  <div class="table-responsive">
-    <table id="tabla-inscripciones" class="table table-dark table-striped table-bordered">
-      <thead class="table-success">
-        <tr>
-          <th>ID</th>
-          <th>Curso</th>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th>DNI</th>              <!-- NUEVO -->
-          <th>F. Nacimiento</th>     <!-- NUEVO -->
-          <th>Provincia</th>         <!-- NUEVO -->
-          <th>Género</th>             <!-- NUEVO -->
-          <th>Teléfono</th>
-          <th>País</th>
-          <th>Email</th>
-          <th>Días</th>
-          <th>Horarios</th>
-          <th>Nivel PC</th>
-          <th>Experiencia</th>
-          <th>Nivel Prog.</th>
-          <th>Tecnologías</th>
-          <th>Fecha Inscr.</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for i in inscripciones %}
-        <tr>
-          <td>{{ i.id }}</td>
-          <td>
-            {% if i.curso == "Desarrollo Web" %}
-              <span class="badge bg-info text-dark">Web</span>
-            {% else %}
-              <span class="badge bg-success">IA</span>
-            {% endif %}
-          </td>
-          <td>{{ i.nombre }}</td>
-          <td>{{ i.apellido }}</td>
-          
-          <!-- Campos nuevos: por ahora vacíos (se llenarán después) -->
-          <td>{{ i.dni|default:"—" }}</td>
-          <td>{{ i.fecha_nacimiento|date:"d/m/Y"|default:"—" }}</td>
-          <td>{{ i.provincia|default:"—" }}</td>
-          <td>{{ i.genero|default:"—" }}</td>
-          
-          <td>{{ i.telefono }}</td>
-          <td>{{ i.pais }}</td>
-          <td>{{ i.email }}</td>
-          <td>{{ i.dias }}</td>
-          <td>{{ i.horarios }}</td>
-          <td>{{ i.nivel_pc }}</td>
-          <td>{{ i.exp_programacion }}</td>
-          <td>{{ i.nivel_programacion }}</td>
-          <td>{{ i.tecnologias_display|default:"—" }}</td>
-          <td>{{ i.creado|date:"d/m H:i" }}</td>
-        </tr>
+  <!-- ✅ Controles para Selección Múltiple -->
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
+      <button type="button" class="btn btn-warning" id="selectAllBtn">
+        <i class="fas fa-check-square"></i> Seleccionar Todos
+      </button>
+      <button type="button" class="btn btn-secondary ms-2" id="deselectAllBtn">
+        <i class="fas fa-square"></i> Deseleccionar Todos
+      </button>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" id="comisionGlobalSelect">
+        <option value="">-- Selecciona una Comisión para Múltiples --</option>
+        {% for com in comisiones_proximas %}
+          <option value="{{ com.id_comision }}">
+            {{ com.id_curso.nombre_curso }} - Comisión {{ com.numero_comision }} (Próxima)
+          </option>
         {% endfor %}
-      </tbody>
-    </table>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <button type="button" class="btn btn-success" id="asignarMultiplesBtn" disabled>
+        <i class="fas fa-save"></i> Asignar Seleccionados a Comisión
+      </button>
+    </div>
+    <!-- ✅ NUEVO: Botón para Enviar Correos Clase 1 -->
+    <div class="col-md-3">
+      <button type="button" class="btn btn-primary" id="enviarClase1Btn" disabled>
+        <i class="fas fa-envelope"></i> Enviar Correos Clase 1
+      </button>
+    </div>
   </div>
+
+  <!-- ✅ Mensaje de Confirmación/Alertas -->
+  <div id="alertContainer" class="mb-3" style="display: none;"></div>
+
+  <form id="asignacionForm" method="post" action="{% url 'asignar_pago_gratis' %}">
+    {% csrf_token %}
+    <input type="hidden" name="comision_global" id="comisionGlobalHidden" value="">
+    
+    <div class="table-responsive">
+      <table id="tabla-inscripciones" class="table table-dark table-striped table-bordered">
+        <thead class="table-success">
+          <tr>
+            <th><input type="checkbox" id="selectAllHeader"></th>
+            <th>ID</th>
+            <th>Curso</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>DNI</th>              <!-- NUEVO -->
+            <th>F. Nacimiento</th>     <!-- NUEVO -->
+            <th>Provincia</th>         <!-- NUEVO -->
+            <th>Género</th>             <!-- NUEVO -->
+            <th>Teléfono</th>
+            <th>País</th>
+            <th>Email</th>
+            <th>Días</th>
+            <th>Horarios</th>
+            <th>Nivel PC</th>
+            <th>Experiencia</th>
+            <th>Nivel Prog.</th>
+            <th>Tecnologías</th>
+            <th>Fecha Inscr.</th>
+            <th>Acciones</th>  <!-- ✅ NUEVO: Columna para Menú Desplegable -->
+          </tr>
+        </thead>
+        <tbody>
+          {% for i in inscripciones %}
+          <tr>
+            <td><input type="checkbox" name="seleccionados" value="{{ i.id }}" class="row-checkbox"></td>
+            <td>{{ i.id }}</td>
+            <td>
+              {% if i.curso == "Desarrollo Web" %}
+                <span class="badge bg-info text-dark">Web</span>
+              {% else %}
+                <span class="badge bg-success">IA</span>
+              {% endif %}
+            </td>
+            <td>{{ i.nombre }}</td>
+            <td>{{ i.apellido }}</td>
+            
+            <!-- Campos nuevos: por ahora vacíos (se llenarán después) -->
+            <td>{{ i.dni|default:"—" }}</td>
+            <td>{{ i.fecha_nacimiento|date:"d/m/Y"|default:"—" }}</td>
+            <td>{{ i.provincia|default:"—" }}</td>
+            <td>{{ i.genero|default:"—" }}</td>
+            
+            <td>{{ i.telefono }}</td>
+            <td>{{ i.pais }}</td>
+            <td>{{ i.email }}</td>
+            <td>{{ i.dias }}</td>
+            <td>{{ i.horarios }}</td>
+            <td>{{ i.nivel_pc }}</td>
+            <td>{{ i.exp_programacion }}</td>
+            <td>{{ i.nivel_programacion }}</td>
+            <td>{{ i.tecnologias_display|default:"—" }}</td>
+            <td>{{ i.creado|date:"d/m H:i" }}</td>
+            <td>
+              <!-- ✅ NUEVO: Menú Desplegable por Fila -->
+              <div class="dropdown">
+                <button class="btn btn-sm btn-outline-light dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                  <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu">
+                  <li>
+                    <select class="form-select form-select-sm" name="comision_{{ i.id }}" style="width: 100%; border: none; background: transparent;">
+                      <option value="">-- Asignar a Comisión --</option>
+                      {% for com in comisiones_proximas %}
+                        <option value="{{ com.id_comision }}">
+                          {{ com.id_curso.nombre_curso }} - Comisión {{ com.numero_comision }} (Próxima)
+                        </option>
+                      {% endfor %}
+                    </select>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="#" onclick="confirmarAsignacionIndividual({{ i.id }})">Asignar Individual</a></li>
+                </ul>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </form>
 </div>
 
+<!-- ✅ Scripts para Funcionalidad -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-  $(document).ready(function() {
-    $('#tabla-inscripciones').DataTable({
-      order: [[17, "desc"]],  // ahora la fecha es la columna 17
-      language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
-      pageLength: 25
-    });
+$(document).ready(function() {
+  // Inicializar DataTable
+  $('#tabla-inscripciones').DataTable({
+    order: [[18, "desc"]],  // ahora la fecha es la columna 18 (ajustada por nueva columna)
+    language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
+    pageLength: 25,
+    columnDefs: [{ orderable: false, targets: [0, 19] }]  // Deshabilitar orden en checkbox y acciones
   });
+
+  // ✅ Selección Múltiple
+  let selectAllHeader = $('#selectAllHeader');
+  let selectAllBtn = $('#selectAllBtn');
+  let deselectAllBtn = $('#deselectAllBtn');
+  let comisionGlobalSelect = $('#comisionGlobalSelect');
+  let asignarMultiplesBtn = $('#asignarMultiplesBtn');
+  let enviarClase1Btn = $('#enviarClase1Btn');
+  let rowCheckboxes = $('.row-checkbox');
+
+  selectAllHeader.on('change', function() {
+    rowCheckboxes.prop('checked', this.checked);
+    toggleAsignarBtn();
+  });
+
+  rowCheckboxes.on('change', function() {
+    selectAllHeader.prop('checked', rowCheckboxes.length === rowCheckboxes.filter(':checked').length);
+    toggleAsignarBtn();
+  });
+
+  selectAllBtn.on('click', function() {
+    selectAllHeader.prop('checked', true).trigger('change');
+  });
+
+  deselectAllBtn.on('click', function() {
+    selectAllHeader.prop('checked', false).trigger('change');
+  });
+
+  comisionGlobalSelect.on('change', function() {
+    $('#comisionGlobalHidden').val(this.value);
+    toggleAsignarBtn();
+  });
+
+  function toggleAsignarBtn() {
+    let seleccionados = rowCheckboxes.filter(':checked').length > 0;
+    let comisionSeleccionada = comisionGlobalSelect.val();
+    asignarMultiplesBtn.prop('disabled', !(seleccionados && comisionSeleccionada));
+    asignarMultiplesBtn.toggleClass('btn-success', seleccionados && comisionSeleccionada).toggleClass('btn-secondary', !(seleccionados && comisionSeleccionada));
+    
+    // ✅ Habilitar botón de correos si hay seleccionados (no necesita comisión)
+    enviarClase1Btn.prop('disabled', !seleccionados);
+    enviarClase1Btn.toggleClass('btn-primary', seleccionados).toggleClass('btn-secondary', !seleccionados);
+  }
+
+  // ✅ Asignación Múltiple
+  asignarMultiplesBtn.on('click', function() {
+    if (confirm('¿Confirmas asignar los seleccionados a la comisión elegida? Esto creará sus perfiles como pagos "gratuitos".')) {
+      let seleccionados = [];
+      rowCheckboxes.filter(':checked').each(function() { seleccionados.push($(this).val()); });
+      if (seleccionados.length > 0) {
+        // Serializar formulario para POST
+        let formData = new FormData($('#asignacionForm')[0]);
+        formData.append('seleccionados_multiples', JSON.stringify(seleccionados));
+        
+        $.ajax({
+          url: "{% url 'asignar_pago_gratis' %}",
+          type: 'POST',
+          data: formData,
+          processData: false,
+          contentType: false,
+          success: function(response) {
+            showAlert('success', 'Asignación múltiple exitosa: ' + response.exito_count + ' procesados.');
+            location.reload();  // Recargar para actualizar tabla
+          },
+          error: function() {
+            showAlert('danger', 'Error en asignación múltiple.');
+          }
+        });
+      }
+    }
+  });
+
+// ✅ Enviar Correos Clase 1
+enviarClase1Btn.on('click', function() {
+  if (confirm('¿Confirmas enviar el correo de la primera clase a los seleccionados?')) {
+    let seleccionados = [];
+    rowCheckboxes.filter(':checked').each(function() { seleccionados.push($(this).val()); });
+    if (seleccionados.length > 0) {
+      let formData = new FormData();
+      formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val());
+      formData.append('seleccionados_multiples', JSON.stringify(seleccionados));
+      formData.append('comision_global', comisionGlobalSelect.val() || '');  // ✅ NUEVO: Envía comisión para fecha/horario
+
+      $.ajax({
+        url: "{% url 'enviar_correos_clase1' %}",
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+          showAlert('success', 'Correos enviados: ' + response.exito_count + ' procesados.');
+          rowCheckboxes.filter(':checked').prop('checked', false).trigger('change');  // Desmarca después
+        },
+        error: function(xhr) {
+          let errorMsg = 'Error al enviar correos.';
+          if (xhr.responseJSON && xhr.responseJSON.error) {
+            errorMsg += ' Detalle: ' + xhr.responseJSON.error;
+          }
+          showAlert('danger', errorMsg);
+        }
+      });
+    }
+  }
+});
+
+  // ✅ Función para Asignación Individual (desde dropdown)
+  window.confirmarAsignacionIndividual = function(inscripcionId) {
+    let select = $(`select[name="comision_${inscripcionId}"]`);
+    let comisionId = select.val();
+    if (!comisionId) {
+      alert('Selecciona una comisión primero.');
+      return;
+    }
+    if (confirm('¿Confirmas asignar este inscripto a la comisión?')) {
+      let formData = new FormData();
+      formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val());
+      formData.append('inscripcion_id', inscripcionId);
+      formData.append('comision_id', comisionId);
+
+      $.ajax({
+        url: "{% url 'asignar_pago_gratis' %}",
+        type: 'POST',
+        data: formData,
+        success: function(response) {
+          showAlert('success', 'Asignación individual exitosa.');
+          select.closest('tr').addClass('table-success').find('input[type="checkbox"]').prop('checked', true).prop('disabled', true);
+        },
+        error: function() {
+          showAlert('danger', 'Error en asignación individual.');
+        }
+      });
+    }
+  };
+
+  // ✅ Función para Mostrar Alertas
+  function showAlert(type, message) {
+    let alertHtml = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+    $('#alertContainer').html(alertHtml).show();
+    setTimeout(() => $('#alertContainer').fadeOut(), 5000);
+  }
+});
 </script>
 
 {% endblock %}

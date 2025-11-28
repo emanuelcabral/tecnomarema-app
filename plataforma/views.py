@@ -4954,7 +4954,7 @@ def error_500_view(request):
 
 from django.shortcuts import render
 from django.db.models import Count
-from .models import InscripcionClaseGratis, InscripcionIAPromo  # ← IMPORTANTE: ambas tablas
+from .models import InscripcionClaseGratis, InscripcionIAPromo, Comision  # ← IMPORTANTE: ambas tablas + Comision
 from plataforma.decorators import session_required
 import itertools
 import json
@@ -5021,9 +5021,13 @@ def alumnos_clase1_html(request):
     tecno_list = [i.tecnologias for i in web_inscripciones if i.tecnologias and i.tecnologias != "Ninguna"]
     graf_tecnos = split_counts(tecno_list)
 
-    # === 6. Contexto final ===
+    # === 6. Comisiones próximas para el select ===
+    comisiones_proximas = Comision.objects.filter(estado_comision='proximo').select_related('id_curso').order_by('id_curso__nombre_curso', 'numero_comision')
+
+    # === 7. Contexto final ===
     contexto = {
         "inscripciones": inscripciones,
+        "comisiones_proximas": comisiones_proximas,  # ← NUEVO: Para los selects en la tabla
 
         "graf_dias_labels": json.dumps(list(graf_dias.keys())),
         "graf_dias_data": json.dumps(list(graf_dias.values())),
@@ -5785,3 +5789,356 @@ def guardar_inscripcion_ia_promo(request):
 
     # 5. SIEMPRE MOSTRAR GRACIAS (nunca más error visible)
     return render(request, 'educativa/gracias.html')
+
+
+
+    #----------------------------------------------------------------------------------------------------------
+
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from django.db import transaction
+from django.contrib import messages
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.urls import reverse
+from .models import (
+    InscripcionClaseGratis, InscripcionIAPromo,  # Modelos de inscriptos gratuitos
+    DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso, ClaseComision
+)
+from django.db.models import Q
+import json
+import logging  # Para debug en consola
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt  # Temporal para AJAX; usa {% csrf_token %} en forms
+def asignar_pago_gratis(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        exito_count = 0
+        errores = []
+
+        # Detectar si es múltiple o individual
+        seleccionados_str = request.POST.get('seleccionados_multiples')
+        if seleccionados_str:
+            # Múltiple
+            seleccionados = json.loads(seleccionados_str)
+            comision_id = request.POST.get('comision_global')
+        else:
+            # Individual
+            seleccionados = [request.POST.get('inscripcion_id')]
+            comision_id = request.POST.get('comision_id')
+
+        if not comision_id or not seleccionados:
+            return JsonResponse({'error': 'Faltan datos de selección o comisión'}, status=400)
+
+        comision = Comision.objects.get(id_comision=comision_id)
+        curso = comision.id_curso
+
+        with transaction.atomic():  # Transacción para consistencia
+            for inscr_id in seleccionados:
+                # Buscar inscripto (prioridad: IA Promo, luego Clase Gratis)
+                inscripcion = InscripcionIAPromo.objects.filter(id=inscr_id).first()
+                if not inscripcion:
+                    inscripcion = InscripcionClaseGratis.objects.filter(id=inscr_id).first()
+                if not inscripcion:
+                    errores.append(f"Inscripción {inscr_id} no encontrada")
+                    continue
+
+                dni = inscripcion.dni or f"GRATIS_{inscripcion.id}"  # Fallback si no hay DNI
+                email = inscripcion.email.lower()
+
+                # ✅ Validaciones (evitar duplicados)
+                if DatosDeEstudiantes.objects.filter(Q(dni=dni) | Q(correo=email)).exists():
+                    errores.append(f"Duplicado para {inscripcion.nombre}: DNI/Email ya existe")
+                    continue
+                if PerfilUsuario.objects.filter(Q(nombre_usuario=dni) | Q(correo=email)).exists():
+                    errores.append(f"Duplicado usuario para {inscripcion.nombre}")
+                    continue
+
+                # ✅ Crear DatosDeEstudiantes (mapeo de campos)
+                ultimo_est = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
+                nuevo_id_est = str(int(ultimo_est.id_estudiante) + 1 if ultimo_est else 1).zfill(6)
+
+                estudiante = DatosDeEstudiantes.objects.create(
+                    id_estudiante=nuevo_id_est,
+                    nombre=inscripcion.nombre,
+                    apellido=inscripcion.apellido,
+                    dni=dni,
+                    correo=email,
+                    fecha_nacimiento=getattr(inscripcion, 'fecha_nacimiento', None),
+                    pais=getattr(inscripcion, 'pais', 'Argentina'),
+                    provincia=getattr(inscripcion, 'provincia', ''),
+                    telefono=getattr(inscripcion, 'telefono', ''),
+                    genero=getattr(inscripcion, 'genero', ''),
+                    # Asignar a primer campo disponible (cursando1, etc.)
+                )
+                # Asignar comisión
+                for i in range(1, 10):
+                    campo = f'cursando{i}'
+                    if getattr(estudiante, campo) is None:
+                        setattr(estudiante, campo, comision)
+                        break
+                estudiante.save()
+
+                # ✅ Crear PerfilUsuario
+                ultimo_user = PerfilUsuario.objects.order_by('-id_usuario').first()
+                nuevo_id_user = str(int(ultimo_user.id_usuario) + 1 if ultimo_user else 1).zfill(6)
+
+                usuario = PerfilUsuario.objects.create(
+                    id_usuario=nuevo_id_user,
+                    id_estudiante=estudiante,
+                    nombre_usuario=dni,  # Usar DNI como username
+                    correo=email,
+                    rol='alumno',
+                    is_active=True
+                )
+                password_temporal = 'pass1234'  # Contraseña temporal
+                usuario.set_password(password_temporal)
+                usuario.save()
+
+                # ✅ Crear RegistroPago (como "gratuito")
+                pago = RegistroPago.objects.create(
+                    estudiante=estudiante,
+                    comision=comision,
+                    plataforma='web_gratis',
+                    medio_pago='inscripcion_gratuita',
+                    estado_pago='Aprobado',  # Directo a aprobado
+                    monto=0.00,
+                    fecha_pago=timezone.now(),
+                    id_transaccion=f'GRATIS_{inscripcion.id}',
+                    observaciones=f'Inscripción gratuita desde clase promo. Curso: {curso.nombre_curso}. Comisión: {comision.numero_comision}.'
+                )
+
+                # ✅ Generar URL de reset de contraseña para el email de bienvenida
+                uid = urlsafe_base64_encode(force_bytes(usuario.pk))
+                token = default_token_generator.make_token(usuario)
+                reset_url = request.build_absolute_uri(reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token}))
+
+                # ✅ EMAIL DE BIENVENIDA AL USUARIO (usando bienvenida_paga.html adaptada para gratis)
+                context_usuario = {
+                    'nombre': inscripcion.nombre,
+                    'curso': curso.nombre_curso,
+                    'comision': comision.numero_comision,
+                    'usuario': dni,  # DNI como username
+                    'password': password_temporal,
+                    'reset_url': reset_url,  # URL para cambiar contraseña
+                }
+
+                html_message_usuario = render_to_string('registration/bienvenida_paga.html', context_usuario)
+                plain_message_usuario = strip_tags(html_message_usuario)
+
+                send_mail(
+                    subject=f"¡Bienvenido/a a Tecno Marema! - Acceso a tu curso GRATIS {curso.nombre_curso}",
+                    message=plain_message_usuario,
+                    from_email=None,  # Usa DEFAULT_FROM_EMAIL de settings
+                    recipient_list=[email],
+                    html_message=html_message_usuario,
+                    fail_silently=False,
+                )
+
+                # ✅ EMAIL A LA INSTITUCIÓN (notificación de nuevo registro usando registro_pago.html)
+                context_institucion = {
+                    'nombre': inscripcion.nombre,
+                    'apellido': inscripcion.apellido,
+                    'email': email,
+                    'documento': dni,  # DNI como documento
+                    'curso': curso.nombre_curso,
+                    'comision': comision.numero_comision,
+                    'pais': getattr(inscripcion, 'pais', 'Argentina'),
+                    'provincia': getattr(inscripcion, 'provincia', ''),
+                    'telefono': getattr(inscripcion, 'telefono', ''),
+                    'medio_pago': 'inscripcion_gratuita',
+                    'fecha': timezone.now(),
+                }
+
+                html_message_institucion = render_to_string('registration/registro_pago.html', context_institucion)
+                plain_message_institucion = strip_tags(html_message_institucion)
+
+                send_mail(
+                    subject=f"📥 Nuevo alumno inscripto GRATIS – {inscripcion.nombre} {inscripcion.apellido}",
+                    message=plain_message_institucion,
+                    from_email=None,
+                    recipient_list=['tecnomarema.ar@gmail.com'],  # Email de la institución
+                    html_message=html_message_institucion,
+                    fail_silently=False,
+                )
+
+                exito_count += 1
+
+        if exito_count > 0:
+            messages.success(request, f'{exito_count} inscriptos convertidos a pagos gratuitos exitosamente. Emails enviados (bienvenida al usuario y notificación a la institución).')
+        if errores:
+            messages.warning(request, 'Errores: ' + '; '.join(errores))
+
+        return JsonResponse({'exito_count': exito_count, 'errores': errores})
+
+    except Exception as e:
+        logger.error(f"Error en asignar_pago_gratis: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+#----------------------------------------------------------------------------------------------------------
+
+# Import (asegúrate de tenerlos al inicio de views.py)
+from .models import ClaseComision, Clase  # Modelos clave
+
+# ✅ VISTA FINAL: Fetch clase con 'curso' (no 'id_curso'), case-insensitive para curso
+@csrf_exempt
+def enviar_correos_clase1(request):
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+
+    try:
+        seleccionados_str = request.POST.get('seleccionados_multiples')
+        if not seleccionados_str:
+            return JsonResponse({'error': 'No hay seleccionados'}, status=400)
+
+        seleccionados = json.loads(seleccionados_str)
+        comision_id = request.POST.get('comision_global', '')  # '000001'
+        exito_count = 0
+        errores = []
+
+        # Fetch comisión
+        comision = None
+        if comision_id:
+            try:
+                comision = Comision.objects.get(id_comision=comision_id)
+                print(f"🔍 Comisión encontrada: ID='{comision_id}' - Curso='{comision.id_curso.nombre_curso}' - Número={comision.numero_comision}")
+            except Comision.DoesNotExist:
+                errores.append(f"Comisión '{comision_id}' no encontrada.")
+                print(f"❌ Comi '{comision_id}' no existe")
+                comision = None
+
+        # Fetch ClaseComision para la PRIMERA CLASE (0 para Web, 1 para otros)
+        primera_clase = None
+        if comision:
+            try:
+                # Determinar numero_clase basado en curso (case-insensitive)
+                curso_nombre_lower = comision.id_curso.nombre_curso.lower()
+                if 'desarrollo web' in curso_nombre_lower:
+                    numero_clase_primera = 0  # Primera para Web
+                    print(f"🎯 Para Desarrollo Web: Usando numero_clase=0")
+                else:
+                    numero_clase_primera = 1  # Primera para IA/otros
+                    print(f"🎯 Para {comision.id_curso.nombre_curso}: Usando numero_clase=1")
+
+                # Paso 1: Fetch la Clase con numero_clase_primera para el curso de la comisión (usa 'curso' como field)
+                clase_primera = Clase.objects.filter(
+                    curso=comision.id_curso,  # FK a Curso object (choices have 'curso')
+                    numero_clase=numero_clase_primera
+                ).first()
+                print(f"🔍 Clase encontrada para curso '{comision.id_curso.nombre_curso}' y numero_clase={numero_clase_primera}: ID='{clase_primera.id if clase_primera else 'None'}'")
+
+                if clase_primera:
+                    # Paso 2: Fetch ClaseComision para esa clase y comision
+                    primera_clase = ClaseComision.objects.filter(
+                        comision=comision,  # FK a Comision object
+                        clase=clase_primera  # FK a Clase object
+                    ).first()
+                    if primera_clase:
+                        print(f"✅ ClaseComision encontrada para comision '{comision_id}' y clase ID='{clase_primera.id}': Fecha={primera_clase.fecha} Hora={primera_clase.horario} Link='{primera_clase.link}'")
+                    else:
+                        print(f"⚠️ No ClaseComision para comision '{comision_id}' y clase ID='{clase_primera.id}' – Usando fallback comision")
+                else:
+                    print(f"⚠️ No Clase con numero_clase={numero_clase_primera} para curso '{comision.id_curso.nombre_curso}' – Usando fallback comision")
+            except Exception as e:
+                errores.append(f"Error query Clase/ClaseComision: {str(e)}")
+                print(f"❌ Error filter: {str(e)}")
+
+        for inscr_id in seleccionados:
+            inscripcion = InscripcionIAPromo.objects.filter(id=inscr_id).first()
+            if not inscripcion:
+                inscripcion = InscripcionClaseGratis.objects.filter(id=inscr_id).first()
+            if not inscripcion:
+                errores.append(f"Inscripción {inscr_id} no encontrada")
+                continue
+
+            email = inscripcion.email.lower().strip()
+            if not email or '@' not in email:
+                errores.append(f"Email inválido: {email}")
+                continue
+
+            # Determinar curso
+            if isinstance(inscripcion, InscripcionClaseGratis):
+                curso_nombre = "Desarrollo Web"
+            else:
+                curso_nombre = "Curso Gratis IA"
+            curso_tipo = "IA" if isinstance(inscripcion, InscripcionIAPromo) else "Web"
+
+            # ✅ LINK DESDE DB (primera_clase.link si existe)
+            clase1_link = None
+            link_texto = f"Link por confirmar para {curso_nombre} clase 1 (contacta al equipo)"
+            if primera_clase and primera_clase.link and primera_clase.link.startswith('http'):
+                clase1_link = primera_clase.link  # DB real
+                print(f"📎 Link DB {curso_tipo}: {clase1_link}")
+            else:
+                print(f"⚠️ No link en ClaseComision para {curso_tipo} (comision_id {comision_id}) – Texto: {link_texto}")
+
+            # ✅ FECHA DESDE DB (primera_clase > comision)
+            if primera_clase:
+                fecha_formateada = primera_clase.fecha.strftime('%d/%m/%Y')
+                hora_formateada = primera_clase.horario.strftime('%H:%M') + ' hs'
+                fecha_clase = f"{fecha_formateada} a las {hora_formateada}"
+            elif comision:
+                fecha_formateada = comision.fecha_inicio.strftime('%d/%m/%Y')
+                dia_horario = f"{comision.dia1 or 'Por definir'} {comision.horario1 or 'Por definir'}"
+                fecha_clase = f"{fecha_formateada} {dia_horario}"
+            else:
+                fecha_clase = "Fecha por confirmar"
+
+            # Logs
+            print(f"🔍 {curso_tipo} - {inscripcion.nombre} (comision_id {comision_id}): Fecha={fecha_clase} | Link={'DB' if clase1_link else 'Texto'}")
+
+            # Contexto
+            context_email = {
+                'nombre': inscripcion.nombre,
+                'apellido': inscripcion.apellido,
+                'curso': curso_nombre,
+                'clase1_link': clase1_link,
+                'link_texto': link_texto,
+                'fecha_clase': fecha_clase,
+            }
+
+            # Render y send
+            html_message = render_to_string('registration/clase1_email.html', context_email)
+            plain_message = strip_tags(html_message)
+
+            try:
+                send_mail(
+                    subject=f"¡Tu primera clase de {curso_nombre} está lista! - Tecno Marema",
+                    message=plain_message,
+                    from_email=None,
+                    recipient_list=[email],
+                    html_message=html_message,
+                    fail_silently=False,
+                )
+                print(f"✅ Enviado a {email} ({curso_tipo})")
+            except Exception as mail_error:
+                errores.append(f"Error mail {email}: {str(mail_error)}")
+                print(f"❌ Error mail {curso_tipo}: {str(mail_error)}")
+                continue
+
+            exito_count += 1
+
+        if exito_count > 0:
+            messages.success(request, f'{exito_count} correos enviados.')
+        if errores:
+            messages.warning(request, f'Errores: ' + '; '.join(errores))
+
+        return JsonResponse({'exito_count': exito_count, 'errores': errores})
+
+    except json.JSONDecodeError as e:
+        return JsonResponse({'error': 'JSON inválido'}, status=400)
+    except Exception as e:
+        print(f"❌ Error general: {str(e)}")
+        return JsonResponse({'error': str(e)}, status=500)

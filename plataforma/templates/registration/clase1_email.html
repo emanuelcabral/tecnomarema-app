@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>¡Tu primera clase está lista!</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff;">
+  <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px #12f693;">
+    <h2 style="color: #12f693; text-align: center; margin-bottom: 30px;">📚 ¡Hola {{ nombre }} {{ apellido }}!</h2>
+
+    <p style="font-size: 16px;">Tu primera clase de <strong style="color:#12f693;">{{ curso }}</strong> está a punto de comenzar. ¡No te la pierdas!</p>
+
+    {% if clase1_link %}
+      <!-- Si hay URL válida de DB, muestra botón clickable -->
+      <p style="font-size: 16px; text-align: center; margin: 30px 0;">
+        <a href="{{ clase1_link }}"
+           style="background-color: #12f693; color: #000; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; box-shadow: 0 0 10px #12f693; display: inline-block;">
+          Unirse a la Clase 1 (Jitsi Meet)
+        </a>
+      </p>
+    {% else %}
+      <!-- Si no hay link en DB, muestra texto plano sin <a> -->
+      <p style="font-size: 16px; text-align: center; margin: 30px 0; color: #ffcc00;">
+        <strong>{{ link_texto }}</strong><br>
+        <em>(El link se enviará cuando se confirme la clase)</em>
+      </p>
+    {% endif %}
+
+    <ul style="font-size: 14px; line-height: 1.6;">
+      <li><strong>Fecha y Hora:</strong> {{ fecha_clase }}</li>
+      <li><strong>Instrucciones:</strong> Llega 10 minutos antes. No necesitas app; funciona en navegador.</li>
+    </ul>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <p style="font-size: 14px; text-align: center;">¡Estamos emocionados de verte en acción!<br>
+    <em>El equipo de Tecno Marema</em></p>
+  </div>
+</body>
+</html>
