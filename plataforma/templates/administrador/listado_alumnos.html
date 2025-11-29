@@ -1,7 +1,12 @@
 {% extends "administrador/base.html" %}
 {% block content %}
+
+<!-- CSS de los botones de DataTables (Bootstrap 5) -->
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
+
 <div class="container mt-5">
   <h2 class="mb-4 text-success">Listado de Alumnos</h2>
+  
   <table id="tabla-alumnos" class="table table-dark table-striped table-bordered">
     <thead>
       <tr>
@@ -36,20 +41,50 @@
   </table>
 </div>
 
+<!-- Scripts necesarios para el botón de impresión -->
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
+
 <script>
   $(document).ready(function() {
     $('#tabla-alumnos').DataTable({
-      "order": [[ 0, "asc" ]],  // Orden por ID al cargar
+      dom: 'lBfrtip',  // ← Aquí está la "l" que trae de vuelta el selector de cantidad
+      pageLength: 50,  // Muestra 50 por defecto (puedes cambiarlo a 25 o 100 si quieres)
+      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+      buttons: [
+        {
+          extend: 'print',
+          text: 'Imprimir Listado Completo',
+          title: 'Listado Completo de Alumnos',
+          className: 'btn btn-success btn-sm',
+          orientation: 'landscape',
+          pageSize: 'A4',
+          messageTop: function () {
+            return 'Generado el ' + new Date().toLocaleDateString('es-ES') + ' a las ' + new Date().toLocaleTimeString('es-ES');
+          },
+          customize: function (win) {
+            $(win.document.body).css('font-size', '11pt');
+            $(win.document.body).find('table')
+              .addClass('compact')
+              .css({'font-size': 'inherit', 'width': '100%'});
+            $(win.document.body).find('button')
+              .css('margin','10px')
+              .text('Imprimir')
+              .addClass('btn btn-primary');
+          }
+        }
+      ],
+      "order": [[ 0, "asc" ]],
       "language": {
         "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
       },
       "columnDefs": [
-        { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 8, 9] }, // columnas ordenables
-        { "orderable": false, "targets": [7] } // Teléfono no ordenable
+        { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 8, 9] },
+        { "orderable": false, "targets": [7] }
       ]
     });
   });
 </script>
-
 
 {% endblock %}
