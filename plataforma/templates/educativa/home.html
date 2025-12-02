@@ -37,6 +37,11 @@
         background-color: #111;
         color: #fff;
         font-family: 'Segoe UI', sans-serif;
+        /*no permitir la seleccion*/
+        -webkit-user-select: none; /* Chrome, Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE/Edge */
+        user-select: none;         /* Estándar */
       }
       
       .resalte {
@@ -1019,5 +1024,38 @@
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Bloqueo de boton derecho y f12 inicio -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // A. Deshabilitar el Menú Contextual (Botón Derecho)
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+            // B. Deshabilitar F12 y Atajos de DevTools
+            document.onkeydown = function(e) {
+                // Bloquea F12
+                if (e.keyCode == 123) { 
+                    return false;
+                }
+                
+                // Bloquea Ctrl+Shift+I (Inspeccionar)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                    return false;
+                }
+
+                // Bloquea Ctrl+Shift+J (Consola)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                    return false;
+                }
+
+                // Bloquea Ctrl+U (Ver Código Fuente)
+                if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                    return false;
+                }
+            };
+        });
+    </script>
+    <!-- Bloqueo de boton derecho y f12 fin -->
+
   </body>
 </html>
