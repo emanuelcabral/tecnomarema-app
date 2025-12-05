@@ -33,6 +33,20 @@ def inicio(request):
 
 def home(request):
     return render(request, 'educativa/home.html')
+#---------------------------------------------------------------------------------------------
+# from django.shortcuts import render
+
+# def home(request):
+#     context = {}
+    
+#     # 1. Verificar si el usuario está autenticado
+#     if request.user.is_authenticated:
+#         # 2. Asignar el objeto request.user (que es tu PerfilUsuario) a la clave 'usuario'
+#         context['usuario'] = request.user
+        
+#     return render(request, 'educativa/home.html', context)
+
+#---------------------------------------------------------------------------------------------
 
 def login_view(request):
     # Limpiar mensajes anteriores para evitar mostrar mensajes viejos
@@ -184,955 +198,6 @@ from django.conf import settings
 from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
 
 
-# @csrf_exempt
-# def guardar_datos_inscripcion_paga(request):
-#     if request.method == "POST":
-#         sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
-#         try:
-#             # ============================
-#             # 🔹 Datos del formulario
-#             # ============================
-#             nombre = request.POST.get("nombre")
-#             apellido = request.POST.get("apellido")
-#             documento = request.POST.get("documento")
-#             email = request.POST.get("email")
-#             fecha_nacimiento = request.POST.get("fecha_nacimiento")
-#             pais = request.POST.get("pais")
-#             provincia = request.POST.get("provincia")
-#             telefono = request.POST.get("telefono")
-#             genero = request.POST.get("genero")
-#             curso_id = request.POST.get("curso")
-#             medio_pago = request.POST.get("medio_pago")
-#             comision_nombre = request.POST.get("comision")
-#             comprobante = request.FILES.get("comprobante")
-
-#             print("Datos recibidos:", nombre, apellido, documento, email, curso_id)
-
-#             # ============================
-#             # 🔹 Validaciones
-#             # ============================
-#             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
-
-#             if DatosDeEstudiantes.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
-
-#             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
-
-#             if PerfilUsuario.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
-
-#             # if not comprobante:
-#             #     return JsonResponse({"status": "error", "msg": "No se recibió comprobante"}, status=400)
-
-#             # Validar comprobante SOLO si el medio de pago es transferencia
-#             if medio_pago == "transferencia_bancaria":
-#                 if not comprobante:
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago para continuar."
-#                     }, status=400)
-
-
-#             # ============================
-#             # 🔹 Curso y comisión
-#             # ============================
-#             curso_obj = Curso.objects.filter(id_curso=curso_id).first()
-#             if not curso_obj:
-#                 return JsonResponse({"status": "error", "msg": f"No se encontró el curso con ID {curso_id}"}, status=400)
-#             curso_nombre = curso_obj.nombre_curso
-
-#             comision = Comision.objects.filter(numero_comision=comision_nombre, id_curso=curso_obj).first()
-#             if not comision:
-#                 return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"}, status=400)
-
-#             # ============================
-#             # 🔹 Crear estudiante
-#             # ============================
-#             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
-#             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
-
-#             estudiante = DatosDeEstudiantes.objects.create(
-#                 id_estudiante=nuevo_id,
-#                 nombre=nombre,
-#                 apellido=apellido,
-#                 dni=documento,
-#                 correo=email,
-#                 fecha_nacimiento=fecha_nacimiento,
-#                 pais=pais,
-#                 provincia=provincia,
-#                 telefono=telefono,
-#                 genero=genero
-#             )
-
-#             # Asignar comisión al primer campo disponible
-#             asignado = False
-#             for i in range(1, 10):
-#                 campo = f'cursando{i}'
-#                 if getattr(estudiante, campo) is None:
-#                     setattr(estudiante, campo, comision)
-#                     estudiante.save()
-#                     asignado = True
-#                     break
-#             if not asignado:
-#                 return JsonResponse({"status": "error", "msg": "El estudiante ya está inscrito en el máximo de comisiones."}, status=400)
-
-#             # ============================
-#             # 🔹 Crear usuario vinculado
-#             # ============================
-#             usuario_id = str(int(PerfilUsuario.objects.order_by('-id_usuario').first().id_usuario) + 1 if PerfilUsuario.objects.exists() else 1).zfill(6)
-
-#             usuario = PerfilUsuario.objects.create(
-#                 id_usuario=usuario_id,
-#                 id_estudiante=estudiante,
-#                 nombre_usuario=documento,
-#                 correo=email,
-#                 rol="alumno",
-#                 is_active=True
-#             )
-#             usuario.set_password("pass1234")
-#             usuario.save()
-
-#             # ============================
-#             # 🔹 Registrar pago
-#             # ============================
-#             RegistroPago.objects.create(
-#                 estudiante=estudiante,
-#                 comision=comision,
-#                 plataforma="web",
-#                 medio_pago=medio_pago,
-#                 estado_pago="Verificando",
-#                 monto=0,
-#                 fecha_pago=timezone.now(),
-#                 id_transaccion="",
-#                 archivo_comprobante=comprobante
-#             )
-
-#             # ============================
-#             # 💌 Correo interno (registro_pago.html)
-#             # ============================
-#             context_interno = {
-#                 "nombre": nombre,
-#                 "apellido": apellido,
-#                 "email": email,
-#                 "documento": documento,
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "pais": pais,
-#                 "provincia": provincia,
-#                 "telefono": telefono,
-#                 "medio_pago": medio_pago,
-#                 "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-#             }
-#             html_interno = render_to_string("registration/registro_pago.html", context_interno)
-#             text_interno = strip_tags(html_interno)
-
-#             email_interno = EmailMultiAlternatives(
-#                 subject="📥 Nuevo alumno inscripto y compra registrada",
-#                 body=text_interno,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=["tecnomarema.ar@gmail.com"],
-#             )
-#             email_interno.attach_alternative(html_interno, "text/html")
-#             email_interno.send()
-
-#             # ============================
-#             # 💌 Correo alumno (bienvenida_paga.html)
-#             # ============================
-#             context_bienvenida = {
-#                 "nombre": f"{nombre} {apellido}",
-#                 "usuario": documento,
-#                 "password": "pass1234",
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "reset_url": "https://tecnomarema.com/reset-password",  # ⚠️ ajustar
-#             }
-#             html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
-#             text_bienvenida = strip_tags(html_bienvenida)
-
-#             email_alumno = EmailMultiAlternatives(
-#                 subject="🎓 Bienvenido/a a tu curso en Tecno Marema",
-#                 body=text_bienvenida,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=[email],
-#             )
-#             email_alumno.attach_alternative(html_bienvenida, "text/html")
-#             email_alumno.send()
-
-#             # ============================
-#             return JsonResponse({"status": "ok", "id_estudiante": nuevo_id, "id_usuario": usuario_id})
-
-#         except Exception as e:
-#             print("ERROR EN INSCRIPCION:", e)
-#             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
-
-#     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
-
-#------------------------------------------------------------------------------------------------------
-
-# @csrf_exempt
-# def guardar_datos_inscripcion_paga(request):
-#     if request.method == "POST":
-#         sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
-#         try:
-#             # ============================
-#             # 🔹 Datos del formulario
-#             # ============================
-#             nombre = request.POST.get("nombre")
-#             apellido = request.POST.get("apellido")
-#             documento = request.POST.get("documento")
-#             email = request.POST.get("email")
-#             fecha_nacimiento = request.POST.get("fecha_nacimiento")
-#             pais = request.POST.get("pais")
-#             provincia = request.POST.get("provincia")
-#             telefono = request.POST.get("telefono")
-#             genero = request.POST.get("genero")
-#             curso_id = request.POST.get("curso")
-#             medio_pago = request.POST.get("medio_pago")
-#             comision_nombre = request.POST.get("comision")
-#             comprobante = request.FILES.get("comprobante")
-
-#             print("Datos recibidos:", nombre, apellido, documento, email, curso_id)
-
-#             # ============================
-#             # 🔹 Validaciones básicas
-#             # ============================
-#             campos_obligatorios = {
-#                 "nombre": nombre,
-#                 "apellido": apellido,
-#                 "documento": documento,
-#                 "email": email,
-#                 "fecha_nacimiento": fecha_nacimiento,
-#                 "pais": pais,
-#                 "provincia": provincia,
-#                 "telefono": telefono,
-#                 "curso": curso_id,
-#                 "comision": comision_nombre,
-#                 "medio_pago": medio_pago,
-#             }
-
-#             faltantes = [campo for campo, valor in campos_obligatorios.items() if not valor]
-#             if faltantes:
-#                 return JsonResponse({
-#                     "status": "error",
-#                     "msg": f"Faltan completar los siguientes campos: {', '.join(faltantes)}"
-#                 }, status=400)
-
-#             # Validar comprobante SOLO si el medio de pago es transferencia
-#             if medio_pago == "transferencia_bancaria":
-#                 if not comprobante:
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago para continuar."
-#                     }, status=400)
-
-#             # ============================
-#             # 🔹 Validaciones de duplicados
-#             # ============================
-#             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
-
-#             if DatosDeEstudiantes.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
-
-#             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
-
-#             if PerfilUsuario.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
-
-#             # ============================
-#             # 🔹 Curso y comisión
-#             # ============================
-#             curso_obj = Curso.objects.filter(id_curso=curso_id).first()
-#             if not curso_obj:
-#                 return JsonResponse({"status": "error", "msg": f"No se encontró el curso con ID {curso_id}"}, status=400)
-#             curso_nombre = curso_obj.nombre_curso
-
-#             comision = Comision.objects.filter(numero_comision=comision_nombre, id_curso=curso_obj).first()
-#             if not comision:
-#                 return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"}, status=400)
-
-#             # ============================
-#             # 🔹 Crear estudiante
-#             # ============================
-#             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
-#             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
-
-#             estudiante = DatosDeEstudiantes.objects.create(
-#                 id_estudiante=nuevo_id,
-#                 nombre=nombre,
-#                 apellido=apellido,
-#                 dni=documento,
-#                 correo=email,
-#                 fecha_nacimiento=fecha_nacimiento,
-#                 pais=pais,
-#                 provincia=provincia,
-#                 telefono=telefono,
-#                 genero=genero
-#             )
-
-#             # Asignar comisión al primer campo disponible
-#             asignado = False
-#             for i in range(1, 10):
-#                 campo = f'cursando{i}'
-#                 if getattr(estudiante, campo) is None:
-#                     setattr(estudiante, campo, comision)
-#                     estudiante.save()
-#                     asignado = True
-#                     break
-#             if not asignado:
-#                 return JsonResponse({"status": "error", "msg": "El estudiante ya está inscrito en el máximo de comisiones."}, status=400)
-
-#             # ============================
-#             # 🔹 Crear usuario vinculado
-#             # ============================
-#             usuario_id = str(int(PerfilUsuario.objects.order_by('-id_usuario').first().id_usuario) + 1 if PerfilUsuario.objects.exists() else 1).zfill(6)
-
-#             usuario = PerfilUsuario.objects.create(
-#                 id_usuario=usuario_id,
-#                 id_estudiante=estudiante,
-#                 nombre_usuario=documento,
-#                 correo=email,
-#                 rol="alumno",
-#                 is_active=True
-#             )
-#             usuario.set_password("pass1234")
-#             usuario.save()
-
-#             # ============================
-#             # 🔹 Registrar pago
-#             # ============================
-#             RegistroPago.objects.create(
-#                 estudiante=estudiante,
-#                 comision=comision,
-#                 plataforma="web",
-#                 medio_pago=medio_pago,
-#                 estado_pago="Verificando",
-#                 monto=0,
-#                 fecha_pago=timezone.now(),
-#                 id_transaccion="",
-#                 archivo_comprobante=comprobante
-#             )
-
-#             # ============================
-#             # 💌 Correo interno (registro_pago.html)
-#             # ============================
-#             context_interno = {
-#                 "nombre": nombre,
-#                 "apellido": apellido,
-#                 "email": email,
-#                 "documento": documento,
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "pais": pais,
-#                 "provincia": provincia,
-#                 "telefono": telefono,
-#                 "medio_pago": medio_pago,
-#                 "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-#             }
-#             html_interno = render_to_string("registration/registro_pago.html", context_interno)
-#             text_interno = strip_tags(html_interno)
-
-#             email_interno = EmailMultiAlternatives(
-#                 subject="📥 Nuevo alumno inscripto y compra registrada",
-#                 body=text_interno,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=["tecnomarema.ar@gmail.com"],
-#             )
-#             email_interno.attach_alternative(html_interno, "text/html")
-#             email_interno.send()
-
-#             # ============================
-#             # 💌 Correo alumno (bienvenida_paga.html)
-#             # ============================
-#             context_bienvenida = {
-#                 "nombre": f"{nombre} {apellido}",
-#                 "usuario": documento,
-#                 "password": "pass1234",
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "reset_url": "https://tecnomarema.com/reset-password",  # ⚠️ ajustar
-#             }
-#             html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
-#             text_bienvenida = strip_tags(html_bienvenida)
-
-#             email_alumno = EmailMultiAlternatives(
-#                 subject="🎓 Bienvenido/a a tu curso en Tecno Marema",
-#                 body=text_bienvenida,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=[email],
-#             )
-#             email_alumno.attach_alternative(html_bienvenida, "text/html")
-#             email_alumno.send()
-
-#             # ============================
-#             # 🔹 Respuesta final
-#             # ============================
-#             return JsonResponse({"status": "ok", "id_estudiante": nuevo_id, "id_usuario": usuario_id})
-
-#         except Exception as e:
-#             print("ERROR EN INSCRIPCION:", e)
-#             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
-
-#     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
-
-#---------------------------------------------------------------------------------------------------------------------------------
-
-# @csrf_exempt
-# def guardar_datos_inscripcion_paga(request):
-#     if request.method == "POST":
-#         sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
-
-#         try:
-#             # ============================
-#             # 🔹 Datos del formulario
-#             # ============================
-#             nombre = request.POST.get("nombre")
-#             apellido = request.POST.get("apellido")
-#             documento = request.POST.get("documento")
-#             email = request.POST.get("email")
-#             fecha_nacimiento = request.POST.get("fecha_nacimiento")
-#             pais = request.POST.get("pais")
-#             provincia = request.POST.get("provincia")
-#             telefono = request.POST.get("telefono")
-#             genero = request.POST.get("genero")
-#             curso_id = request.POST.get("curso")
-#             medio_pago = request.POST.get("medio_pago")
-#             comision_nombre = request.POST.get("comision")
-#             comprobante = request.FILES.get("comprobante")
-
-#             # Datos de pago con MercadoPago (token + método)
-#             token = request.POST.get("token")
-#             payment_method_id = request.POST.get("payment_method_id")
-
-#             print("📥 Datos recibidos:", nombre, apellido, documento, email, curso_id, medio_pago)
-
-#             # ============================
-#             # 🔹 Validaciones básicas
-#             # ============================
-#             campos_obligatorios = {
-#                 "nombre": nombre,
-#                 "apellido": apellido,
-#                 "documento": documento,
-#                 "email": email,
-#                 "fecha_nacimiento": fecha_nacimiento,
-#                 "pais": pais,
-#                 "provincia": provincia,
-#                 "telefono": telefono,
-#                 "curso": curso_id,
-#                 "comision": comision_nombre,
-#                 "medio_pago": medio_pago,
-#             }
-
-#             faltantes = [campo for campo, valor in campos_obligatorios.items() if not valor]
-#             if faltantes:
-#                 return JsonResponse({
-#                     "status": "error",
-#                     "msg": f"Faltan completar los siguientes campos: {', '.join(faltantes)}"
-#                 }, status=400)
-
-#             # ============================
-#             # 🔹 Validar comprobante o token según medio de pago
-#             # ============================
-#             if medio_pago == "transferencia_bancaria":
-#                 if not comprobante:
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago para continuar."
-#                     }, status=400)
-
-#             elif medio_pago in ["debito", "credito_1", "credito_cuotas"]:
-#                 if not token or not payment_method_id:
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": "No se recibió el token de MercadoPago. Por favor, intentá nuevamente."
-#                     }, status=400)
-
-#                 # ============================
-#                 # 🔹 Validar con MercadoPago
-#                 # ============================
-#                 payment_data = {
-#                     "transaction_amount": float(getattr(settings, "MP_MONTO_CURSO", 10000)),
-#                     "token": token,
-#                     "description": f"Inscripción curso {curso_id} - comisión {comision_nombre}",
-#                     "installments": 1 if medio_pago != "credito_cuotas" else 3,
-#                     "payment_method_id": payment_method_id,
-#                     "payer": {"email": email},
-#                 }
-
-#                 result = sdk.payment().create(payment_data)
-#                 payment = result.get("response", {})
-
-#                 if payment.get("status") != "approved":
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": f"Pago rechazado: {payment.get('status_detail', 'motivo desconocido')}."
-#                     }, status=400)
-
-#                 print("✅ Pago aprobado por MercadoPago:", payment.get("id"))
-
-#             # ============================
-#             # 🔹 Validaciones de duplicados
-#             # ============================
-#             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
-
-#             if DatosDeEstudiantes.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
-
-#             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
-
-#             if PerfilUsuario.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
-
-#             # ============================
-#             # 🔹 Curso y comisión
-#             # ============================
-#             curso_obj = Curso.objects.filter(id_curso=curso_id).first()
-#             if not curso_obj:
-#                 return JsonResponse({"status": "error", "msg": f"No se encontró el curso con ID {curso_id}"}, status=400)
-#             curso_nombre = curso_obj.nombre_curso
-
-#             comision = Comision.objects.filter(numero_comision=comision_nombre, id_curso=curso_obj).first()
-#             if not comision:
-#                 return JsonResponse({"status": "error", "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"}, status=400)
-
-#             # ============================
-#             # 🔹 Crear estudiante
-#             # ============================
-#             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
-#             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
-
-#             estudiante = DatosDeEstudiantes.objects.create(
-#                 id_estudiante=nuevo_id,
-#                 nombre=nombre,
-#                 apellido=apellido,
-#                 dni=documento,
-#                 correo=email,
-#                 fecha_nacimiento=fecha_nacimiento,
-#                 pais=pais,
-#                 provincia=provincia,
-#                 telefono=telefono,
-#                 genero=genero
-#             )
-
-#             # Asignar comisión al primer campo libre
-#             asignado = False
-#             for i in range(1, 10):
-#                 campo = f'cursando{i}'
-#                 if getattr(estudiante, campo) is None:
-#                     setattr(estudiante, campo, comision)
-#                     estudiante.save()
-#                     asignado = True
-#                     break
-#             if not asignado:
-#                 return JsonResponse({"status": "error", "msg": "El estudiante ya está inscrito en el máximo de comisiones."}, status=400)
-
-#             # ============================
-#             # 🔹 Crear usuario vinculado
-#             # ============================
-#             ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
-#             usuario_id = str(int(ultimo_usuario.id_usuario) + 1 if ultimo_usuario else 1).zfill(6)
-
-#             usuario = PerfilUsuario.objects.create(
-#                 id_usuario=usuario_id,
-#                 id_estudiante=estudiante,
-#                 nombre_usuario=documento,
-#                 correo=email,
-#                 rol="alumno",
-#                 is_active=True
-#             )
-#             usuario.set_password("pass1234")
-#             usuario.save()
-
-#             # ============================
-#             # 🔹 Registrar pago (según medio)
-#             # ============================
-#             estado_pago = "Pendiente" if medio_pago == "transferencia_bancaria" else "Aprobado"
-#             id_transaccion = ""
-#             if medio_pago in ["debito", "credito_1", "credito_cuotas"]:
-#                 id_transaccion = payment.get("id")
-
-#             RegistroPago.objects.create(
-#                 estudiante=estudiante,
-#                 comision=comision,
-#                 plataforma="web",
-#                 medio_pago=medio_pago,
-#                 estado_pago=estado_pago,
-#                 monto=float(getattr(settings, "MP_MONTO_CURSO", 10000)),
-#                 fecha_pago=timezone.now(),
-#                 id_transaccion=id_transaccion,
-#                 archivo_comprobante=comprobante
-#             )
-
-#             # ============================
-#             # 💌 Correos (interno + alumno)
-#             # ============================
-#             context_interno = {
-#                 "nombre": nombre,
-#                 "apellido": apellido,
-#                 "email": email,
-#                 "documento": documento,
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "pais": pais,
-#                 "provincia": provincia,
-#                 "telefono": telefono,
-#                 "medio_pago": medio_pago,
-#                 "estado_pago": estado_pago,
-#                 "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-#             }
-#             html_interno = render_to_string("registration/registro_pago.html", context_interno)
-#             text_interno = strip_tags(html_interno)
-
-#             email_interno = EmailMultiAlternatives(
-#                 subject="📥 Nuevo alumno inscripto y pago registrado",
-#                 body=text_interno,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=["tecnomarema.ar@gmail.com"],
-#             )
-#             email_interno.attach_alternative(html_interno, "text/html")
-#             email_interno.send()
-
-#             # Correo al alumno
-#             context_bienvenida = {
-#                 "nombre": f"{nombre} {apellido}",
-#                 "usuario": documento,
-#                 "password": "pass1234",
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "reset_url": "https://tecnomarema.com/reset-password",
-#             }
-#             html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
-#             text_bienvenida = strip_tags(html_bienvenida)
-
-#             email_alumno = EmailMultiAlternatives(
-#                 subject="🎓 Bienvenido/a a tu curso en Tecno Marema",
-#                 body=text_bienvenida,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=[email],
-#             )
-#             email_alumno.attach_alternative(html_bienvenida, "text/html")
-#             email_alumno.send()
-
-#             # ============================
-#             # 🔹 Respuesta final
-#             # ============================
-#             return JsonResponse({
-#                 "status": "ok",
-#                 "id_estudiante": nuevo_id,
-#                 "id_usuario": usuario_id,
-#                 "estado_pago": estado_pago
-#             })
-
-#         except Exception as e:
-#             print("❌ ERROR EN INSCRIPCIÓN:", e)
-#             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
-
-#     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
-#------------------------------------------------------------------------------- gemini 17/10 -----------------
-
-# # views.py (ADAPTADO Y COMPLETO)
-
-# from django.views.decorators.csrf import csrf_exempt
-# from django.http import JsonResponse
-# from django.utils import timezone
-# from django.core.mail import EmailMultiAlternatives
-# from django.template.loader import render_to_string
-# from django.utils.html import strip_tags
-# from django.conf import settings
-# from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
-# import mercadopago
-
-
-# @csrf_exempt
-# def guardar_datos_inscripcion_paga(request):
-#     if request.method == "POST":
-#         sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
-
-#         try:
-#             # ============================
-#             # 🔹 Datos del formulario
-#             # ============================
-#             nombre = request.POST.get("nombre")
-#             apellido = request.POST.get("apellido")
-#             documento = request.POST.get("documento")
-#             email = request.POST.get("email")
-#             fecha_nacimiento = request.POST.get("fecha_nacimiento")
-#             pais = request.POST.get("pais")
-#             provincia = request.POST.get("provincia")
-#             telefono = request.POST.get("telefono")
-#             genero = request.POST.get("genero")
-#             curso_id = request.POST.get("curso")
-#             medio_pago = request.POST.get("medio_pago")
-#             comision_nombre = request.POST.get("comision")
-#             comprobante = request.FILES.get("comprobante")
-
-#             # Datos de pago MercadoPago (CardForm)
-#             token = request.POST.get("token")
-#             payment_method_id = request.POST.get("payment_method_id")
-#             cuotas = int(request.POST.get("cuotas", 1))
-
-#             print("📥 Datos recibidos:", nombre, apellido, documento, email, curso_id, medio_pago)
-
-#             # ===============================================
-#             # 💡 PASO 1: Obtener el Curso y su Precio Dinámico
-#             # ===============================================
-#             curso_obj = Curso.objects.filter(id_curso=curso_id).first()
-#             if not curso_obj:
-#                 return JsonResponse({
-#                     "status": "error",
-#                     "msg": f"No se encontró el curso con ID {curso_id}"
-#                 }, status=400)
-
-#             monto_dinamico = float(curso_obj.precio_final)
-#             curso_nombre = curso_obj.nombre_curso
-
-#             # ============================
-#             # 🔹 Validaciones básicas
-#             # ============================
-#             campos_obligatorios = {
-#                 "nombre": nombre, "apellido": apellido, "documento": documento,
-#                 "email": email, "fecha_nacimiento": fecha_nacimiento, "pais": pais,
-#                 "provincia": provincia, "telefono": telefono, "curso": curso_id,
-#                 "comision": comision_nombre, "medio_pago": medio_pago,
-#             }
-
-#             faltantes = [campo for campo, valor in campos_obligatorios.items() if not valor]
-#             if faltantes:
-#                 return JsonResponse({
-#                     "status": "error",
-#                     "msg": f"Faltan completar los siguientes campos: {', '.join(faltantes)}"
-#                 }, status=400)
-
-#             # ============================
-#             # 🔹 Validar comprobante o token según medio
-#             # ============================
-#             if medio_pago == "transferencia_bancaria":
-#                 if not comprobante:
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": "Falta comprobante. Por favor, adjuntá el comprobante de pago."
-#                     }, status=400)
-
-#             elif medio_pago in ["debito", "credito_1", "credito_cuotas"]:
-#                 if not token or not payment_method_id:
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": "Faltan datos de la tarjeta. Intentá nuevamente."
-#                     }, status=400)
-
-#                 # ============================
-#                 # 🔹 Validar con MercadoPago (CardForm)
-#                 # ============================
-#                 payment_data = {
-#                     "transaction_amount": monto_dinamico,
-#                     "token": token,
-#                     "description": f"Inscripción curso {curso_nombre} - comisión {comision_nombre}",
-#                     "installments": cuotas if medio_pago == "credito_cuotas" else 1,
-#                     "payment_method_id": payment_method_id,
-#                     "payer": {"email": email},
-#                 }
-
-#                 try:
-#                     result = sdk.payment().create(payment_data)
-#                     payment = result.get("response", {})
-#                 except Exception as e:
-#                     print("❌ Error MercadoPago:", e)
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": f"Error comunicándose con MercadoPago: {str(e)}"
-#                     }, status=500)
-
-#                 status_mp = payment.get("status", "").lower()
-#                 id_transaccion = payment.get("id", "")
-#                 detalle_status = payment.get("status_detail", "")
-
-#                 if status_mp != "approved":
-#                     # Registrar como rechazado
-#                     RegistroPago.objects.create(
-#                         estudiante=None,
-#                         comision=None,
-#                         plataforma="web",
-#                         medio_pago=medio_pago,
-#                         estado_pago=status_mp,
-#                         monto=monto_dinamico,
-#                         fecha_pago=timezone.now(),
-#                         id_transaccion=id_transaccion
-#                     )
-#                     return JsonResponse({
-#                         "status": "error",
-#                         "msg": f"Pago rechazado: {detalle_status or 'motivo desconocido'}."
-#                     }, status=400)
-
-#                 print("✅ Pago aprobado por MercadoPago:", id_transaccion)
-#                 estado_pago = "Aprobado"
-
-#             else:
-#                 estado_pago = "Pendiente"
-#                 id_transaccion = ""
-
-#             # ============================
-#             # 🔹 Validaciones duplicados
-#             # ============================
-#             if DatosDeEstudiantes.objects.filter(dni=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este DNI."}, status=400)
-#             if DatosDeEstudiantes.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Ya existe un estudiante con este correo."}, status=400)
-#             if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este DNI ya está registrado como usuario."}, status=400)
-#             if PerfilUsuario.objects.filter(correo=email).exists():
-#                 return JsonResponse({"status": "error", "msg": "Este correo ya está registrado como usuario."}, status=400)
-
-#             # ============================
-#             # 🔹 Buscar comisión
-#             # ============================
-#             comision = Comision.objects.filter(
-#                 numero_comision=comision_nombre, id_curso=curso_obj
-#             ).first()
-#             if not comision:
-#                 return JsonResponse({
-#                     "status": "error",
-#                     "msg": f"No se encontró la comisión '{comision_nombre}' para el curso {curso_nombre}"
-#                 }, status=400)
-
-#             # ============================
-#             # 🔹 Crear estudiante
-#             # ============================
-#             ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
-#             nuevo_id = str(int(ultimo.id_estudiante) + 1 if ultimo else 1).zfill(6)
-
-#             estudiante = DatosDeEstudiantes.objects.create(
-#                 id_estudiante=nuevo_id,
-#                 nombre=nombre,
-#                 apellido=apellido,
-#                 dni=documento,
-#                 correo=email,
-#                 fecha_nacimiento=fecha_nacimiento,
-#                 pais=pais,
-#                 provincia=provincia,
-#                 telefono=telefono,
-#                 genero=genero
-#             )
-
-#             # Asignar comisión libre
-#             asignado = False
-#             for i in range(1, 10):
-#                 campo = f'cursando{i}'
-#                 if getattr(estudiante, campo) is None:
-#                     setattr(estudiante, campo, comision)
-#                     estudiante.save()
-#                     asignado = True
-#                     break
-#             if not asignado:
-#                 return JsonResponse({
-#                     "status": "error",
-#                     "msg": "El estudiante ya está inscrito en el máximo de comisiones."
-#                 }, status=400)
-
-#             # ============================
-#             # 🔹 Crear usuario vinculado
-#             # ============================
-#             ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
-#             usuario_id = str(int(ultimo_usuario.id_usuario) + 1 if ultimo_usuario else 1).zfill(6)
-
-#             usuario = PerfilUsuario.objects.create(
-#                 id_usuario=usuario_id,
-#                 id_estudiante=estudiante,
-#                 nombre_usuario=documento,
-#                 correo=email,
-#                 rol="alumno",
-#                 is_active=True
-#             )
-#             usuario.set_password("pass1234")
-#             usuario.save()
-
-#             # ============================
-#             # 🔹 Registrar pago
-#             # ============================
-#             RegistroPago.objects.create(
-#                 estudiante=estudiante,
-#                 comision=comision,
-#                 plataforma="web",
-#                 medio_pago=medio_pago,
-#                 estado_pago=estado_pago,
-#                 monto=monto_dinamico,
-#                 fecha_pago=timezone.now(),
-#                 id_transaccion=id_transaccion,
-#                 archivo_comprobante=comprobante
-#             )
-
-#             # ============================
-#             # 💌 Envío de correos
-#             # ============================
-#             context_interno = {
-#                 "nombre": nombre,
-#                 "apellido": apellido,
-#                 "email": email,
-#                 "documento": documento,
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "pais": pais,
-#                 "provincia": provincia,
-#                 "telefono": telefono,
-#                 "medio_pago": medio_pago,
-#                 "estado_pago": estado_pago,
-#                 "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S'),
-#             }
-#             html_interno = render_to_string("registration/registro_pago.html", context_interno)
-#             text_interno = strip_tags(html_interno)
-
-#             email_interno = EmailMultiAlternatives(
-#                 subject="📥 Nuevo alumno inscripto y pago registrado",
-#                 body=text_interno,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=["tecnomarema.ar@gmail.com"],
-#             )
-#             email_interno.attach_alternative(html_interno, "text/html")
-#             email_interno.send()
-
-#             # Correo al alumno
-#             context_bienvenida = {
-#                 "nombre": f"{nombre} {apellido}",
-#                 "usuario": documento,
-#                 "password": "pass1234",
-#                 "curso": curso_nombre,
-#                 "comision": comision.numero_comision,
-#                 "reset_url": "https://tecnomarema.com/reset-password",
-#             }
-#             html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
-#             text_bienvenida = strip_tags(html_bienvenida)
-
-#             email_alumno = EmailMultiAlternatives(
-#                 subject="🎓 Bienvenido/a a tu curso en Tecno Marema",
-#                 body=text_bienvenida,
-#                 from_email=settings.DEFAULT_FROM_EMAIL,
-#                 to=[email],
-#             )
-#             email_alumno.attach_alternative(html_bienvenida, "text/html")
-#             email_alumno.send()
-
-#             # ============================
-#             # 🔹 Respuesta final
-#             # ============================
-#             return JsonResponse({
-#                 "status": "ok",
-#                 "id_estudiante": nuevo_id,
-#                 "id_usuario": usuario_id,
-#                 "estado_pago": estado_pago
-#             })
-
-#         except Exception as e:
-#             print("❌ ERROR EN INSCRIPCIÓN:", e)
-#             return JsonResponse({"status": "error", "msg": str(e)}, status=500)
-
-#     return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
-
-
-# views.py (ADAPTADO Y COMPLETO)
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
@@ -3772,10 +2837,117 @@ def listado_alumnos_view(request):
                 .filter(perfilusuario__rol='alumno')
     return render(request, 'administrador/listado_alumnos.html', {'alumnos': alumnos})
 
+# @session_required
+# def listado_cursos_view(request):
+#     cursos = Curso.objects.all().order_by('id_curso') 
+#     return render(request, 'administrador/listado_cursos.html', {'cursos': cursos})
+#------------------------------------------------------------------------------------------
+# from django.core.paginator import Paginator
+
+# @session_required
+# def listado_cursos_view(request):
+#     cursos = Curso.objects.all().order_by('id_curso')
+#     paginator = Paginator(cursos, 10)  # 10 cursos por página
+#     page_number = request.GET.get('page')
+#     cursos = paginator.get_page(page_number)
+#     return render(request, 'administrador/listado_cursos.html', {'cursos': cursos})
+#------------------------------------------------------------------------------------------
+
+from django.core.paginator import Paginator
+from django.shortcuts import get_object_or_404, render
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.db import transaction
+from decimal import Decimal
+from .models import Curso  # Ajusta si tu modelo está en otro lugar
+
 @session_required
 def listado_cursos_view(request):
-    cursos = Curso.objects.all().order_by('id_curso') 
+    cursos = Curso.objects.all().order_by('id_curso')
+    paginator = Paginator(cursos, 10)  # 10 cursos por página
+    page_number = request.GET.get('page')
+    cursos = paginator.get_page(page_number)
+
+    if request.method == 'POST':
+        id_curso = request.POST.get('id_curso')
+        if not id_curso:
+            messages.error(request, 'ID de curso no válido.')
+            return render(request, 'administrador/listado_cursos.html', {'cursos': cursos})
+
+        curso = get_object_or_404(Curso, id_curso=id_curso)
+        action = request.POST.get('action')
+
+        try:
+            with transaction.atomic():
+                if action == 'update':
+                    print("DEBUG - POST data para update:", dict(request.POST))  # Debug temporal - quítalo después
+                    # Actualiza campos (duracion y modalidad son CharField, sin conversiones numéricas)
+                    curso.nombre_curso = request.POST.get('nombre_curso') or curso.nombre_curso
+                    curso.descripcion = request.POST.get('descripcion') or curso.descripcion
+                    curso.estado_curso = request.POST.get('estado_curso') or curso.estado_curso
+                    curso.duracion = request.POST.get('duracion') or curso.duracion  # String para CharField con choices
+                    curso.modalidad = request.POST.get('modalidad') or curso.modalidad  # String para CharField con choices
+                    pf_str = request.POST.get('precio_final')
+                    if pf_str:
+                        curso.precio_final = Decimal(pf_str)  # Decimal para DecimalField
+                    po_str = request.POST.get('precio_original')
+                    if po_str:
+                        curso.precio_original = Decimal(po_str)
+                    curso.consigna_proyecto = request.POST.get('consigna_proyecto') or curso.consigna_proyecto
+
+                    # Iconos si se envían (opcional)
+                    for i in range(1, 13):
+                        field_name = f'icono{i:02d}'
+                        if field_name in request.FILES:
+                            old_file = getattr(curso, field_name)
+                            if old_file:
+                                old_file.delete(save=False)
+                            setattr(curso, field_name, request.FILES[field_name])
+
+                    curso.save()
+                    print("DEBUG - Curso guardado con nombre:", curso.nombre_curso)  # Debug - quítalo después
+                    messages.success(request, f'Curso "{curso.nombre_curso}" actualizado correctamente.')
+
+                elif action == 'update_icono':
+                    print("DEBUG - POST data para icono:", dict(request.POST), "FILES:", dict(request.FILES))  # Debug - quítalo después
+                    # Eliminar icono
+                    if 'delete_icono' in request.POST:
+                        field_to_delete = request.POST['delete_icono']
+                        old_icon = getattr(curso, field_to_delete)
+                        if old_icon:
+                            old_icon.delete(save=False)
+                            setattr(curso, field_to_delete, None)
+                        messages.info(request, f'Icono {field_to_delete} eliminado correctamente.')
+
+                    # Subir iconos
+                    updated_count = 0
+                    for i in range(1, 13):
+                        field_name = f'icono{i:02d}'
+                        if field_name in request.FILES:
+                            old_file = getattr(curso, field_name)
+                            if old_file:
+                                old_file.delete(save=False)
+                            setattr(curso, field_name, request.FILES[field_name])
+                            updated_count += 1
+
+                    curso.save()
+                    if updated_count > 0:
+                        messages.success(request, f'{updated_count} icono(s) actualizado(s).')
+                    else:
+                        messages.info(request, 'No se subieron nuevos iconos.')
+
+                return HttpResponseRedirect(request.get_full_path())
+
+        except ValueError as e:
+            print("DEBUG - Error ValueError:", str(e))  # Debug - quítalo después
+            messages.error(request, f'Error en números: {str(e)}')
+        except Exception as e:
+            print("DEBUG - Error general:", str(e))  # Debug - quítalo después
+            messages.error(request, f'Error al guardar: {str(e)}')
+
     return render(request, 'administrador/listado_cursos.html', {'cursos': cursos})
+
+#------------------------------------------------------------------------------------------
 
 @session_required
 def listado_comisiones_view(request):

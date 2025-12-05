@@ -2,27 +2,346 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="mb-4 text-success">Listado de Cursos</h2>
-  <table class="table table-dark table-striped">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Descripción</th>
-        <th>Estado</th>
-        <th>Duración</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for curso in cursos %}
-      <tr>
-        <td>{{ curso.id_curso }}</td>
-        <td>{{ curso.nombre_curso }}</td>
-        <td>{{ curso.descripcion }}</td>
-        <td>{{ curso.estado_curso }}</td>
-        <td>{{ curso.duracion }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="table-responsive">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Estado</th>
+          <th>Duración (hs)</th>
+          <th>Modalidad</th>
+          <th>Precio Final</th>
+          <th>Precio Original</th>
+          <th>Consigna Proyecto</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for curso in cursos %}
+        <form method="post" enctype="multipart/form-data" class="curso-form">
+          {% csrf_token %}
+          <input type="hidden" name="id_curso" value="{{ curso.id_curso }}">
+          <input type="hidden" name="action" value="update">
+          <tr class="curso-row">
+            <td>{{ curso.id_curso }}</td>
+
+            <td>
+              <span class="display-text">{{ curso.nombre_curso }}</span>
+              <input type="text" class="edit-input form-control" name="nombre_curso" value="{{ curso.nombre_curso }}" required style="display: none;">
+            </td>
+
+            <td>
+              <span class="display-text">{{ curso.descripcion|truncatewords:10 }}</span>
+              <textarea class="edit-input form-control" name="descripcion" rows="2" style="display: none;">{{ curso.descripcion }}</textarea>
+            </td>
+
+            <td>
+              <span class="display-text">
+                <span class="badge 
+                  {% if curso.estado_curso == 'proximo' %}bg-warning
+                  {% elif curso.estado_curso == 'en_curso' %}bg-success
+                  {% elif curso.estado_curso == 'finalizado' %}bg-secondary{% endif %}">
+                  {{ curso.get_estado_curso_display }}
+                </span>
+              </span>
+              <select class="edit-input form-select" name="estado_curso" style="display: none;" required>
+                <option value="proximo" {% if curso.estado_curso == 'proximo' %}selected{% endif %}>Próximo</option>
+                <option value="en_curso" {% if curso.estado_curso == 'en_curso' %}selected{% endif %}>¡En curso!</option>
+                <option value="finalizado" {% if curso.estado_curso == 'finalizado' %}selected{% endif %}>Finalizado</option>
+              </select>
+            </td>
+
+            <!-- Duración: ahora es número libre -->
+            <td>
+              <span class="display-text">{{ curso.duracion }} hs</span>
+              <input type="number" class="edit-input form-control text-center" name="duracion" value="{{ curso.duracion }}" required min="1" style="display: none; width: 80px;">
+            </td>
+
+            <td>
+              <span class="display-text">{{ curso.get_modalidad_display }}</span>
+              <select class="edit-input form-select" name="modalidad" style="display: none;" required>
+                <option value="online_vivo" {% if curso.modalidad == 'online_vivo' %}selected{% endif %}>Online en vivo</option>
+                <option value="online_grabado" {% if curso.modalidad == 'online_grabado' %}selected{% endif %}>Online grabado</option>
+                <option value="presencial" {% if curso.modalidad == 'presencial' %}selected{% endif %}>Presencial</option>
+                <option value="hibrido" {% if curso.modalidad == 'hibrido' %}selected{% endif %}>Híbrido</option>
+              </select>
+            </td>
+
+            <td>
+              <span class="display-text">${{ curso.precio_final|floatformat:2 }}</span>
+              <input type="number" step="0.01" class="edit-input form-control text-end" name="precio_final" value="{{ curso.precio_final }}" required min="0" style="display: none;">
+            </td>
+
+            <td>
+              <span class="display-text">${{ curso.precio_original|floatformat:2 }}</span>
+              <input type="number" step="0.01" class="edit-input form-control text-end" name="precio_original" value="{{ curso.precio_original }}" required min="0" style="display: none;">
+            </td>
+
+            <td>
+              <span class="display-text">{{ curso.consigna_proyecto|truncatewords:5 }}</span>
+              <textarea class="edit-input form-control" name="consigna_proyecto" rows="2" style="display: none;">{{ curso.consigna_proyecto }}</textarea>
+            </td>
+
+            <td>
+              <button type="button" class="btn btn-sm btn-warning edit-btn me-1">Editar</button>
+              <button type="submit" class="btn btn-sm btn-success save-btn me-1" style="display: none;">Guardar</button>
+              <button type="button" class="btn btn-sm btn-secondary cancel-btn me-1" style="display: none;">Cancelar</button>
+              <a href="/administrador/eliminar-curso/{{ curso.id_curso }}/" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+            </td>
+          </tr>
+        </form>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 text-success">Iconos de Cursos</h2>
+  <div class="row">
+    {% for curso in cursos %}
+    <div class="col-md-6 mb-4">
+      <h5>ID: {{ curso.id_curso }} - {{ curso.nombre_curso }}</h5>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="id_curso" value="{{ curso.id_curso }}">
+        <input type="hidden" name="action" value="update_icono">
+        <div class="row g-3">
+
+          <!-- ICONO 01 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono01 %}
+                <img src="{{ curso.icono01.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono01" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono01?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono01</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono01" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 02 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono02 %}
+                <img src="{{ curso.icono02.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono02" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono02?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono02</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono02" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 03 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono03 %}
+                <img src="{{ curso.icono03.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono03" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono03?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono03</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono03" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 04 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono04 %}
+                <img src="{{ curso.icono04.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono04" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono04?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono04</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono04" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 05 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono05 %}
+                <img src="{{ curso.icono05.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono05" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono05?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono05</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono05" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 06 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono06 %}
+                <img src="{{ curso.icono06.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono06" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono06?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono06</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono06" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 07 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono07 %}
+                <img src="{{ curso.icono07.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono07" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono07?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono07</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono07" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 08 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono08 %}
+                <img src="{{ curso.icono08.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono08" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono08?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono08</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono08" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 09 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono09 %}
+                <img src="{{ curso.icono09.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono09" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono09?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono09</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono09" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 10 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono10 %}
+                <img src="{{ curso.icono10.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono10" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono10?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono10</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono10" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 11 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono11 %}
+                <img src="{{ curso.icono11.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono11" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono11?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono11</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono11" accept="image/*">
+            </div>
+          </div>
+
+          <!-- ICONO 12 -->
+          <div class="col-6 col-sm-4 col-md-3">
+            <div class="position-relative text-center">
+              {% if curso.icono12 %}
+                <img src="{{ curso.icono12.url }}" class="img-thumbnail" style="width:100%; height:80px; object-fit:cover;">
+                <button type="submit" name="delete_icono" value="icono12" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" onclick="return confirm('¿Eliminar icono12?')">X</button>
+              {% else %}
+                <div class="border p-3 text-muted" style="height:80px; line-height:60px;">Sin icono</div>
+              {% endif %}
+              <small class="d-block mt-1">icono12</small>
+              <input type="file" class="form-control form-control-sm mt-1" name="icono12" accept="image/*">
+            </div>
+          </div>
+
+        </div>
+        <div class="mt-3">
+          <button type="submit" class="btn btn-primary btn-sm">Guardar Iconos</button>
+        </div>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  console.log('JS cargado - botones editar:', document.querySelectorAll('.edit-btn').length);
+
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.classList.contains('edit-btn')) {
+      e.preventDefault();
+      const row = e.target.closest('tr');
+      const isEditing = row.classList.contains('editing');
+
+      if (isEditing) {
+        row.querySelectorAll('.display-text').forEach(el => el.style.display = '');
+        row.querySelectorAll('.edit-input').forEach(el => el.style.display = 'none');
+        row.querySelector('.edit-btn').style.display = '';
+        row.querySelector('.save-btn').style.display = 'none';
+        row.querySelector('.cancel-btn').style.display = 'none';
+        row.classList.remove('editing');
+      } else {
+        row.querySelectorAll('.display-text').forEach(el => el.style.display = 'none');
+        row.querySelectorAll('.edit-input').forEach(el => el.style.display = '');
+        row.querySelector('.edit-btn').style.display = 'none';
+        row.querySelector('.save-btn').style.display = '';
+        row.querySelector('.cancel-btn').style.display = '';
+        row.classList.add('editing');
+      }
+    }
+
+    if (e.target && e.target.classList.contains('cancel-btn')) {
+      e.preventDefault();
+      const row = e.target.closest('tr');
+      row.querySelectorAll('.display-text').forEach(el => el.style.display = '');
+      row.querySelectorAll('.edit-input').forEach(el => el.style.display = 'none');
+      row.querySelector('.edit-btn').style.display = '';
+      row.querySelector('.save-btn').style.display = 'none';
+      row.querySelector('.cancel-btn').style.display = 'none';
+      row.classList.remove('editing');
+    }
+  });
+});
+</script>
+
+<style>
+  .edit-input { display: none; }
+  .editing .edit-input { display: block !important; }
+  .editing .display-text { display: none !important; }
+  .position-relative img { position: relative; }
+  .position-absolute { position: absolute; }
+</style>
 {% endblock %}
