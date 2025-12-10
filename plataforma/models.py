@@ -741,3 +741,142 @@ class InscripcionIAPromo(models.Model):
 
     def __str__(self):
         return f"IA - {self.nombre} {self.apellido} - {self.email}"
+    
+
+# # =========================================================================
+# # NUEVA TABLA AUXILIAR: REGISTRO DE REPROGRAMACIONES/CANCELACIONES DE CLASE
+# # =========================================================================
+
+# class ReprogramacionDeClase(models.Model):
+#     """
+#     Registra una cancelación o reprogramación de una clase de una comisión.
+#     Es el disparador que usa el script de notificaciones.
+#     """
+    
+#     clase_afectada = models.ForeignKey(
+#         'ClaseComision', 
+#         on_delete=models.CASCADE,
+#         help_text="La clase original (de la tabla ClaseComision) que fue afectada."
+#     )
+    
+#     fecha_registro = models.DateField(
+#         auto_now_add=True, 
+#         help_text="Fecha en que se registró la afectación (hoy)."
+#     )
+    
+#     ESTADOS = [
+#         ('Cancelada', 'Cancelada'),
+#         ('Reprogramada', 'Reprogramada'),
+#     ]
+#     estado = models.CharField(max_length=20, choices=ESTADOS)
+    
+#     motivo = models.TextField(help_text="Razón de la ausencia del profesor.")
+    
+#     # Campo para la nueva fecha si se reprogramó, o información adicional si se canceló.
+#     nueva_fecha_o_info = models.CharField(
+#         max_length=255, 
+#         blank=True, 
+#         null=True,
+#         help_text="Detalles de la nueva fecha o instrucción."
+#     )
+    
+#     notificado_correo = models.BooleanField(
+#         default=False, 
+#         help_text="Indica si el correo ya fue enviado por el script."
+#     )
+
+#     def __str__(self):
+#         return f"{self.estado} - {self.clase_afectada.comision.id_curso.nombre_curso} ({self.clase_afectada.fecha.strftime('%d/%m/%Y')})"
+
+# # =========================================================================
+# # FIN DE NUEVOS MODELOS
+# # =========================================================================
+
+
+# plataforma/models.py (solo el modelo ReprogramacionDeClase)
+
+class ReprogramacionDeClase(models.Model):
+
+    # Mapeo exacto de lo que envía el select del formulario
+    ACCIONES_CHOICES = [
+        ('1', 'Mover 1 Clase Siguiente'),
+        ('2', 'Mover 2 Clases Siguientes'),
+        ('3', 'Mover 3 Clases Siguientes'),
+        ('4', 'Mover 4 Clases Siguientes'),
+        ('Cancelada', 'Cancelar Clase'),
+    ]
+
+    # Estados finales que verá el calendario
+    ESTADOS_FINALES = [
+        ('Cancelada', 'Cancelada'),
+        ('Reprogramada', 'Reprogramada'),
+    ]
+
+    clase_afectada = models.ForeignKey(
+        'ClaseComision',
+        on_delete=models.CASCADE,
+        related_name='eventos_reprogramacion',
+        help_text="Clase original afectada (ClaseComision)."
+    )
+
+    # Estado final que se mostrará en el calendario
+    estado_final = models.CharField(
+        max_length=20,
+        choices=ESTADOS_FINALES,
+        verbose_name="Estado Final de la Clase"
+    )
+
+    # Acción específica que tomó el usuario en el formulario
+    accion_solicitada = models.CharField(
+        max_length=10,
+        choices=ACCIONES_CHOICES,
+        verbose_name="Acción Solicitada"
+    )
+
+    # Motivo general y detalle adicional
+    motivo_principal = models.CharField(
+        max_length=50,
+        verbose_name="Motivo Principal (Select)"
+    )
+
+    motivo_detalle = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Detalle Adicional"
+    )
+
+    # FECHA ORIGINAL DE LA CLASE ANTES DE MOVERLA
+    fecha_original = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Fecha original de la clase antes de reprogramar (para el correo)"
+    )
+
+    # Nueva fecha (solo si la clase fue reprogramada)
+    fecha_reprogramada = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Fecha a la que se movió la clase (si aplica)."
+    )
+
+    fecha_registro = models.DateTimeField(
+        auto_now_add=True,
+        help_text="Fecha en que se registró el evento."
+    )
+
+    notificado_correo = models.BooleanField(
+        default=False,
+        help_text="True cuando el correo haya sido enviado."
+    )
+
+    def __str__(self):
+        return (
+            f"{self.estado_final} - {self.clase_afectada.comision} - "
+            f"{self.fecha_original.strftime('%d/%m/%Y') if self.fecha_original else 'Sin fecha'}"
+        )
+
+    class Meta:
+        verbose_name_plural = "Reprogramaciones de Clase"
+        # Puedes mantenerlo si querés solo una por clase activa
+        unique_together = ('clase_afectada',)
+        ordering = ['-fecha_registro']

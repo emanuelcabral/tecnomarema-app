@@ -1727,23 +1727,23 @@ for comision in comisiones:
 ##---------------------traer nombres de clases-------------------------------##
 ###############################################################################
 
-# from django.shortcuts import render, get_object_or_404
-# from .models import Clase, Curso
+from django.shortcuts import render, get_object_or_404
+from .models import Clase, Curso
 
-# def curso_desarrollo_web_view(request):
-#     curso = get_object_or_404(Curso, nombre="Desarrollo Web")
-#     clases = Clase.objects.filter(curso=curso).order_by('numero_clase')
-#     return render(request, 'curso_desarrollo_web.html', {
-#         'clases': clases,
-#         'curso': curso,
-#     })
+def curso_desarrollo_web_view(request):
+    curso = get_object_or_404(Curso, nombre="Desarrollo Web")
+    clases = Clase.objects.filter(curso=curso).order_by('numero_clase')
+    return render(request, 'curso_desarrollo_web.html', {
+        'clases': clases,
+        'curso': curso,
+    })
 
-#------------------------------------------------------------------------------
-# from .models import Clase
+######------------------------------------------------------------------------------
+from .models import Clase
 
-# def curso_view(request, curso_id):
-#     clases = Clase.objects.filter(curso_id=curso_id, estado_clase='activo').order_by('numero_clase')
-#     return render(request, 'educativa/curso.html', {'clases': clases})
+def curso_view(request, curso_id):
+    clases = Clase.objects.filter(curso_id=curso_id, estado_clase='activo').order_by('numero_clase')
+    return render(request, 'educativa/curso.html', {'clases': clases})
 
 
 ####################################################################################
@@ -1921,6 +1921,347 @@ def detalle_comision_view(request, comision_id):
         'clases_comisionadas': clases_comisionadas,
     })
 
+#-**************************************************************************************************************************
+
+# #######################################################################
+###---------------------IMPORTS------------------------------------####
+#######################################################################
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.utils.crypto import get_random_string
+from django.contrib import messages
+from django.db import transaction
+from datetime import date, datetime, timedelta
+from django.utils import timezone  # ← Añadido para update
+
+from .models import Curso, Comision, Clase, ClaseComision, ReprogramacionDeClase
+from .forms import ClaseComisionForm
+
+# Para envío real de correo
+from django.core.mail import send_mail
+
+#######################################################################
+###---------------------FUNCIONES AUXILIARES-----------------------####
+#######################################################################
+
+def obtener_estado_comision(fecha_inicio, fecha_fin):
+    hoy = date.today()
+    if hoy < fecha_inicio:
+        return 'proximo'
+    elif fecha_inicio <= hoy <= fecha_fin:
+        return 'en_curso'
+    else:
+        return 'finalizado'
+
+def calcular_proxima_fecha_clase(clase_comision_actual, slots_a_mover):
+    comision_pk = clase_comision_actual.comision.pk
+    fecha_actual = clase_comision_actual.fecha
+    hora_actual = clase_comision_actual.horario
+    
+    if not fecha_actual or not hora_actual:
+        return None
+
+    current_datetime = datetime.combine(fecha_actual, hora_actual)
+
+    slots_qs = ClaseComision.objects.filter(
+        comision_id=comision_pk,
+        fecha__isnull=False
+    ).exclude(pk=clase_comision_actual.pk).order_by('fecha', 'horario')
+
+    lista_slots = [datetime.combine(s.fecha, s.horario) for s in slots_qs if s.fecha and s.horario]
+
+    indice_siguiente = next((i for i, s in enumerate(lista_slots) if s > current_datetime), -1)
+
+    if indice_siguiente == -1:
+        if not lista_slots:
+            return current_datetime + timedelta(days=7 * slots_a_mover)
+        dias_de_ciclo = (lista_slots[-1] - lista_slots[-2]).days if len(lista_slots) >= 2 else 7
+        return current_datetime + timedelta(days=dias_de_ciclo * slots_a_mover)
+
+    indice_destino = indice_siguiente + slots_a_mover - 1
+    if indice_destino < len(lista_slots):
+        return lista_slots[indice_destino]
+    else:
+        ultimo_slot = lista_slots[-1]
+        dias_de_ciclo = (lista_slots[-1] - lista_slots[-2]).days if len(lista_slots) >= 2 else 7
+        slots_extra = indice_destino - len(lista_slots) + 1
+        return ultimo_slot + timedelta(days=dias_de_ciclo * slots_extra)
+
+
+def desplazar_clases_posteriores(clase_reprogramada, slots_diferencia):
+    comision = clase_reprogramada.comision
+    clases_posteriores = ClaseComision.objects.filter(
+        comision=comision,
+        clase__numero_clase__gt=clase_reprogramada.clase.numero_clase
+    ).order_by('clase__numero_clase')
+
+    movidas = 0
+    for clase_pos in clases_posteriores:
+        nueva_fecha_hora = calcular_proxima_fecha_clase(clase_pos, slots_diferencia)
+        if nueva_fecha_hora:
+            clase_pos.fecha = nueva_fecha_hora.date()
+            clase_pos.horario = nueva_fecha_hora.time()
+            clase_pos.save(update_fields=['fecha', 'horario'])
+            movidas += 1
+    return movidas
+
+
+def enviar_notificacion_por_reprogramacion(clase_comision, motivo, estado, request=None):
+    try:
+        comision = clase_comision.comision
+        alumnos = getattr(comision, 'alumnos', None)
+        emails = []
+
+        if alumnos and hasattr(alumnos, 'all'):
+            for alumno in alumnos.all():
+                if alumno.email and '@' in alumno.email:
+                    emails.append(alumno.email)
+
+        if not emails:
+            print("[EMAIL] No hay alumnos con email válido.")
+            if request:
+                messages.warning(request, "No hay alumnos con email.")
+            return False
+
+        subject = f"CLASE {estado.upper()}: {clase_comision.clase.nombre_clase}"
+        cuerpo = f"""
+¡Hola!
+
+La clase ha sido {estado.upper()}:
+
+Comisión: {comision.id_comision}
+Clase: {clase_comision.clase.nombre_clase}
+Fecha: {clase_comision.fecha.strftime('%d/%m/%Y')} a las {clase_comision.horario.strftime('%H:%M')}
+
+Motivo: {motivo}
+
+¡Saludos!
+        """.strip()
+
+        print(f"[EMAIL] Enviando a: {emails}")
+        send_mail(subject, cuerpo, None, emails, fail_silently=False)
+        print(f"[EMAIL] CORREO ENVIADO A {len(emails)} ALUMNOS")
+        if request:
+            messages.success(request, f"Correo enviado a {len(emails)} alumnos.")
+        return True
+
+    except Exception as e:
+        print(f"[EMAIL ERROR] {e}")
+        if request:
+            messages.error(request, f"Error enviando correo: {e}")
+        return False
+
+
+#######################################################################
+###---------------------VIEWS PRINCIPALES-------------------------####
+#######################################################################
+
+def alta_clase_comision_view(request):
+    comisiones = Comision.objects.all()
+    clases = Clase.objects.all().order_by('id')
+    comision_seleccionada = None
+    clase_existente = None
+    form = ClaseComisionForm()
+
+    if request.method == 'POST':
+        comision_pk = request.POST.get('comision')
+        clase_id = request.POST.get('clase')
+
+        # === GUARDAR CLASE GENERAL ===
+        if 'guardar_clase' in request.POST:
+            comision_id_ext = request.POST.get('id_comision')
+            comision = Comision.objects.get(id_comision=comision_id_ext)
+            curso = comision.id_curso
+
+            Clase.objects.create(
+                id_clase=request.POST.get('id_clase'),
+                nombre_clase=request.POST.get('nombre_clase'),
+                numero_clase=request.POST.get('numero_clase'),
+                fecha_clase=request.POST.get('fecha_clase'),
+                presentacion=request.POST.get('presentacion'),
+                video=request.POST.get('video'),
+                id_comision=comision,
+                id_curso=curso
+            )
+            messages.success(request, "Clase general creada exitosamente.")
+            return redirect(f'/alta_clase_comision/?id_comision={comision_id_ext}&guardado=1')
+
+        # === GUARDAR CLASECOMISION O REPROGRAMAR ===
+        elif 'guardar_clase_comision' in request.POST:
+            comision_obj = get_object_or_404(Comision, pk=comision_pk)
+            comision_redirect_id = comision_obj.id_comision
+
+            es_reprogramacion = request.POST.get('reprogramar_clase') == 'on'
+            clase_comision_pk = request.POST.get('clase_comision_id')
+            accion_reprogramacion = request.POST.get('accion_reprogramacion', '').strip()
+            motivo_opcion = request.POST.get('motivo_opcion', '')
+            motivo_detalle = request.POST.get('motivo_detalle', '')
+            motivo_completo = f"{motivo_opcion}: {motivo_detalle}".strip() if motivo_detalle else motivo_opcion
+
+            try:
+                clase = ClaseComision.objects.get(comision_id=comision_pk, clase_id=clase_id)
+            except ClaseComision.DoesNotExist:
+                messages.error(request, "Clase no encontrada.")
+                return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
+
+            # === GUARDADO NORMAL (sin reprogramar) ===
+            if not es_reprogramacion:
+                form = ClaseComisionForm(request.POST, instance=clase)
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, "Clase guardada correctamente.")
+                else:
+                    messages.error(request, "Error en el formulario.")
+                return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}&guardado=1')
+
+            # === REPROGRAMACIÓN ===
+            if str(clase.pk) != clase_comision_pk:
+                messages.error(request, "Error de seguridad: clase no coincide.")
+                return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
+
+            estado_final = None
+            fecha_reprogramada = None
+            clases_movidas = 0
+            fecha_original = clase.fecha  # GUARDAMOS LA FECHA ORIGINAL
+
+            if accion_reprogramacion == 'Cancelada':
+                estado_final = 'Cancelada'
+                messages.warning(request, f"Clase {clase.clase.nombre_clase} CANCELADA.")
+
+            elif accion_reprogramacion and accion_reprogramacion.lstrip('-+').isdigit():
+                slots = int(accion_reprogramacion)
+                nueva_fecha_hora = calcular_proxima_fecha_clase(clase, slots)
+                if not nueva_fecha_hora:
+                    messages.error(request, "No se pudo calcular nueva fecha.")
+                    return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
+
+                clase.fecha = nueva_fecha_hora.date()
+                clase.horario = nueva_fecha_hora.time()
+                clase.save()
+
+                clases_movidas = desplazar_clases_posteriores(clase, slots)
+                estado_final = 'Reprogramada'
+                fecha_reprogramada = nueva_fecha_hora.date()
+
+                messages.success(request, f"Clase reprogramada y {clases_movidas} clases posteriores movidas.")
+
+            else:
+                messages.error(request, f"Acción no válida: '{accion_reprogramacion}'")
+                return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
+
+            # === GUARDAR EN TABLA REPROGRAMACIÓN ===
+            try:
+                ReprogramacionDeClase.objects.update_or_create(
+                    clase_afectada=clase,
+                    defaults={
+                        'estado_final': estado_final,
+                        'accion_solicitada': accion_reprogramacion,
+                        'motivo_principal': motivo_opcion,
+                        'motivo_detalle': motivo_detalle or None,
+                        'fecha_original': fecha_original,
+                        'fecha_reprogramada': fecha_reprogramada,
+                        'notificado_correo': False
+                    }
+                )
+            except Exception as e:
+                messages.error(request, f"Error al guardar historial: {e}")
+                print("ERROR GUARDANDO REPROGRAMACIÓN:", e)
+
+            # === ENVÍO AUTOMÁTICO EN SEGUNDO PLANO (NO DEMORA NADA) ===
+            from threading import Thread
+            import subprocess
+            import sys
+            import os
+
+            def enviar_correos():
+                subprocess.Popen([
+                    sys.executable, 'manage.py', 'enviar_notificacion_ausencia'
+                ], cwd=os.getcwd(), creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+
+            Thread(target=enviar_correos, daemon=True).start()
+
+            messages.success(request, 
+                f"¡Clase {estado_final.lower()} correctamente! "
+                "Los alumnos están siendo notificados ahora mismo..."
+            )
+
+            return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}&guardado=1')
+
+    # === GET ===
+    comision_id_ext = request.GET.get('id_comision')
+    clase_id = request.GET.get('clase_id')
+
+    if comision_id_ext:
+        try:
+            comision_seleccionada = Comision.objects.get(id_comision=comision_id_ext)
+            clases = Clase.objects.filter(curso=comision_seleccionada.id_curso).order_by('numero_clase')
+
+            if clase_id:
+                try:
+                    clase_existente = ClaseComision.objects.get(comision=comision_seleccionada, clase_id=clase_id)
+                    form = ClaseComisionForm(instance=clase_existente)
+                except ClaseComision.DoesNotExist:
+                    clase_existente = None
+        except Comision.DoesNotExist:
+            messages.error(request, "Comisión no encontrada.")
+
+    return render(request, 'educativa/alta_clase_comision.html', {
+        'comisiones': comisiones,
+        'comision_seleccionada': comision_seleccionada,
+        'clases': clases,
+        'nuevo_id_clase': get_random_string(length=8).upper(),
+        'form': form,
+        'guardado_exitoso': request.GET.get('guardado') == '1',
+        'clase_existente': clase_existente,
+        'hora_inicio': clase_existente.horario if clase_existente else None,
+        'hora_fin': clase_existente.hora_fin if clase_existente else None,
+    })
+# === RESTO DE VIEWS (sin cambios) ===
+def obtener_datos_clase_comision(request):
+    comision_id = request.GET.get('comision_id')
+    clase_id = request.GET.get('clase_id')
+    try:
+        clase_comision = ClaseComision.objects.get(comision__id_comision=comision_id, clase__id=clase_id)
+        data = {
+            'fecha': clase_comision.fecha.isoformat() if clase_comision.fecha else '',
+            'clase_comision_pk': str(clase_comision.pk),
+            'hora_inicio': clase_comision.horario.strftime('%H:%M') if clase_comision.horario else '',
+            'hora_fin': clase_comision.hora_fin.strftime('%H:%M') if clase_comision.hora_fin else '',
+            'link': clase_comision.link or '',
+            'video': clase_comision.video or ''
+        }
+    except ClaseComision.DoesNotExist:
+        data = {k: '' for k in ['fecha', 'clase_comision_pk', 'hora_inicio', 'hora_fin', 'link', 'video']}
+    return JsonResponse(data)
+
+def obtener_clases_de_comision(request):
+    comision_id = request.GET.get('comision_id')
+    try:
+        comision = Comision.objects.get(id_comision=comision_id)
+        clases = Clase.objects.filter(curso=comision.id_curso).order_by('numero_clase').values('id', 'nombre_clase')
+        data = [{'id': c['id'], 'nombre': c['nombre_clase']} for c in clases]
+    except Comision.DoesNotExist:
+        data = []
+    return JsonResponse({'clases': data})
+
+def detalle_comision_view(request, comision_id):
+    comision = get_object_or_404(Comision, id_comision=comision_id)
+    clases_comisionadas = ClaseComision.objects.filter(comision=comision).select_related('clase').order_by('clase__numero_clase')
+    return render(request, 'educativa/detalle_comision.html', {
+        'comision': comision,
+        'clases_comisionadas': clases_comisionadas,
+    })
+
+def curso_view(request, curso_id):
+    clases = Clase.objects.filter(curso_id=curso_id, estado_clase='activo').order_by('numero_clase')
+    return render(request, 'educativa/curso.html', {'clases': clases})
+
+def curso_desarrollo_web_view(request):
+    curso = get_object_or_404(Curso, nombre="Desarrollo Web")
+    clases = Clase.objects.filter(curso=curso).order_by('numero_clase')
+    return render(request, 'curso_desarrollo_web.html', {'clases': clases, 'curso': curso})
+#-*******************************************************************************************************************************************
 
 ##############################################################################
 #-----------------------------------------------------------------------#
@@ -5408,3 +5749,34 @@ def alta_quiz_view(request):
     }
 
     return render(request, 'administrador/alta_quiz.html', contexto)
+
+
+############################################################################################
+###-----------------------------calendario de clases-------------------------------------###
+############################################################################################
+
+from django.shortcuts import render, get_object_or_404
+from .models import ClaseComision, Comision 
+
+def calendario_view(request, comision_id): 
+    """
+    Recupera todas las clases de una comisión específica.
+    """
+    
+    comision = get_object_or_404(Comision, pk=comision_id)
+    
+    clases = ClaseComision.objects.filter(
+        comision=comision
+    ).order_by('fecha', 'horario').select_related(
+        'clase',
+        'comision__id_curso'
+    )
+    
+    context = {
+        'clases': clases,
+        'titulo': f'Calendario del Curso: {comision.id_curso.nombre_curso} | Comisión {comision.numero_comision}',
+    }
+    
+    # 🚨 CORRECCIÓN: Referenciar el archivo dentro del subdirectorio 'educativa/'
+    return render(request, 'educativa/calendario.html', context)
+

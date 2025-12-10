@@ -306,6 +306,9 @@ path('enviar_correos_clase1/', views.enviar_correos_clase1, name='enviar_correos
 
 path('administrador/alta_quiz/', views.alta_quiz_view, name='alta_quiz'),
 
+# path('calendario/<int:comision_id>/', views.calendario_view, name='calendario_clases'),
+path('calendario/<str:comision_id>/', views.calendario_view, name='calendario_clases'),
+
 
 ]
 

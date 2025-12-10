@@ -7,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
     
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <style>
@@ -60,13 +59,16 @@
         small.text-info {
             color: #12f693 !important;
         }
+        .card .title {
+            color: #ff5555; /* Título rojo para la sección de Reprogramación */
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="card p-4">
-        <h1 class="title mb-4">Alta / Edición de Clase Comisión</h1>
+        <h1 class="title mb-4">Alta / Edición / Reprogramación de Clase Comisión</h1>
 
         <form method="post" novalidate>
             {% csrf_token %}
@@ -100,33 +102,84 @@
             <div class="mb-3">
                 <label for="id_fecha">Fecha</label>
                 <input type="date" name="fecha" id="id_fecha" class="form-control"
-                       value="{{ form.fecha.value|stringformat:'s' }}" required>
+                        value="{{ form.fecha.value|stringformat:'s' }}" required>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="id_hora_inicio">Hora de Inicio</label>
                     <input type="time" name="horario" id="id_hora_inicio" class="form-control" step="60"
-                           value="{{ form.hora_inicio.value|stringformat:'s' }}" required>
+                            value="{{ form.hora_inicio.value|stringformat:'s' }}" required>
                 </div>
 
                 <div class="col-md-6 mb-3">
                     <label for="id_hora_fin">Hora de Fin</label>
                     <input type="time" name="hora_fin" id="id_hora_fin" class="form-control" step="60"
-                           value="{{ form.hora_fin.value|stringformat:'s' }}">
+                            value="{{ form.hora_fin.value|stringformat:'s' }}">
                 </div>
             </div>
 
             <div class="mb-3">
                 <label for="id_link">Link a la clase (Jitsi, Zoom, etc.)</label>
                 <input type="url" name="link" id="id_link" class="form-control"
-                       placeholder="https://..." value="{{ form.link.value|stringformat:'s' }}">
+                        placeholder="https://..." value="{{ form.link.value|stringformat:'s' }}">
             </div>
 
             <div class="mb-3">
                 <label for="id_video">URL del video grabado</label>
                 <input type="url" name="video" id="id_video" class="form-control"
-                       placeholder="https://..." value="{{ form.video.value|stringformat:'s' }}">
+                        placeholder="https://..." value="{{ form.video.value|stringformat:'s' }}">
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+            <div class="form-check form-switch mb-4 mt-4">
+                <input class="form-check-input" type="checkbox" id="toggleReprogramacion" name="reprogramar_clase">
+                <label class="form-check-label" for="toggleReprogramacion" style="color: #ff5555; font-size: 1.1rem; font-weight: bold;">
+                    🚨 Habilitar Reprogramación / Cancelación de esta Clase
+                </label>
+            </div>
+
+            <div id="reprogramacion_card" class="card p-4 mb-4" style="display: none;">
+                <h3 class="title mb-4" style="color: #ff5555;">Detalles de la Reprogramación</h3>
+
+                <input type="hidden" name="clase_comision_id" id="id_clase_comision_reprogramar">
+
+                <div class="mb-3">
+                    <label for="id_accion_reprogramacion">Acción de Reprogramación</label>
+                    <select name="accion_reprogramacion" id="id_accion_reprogramacion" class="form-select">
+                        <option value="">Seleccione la acción</option>
+                        <option value="1">➡️ Mover 1 Clase Siguiente (Ej: Martes a Jueves)</option>
+                        <option value="2">⏩ Mover 2 Clases Siguientes</option>
+                        <option value="3">⏭️ Mover 3 Clases Siguientes</option>
+                        <option value="4">🚀 Mover 4 Clases Siguientes</option>
+                        <option value="Cancelada">❌ Cancelar Clase (Requiere reasignación manual)</option>
+                    </select>
+                    <small class="text-info mt-1" style="color: #12f693 !important;">
+                        *El sistema calculará la fecha real basándose en la frecuencia semanal de la comisión.
+                    </small>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_motivo_opcion">Motivo Principal de la Suspensión</label>
+                    <select name="motivo_opcion" id="id_motivo_opcion" class="form-select">
+                        <option value="">Seleccione un motivo</option>
+                        <option value="Enfermedad/Salud">Enfermedad / Problema de Salud</option>
+                        <option value="Conectividad">Problemas de Conectividad a Internet</option>
+                        <option value="Suministro_Luz">Falta de Suministro Eléctrico (Luz)</option>
+                        <option value="Problemas_Tecnicos">Otros Problemas Técnicos (PC, software)</option>
+                        <option value="Personales">Motivos Personales / Emergencia Familiar</option>
+                        <option value="Otro">Otro (Especifique abajo)</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_motivo_detalle">Detalle Adicional (Opcional)</label>
+                    <textarea name="motivo_detalle" id="id_motivo_detalle" class="form-control" rows="3" placeholder="Especifique el motivo 'Otro' o brinde más detalles (Ej: El médico me indicó reposo por 48hs)."></textarea>
+                </div>
+
+                <small class="text-info mt-2" style="color: #ff5555 !important;">
+                    ⚠️ Al guardar, si la clase existe, se enviará automáticamente una notificación por correo a todos los alumnos de esta comisión.
+                </small>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 mt-4" name="guardar_clase_comision">
@@ -138,7 +191,6 @@
 </div>
 
 
-<!-- Modal de éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-labelledby="modalExitoLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-dark">
@@ -156,7 +208,6 @@
     </div>
 </div>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 {% if guardado_exitoso %}
@@ -169,11 +220,43 @@
 {% endif %}
 
 
-{% comment %} codigo para actulizar dinamicamente clasecommision - inicia {% endcomment %}
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const comisionSelect = document.getElementById('id_comision');
     const claseSelect = document.getElementById('id_clase');
+
+    // --- Elementos de Reprogramación ---
+    const toggleReprogramacion = document.getElementById('toggleReprogramacion');
+    const reprogramacionCard = document.getElementById('reprogramacion_card');
+    const idClaseComisionReprogramar = document.getElementById('id_clase_comision_reprogramar');
+    
+    // ** ELEMENTOS DE ACCIÓN Y MOTIVO ACTUALIZADOS **
+    const accionReprogramacionField = document.getElementById('id_accion_reprogramacion');
+    const motivoOpcionField = document.getElementById('id_motivo_opcion');
+    const motivoDetalleField = document.getElementById('id_motivo_detalle');
+
+
+    // ** 1. Alternar visibilidad de la tarjeta de reprogramación **
+    if (toggleReprogramacion && reprogramacionCard && motivoOpcionField && accionReprogramacionField) {
+        toggleReprogramacion.addEventListener('change', function() {
+            const isChecked = this.checked;
+
+            reprogramacionCard.style.display = isChecked ? 'block' : 'none';
+            
+            // Hacemos que la ACCIÓN y el MOTIVO (select) sean REQUERIDOS al activar
+            accionReprogramacionField.required = isChecked;
+            motivoOpcionField.required = isChecked;
+            
+            // Si se desactiva, limpiamos todos los campos de reprogramación y sus requisitos
+            if (!isChecked) {
+                if (idClaseComisionReprogramar) idClaseComisionReprogramar.value = '';
+                accionReprogramacionField.value = ''; // Limpiar select de acción
+                motivoOpcionField.value = ''; // Limpiar select de motivo
+                if (motivoDetalleField) motivoDetalleField.value = ''; // Limpiar detalle
+            } 
+        });
+    }
+
 
     const campos = {
         fecha: document.getElementById('id_fecha'),
@@ -185,8 +268,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function limpiarCampos() {
         for (let key in campos) {
-            campos[key].value = '';
+            if (campos[key]) campos[key].value = '';
         }
+        // Limpiamos y ocultamos la sección de reprogramación (solo en el "reset" completo)
+        if (toggleReprogramacion) toggleReprogramacion.checked = false;
+        if (reprogramacionCard) reprogramacionCard.style.display = 'none';
+        if (idClaseComisionReprogramar) idClaseComisionReprogramar.value = '';
+        
+        // Limpiamos los campos de acción y motivo
+        if (accionReprogramacionField) accionReprogramacionField.value = '';
+        if (motivoOpcionField) motivoOpcionField.value = '';
+        if (motivoDetalleField) motivoDetalleField.value = '';
     }
 
     function cargarClasesParaComision(comisionId) {
@@ -228,18 +320,28 @@ document.addEventListener('DOMContentLoaded', function () {
             limpiarCampos();
             return;
         }
+        
+        // Antes de cargar datos, aseguramos que la sección de reprogramación esté oculta y limpia.
+        if (toggleReprogramacion) toggleReprogramacion.checked = false;
+        if (reprogramacionCard) reprogramacionCard.style.display = 'none';
 
+        // 🚨 FUNCIÓN CLAVE: Necesita el PK de la clase-comisión
         fetch(`/ajax/obtener_datos_clase_comision/?comision_id=${comisionId}&clase_id=${claseId}`)
             .then(response => {
                 if (!response.ok) throw new Error('Error al obtener datos de clase');
                 return response.json();
             })
             .then(data => {
-                campos.fecha.value = data.fecha || '';
-                campos.hora_inicio.value = data.hora_inicio || '';
-                campos.hora_fin.value = data.hora_fin || '';
-                campos.link.value = data.link || '';
-                campos.video.value = data.video || '';
+                if (campos.fecha) campos.fecha.value = data.fecha || '';
+                if (campos.hora_inicio) campos.hora_inicio.value = data.hora_inicio || '';
+                if (campos.hora_fin) campos.hora_fin.value = data.hora_fin || '';
+                if (campos.link) campos.link.value = data.link || '';
+                if (campos.video) campos.video.value = data.video || '';
+                
+                // 🚨 ¡CLAVE! Asignamos el ID de la ClaseComision al campo oculto para el backend
+                if (idClaseComisionReprogramar) {
+                    idClaseComisionReprogramar.value = data.clase_comision_pk || ''; 
+                }
             })
             .catch(err => {
                 limpiarCampos();
@@ -252,6 +354,10 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     claseSelect.addEventListener('change', function () {
+        // Asegúrate de que al seleccionar una clase nueva, la funcionalidad de reprogramación se resetea a apagada
+        if (toggleReprogramacion) toggleReprogramacion.checked = false;
+        if (reprogramacionCard) reprogramacionCard.style.display = 'none';
+
         cargarDatosClaseComision(comisionSelect.value, this.value);
     });
 
@@ -264,8 +370,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
-
-
 
 
 </body>

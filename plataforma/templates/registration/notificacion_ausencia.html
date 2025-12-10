@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>⚠️ URGENTE: Clase de {{ curso }} {{ estado }}</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff;">
+    <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px #12f693;color: #fff;">
+        
+        <h1 style="color: #ff5555; text-align: center; margin-bottom: 30px; font-size: 28px;">
+            ⚠️ ¡NOTIFICACIÓN URGENTE!
+        </h1>
+
+        <p style="font-size: 18px; text-align: center;">
+            Hola, <strong style="color:#12f693;">{{ nombre }}</strong>.
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
+
+        <p style="font-size: 18px; text-align: center; font-weight: bold;">
+            Te informamos que la clase del día <strong>{{ fecha_original }}</strong> a las <strong>{{ hora_original }}</strong> ha sido <strong>{{ estado|upper }}</strong>.
+        </p>
+
+        <h2 style="color: #fff; text-align: center; margin: 30px 0; font-size: 24px; background-color: #ff5555; padding: 10px; border-radius: 4px; box-shadow: 0 0 5px #ff5555;">
+            <strong>Clase de "{{ nombre_clase }}"</strong>
+        </h2>
+        
+        <p style="font-size: 16px; text-align: center;">
+            Curso: <strong style="color:#12f693;">{{ curso }}</strong> | Comisión: <strong style="color:#12f693;">{{ comision }}</strong>
+        </p>
+        
+        <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+        <h3 style="color: #12f693; text-align: center; margin-bottom: 20px;">
+            Detalles de la Suspensión
+        </h3>
+
+        <ul style="font-size: 16px; list-style: none; padding-left: 0;">
+            <li style="margin-bottom: 10px;">👤 Profesor Ausente: Por {{ motivo }}.</li>
+            
+            {% if estado == 'Cancelada' %}
+            <li style="margin-bottom: 10px; color: #ff5555; font-weight: bold;">🚨 Estado: Clase Cancelada (NO se realizará hoy).</li>
+            <li style="margin-bottom: 10px;">📅 Reprogramación: La clase fue eliminada del calendario. Se requiere una reasignación manual por parte del administrador.</li>
+            {% endif %}
+
+            {% if estado == 'Reprogramada' %}
+            <li style="margin-bottom: 10px; color: #ffd700; font-weight: bold;">🟡 Estado: Clase Reprogramada para: {{ nueva_fecha }}.</li>
+            <li style="margin-bottom: 10px;">✅ El resto de las clases se acomodarán. Recuerda que podrás visualizarlas desde la sesión de calendario</li>
+            {% endif %}
+        </ul>
+
+        <p style="text-align: center; margin: 40px 0;">
+            <a href="{{ link_plataforma }}"
+               style="background-color: #12f693; color: #000; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 0 10px #12f693; display: inline-block;">
+                VER MI CALENDARIO DE CLASES
+            </a>
+        </p>
+
+        <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+        <p style="font-size: 14px; text-align: center;">Lamentamos los inconvenientes que esto pueda ocasionar. <strong style="color: #12f693;">Tecno Marema</strong>.</p>
+    </div>
+</body>
+</html>
