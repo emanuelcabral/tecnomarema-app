@@ -570,31 +570,29 @@
 
   </div>
 
-  <div class="container d-flex atencion mt-3 flex-wrap">
+   <div class="container d-flex atencion mt-3 flex-wrap">
 
-    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}" class="btn btn-outline-info">Ver participantes</a>
-    <!-- <a href="{% url 'asistencia_alumnos' %}">Asistencias</a> -->
-    <!-- <a href="{% url 'entrega_proyecto' comision.numero_comision %}">Entrega Final</a> -->
-    <!-- <a href="{% url 'entrega_proyecto' comision.id_comision %}">Entrega Final</a> -->
+    <a href="{% url 'participantes' comision.numero_comision comision.id_curso.id_curso %}" class="btn btn-outline-info">👥 Ver participantes</a>
 
     {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' %}
       <a href="{% url 'asistencia_general' comision.numero_comision %}" 
-        class="btn btn-outline-info" >
-          Asistencia General
+        class="btn btn-outline-info">
+         📑 Asistencia General
       </a>
     {% endif %}
 
     {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
-      <a href="{% url 'entrega_proyecto' comision.id_comision %}" class="btn btn-outline-info">Entrega Final</a>
+      <a href="{% url 'entrega_proyecto' comision.id_comision %}" class="btn btn-outline-info">📤 Entrega Final</a>
     {% endif %}
 
     {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
-      <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}" class="btn btn-outline-info">Mi Certificado</a>
+      <a href="{% url 'mi_certificado' estudiante.id_estudiante comision.id_comision %}" class="btn btn-outline-info" >🏆 Mi Certificado</a>
     {% endif %}
 
+    <a href="{% url 'calendario_clases' comision.id_comision %}" class="btn btn-outline-info">🗓️ Calendario de Clases</a>
 
 
-    <a href="{% url 'chat_general' %}" class="btn btn-outline-info">Chat</a>
+    <a href="{% url 'chat_general' %}" class="btn btn-outline-info">💬 Chat</a>
 
     <!-- <a href="{% url 'valoraciones' %}">valoraciones</a> -->
 
@@ -606,7 +604,7 @@
 
     {% if usuario.rol == 'profesor' %}
       <a href="/curso/{{ comision.id_curso.id_curso }}/comision/{{ comision.id_comision }}/entregas/" class="btn btn-outline-info">
-        Entregas de Proyectos
+        Entregas de Proyectos 📥
       </a>
     {% endif %}
 

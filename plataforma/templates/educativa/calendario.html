@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <title>{{ titulo }}</title>
+
+    <style>
+        /* 🎨 GENERAL */
+        body {
+            background-color: #0e0e0e;
+            background-image: url("{% static 'img/fondo1.svg' %}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #12f693;
+            text-align: center;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #12f693;
+            padding-bottom: 10px;
+        }
+
+        /* 🎴 TARJETAS DE CLASES */
+        .clase-card {
+            background-color: #111;
+            border-left: 5px solid #12f693;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .clase-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(18, 246, 147, 0.2);
+        }
+
+        /* 📅 COLUMNA FECHA */
+        .fecha-col {
+            width: 150px;
+            text-align: center;
+            padding-right: 20px;
+            border-right: 1px solid #333;
+            flex-shrink: 0;
+        }
+
+        .dia-semana {
+            text-transform: uppercase;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #ff5555;
+        }
+
+        .fecha-col strong {
+            display: block;
+            font-size: 24px;
+            color: #12f693;
+        }
+
+        .fecha-col span {
+            font-size: 14px;
+            color: #bbb;
+        }
+
+        /* 📘 INFO DE CLASE */
+        .info-col {
+            flex-grow: 1;
+            padding-left: 20px;
+        }
+
+        .info-col h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.5em;
+            color: #fff;
+        }
+
+        .info-col p {
+            margin: 0;
+            font-size: 0.9em;
+            color: #bbb;
+        }
+
+        /* ⏰ HORARIO */
+        .horario {
+            margin-left: auto;
+            padding: 8px 15px;
+            border-radius: 4px;
+            background-color: #333;
+            color: #12f693;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* 🚨 ESTADOS DE CLASE */
+        .clase-status-alert {
+            padding: 8px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .alert-danger-custom {
+            background-color: #4b1212;
+            border: 1px solid #ff5555;
+            color: #ffe0e0;
+        }
+
+        .alert-warning-custom {
+            background-color: #4b3800;
+            border: 1px solid #ffc107;
+            color: #fff3cd;
+        }
+
+        .clase-status-normal {
+            display: inline-block;
+            background-color: #12f693;
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin: 5px 0;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+
+        <h1>🗓️ {{ titulo }}</h1>
+
+        {% for clase in clases %}
+        <div class="clase-card">
+
+            <!-- 📅 FECHA -->
+            <div class="fecha-col">
+                <span class="dia-semana">{{ clase.fecha|date:"l"|upper }}</span>
+                <strong>{{ clase.fecha|date:"d/m" }}</strong>
+                <span>{{ clase.fecha|date:"Y" }}</span>
+            </div>
+
+            <!-- 📘 INFORMACIÓN -->
+            <div class="info-col">
+                <h3>{{ clase.clase.nombre_clase }}</h3>
+
+                {% if clase.ultimo_estado %}
+                    <div class="clase-status-alert
+                        {% if clase.ultimo_estado == 'Cancelada' %} alert-danger-custom
+                        {% elif clase.ultimo_estado == 'Reprogramada' %} alert-warning-custom
+                        {% endif %}">
+                        
+                        <strong>ESTADO: {{ clase.ultimo_estado|upper }}</strong>
+
+                        {% if clase.ultimo_estado == 'Cancelada' %}
+                            <small>Motivo: {{ clase.info_reprogramacion|default_if_none:"Clase suspendida sin detalles adicionales." }}</small>
+                        {% elif clase.ultimo_estado == 'Reprogramada' %}
+                            <small>Motivo de Reprogramación: {{ clase.info_reprogramacion|default_if_none:"Movida a la siguiente fecha disponible." }}</small>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <span class="clase-status-normal">Clase Programada</span>
+                {% endif %}
+
+                <p>Curso: {{ clase.comision.id_curso.nombre_curso }}</p>
+                <p>Comisión: {{ clase.comision.numero_comision }}</p>
+            </div>
+
+            <!-- ⏰ HORARIO -->
+            <div class="horario">
+                {{ clase.horario|date:"H:i" }} - {{ clase.hora_fin|date:"H:i" }}
+            </div>
+
+        </div>
+        {% empty %}
+        <div style="text-align:center; color:#ff5555; padding:50px; background-color:#111; border-radius:8px;">
+            <p>Aún no hay clases programadas en el calendario.</p>
+        </div>
+        {% endfor %}
+
+    </div>
+</body>
+</html>
