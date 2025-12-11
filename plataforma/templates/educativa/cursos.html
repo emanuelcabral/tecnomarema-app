@@ -1,251 +1,520 @@
-{% extends "administrador/base.html" %}
-{% block content %}
-<div class="container mt-5">
-  <h2 class="mb-4 text-success">Listado de Cursos</h2>
-  {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-success alert-dismissible fade show" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
-  <div class="table-responsive">
-    <table class="table table-dark table-striped">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Nombre</th>
-          <th>Descripción</th>
-          <th>Estado</th>
-          <th>Duración</th>
-          <th>Modalidad</th>
-          <th>Precio Final</th>
-          <th>Precio Original</th>
-          <th>Consigna Proyecto</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for curso in cursos %}
-        <form method="post" enctype="multipart/form-data" class="curso-form">
-          {% csrf_token %}
-          <input type="hidden" name="id_curso" value="{{ curso.id_curso }}">
-          <input type="hidden" name="action" value="update">
-          <tr>
-            <td>{{ curso.id_curso }}</td>
-            <td><input type="text" class="form-control static-input" name="nombre_curso" value="{{ curso.nombre_curso }}" required></td>
-            <td><textarea class="form-control static-input" name="descripcion" rows="2">{{ curso.descripcion }}</textarea></td>
-            <td>
-              <select class="form-select static-input" name="estado_curso" required>
-                <option value="disponible" {% if curso.estado_curso == 'disponible' %}selected{% endif %}>Disponible</option>
-                <option value="proximo" {% if curso.estado_curso == 'proximo' %}selected{% endif %}>Próximo</option>
-                <option value="inactivo" {% if curso.estado_curso == 'inactivo' %}selected{% endif %}>Inactivo</option>
-              </select>
-              <span class="badge ms-2 {% if curso.estado_curso == 'disponible' %}bg-success{% elif curso.estado_curso == 'proximo' %}bg-warning{% elif curso.estado_curso == 'inactivo' %}bg-danger{% else %}bg-secondary{% endif %}">{{ curso.estado_curso|title }}</span>
-            </td>
-            <td><input type="number" class="form-control text-center static-input" name="duracion" value="{{ curso.duracion }}" required min="1"> hrs</td>
-            <td><input type="text" class="form-control static-input" name="modalidad" value="{{ curso.modalidad }}" required></td>
-            <td><input type="number" step="0.01" class="form-control text-end static-input" name="precio_final" value="{{ curso.precio_final|floatformat:2 }}" required min="0"> $</td>
-            <td><input type="number" step="0.01" class="form-control text-end static-input" name="precio_original" value="{{ curso.precio_original|floatformat:2 }}" required min="0"> $</td>
-            <td><textarea class="form-control static-input" name="consigna_proyecto" rows="2">{{ curso.consigna_proyecto }}</textarea></td>
-            <td>
-              <button type="submit" class="btn btn-sm btn-success">Guardar</button>
-              <a href="/administrador/eliminar-curso/{{ curso.id_curso }}/" class="btn btn-sm btn-danger ms-1" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-            </td>
-          </tr>
-        </form>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    {% load util_filtros %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <title>Cursos</title>
+    <style>
+        body {
+            background-color: #000;
+            background-image: url("{% static 'img/fondo1.svg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-  <h2 class="mb-4 text-success">Iconos de Cursos</h2>
-  <div class="row">
-    {% for curso in cursos %}
-    <div class="col-md-6 mb-3">
-      <h5>ID: {{ curso.id_curso }} - {{ curso.nombre_curso }}</h5>
-      <form method="post" enctype="multipart/form-data" class="icono-form" data-curso-id="{{ curso.id_curso }}">
-        {% csrf_token %}
-        <input type="hidden" name="id_curso" value="{{ curso.id_curso }}">
-        <input type="hidden" name="action" value="update_icono">
-        <div class="row">
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono01 %}
-                <img src="{{ curso.icono01.url }}" alt="icono01" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono01" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono01?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono01</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono01" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono02 %}
-                <img src="{{ curso.icono02.url }}" alt="icono02" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono02" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono02?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono02</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono02" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono03 %}
-                <img src="{{ curso.icono03.url }}" alt="icono03" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono03" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono03?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono03</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono03" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono04 %}
-                <img src="{{ curso.icono04.url }}" alt="icono04" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono04" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono04?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono04</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono04" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono05 %}
-                <img src="{{ curso.icono05.url }}" alt="icono05" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono05" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono05?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono05</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono05" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono06 %}
-                <img src="{{ curso.icono06.url }}" alt="icono06" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono06" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono06?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono06</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono06" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono07 %}
-                <img src="{{ curso.icono07.url }}" alt="icono07" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono07" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono07?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono07</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono07" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono08 %}
-                <img src="{{ curso.icono08.url }}" alt="icono08" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono08" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono08?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono08</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono08" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono09 %}
-                <img src="{{ curso.icono09.url }}" alt="icono09" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono09" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono09?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono09</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono09" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono10 %}
-                <img src="{{ curso.icono10.url }}" alt="icono10" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono10" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono10?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono10</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono10" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono11 %}
-                <img src="{{ curso.icono11.url }}" alt="icono11" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono11" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono11?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono11</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono11" accept="image/*">
-          </div>
-          <div class="col-6 col-sm-4 col-md-3 mb-2">
-            <div class="position-relative">
-              {% if curso.icono12 %}
-                <img src="{{ curso.icono12.url }}" alt="icono12" class="img-thumbnail" style="width: 100%; height: auto; max-height: 80px;">
-                <button type="submit" name="delete_icono" value="icono12" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-1" style="z-index: 10;" onclick="return confirm('¿Eliminar icono12?')">X</button>
-              {% else %}
-                <div class="border p-2 text-center text-muted" style="height: 80px;">Sin icono</div>
-              {% endif %}
-            </div>
-            <small class="d-block text-muted">icono12</small>
-            <input type="file" class="form-control form-control-sm mt-1" name="icono12" accept="image/*">
+        .navbar {
+            background-color: #111;
+        }
+
+        .nav-link {
+            color: #12f693 !important;
+        }
+
+        .nav-link.active {
+            border-bottom: 2px solid #12f693;
+        }
+
+        .curso-card {
+            background-color: #111;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .curso-img {
+            width: 250px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .badge-proximamente {
+            background-color: #cf30ff;
+            color: white;
+            font-size: 0.8rem;
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .icono-tec {
+            width: 30px;
+            margin-right: 10px;
+        }
+
+        .btn-comprar {
+            background-color: #12f693;
+            color: #000;
+        }
+
+    /* navbar inicio */
+        /* NAVBAR BASE */
+        .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    /* EFECTO NEÓN CYBERPUNK */
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% { background-position: 0% }
+      100% { background-position: 100% }
+    }
+
+    .navbar::after {
+      background-size: 200% auto;
+    }
+
+    /* LOGO */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand span.white {
+      color: #fff;
+    }
+
+    .navbar-brand span.green {
+      color: #12f693;
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    /* LINKS */
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: 0.3s;
+    }
+
+    .navbar-nav .nav-link:hover {
+      color: #12f693 !important;
+    }
+
+
+    /* eliminar borde outline del menu hamburguesa */
+.navbar-toggler:focus,
+.navbar-toggler:active,
+.navbar-toggler.collapsed:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+    /* BOTÓN LOGIN */
+    .btn-login {
+      margin-left: 10px;
+      background-color: #12f693;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    /* BOTÓN INSCRIPCIÓN */
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: #cf30ff;
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* BOTÓN HAMBURGUESA */
+    .navbar-toggler {
+      border-color: #12f693;
+    }
+
+    .navbar-toggler-icon {
+      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+    }
+
+    /* navbar fin */
+
+    /* footer inicia */
+    /* linea animada inicia */
+    .borde-animado {
+    width: 100%;
+    height: 4px; /* grosor del borde */
+    background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+    background-size: 600% 100%;
+    animation: animarBorde 4s linear infinite;
+  }
+
+  @keyframes animarBorde {
+    0% {
+      background-position: 0% 0;
+    }
+    100% {
+      background-position: 600% 0;
+    }
+  }
+    /* linea animada fin */
+
+
+    .text-magenta {
+      color: #cf30ff;
+    }
+
+    .newsletter-input::placeholder {
+      color: #ccc;
+      opacity: 1;
+    }
+
+    .newsletter-input:focus {
+      border-color: #12f693;
+      box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.99);
+      background-color: #111;
+      color: #fff;
+    }
+
+    .btn-suscribirme {
+      background-color: #cf30ff;
+      color: white;
+      transition: background-color 0.3s ease;
+      border: none;
+    }
+
+    .btn-suscribirme:hover {
+      background-color: #12f693;
+      color: black;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+      color: #cf30ff;
+    }
+
+    .footer-icon {
+      transition: color 0.3s ease;
+    }
+
+    .footer-icon:hover {
+      color: #cf30ff;
+    }
+
+    .bi-linkedin:hover {
+      color: #0e76a8;
+    }
+
+    .bi-facebook:hover {
+      color: #1877f2;
+    }
+
+    .bi-youtube:hover {
+      color: #ff0000;
+    }
+
+    .bi-instagram:hover {
+      color: #e1306c;
+    }
+
+    .bi-discord:hover {
+      color: #7289da;
+    }
+
+    footer {
+      border-top: 1px solid #444;
+    }
+
+    /* footer fin */
+  
+
+    /* subir inicia */
+
+    .subir {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #12f693;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(18, 246, 147, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  text-decoration: none;
+  color: black; /* color del ícono */
+  z-index: 9999;
+}
+
+.subir:hover {
+  background-color: #0ebf6f;
+  transform: scale(1.1);
+  color: black; /* si quieres que cambie el color del ícono también, cámbialo aquí */
+}
+
+    /* subir fin */
+
+@media only screen and (max-width:600px){
+
+  .curso-card{
+    border: 2px solid #12f693;
+  }
+
+  .curso-img{
+    display:none;
+  }
+
+}
+
+    </style>
+</head>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="#">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#info">Info</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'home' %}#testimonios">Testimonios</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+
+        {% if request.session.usuario_logueado %}
+          <!-- Si está logueado -->
+          <li class="nav-item">
+            <form action="{% url 'logout' %}" method="post" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-login btn-sm">
+                <i class="bi bi-person-badge"></i> Cerrar sesión
+              </button>
+            </form>
+          </li>
+        {% else %}
+          <!-- Si NO está logueado -->
+          <li class="nav-item">
+            <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm">
+              <i class="bi bi-pencil me-1"></i>Inscripción
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'login' %}" class="btn btn-login btn-sm">
+              <i class="bi bi-person-badge"></i>Login
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% comment %} ################################################################################################################# {% endcomment %}
+
+    <!-- Título -->
+    <div class="container mt-5">
+        <h2 class="text-white mb-4">Cursos disponibles</h2>
+
+{% for curso in cursos %}
+<div class="curso-card">
+    <!-- Asumiendo que tienes una imagen en static/img/ que se llama igual que el curso en minúsculas sin espacios -->
+    <img src="{% static 'img/' %}{{ curso.nombre_curso|lower }}.jpg" class="curso-img" alt="{{ curso.nombre_curso }}">
+    
+    <div class="flex-grow-1">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-1">{{ curso.nombre_curso }}</h4>
+            <span class="badge-proximamente">{{ curso.estado_curso }}</span>
+        </div>
+
+        <p>{{ curso.descripcion }}</p>
+
+        {% if curso.precio_original %}
+        <p style="text-decoration: line-through;"><strong>Precio:</strong> {{ curso.precio_original }}</p>
+        {% endif %}
+        
+        <p><strong>Precio:</strong> {{ curso.precio_final }}</p>
+        <p><strong>Clases:</strong> {{ clases_por_curso|default_if_none:"0"|dict_get:curso.id_curso }}</p>
+
+        <div class="d-flex align-items-center mb-3">
+            {% if curso.iconos_cargados %}
+                {% for icono in curso.iconos_cargados %}
+                <img src="{{ icono.url }}" class="icono-tec" alt="{{ icono.name }}">
+                {% endfor %}
+            {% else %}
+                <!-- Aquí un set fijo de iconos por defecto (ejemplo Desarrollo Web) -->
+                {% comment %} <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" class="icono-tec" alt="HTML">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" class="icono-tec" alt="CSS">
+                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" class="icono-tec" alt="JavaScript"> {% endcomment %}
+            {% endif %}
+        </div>
+
+        {% if curso.estado_curso == 'Disponible' %}
+            <a href="{% url 'curso_compra' nombre_curso=curso.nombre_curso|lower|replace:' ,_' %}" class="btn btn-comprar">Comprar</a>
+        {% else %}
+            <button class="btn btn-comprar" disabled>Comprar</button>
+        {% endif %}
+
+    </div>
+</div>
+{% endfor %}
+
+
+    </div>
+{% comment %} ################################################################################################################################### {% endcomment %}
+  <!-- FOOTER -->
+  <div class="borde-animado"></div>
+  <footer class="bg-black text-white py-5">
+    <div class="container">
+      <div class="row">
+
+        <!-- Mapa del sitio -->
+        <div class="col-lg-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
+          <ul class="list-unstyled">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#cursos">Cursos</a></li>
+            <li><a href="#info">Info</a></li>
+            <li><a href="#testimonios">Testimonios</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#inscripcion">Inscripción</a></li>
+            <li><a href="#login">Login</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+
+        <!-- Redes sociales -->
+        <div class="col-lg-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
+          <div class="d-flex justify-content-start gap-3">
+            <a href="https://www.linkedin.com/in/tecnomarema/" target="_blank" class="fs-4 footer-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" class="fs-4 footer-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.youtube.com/@TecnoMarema" target="_blank" class="fs-4 footer-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/tecno.marema/" target="_blank" class="fs-4 footer-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://discord.com/invite/D7kwJMK4nE" target="_blank" class="fs-4 footer-icon" aria-label="Discord"><i class="bi bi-discord"></i></a>
           </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-sm mt-2">Guardar Iconos</button>
-      </form>
-    </div>
-    {% endfor %}
-  </div>
-</div>
 
-<style>
-  .static-input {
-    border: none !important;
-    background: transparent !important;
-    color: inherit !important;
-    box-shadow: none !important;
-    padding: 0.25rem 0 !important;
-  }
-  .static-input:focus {
-    border-bottom: 1px solid #6c757d !important;
-    background: rgba(255,255,255,0.1) !important;
-  }
-  .static-input::placeholder {
-    color: inherit;
-    opacity: 1;
-  }
-  .table td {
-    vertical-align: middle;
-  }
-  .position-relative img {
-    position: relative;
-  }
-  .position-absolute {
-    position: absolute;
-  }
-</style>
-{% endblock %}
+        <!-- Contacto -->
+        <div class="col-lg-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
+          <p class="mb-1">
+            <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
+            <a href="mailto:tecnomarema.arg@gmail.com">tecnomarema.arg@gmail.com</a>
+          </p>
+        </div>
+
+        <!-- Newsletter -->
+        <div class="col-lg-3 mb-4">
+          <h5 class="text-uppercase fw-bold text-magenta">Newsletter</h5>
+          <p class="small">
+            Suscribite y mantenete al día con novedades, recursos y contenidos exclusivos en tu correo.
+          </p>
+          <form>
+            <input type="text" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+                   placeholder="Tu nombre" required />
+            <input type="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input"
+                   placeholder="Tu email" required />
+            <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
+              <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
+            </button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Derechos y condiciones -->
+      <hr class="border-secondary" />
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+        <div class="mb-2 mb-md-0">
+          © 2025 Tecno Marema. Todos los derechos reservados.
+        </div>
+        <div>
+          <a href="#terminos">Términos y Condiciones</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- btn subir inicia -->
+<a href="#" class="subir" aria-label="Subir al inicio" id="btnSubir">
+    <i class="bi bi-chevron-up"></i>
+  </a>
+  <!-- btn subir fin -->
+  
+  <!-- script subir inicia -->
+  <script>
+      document.getElementById('btnSubir').addEventListener('click', function(event) {
+        event.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+  
+  </script>
+  <!-- script subir fin -->
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
