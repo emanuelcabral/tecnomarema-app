@@ -5780,3 +5780,101 @@ def calendario_view(request, comision_id):
     # 🚨 CORRECCIÓN: Referenciar el archivo dentro del subdirectorio 'educativa/'
     return render(request, 'educativa/calendario.html', context)
 
+# views.py
+
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.db import transaction , models
+from datetime import timedelta, datetime
+import holidays
+
+from .models import Comision, Clase, ClaseComision
+
+# Feriados Argentina
+feriados_ar = holidays.AR(years=[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035])
+
+
+def crear_clases_comision_view(request):
+    comisiones = Comision.objects.all().select_related('id_curso')
+
+    if request.method == 'POST':
+        comision_id = request.POST.get('comision_id')
+        if not comision_id:
+            messages.error(request, "Falta comisión")
+            return redirect('crear_clases_comision')
+
+        try:
+            comision = Comision.objects.get(id_comision=comision_id)
+        except Comision.DoesNotExist:
+            messages.error(request, "Esa comisión no existe")
+            return redirect('crear_clases_comision')
+
+        clases = Clase.objects.filter(curso=comision.id_curso).order_by('numero_clase')
+
+        fecha_str = request.POST.get('fecha_inicio')
+        hora_str = request.POST.get('hora_inicio')
+        hora_fin_str = request.POST.get('hora_fin') or None
+
+        if not fecha_str or not hora_str:
+            messages.error(request, "Falta fecha o hora")
+            return redirect('crear_clases_comision')
+
+        fecha_actual = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+        hora_inicio = datetime.strptime(hora_str, '%H:%M').time()
+        hora_fin = datetime.strptime(hora_fin_str, '%H:%M').time() if hora_fin_str else None
+
+        dias = []
+        for d in ['lunes','martes','miércoles','jueves','viernes','sábado','domingo']:
+            if request.POST.get(d) == 'on':
+                dias.append(d)
+
+        if not dias:
+            messages.error(request, "Elegí al menos un día")
+            return redirect('crear_clases_comision')
+
+        mapa = {'lunes':0,'martes':1,'miércoles':2,'jueves':3,'viernes':4,'sábado':5,'domingo':6}
+
+        creadas = 0
+        with transaction.atomic():
+            for clase in clases:
+                fecha = fecha_actual
+                while True:
+                    if fecha.weekday() in [mapa[d] for d in dias] and fecha not in feriados_ar:
+                        break
+                    fecha += timedelta(days=1)
+
+                try:
+                    obj = ClaseComision.objects.get(comision=comision, clase=clase)
+                    obj.fecha = fecha
+                    obj.horario = hora_inicio
+                    obj.hora_fin = hora_fin
+                    obj.link = ''
+                    obj.video = ''
+                    obj.save()
+                except ClaseComision.DoesNotExist:
+                    ultimo_id = ClaseComision.objects.aggregate(models.Max('id'))['id__max'] or 0
+                    nuevo_id = ultimo_id + 1
+                    ClaseComision.objects.create(
+                        id=nuevo_id,
+                        comision=comision,
+                        clase=clase,
+                        fecha=fecha,
+                        horario=hora_inicio,
+                        hora_fin=hora_fin,
+                        link='',
+                        video=''
+                    )
+                creadas += 1
+                fecha_actual = fecha + timedelta(days=1)
+
+        # MODAL APARECE SÍ O SÍ CON MENSAJE
+        return render(request, 'administrador/crear_clases_comision.html', {
+            'comisiones': comisiones,
+            'dias_semana': ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],
+            'modal_mensaje': f"¡LISTO! {creadas} clases creadas para la COMISIÓN {comision.numero_comision} de {comision.id_curso.nombre_curso}"
+        })
+
+    return render(request, 'administrador/crear_clases_comision.html', {
+        'comisiones': comisiones,
+        'dias_semana': ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],
+    })

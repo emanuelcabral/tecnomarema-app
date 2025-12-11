@@ -1,0 +1,63 @@
+<!-- templates/administrador/crear_clases_comision.html -->
+{% extends "administrador/base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Generar Calendario Automático de Clases</h2>
+  <form method="post">
+    {% csrf_token %}
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label">Comisión</label>
+        <select name="comision_id" class="form-select" required>
+          <option value="">-- Seleccionar comisión --</option>
+          {% for c in comisiones %}
+            <option value="{{ c.id_comision }}">{{ c.id_comision }} - {{ c.id_curso }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Fecha de inicio</label>
+        <input type="date" name="fecha_inicio" class="form-control" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Hora de inicio</label>
+        <input type="time" name="hora_inicio" class="form-control" required>
+      </div>
+      <div class="col-md-3">
+        <label class="form-label">Hora de fin (opcional)</label>
+        <input type="time" name="hora_fin" class="form-control">
+      </div>
+    </div>
+
+    <hr>
+    <p><strong>Días de dictado:</strong></p>
+    <div class="row">
+      {% for dia in dias_semana %}
+      <div class="col-md-3">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="{{ dia }}" id="id_{{ dia }}">
+          <label class="form-check-label" for="id_{{ dia }}">{{ dia|title }}</label>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="mt-4">
+      <button type="submit" class="btn btn-success btn-lg">Generar Todas las Clases</button>
+      <a href="{% url 'admin_panel' %}" class="btn btn-secondary btn-lg">Volver al Panel</a>
+    </div>
+  </form>
+</div>
+
+<!-- MODAL QUE APARECE SÍ O SÍ -->
+{% if modal_mensaje %}
+<div style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:40px;text-align:center;max-width:500px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.5);">
+    <h2 style="color:#28a745;margin-bottom:20px;">CLASES GENERADAS CON ÉXITO</h2>
+    <div style="font-size:80px;color:#28a745;">✓</div>
+    <h3 style="margin:20px 0;color:#333;">{{ modal_mensaje }}</h3>
+    <a href="{% url 'crear_clases_comision' %}" class="btn btn-success btn-lg px-5">Aceptar</a>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
