@@ -5878,3 +5878,96 @@ def crear_clases_comision_view(request):
         'comisiones': comisiones,
         'dias_semana': ['lunes','martes','miércoles','jueves','viernes','sábado','domingo'],
     })
+
+
+    ################################################################################################
+    #------------------------------------newsletters-----------------------------------------------#
+    ################################################################################################
+
+# plataforma/views.py → REEMPLAZÁ LA FUNCIÓN ENTERA POR ESTA
+
+from django.contrib import messages
+from django.contrib import messages
+from django.shortcuts import redirect
+from django.utils import timezone
+import threading  # ← ESTO ES LA CLAVE
+
+@session_required
+def envio_y_edicion_de_newsletter(request):
+    if request.method == "POST":
+        # Guardamos los datos en sesión para usarlos en el hilo
+        request.session['newsletter_data'] = request.POST
+
+        # Mostramos el mensaje INMEDIATAMENTE
+        messages.success(request, "¡Newsletter enviada! Se está enviando a todos los contactos en segundo plano...")
+
+        # Lanzamos el envío en un hilo separado → el navegador responde YA
+        threading.Thread(target=enviar_newsletter_en_background, args=(request,)).start()
+
+        return redirect('envio-newsletter')
+
+    return render(request, 'administrador/envio_y_edicion_de_newsletter.html')
+
+
+# FUNCIÓN QUE SE EJECUTA EN SEGUNDO PLANO
+def enviar_newsletter_en_background(request):
+    from django.core.mail import send_mail
+    from django.template.loader import render_to_string
+    from django.conf import settings
+    from .models import Suscriptor, PerfilUsuario
+
+    data = request.session.get('newsletter_data')
+    if not data:
+        return
+
+    dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+    dia_semana = dias[timezone.now().weekday()]
+
+    context_base = {
+        'dia_semana': dia_semana,
+        'numero_edicion': data['numero_edicion'],
+        'titulo_novedad': data['titulo_novedad'],
+        'extracto_novedad': data['extracto_novedad'],
+        'link_novedad': data['link_novedad'],
+        'titulo_promocion': data['titulo_promocion'],
+        'descuento': data.get('descuento', '40%'),
+        'codigo_cupon': data['codigo_cupon'],
+        'fecha_vencimiento': data['fecha_vencimiento'],
+        'link_promocion': data['link_promocion'],
+        'link_discord': "https://discord.gg/tecnomarema",
+        'link_linkedin': "https://linkedin.com/company/tecnomarema",
+        'link_youtube': "https://youtube.com/@tecnomarema",
+        'link_instagram': "https://instagram.com/tecnomarema",
+        'link_facebook': "https://facebook.com/tecnomarema",
+    }
+
+    emails_suscriptores = Suscriptor.objects.values_list('email', flat=True)
+    emails_usuarios = PerfilUsuario.objects.exclude(correo__isnull=True).exclude(correo='').values_list('correo', flat=True)
+    todos_emails = set(list(emails_suscriptores) + list(emails_usuarios))
+
+    for email in todos_emails:
+        if not email:
+            continue
+        try:
+            perfil = PerfilUsuario.objects.get(correo__iexact=email)
+            nombre = perfil.id_estudiante.nombre.split()[0] if perfil.id_estudiante else "amigo/a"
+        except:
+            nombre = "amigo/a"
+
+        context = context_base.copy()
+        context['nombre'] = nombre
+        context['link_unsubscribe'] = f"https://tecnomarema.com.ar/unsubscribe/?email={email}"
+
+        html_message = render_to_string('registration/newsletter.html', context)
+
+        try:
+            send_mail(
+                subject=f"{dia_semana}: {data['titulo_promocion']} + Novedades Tecno Marema",
+                message="",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email.strip().lower()],
+                html_message=html_message,
+                fail_silently=True,
+            )
+        except:
+            pass

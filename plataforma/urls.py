@@ -311,6 +311,7 @@ path('calendario/<str:comision_id>/', views.calendario_view, name='calendario_cl
 
 path('crear-clases/', views.crear_clases_comision_view, name='crear_clases_comision'),
 
+path('administrador/envio-newsletter/', views.envio_y_edicion_de_newsletter, name='envio-newsletter'),
 
 ]
 
