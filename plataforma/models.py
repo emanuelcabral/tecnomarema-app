@@ -880,3 +880,15 @@ class ReprogramacionDeClase(models.Model):
         # Puedes mantenerlo si querés solo una por clase activa
         unique_together = ('clase_afectada',)
         ordering = ['-fecha_registro']
+
+#######################################################################################################
+#------------------notificaciones de ausencia enviadas a los estudiantes------------------------------#
+#######################################################################################################
+
+class NotificacionAusenciaEnviada(models.Model):
+    estudiante = models.ForeignKey(DatosDeEstudiantes, on_delete=models.CASCADE)
+    clase_comision = models.ForeignKey(ClaseComision, on_delete=models.CASCADE)
+    fecha_envio = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('estudiante', 'clase_comision')

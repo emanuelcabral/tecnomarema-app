@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Te necesitamos en clase, {{ nombre }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #12f693, #00b894); padding: 30px; text-align: center; color: white; }
+        .content { padding: 35px; color: #333; line-height: 1.7; }
+        .footer { background-color: #111; color: #aaa; padding: 25px; text-align: center; font-size: 14px; }
+        .btn { 
+            display: inline-block; 
+            background-color: #12f693; 
+            color: #000; 
+            padding: 14px 30px; 
+            text-decoration: none; 
+            border-radius: 8px; 
+            font-weight: bold 18px; 
+            margin: 20px 0; 
+            box-shadow: 0 4px 15px rgba(18, 246, 147, 0.4);
+        }
+        .highlight { color: #12f693; font-weight: bold; }
+        .warning { background: #fff5f5; border: 1px solid #fca5a5; padding: 18px; border-radius: 8px; margin: 20px 0; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Te necesitamos en clase</h1>
+        </div>
+
+        <div class="content">
+            <p>Hola <strong>{{ nombre }}</strong>,</p>
+
+            <div class="warning">
+                <p>Notamos que <strong>no se registró tu presencia</strong> en la clase del:</p>
+                <p style="margin:10px 0 0 0; font-size:18px;">
+                    <strong>{{ fecha_clase }}</strong> a las <strong>{{ hora_clase }} hs</strong><br>
+                    Clase {{ numero_clase }}: "{{ nombre_clase }}"<br>
+                    Curso: <strong>{{ curso }}</strong> – Comisión {{ comision }}
+                </p>
+            </div>
+
+            <p>
+                Como <strong>tutor/a</strong> sos una pieza clave en el acompañamiento de los alumnos. 
+                Tu presencia (aunque sea solo para saludar y estar disponible) hace una diferencia enorme en:
+            </p>
+
+            <ul style="line-height:1.8;">
+                <li>La motivación del grupo</li>
+                <li>La resolución rápida de dudas</li>
+                <li>La detección temprana de alumnos que puedan necesitar apoyo</li>
+                <li>El clima de confianza y compromiso que queremos transmitir</li>
+            </ul>
+
+            <p>
+                Si por algún motivo no pudiste estar, por favor avisanos con anticipación para poder coordinar. 
+                ¡Los alumnos te esperan y te necesitan!
+            </p>
+
+            <p style="text-align: center;">
+                <a href="{{ link_calendario }}" class="btn">
+                    VER MI CALENDARIO DE CLASES
+                </a>
+            </p>
+
+            <p>
+                Contamos con vos para seguir haciendo que cada clase sea una experiencia increíble.
+            </p>
+
+            <p>Un abrazo grande y gracias por tu compromiso,<br>
+            <strong>El equipo de Tecno Marema</strong>
+            <br><br>
+            <em>"Los alumnos no solo aprenden del profe... también aprenden de vos."</em>
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 Tecno Marema • Mensaje automático de control de asistencia de tutores</p>
+            <p>Si hubo un error en el registro, respondé este correo.</p>
+        </div>
+    </div>
+</body>
+</html>
