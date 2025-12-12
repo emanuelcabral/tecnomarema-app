@@ -1,0 +1,76 @@
+{% extends "administrador/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+    :root {
+        --verde: #12f693;
+        --fondo: #111;
+        --borde: #333;
+        --texto: #fff;
+    }
+    .newsletter-wrapper {
+        min-height: 100vh;
+        background: #000;
+        padding: 40px 20px;
+    }
+    .newsletter-module {
+        background: var(--fondo);
+        border: 1px solid var(--borde);
+        border-radius: 16px;
+        padding: 50px;
+        max-width: 900px;
+        margin: 0 auto;
+        box-shadow: 0 0 40px rgba(18,246,147,0.3);
+    }
+    h1 { color: var(--verde); text-align: center; font-size: 36px; margin: 0 0 15px 0; text-shadow: 0 0 20px var(--verde); }
+    .subtitle { text-align: center; color: #999; font-size: 17px; margin-bottom: 50px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 30px; margin-bottom: 50px; }
+    label { color: var(--verde); font-weight: bold; margin-bottom: 10px; font-size: 16px; }
+    input, textarea {
+        width: 100%; padding: 16px; background: #000; border: 2px solid var(--borde);
+        border-radius: 12px; color: var(--texto); font-size: 17px; box-sizing: border-box;
+    }
+    input:focus, textarea:focus { outline: none; border-color: var(--verde); box-shadow: 0 0 20px rgba(18,246,147,0.6); }
+    textarea { min-height: 120px; resize: vertical; }
+    .btn-enviar {
+        background: var(--verde); color: #000; padding: 20px; border: none; border-radius: 16px;
+        font-size: 24px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px;
+        box-shadow: 0 0 30px var(--verde); transition: all 0.4s;
+    }
+    .btn-enviar:hover { background: #00ff9d; transform: translateY(-4px); box-shadow: 0 15px 40px rgba(18,246,147,0.8); }
+    .success-msg {
+        background: rgba(18,246,147,0.15); border: 2px solid var(--verde); color: var(--verde);
+        padding: 20px; border-radius: 12px; text-align: center; font-size: 20px; font-weight: bold; margin: 30px 0;
+    }
+</style>
+
+<div class="newsletter-wrapper">
+    <div class="newsletter-module">
+        <h1>Envío y Edición de Newsletter</h1>
+        <p class="subtitle">Completa los campos y envía la newsletter a todos los alumnos y suscriptores</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="success-msg">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-grid">
+                <div><label>Número de Edición</label><input type="text" name="numero_edicion" required placeholder="Ej: #52" value="{{ request.POST.numero_edicion|default:'' }}"></div>
+                <div><label>Título de la Novedad Destacada</label><input type="text" name="titulo_novedad" required placeholder="Ej: ¡Lanzamos React + Next.js!" value="{{ request.POST.titulo_novedad|default:'' }}"></div>
+                <div><label>Extracto / Descripción corta</label><textarea name="extracto_novedad" required placeholder="Breve resumen...">{{ request.POST.extracto_novedad|default:'' }}</textarea></div>
+                <div><label>Link de la Novedad</label><input type="url" name="link_novedad" required placeholder="https://..." value="{{ request.POST.link_novedad|default:'' }}"></div>
+                <div><label>Título de la Promoción</label><input type="text" name="titulo_promocion" required placeholder="Ej: 50% OFF" value="{{ request.POST.titulo_promocion|default:'' }}"></div>
+                <div><label>% de Descuento</label><input type="text" name="descuento" value="50%" placeholder="Ej: 40%"></div>
+                <div><label>Código del Cupón</label><input type="text" name="codigo_cupon" required placeholder="Ej: BLACK2025" value="{{ request.POST.codigo_cupon|default:'' }}"></div>
+                <div><label>Fecha de Vencimiento</label><input type="text" name="fecha_vencimiento" required placeholder="Ej: 30 de diciembre" value="{{ request.POST.fecha_vencimiento|default:'' }}"></div>
+                <div style="grid-column: span 2;"><label>Link de la Promoción</label><input type="url" name="link_promocion" required placeholder="https://tecnomarema.ar/cursos" value="{{ request.POST.link_promocion|default:'' }}"></div>
+            </div>
+            <button type="submit" class="btn-enviar">Guardar y Enviar Newsletter Ahora</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

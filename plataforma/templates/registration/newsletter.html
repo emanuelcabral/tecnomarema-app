@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>{{ dia_semana }}: Novedades y Ofertas Tech de Tecno Marema</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff;">
+  <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px #12f693;color: #fff;">
+    
+    <h1 style="color: #12f693; text-align: center; margin-bottom: 10px; font-size: 24px;">
+      NEWSLETTER TECNO MAREMA
+    </h1>
+    <p style="text-align: center; margin-bottom: 30px; font-size: 14px; color: #999;">
+      {{ dia_semana }} | Edición {{ numero_edicion }}
+    </p>
+
+    <p style="font-size: 18px;">
+      Hola, <strong style="color:#12f693;">{{ nombre }}</strong>. Te traemos las últimas novedades y una oferta imperdible.
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <h2 style="color: #fff; text-align: left; margin-bottom: 15px; font-size: 22px;">
+      Novedad Destacada: {{ titulo_novedad }}
+    </h2>
+    
+    <p style="font-size: 16px;">
+      {{ extracto_novedad }}
+    </p>
+    
+    <p style="text-align: center; margin-top: 20px;">
+      <a href="{{ link_novedad }}"
+         style="color: #12f693; text-decoration: none; font-weight: bold; border: 1px solid #12f693; padding: 8px 15px; border-radius: 4px; display: inline-block;">
+        Leer Artículo Completo
+      </a>
+    </p>
+    
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <div style="height: 5px; background-color: #12f693; margin: 30px 0; box-shadow: 0 0 10px #12f693;"></div>
+
+    <div style="background-color: #222; padding: 20px; border-radius: 8px; border: 1px solid #00FFFF;">
+        <h2 style="color: #00FFFF; text-align: center; margin-bottom: 15px; font-size: 24px; font-weight: bold;">
+            OPORTUNIDAD ÚNICA! {{ titulo_promocion }}
+        </h2>
+        
+        <p style="font-size: 18px; text-align: center; font-weight: bold;">
+            Aprovecha un <strong style="color:#12f693; font-size: 1.1em;">{{ descuento }} OFF</strong> en todos nuestros cursos.
+        </p>
+        
+        <p style="font-size: 16px; text-align: center;">
+            <strong style="font-weight: bold;">CUPÓN:</strong> <span style="background-color: #12f693; color: #000; padding: 5px 10px; border-radius: 4px; font-weight: bold;">{{ codigo_cupon }}</span>
+        </p>
+
+        <p style="font-size: 14px; text-align: center; color: #00FFFF;">
+            Válido solo hasta el {{ fecha_vencimiento }}. ¡No te lo pierdas!
+        </p>
+        
+        <p style="text-align: center; margin-top: 30px;">
+          <a href="{{ link_promocion }}"
+             style="background-color: #12f693; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 20px; box-shadow: 0 0 10px #12f693; display: inline-block;">
+            IR A LA PROMOCIÓN
+          </a>
+        </p>
+    </div>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <div style="text-align: center; margin-bottom: 20px;">
+      <a href="{{ link_discord }}" style="color: #fff; text-decoration: none; margin: 0 8px; font-size: 24px; display: inline-block;">
+        <span style="font-weight: bold;">D</span>iscord
+      </a>
+      <a href="{{ link_linkedin }}" style="color: #fff; text-decoration: none; margin: 0 8px; font-size: 24px; display: inline-block;">
+        <span style="font-weight: bold;">L</span>inkedIn
+      </a>
+      <a href="{{ link_youtube }}" style="color: #fff; text-decoration: none; margin: 0 8px; font-size: 24px; display: inline-block;">
+        <span style="font-weight: bold;">Y</span>ouTube
+      </a>
+      <a href="{{ link_instagram }}" style="color: #fff; text-decoration: none; margin: 0 8px; font-size: 24px; display: inline-block;">
+        <span style="font-weight: bold;">I</span>nstagram
+      </a>
+      <a href="{{ link_facebook }}" style="color: #fff; text-decoration: none; margin: 0 8px; font-size: 24px; display: inline-block;">
+        <span style="font-weight: bold;">F</span>acebook
+      </a>
+    </div>
+
+    <p style="font-size: 12px; text-align: center; color: #666;">
+        Estás recibiendo este correo porque te suscribiste a la Newsletter de Tecno Marema.
+        <br><a href="{{ link_unsubscribe }}" style="color: #999;">Darme de baja de la Newsletter</a>
+    </p>
+
+  </div>
+</body>
+</html>

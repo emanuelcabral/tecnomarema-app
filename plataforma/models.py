@@ -892,3 +892,88 @@ class NotificacionAusenciaEnviada(models.Model):
 
     class Meta:
         unique_together = ('estudiante', 'clase_comision')
+
+
+
+#######################################################################################################
+#----------------------------------newsletter edicion y envíos----------------------------------------#
+#######################################################################################################
+
+# plataforma/models.py
+
+from django.db import models
+from django.utils import timezone
+from django.conf import settings
+
+
+class Newsletter(models.Model):
+    numero_edicion = models.CharField(
+        max_length=10,
+        unique=True,
+        help_text="Ejemplo: #52"
+    )
+    titulo_novedad = models.CharField(
+        max_length=200,
+        help_text="Título principal de la novedad destacada"
+    )
+    extracto_novedad = models.TextField(
+        help_text="Breve descripción de la novedad (1-2 párrafos)"
+    )
+    link_novedad = models.URLField(
+        help_text="Enlace al artículo, video o anuncio completo"
+    )
+
+    titulo_promocion = models.CharField(
+        max_length=200,
+        help_text="Ej: 50% OFF en todos los cursos"
+    )
+    descuento = models.CharField(
+        max_length=20,
+        default="40%",
+        help_text="Ej: 50%, 30%, GRATIS"
+    )
+    codigo_cupon = models.CharField(
+        max_length=50,
+        help_text="Código que usarán los alumnos al inscribirse"
+    )
+    fecha_vencimiento = models.CharField(
+        max_length=50,
+        help_text="Ej: 30 de diciembre, Hasta fin de mes"
+    )
+    link_promocion = models.URLField(
+        help_text="URL directa a la página de cursos o promo"
+    )
+
+    # Metadatos
+    creado_el = models.DateTimeField(auto_now_add=True)
+    enviado_el = models.DateTimeField(null=True, blank=True)
+    enviado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='newsletters_enviadas',
+        verbose_name="Enviado por"
+    )
+
+    class Meta:
+        ordering = ['-creado_el']
+        verbose_name = "Newsletter"
+        verbose_name_plural = "Newsletters"
+        constraints = [
+            models.UniqueConstraint(fields=['numero_edicion'], name='unique_numero_edicion')
+        ]
+
+    def __str__(self):
+        estado = " (Enviada)" if self.enviado_el else " (Borrador)"
+        return f"Newsletter {self.numero_edicion} - {self.titulo_promocion}{estado}"
+
+    def save(self, *args, **kwargs):
+        # Opcional: si se marca como enviada manualmente
+        if self.enviado_el and not self.enviado_por:
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            # Intenta asignar al usuario actual si está disponible
+            if kwargs.get('force_insert') is False and kwargs.get('force_update') is False:
+                pass
+        super().save(*args, **kwargs)
