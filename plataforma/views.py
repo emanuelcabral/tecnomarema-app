@@ -4740,21 +4740,62 @@ def listado_pagos(request):
 ####--------------------------------------subscriptores---------------------------------------####
 ##################################################################################################
 
-from django.shortcuts import render, redirect
-from .forms import SuscriptorForm
-from django.contrib import messages
+# from django.shortcuts import render, redirect
+# from .forms import SuscriptorForm
+# from django.contrib import messages
 
-def newsletter_view(request):
-    if request.method == 'POST':
-        form = SuscriptorForm(request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, '¡Gracias por suscribirte!')
-            return redirect('inicio')  # Cambiá esto al nombre real de tu URL o plantilla
-    else:
-        form = SuscriptorForm()
+# def newsletter_view(request):
+#     if request.method == 'POST':
+#         form = SuscriptorForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             messages.success(request, '¡Gracias por suscribirte!')
+#             return redirect('inicio')  # Cambiá esto al nombre real de tu URL o plantilla
+#     else:
+#         form = SuscriptorForm()
     
-    return render(request, 'home.html', {'form': form})
+#     return render(request, 'home.html', {'form': form})
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import Suscriptor  # Asegurate de tener este modelo
+
+@csrf_exempt  # Temporal para probar rápido. Después lo quitamos si querés
+def newsletter_view(request):
+    # Si es una petición AJAX (nuestro formulario)
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/x-www-form-urlencoded':
+        if request.method == 'POST':
+            nombre = request.POST.get('nombre', '').strip()
+            email = request.POST.get('email', '').strip().lower()
+
+            if not nombre or not email:
+                return JsonResponse({
+                    'status': 'error',
+                    'message': 'Completa todos los campos'
+                }, status=400)
+
+            suscriptor, created = Suscriptor.objects.get_or_create(
+                email=email,
+                defaults={'nombre': nombre}
+            )
+
+            if not created:
+                # Actualiza nombre si cambió
+                if suscriptor.nombre != nombre:
+                    suscriptor.nombre = nombre
+                    suscriptor.save()
+                return JsonResponse({'status': 'exists'})
+
+            return JsonResponse({'status': 'success'})
+
+        return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+    # Si es una petición normal (alguien entra directo a /newsletter/)
+    # Puedes redirigir al home o mostrar algo
+    return redirect('home')  # o 'inicio', según tu name en urls.py
 
 
 ##################################################################################################
