@@ -184,5 +184,81 @@
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
     </script>
     <!-- BS 5.1 fin -->
+
+<!-- --------------------------------------------------------------------------------------------------------- -->
+
+<script>
+    // Deshabilitar clic derecho (menú contextual)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    // Deshabilitar selección de texto
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+    });
+
+    // Deshabilitar arrastrar imágenes
+    document.addEventListener('dragstart', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+        }
+    });
+
+    // Deshabilitar atajos comunes (Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+U, Ctrl+Shift+I, F12, etc.)
+    document.addEventListener('keydown', function(e) {
+        // F12
+        if (e.key === 'F12') {
+            e.preventDefault();
+        }
+
+        // Ctrl + Shift + I (DevTools en muchos navegadores)
+        if (e.ctrlKey && e.shiftKey && e.key === 'I') {
+            e.preventDefault();
+        }
+
+        // Ctrl + Shift + J (consola)
+        if (e.ctrlKey && e.shiftKey && e.key === 'J') {
+            e.preventDefault();
+        }
+
+        // Ctrl + U (ver fuente)
+        if (e.ctrlKey && e.key === 'u') {
+            e.preventDefault();
+        }
+
+        // Ctrl + S (guardar página)
+        if (e.ctrlKey && e.key === 's') {
+            e.preventDefault();
+        }
+
+        // Ctrl + C, Ctrl + X, Ctrl + A (copiar, cortar, seleccionar todo)
+        if (e.ctrlKey && (e.key === 'c' || e.key === 'x' || e.key === 'a')) {
+            e.preventDefault();
+        }
+    });
+
+    // Opcional: CSS adicional para reforzar no selección
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+    document.body.style.mozUserSelect = 'none';
+    document.body.style.msUserSelect = 'none';
+</script>
+
+<style>
+    body, * {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+    }
+    img {
+        -webkit-user-drag: none;
+        user-drag: none;
+    }
+</style>
+
+<!-- --------------------------------------------------------------------------------------------------------- -->
+
 </body>
 </html>
