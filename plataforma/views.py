@@ -5775,6 +5775,7 @@ def calendario_view(request, comision_id):
     context = {
         'clases': clases,
         'titulo': f'Calendario del Curso: {comision.id_curso.nombre_curso} | Comisión {comision.numero_comision}',
+        'comision': comision,
     }
     
     # 🚨 CORRECCIÓN: Referenciar el archivo dentro del subdirectorio 'educativa/'
