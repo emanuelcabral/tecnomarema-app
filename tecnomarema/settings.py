@@ -325,7 +325,7 @@ ALLOWED_HOSTS = [
     'tecnomarema.com.ar', 
     'www.tecnomarema.com.ar', 
     'localhost', 
-    '127.0.0.1'
+    '127.0.0.1',
     '.ngrok-free.app', 
     'testserver',
 ]
