@@ -298,6 +298,7 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv  # ✅ Para leer variables del .env
+import dj_database_url  # ✅ Para configurar la base de datos desde DATABASE_URL
 
 # Cargar variables de entorno
 load_dotenv()
@@ -376,7 +377,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 
-# Base de datos
+# # Base de datos
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'tecnomarema'),
+#         'USER': os.getenv('DB_USER', 'postgres'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', '9560'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
+
+# # 2. Reemplazá tu bloque de DATABASES por este:
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Si existe DATABASE_URL (en Render), la usa. 
+#         # Si no existe (en tu PC), usa los valores por defecto que ya tenías.
+#         default=os.getenv('DATABASE_URL', f"postgres://{os.getenv('DB_USER', 'postgres')}:{os.getenv('DB_PASSWORD', '9560')}@{os.getenv('DB_HOST', 'localhost')}:{os.getenv('DB_PORT', '5432')}/{os.getenv('DB_NAME', 'tecnomarema')}")
+#     )
+# }
+
+# 1. Bloque Local (Como ya lo tenías)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -387,6 +409,15 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+
+# 2. Bloque para Render (Con el salto de línea que pediste)
+if os.getenv('DATABASE_URL'):
+    import dj_database_url
+    
+    DATABASES['default'] = dj_database_url.config(
+        conn_max_age=600,
+        ssl_require=True
+    )
 
 # Validación de contraseñas
 AUTH_PASSWORD_VALIDATORS = [
