@@ -321,6 +321,7 @@ DEBUG = True  # Cambiar a False en producción
 
 # Sin http://
 ALLOWED_HOSTS = [
+    'tecnomarema-app.onrender.com',
     'tecnomarema.onrender.com', 
     'tecnomarema.com.ar', 
     'www.tecnomarema.com.ar', 
