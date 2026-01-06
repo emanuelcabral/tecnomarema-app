@@ -309,13 +309,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Seguridad
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True  # Cambiar a False en producción
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.ngrok-free.app', 'testserver']
+# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.ngrok-free.app', 'testserver']
 
+# CSRF_TRUSTED_ORIGINS = [
+#     'https://tu-dominio1.com',
+#     'https://tecnomarema-app.onrender.com',
+#     'https://tecnomarema.com.ar',
+#     'https://www.tecnomarema.com.ar',
+#     'https://891a-148-222-130-44.ngrok-free.app',
+# ]
+
+# Sin http://
+ALLOWED_HOSTS = [
+    'tecnomarema.onrender.com', 
+    'tecnomarema.com.ar', 
+    'www.tecnomarema.com.ar', 
+    'localhost', 
+    '127.0.0.1'
+    '.ngrok-free.app', 
+    'testserver',
+]
+
+# Con https://
 CSRF_TRUSTED_ORIGINS = [
-    'https://tu-dominio1.com',
-    'https://tecnomarema-app.onrender.com',
+    'https://tecnomarema.onrender.com',
     'https://tecnomarema.com.ar',
-    'https://891a-148-222-130-44.ngrok-free.app',
+    'https://www.tecnomarema.com.ar',
 ]
 
 # Aplicaciones instaladas
@@ -344,8 +363,8 @@ CHANNEL_LAYERS = {
 # Middlewares
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware', # 👈 Agregá esta línea
     'django.contrib.sessions.middleware.SessionMiddleware',
-
 # 🚨 SOLUCIÓN 1: LocaleMiddleware DEBE IR AQUÍ 
     'django.middleware.locale.LocaleMiddleware', 
 
@@ -439,11 +458,18 @@ USE_I18N = True
 USE_TZ = True
 
 # Archivos estáticos
+# STATIC_URL = 'static/'
+# STATICFILES_DIRS = [BASE_DIR / 'plataforma' / 'static']
+
+# # se agrega esta linea para el servidor de produccion:
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'plataforma' / 'static']
-
-# se agrega esta linea para el servidor de produccion:
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+# 👈 AGREGÁ ESTA LÍNEA:
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
