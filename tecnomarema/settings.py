@@ -308,10 +308,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Seguridad
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True  # Cambiar a False en producción
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app', 'testserver']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com', '.ngrok-free.app', 'testserver']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://tu-dominio1.com',
+    'https://tecnomarema-app.onrender.com',
+    'https://tecnomarema.com.ar',
     'https://891a-148-222-130-44.ngrok-free.app',
 ]
 
