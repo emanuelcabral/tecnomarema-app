@@ -398,7 +398,9 @@ WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 #     )
 # }
 
-# 1. Bloque Local (Como ya lo tenías)
+# ==========================================================
+# BLOQUE 1: Tu configuración Local (No se toca)
+# ==========================================================
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -410,7 +412,9 @@ DATABASES = {
     }
 }
 
-# 2. Bloque para Render (Con el salto de línea que pediste)
+# ==========================================================
+# BLOQUE 2: Salto de línea y configuración para Render
+# ==========================================================
 if os.getenv('DATABASE_URL'):
     import dj_database_url
     
