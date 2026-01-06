@@ -1,0 +1,2041 @@
+[
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000001",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OZFX61SBwyoyh4SwoN0JkT$2u8rP2UsBIm7zXhTMFhLwfZIhh6egA8m4EMn8jAZlv4=",
+    "is_superuser": false,
+    "id_estudiante": "000001",
+    "nombre_usuario": "emacabral",
+    "correo": "tecnomarema.ar@gmail.com",
+    "foto": "fotos_perfil/perfil01.png",
+    "rol": "profesor",
+    "ultimo_typing": "2025-07-06T21:44:05.401Z",
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-05-28T04:10:53.015Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000002",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rtJHmUWPGg9cAN1L5LvMRU$t4DNHCZW9JZnuJbuFbXOOitdUqf0XskcasFDLjoLKb4=",
+    "is_superuser": false,
+    "id_estudiante": "000002",
+    "nombre_usuario": "marema2",
+    "correo": "maria.gomez@gmail.com",
+    "foto": "fotos_perfil/andrea1.jpg",
+    "rol": "alumno",
+    "ultimo_typing": "2025-07-06T21:39:44.021Z",
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-05-28T17:05:51.631Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000003",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$10mHUiBoC2Sj9L2kG4oELi$8N7YEqlQwamViC/w7Httzo1c9kjpj7uONGBxuXb/EuY=",
+    "is_superuser": false,
+    "id_estudiante": "000003",
+    "nombre_usuario": "marema3",
+    "correo": "emacplay@gmail.com",
+    "foto": "fotos_perfil/perfil04.avif",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-06-05T21:43:40.415Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000004",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$a8WnO4SgeViAygYCF3ZXop$GMdtT45qqyUrwWKfKf+WQjon6N0CcODZGs/svRqjU78=",
+    "is_superuser": false,
+    "id_estudiante": "000004",
+    "nombre_usuario": "tecnomarema",
+    "correo": "tecnomarema.arge@gmail.com",
+    "foto": "fotos_perfil/logo-marema.png",
+    "rol": "admin",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": true,
+    "date_joined": "2025-07-04T15:00:03.222Z",
+    "last_login": "2025-07-04T16:21:26.924Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000005",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rzD1Sz0wXeIdr5oM4g02QK$D9HEEis/8ETdjIJTG87ab65vQnNBCgK1OlY8ObzMmK4=",
+    "is_superuser": false,
+    "id_estudiante": "000005",
+    "nombre_usuario": "leonardo",
+    "correo": "leonardoda@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": "2025-07-06T21:37:49.587Z",
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-06T21:12:16.260Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000006",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Cew9SxyWse5hhB9UJ0F1CR$b+mYXfNmFlI6d8hb9WeJCka5Ee2vjCHMzRKOB4BM1H0=",
+    "is_superuser": false,
+    "id_estudiante": "000006",
+    "nombre_usuario": "marema1000",
+    "correo": "micorrreo100@gmail.com",
+    "foto": "",
+    "rol": "tutor",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-06-08T23:04:11.778Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000007",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$qzwhxVNfw565fBhUbGNhJW$yRJWAIAs0KcV/wakA8wTWDZbKWNZnSGwK4n46FHzdYg=",
+    "is_superuser": false,
+    "id_estudiante": "000007",
+    "nombre_usuario": "leandrop",
+    "correo": "leandroparedes@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-08T12:34:15.261Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000008",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OiLko3qiByImPH2QmbV4CA$hq5HFY3azATp5nR1j39hEGLzAyHLK/lWhAZDzg6vBU4=",
+    "is_superuser": false,
+    "id_estudiante": "000008",
+    "nombre_usuario": "balbo",
+    "correo": "correobalbo@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-08T16:06:39.648Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000009",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$3w0qDWugp4s5q9j15TEcTx$vod6YV0HHiwH4y7Jx6aOpAZ2O67g7LqCxMd1ylKliRs=",
+    "is_superuser": false,
+    "id_estudiante": "000009",
+    "nombre_usuario": "mirtalop",
+    "correo": "mirtalopez@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-08T21:28:51.680Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000010",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$nydSw6FQ9o4IJdCSlxPpI8$nfdzVWShty8txOLO6TP9UBCao7xD/UUjYScH+QUL7pg=",
+    "is_superuser": false,
+    "id_estudiante": "000010",
+    "nombre_usuario": "lara",
+    "correo": "lara@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-10T13:08:10.193Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000011",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$1Uyju4qAeLLRUH4oAoSbbP$U14eIhFxn54P2yyZy2mbopMHdqM+wlrwGBnOP/Jqy80=",
+    "is_superuser": false,
+    "id_estudiante": "000011",
+    "nombre_usuario": "silver",
+    "correo": "silver@gmail.com",
+    "foto": "",
+    "rol": "tutor",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-11T14:45:49.866Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000012",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$rsvRlOquKlHXBnpJ7cMO4n$wehAu1SPWj4ru5B91nLNiCUSSpZOLkSNofIXXxWU8Ko=",
+    "is_superuser": false,
+    "id_estudiante": "000012",
+    "nombre_usuario": "atom",
+    "correo": "atom@gmail.com",
+    "foto": "",
+    "rol": "profesor",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-11T14:48:46.408Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000013",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$7apho3LLiOprriMKgJprts$Z+BTNDTZgZB9QfVhREv8eEdFU+Ggb9eHb4D68+/KvUo=",
+    "is_superuser": false,
+    "id_estudiante": "000013",
+    "nombre_usuario": "marcos",
+    "correo": "marcos@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-12T00:36:39.756Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000014",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XEMusocui2v6xDZdW5tvVP$0QHf3X0yBQJ6EPsBZ5L4Zj2pye4pqP7KX67zsMiU9Lw=",
+    "is_superuser": false,
+    "id_estudiante": "000014",
+    "nombre_usuario": "andres",
+    "correo": "andres@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-12T00:44:17.645Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000015",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ZsrMpqnHkGdEafEth5znDf$5c+uopnrplDiBzzPFhn/KKAIJk6qbDhtNsqTxxGlWD8=",
+    "is_superuser": false,
+    "id_estudiante": "000015",
+    "nombre_usuario": "clara",
+    "correo": "clara@gmail.com",
+    "foto": "",
+    "rol": "profesor",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-12T00:50:21.873Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000016",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$pUPedxww4DK87UTsLwAsqX$LtJBfWrdZ52NQqN6RlFdmV19B7jz7N8uKf/buLIVjvA=",
+    "is_superuser": false,
+    "id_estudiante": "000016",
+    "nombre_usuario": "clark",
+    "correo": "clark@gmail.com",
+    "foto": "",
+    "rol": "tutor",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-12T00:52:12.513Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000017",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$NBXEod1OUcVCQNP9bBHy0r$YYb48VqF2Ens3ExW8QzUyTcVCAoU2YCwq3l1YNMtovs=",
+    "is_superuser": false,
+    "id_estudiante": "000017",
+    "nombre_usuario": "22333445",
+    "correo": "marcosparish1@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-18T17:20:56.154Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000018",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$7P3ygI1fvPi5KPtvqusLgL$yIHwwb4WndVBw3l25DfL/HW4mWh+LH7r1hb4T8TZemc=",
+    "is_superuser": false,
+    "id_estudiante": "000018",
+    "nombre_usuario": "22099111",
+    "correo": "marcosv@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-25T20:21:31.585Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000019",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$d2fZt61JlzDMtzDBMfinR6$NRFvKo+VFrZLF0gTx4JUDxrpoCGYCTaa+gRyUe39HYA=",
+    "is_superuser": false,
+    "id_estudiante": "000019",
+    "nombre_usuario": "22099114",
+    "correo": "marcofadol@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-25T20:45:12.407Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000020",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$J0f50mPgolaMzGPMQIxTSq$F6jSig63PtzFnmKfiEKYaQTB59F4AeUQDHtj3XDqCRU=",
+    "is_superuser": false,
+    "id_estudiante": "000020",
+    "nombre_usuario": "22099116",
+    "correo": "nazapael@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-07-25T20:48:47.450Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000021",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$MpBNxgs38Ta8FwqTJM7m4M$VkNdGGSywdXcvHf48LQbM+ouhHIyVQgVqw1wPZYRtuA=",
+    "is_superuser": false,
+    "id_estudiante": "000021",
+    "nombre_usuario": "22000199",
+    "correo": "micorreo199@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T21:29:31.289Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000022",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jX3Q0hsCZDxX0LLO0erTXd$qFOxfxCc/ALa31G0/FDVB9mbSsOPCtXXCXjV8hsvkqY=",
+    "is_superuser": false,
+    "id_estudiante": "000022",
+    "nombre_usuario": "42506147",
+    "correo": "12alvarobelmonte@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-09-13T21:28:40.774Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000023",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$upaQutvq1oXsS7I7SikncF$A6LeTIXCFVQ7ZXk0koYqGz9WLL6u5+lXsMMLSgCYJqo=",
+    "is_superuser": false,
+    "id_estudiante": "000023",
+    "nombre_usuario": "22000198",
+    "correo": "micorreo198@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T21:30:35.415Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000024",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OSdrTpgdYhic8BI2tSeJrW$BGK0JEOuM7MeUwQKJ8BKAAQxiSfbdxMMPtI017vU5yw=",
+    "is_superuser": false,
+    "id_estudiante": "000024",
+    "nombre_usuario": "22000196",
+    "correo": "micorreo196@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T21:59:06.255Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000025",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$n978aLoMmF1YrheEI3kVg6$9nG51a3GBVArE1q7QxLBegluJlO/E8CN98ZGKifNpqg=",
+    "is_superuser": false,
+    "id_estudiante": "000025",
+    "nombre_usuario": "22000194",
+    "correo": "micorreo194@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:14:48.617Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000026",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XaUqT7BYWkejuzMY4TvQve$+98uyEZWKWbDkvG3i/puHTIRJX/NlY03E2O5BupH4kU=",
+    "is_superuser": false,
+    "id_estudiante": "000026",
+    "nombre_usuario": "22000193",
+    "correo": "micorreo193@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:19:47.258Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000027",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$fKpVVSA0nGm8BqoJXtrZuw$YcIrsk37L0BDUaAchijtFJP3BP4RGAntykzm1yIPBvo=",
+    "is_superuser": false,
+    "id_estudiante": "000027",
+    "nombre_usuario": "22000192",
+    "correo": "micorreo192@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:20:53.265Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000028",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$H9XjjSyrhLUq5YlmpfnGLJ$QHw6IRMN/MlbxxtjUDiA8JRN8Ak34mrmPd4R117bdX0=",
+    "is_superuser": false,
+    "id_estudiante": "000028",
+    "nombre_usuario": "22000191",
+    "correo": "micorreo191@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:21:36.304Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000029",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$1XaAGoKYmEsQLstjIm5loP$+Xkl7j5y1ChdhuCgMIcq3p5owLCDWhMxygzUmY3OAmA=",
+    "is_superuser": false,
+    "id_estudiante": "000029",
+    "nombre_usuario": "22000190",
+    "correo": "micorreo190@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:22:59.717Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000030",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$XXe6uTvRc8jfuD9GN31j86$PrecMjhZwe3b4S9tI+Y952rRWSuJujdVXSaWKBLnJD0=",
+    "is_superuser": false,
+    "id_estudiante": "000030",
+    "nombre_usuario": "22000189",
+    "correo": "micorreo189@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:23:43.713Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000031",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$VVhZatVmqsiACkB2OCx9lu$hPZ39V7gbBAu788jJEyxnG9Q19dbSlZz2fI1SQ5maiI=",
+    "is_superuser": false,
+    "id_estudiante": "000031",
+    "nombre_usuario": "22000188",
+    "correo": "micorreo188@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:28:20.192Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000032",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ICWjRMsTA4UUCy7cdhQtqM$7SxK688EhEcq006LpmS20A14VY41Vp1lOEuXpEejLdU=",
+    "is_superuser": false,
+    "id_estudiante": "000032",
+    "nombre_usuario": "22000187",
+    "correo": "micorreo187@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:29:20.052Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000033",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$0nbaU0AmAsBWyBxFu4d8hp$y8+vv7bstTCEoGSaBwE/qGOq43faFPwkXrrdzh5CEoI=",
+    "is_superuser": false,
+    "id_estudiante": "000033",
+    "nombre_usuario": "22000186",
+    "correo": "micorreo186@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T22:30:18.443Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000034",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$UoJgu54FWbMLF1vaPgpGyD$G5nKki0v6/EkIxCpzVgBNuB+7zJP193F6Wi8Fvdb/2M=",
+    "is_superuser": false,
+    "id_estudiante": "000034",
+    "nombre_usuario": "22000170",
+    "correo": "micorreo170@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-11T23:39:46.739Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000035",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$zKovHXpEz5acYNXhWGPMkz$Nhb2e6HWFW4IAKnukFDSNzziEWGcdt6y5dqZhhdSACQ=",
+    "is_superuser": false,
+    "id_estudiante": "000035",
+    "nombre_usuario": "22000155",
+    "correo": "micorreo155@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:30:49.619Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000036",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$0BTYMto3nLyLkp1YmLvGnI$klTOR9rAV0UYiBRQqfWboyMnknLViEePsID5Oguw/Gs=",
+    "is_superuser": false,
+    "id_estudiante": "000036",
+    "nombre_usuario": "22000154",
+    "correo": "micorreo154@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:32:50.471Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000037",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ANp9gLA5UgxBiXKwzbrA5Z$39+epUijw7lEhnZRXS8qYlAb6pXVT1HGz/sCHdj3AJQ=",
+    "is_superuser": false,
+    "id_estudiante": "000037",
+    "nombre_usuario": "22000153",
+    "correo": "micorreo153@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:34:13.984Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000038",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$nxXDlvDXZRx2arKGunWACO$ggjRfu9m4KZZqITnNLqpgCQthJC/fbK9tkCTq1E1f1w=",
+    "is_superuser": false,
+    "id_estudiante": "000038",
+    "nombre_usuario": "22000152",
+    "correo": "micorreo152@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:35:58.146Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000039",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$bwjxzN95C4MBXFFu2o4U68$iT+EqdDjdd5bxrxn8isicE7DzRnz7ed4/nILcWGpbao=",
+    "is_superuser": false,
+    "id_estudiante": "000039",
+    "nombre_usuario": "22000131",
+    "correo": "micorreo131@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:45:39.963Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000040",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$HAYx271eLFTgO8m7heiU5Q$kocw812u2MNle8EdXtZj9uAFYeKeDaOumL1PuqFMvwE=",
+    "is_superuser": false,
+    "id_estudiante": "000040",
+    "nombre_usuario": "22000121",
+    "correo": "micorreo121@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:46:59.578Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000041",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$dgyelravFwj9uyWlC0hgOj$ss+EBkJ5M+fb3LhdRudP2BRBgy3FyDUHgekXV/EFxy0=",
+    "is_superuser": false,
+    "id_estudiante": "000041",
+    "nombre_usuario": "22000122",
+    "correo": "micorreo122@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:48:50.175Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000042",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$3Wzn8Z1U4bfAHx1YtMa1WQ$eYObYduP0EEPWqEC95cWb3MKKEAMRa+7WmHNVaIOL44=",
+    "is_superuser": false,
+    "id_estudiante": "000042",
+    "nombre_usuario": "22000124",
+    "correo": "micorreo124@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:53:02.174Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000043",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$DX7dtLIpY4ox0CZ66V2jpg$Bbd5D9dLJdZp7F2A/0hlourCP+aPIghQIT2QFhQVPGM=",
+    "is_superuser": false,
+    "id_estudiante": "000043",
+    "nombre_usuario": "22000125",
+    "correo": "micorreo125@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:54:40.833Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000044",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$wkWBMNufAF6MIpPW9nYbHt$a75lPGZpTR2Kqvl5GhxoyFOXTel5i5Sg2fWbHywZPWk=",
+    "is_superuser": false,
+    "id_estudiante": "000044",
+    "nombre_usuario": "22000126",
+    "correo": "micorreo126@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-12T00:55:50.274Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000045",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$7BuwHootQJ8NAMCJkVKh21$B6SAbZPWbbo/jkdoMZQCsuqNSUzSJR9VQeegfuDyAnU=",
+    "is_superuser": false,
+    "id_estudiante": "000045",
+    "nombre_usuario": "elias123",
+    "correo": "elias@grr.la",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-16T00:24:41.520Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000046",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$xzaNEm0v1BAgJrBKIpiujy$gA2Q24P9AzlS0o1Tm+GJumz9q/EM+DWagfg53qie5BM=",
+    "is_superuser": false,
+    "id_estudiante": "000046",
+    "nombre_usuario": "alvaro123",
+    "correo": "alvaro@grr.la",
+    "foto": "",
+    "rol": "profesor",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-16T00:28:10.495Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000047",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$nfKrdHv565vtrZkVJeJWc9$Uru7mmqDiSQaPLM3oNiTu5HjvCQW8CTr8gCk4BrAze0=",
+    "is_superuser": false,
+    "id_estudiante": "000047",
+    "nombre_usuario": "22000918",
+    "correo": "micorreo918@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T17:01:50.644Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000048",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$trY6S5Ijx5YMUvWZnCHZyi$z4yW9DvpN4/JyuGuG5fVD1fFsTJXO0exvI6sc9xcNDo=",
+    "is_superuser": false,
+    "id_estudiante": "000048",
+    "nombre_usuario": "22000917",
+    "correo": "micorreo917@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T17:03:12.787Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000049",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$H57ZYhEWCZMQcjJeaI3BIg$HJWgsD5UXXnqCKsGqRZE58OqMgE4Ake7lONFEKJi9ds=",
+    "is_superuser": false,
+    "id_estudiante": "000049",
+    "nombre_usuario": "22000915",
+    "correo": "micorreo915@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T17:42:11.578Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000050",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$4ts5Sm4AtBSBgCHzi1xuIa$zpbDmwXQPqvTRX4LV2KCpSuchRWLq9nnO1/HgOOYuxE=",
+    "is_superuser": false,
+    "id_estudiante": "000050",
+    "nombre_usuario": "22000914",
+    "correo": "micorreo914@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T17:44:11.510Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000051",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$Eb509RjPx85FnEe4tIBtNq$bjnByM0mJZ4BuYmpSAZromnvoYa3D27MDYvpLbD3tAo=",
+    "is_superuser": false,
+    "id_estudiante": "000051",
+    "nombre_usuario": "22000000",
+    "correo": "micorreo000@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T17:45:13.799Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000052",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$PFIfOpXwbFLh67qQbAEFNA$d6Vgw7eJBxjEEd3t+H8EUcr0w0qqeqrWBr7zn7fXFAA=",
+    "is_superuser": false,
+    "id_estudiante": "000052",
+    "nombre_usuario": "22000001",
+    "correo": "micorreo001@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T17:46:52.819Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000053",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$4RjybpRp0pYBvs2MPDHN00$ESbuNCgx0Zo2ToGSaA695eJm1e+R1wQHsSh+42eCfnw=",
+    "is_superuser": false,
+    "id_estudiante": "000053",
+    "nombre_usuario": "22000002",
+    "correo": "micorreo002@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T18:01:38.824Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000054",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$KxvAvlQtoXVP5EtYAL9Ixm$V0/cB0nVs6ixB1aypSVbes77JEtj8kE8kjrmLlFcs00=",
+    "is_superuser": false,
+    "id_estudiante": "000054",
+    "nombre_usuario": "22000003",
+    "correo": "micorreo003@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T18:02:52.442Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000055",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$JxI0CrjxT5ksEBD35DXOCK$M76H/ZoQM8pw9xbPxrjZapLgVsn0T6DB+vBvwKSPV9Q=",
+    "is_superuser": false,
+    "id_estudiante": "000055",
+    "nombre_usuario": "22000004",
+    "correo": "micorreo004@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T18:04:36.267Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000056",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$jTN9PeqSzazOTjU8d3CLh3$lFb1Yu7+t60xPgcOdH7T/OkvWAWBbIVwi30mVZys3xo=",
+    "is_superuser": false,
+    "id_estudiante": "000056",
+    "nombre_usuario": "22000005",
+    "correo": "micorreo005@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T18:08:39.430Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000057",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$05g2FlaWpb5jjukYycpPss$7jhsaEQLGwKEIyvOOjFydKSRYPLP+aBs5Zhvkz5egQU=",
+    "is_superuser": false,
+    "id_estudiante": "000057",
+    "nombre_usuario": "22000006",
+    "correo": "micorreo006@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T18:09:23.534Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000058",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$OM5gASuMxQBv6MtFBkQrMx$q1IQ9VCTGrJeDLSh0nys+vJrvxwk3Nxjp7a3tTPCB6w=",
+    "is_superuser": false,
+    "id_estudiante": "000058",
+    "nombre_usuario": "22000007",
+    "correo": "micorreo007@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-17T18:11:04.062Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000059",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$VSad3EdiuanTOzLljE4TYO$9d5wQer//LVjlJ6DZ2VVpNzp7mhAuEg0Bh8gXJsPPXM=",
+    "is_superuser": false,
+    "id_estudiante": "000059",
+    "nombre_usuario": "22000008",
+    "correo": "micorreo008@grr.la",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-18T01:24:29.447Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000060",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$DIpFPVai0tPsIYtkdkKkjM$wCyCqxmXLvZKplWSVnnadf09rhSVfbWPn375P/UlMUc=",
+    "is_superuser": false,
+    "id_estudiante": "000060",
+    "nombre_usuario": "22000145",
+    "correo": "tecnomar@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-27T23:57:08.905Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000061",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$ncqZI4Dgl5PnydNR4CE7f7$/5a+bvnKsbf+KQZLIoREY6QcksKdzoqpl1oRBLeRTcI=",
+    "is_superuser": false,
+    "id_estudiante": "000061",
+    "nombre_usuario": "15200300",
+    "correo": "tecnomaximo@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-28T00:02:56.543Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.perfilusuario",
+  "pk": "000062",
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$MyrvunPU0vNLFZkBCMoogL$XXOMfVU7gaz/jzftDFJ5o0hjPz3sI/MTh5xT+bGxuuI=",
+    "is_superuser": false,
+    "id_estudiante": "000062",
+    "nombre_usuario": "21000112",
+    "correo": "coder.@gmail.com",
+    "foto": "",
+    "rol": "alumno",
+    "ultimo_typing": null,
+    "is_active": true,
+    "is_staff": false,
+    "date_joined": "2025-11-28T00:10:09.851Z",
+    "last_login": null,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 1,
+  "fields": {
+    "estudiante": "000002",
+    "comision": "000001",
+    "plataforma": "Mercado Pago",
+    "medio_pago": "Tarjeta crédito",
+    "estado_pago": "Aprobado",
+    "monto": "50.00",
+    "fecha_pago": "2025-07-10T14:35:00Z",
+    "id_transaccion": "TX123456789",
+    "link_comprobante": "https://example.com/comprobante/1",
+    "archivo_comprobante": "",
+    "observaciones": "Pago al día"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 2,
+  "fields": {
+    "estudiante": "000003",
+    "comision": "000002",
+    "plataforma": "PayPal",
+    "medio_pago": "Cuenta PayPal",
+    "estado_pago": "Verificando",
+    "monto": "75.00",
+    "fecha_pago": "2025-07-11T09:20:00Z",
+    "id_transaccion": "TX987654321",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/carla_pago.pdf",
+    "observaciones": ""
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 3,
+  "fields": {
+    "estudiante": "000005",
+    "comision": "000001",
+    "plataforma": "Transferencia bancaria",
+    "medio_pago": "Transferencia",
+    "estado_pago": "Aprobado",
+    "monto": "100.00",
+    "fecha_pago": "2025-07-13T11:15:00Z",
+    "id_transaccion": "TX5566778899",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "Confirmado banco"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 12,
+  "fields": {
+    "estudiante": "000017",
+    "comision": "000009",
+    "plataforma": "web",
+    "medio_pago": "transferencia",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-07-18T17:20:57.062Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Leonardo_Phoenix_10_A_fluffy_disheveled_cat_looking_thoroughly_0_HJhCgaW.jpg",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 14,
+  "fields": {
+    "estudiante": "000018",
+    "comision": "000008",
+    "plataforma": "web",
+    "medio_pago": "transferencia",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-07-25T20:21:32.522Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/gato-logo_UxA2nEB.fw.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 15,
+  "fields": {
+    "estudiante": "000019",
+    "comision": "000008",
+    "plataforma": "web",
+    "medio_pago": "transferencia",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-07-25T20:45:13.312Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/gato-logo_NsJuJLx.fw.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 16,
+  "fields": {
+    "estudiante": "000020",
+    "comision": "000008",
+    "plataforma": "web",
+    "medio_pago": "transferencia",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-07-25T20:48:48.367Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Interfaz_moderna_con_cintas_3D.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 35,
+  "fields": {
+    "estudiante": "000022",
+    "comision": "000009",
+    "plataforma": "web",
+    "medio_pago": "transferencia",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-09-13T21:28:41.715Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Leonardo_Phoenix_10_A_fluffy_disheveled_cat_looking_thoroughly_0_WoqRYz1.jpg",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 86,
+  "fields": {
+    "estudiante": "000021",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Pendiente",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-11T21:29:32.278Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_4_43PM.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 87,
+  "fields": {
+    "estudiante": "000023",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Pendiente",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-11T21:30:36.423Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_4_43PM_2Tu3u62.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 88,
+  "fields": {
+    "estudiante": "000024",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T21:59:07.158Z",
+    "id_transaccion": "1342384209",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 89,
+  "fields": {
+    "estudiante": "000025",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:14:49.531Z",
+    "id_transaccion": "1342384415",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 90,
+  "fields": {
+    "estudiante": "000026",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:19:48.169Z",
+    "id_transaccion": "1342384473",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 91,
+  "fields": {
+    "estudiante": "000027",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:20:54.174Z",
+    "id_transaccion": "1325347380",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 92,
+  "fields": {
+    "estudiante": "000028",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "pending",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:21:37.258Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 93,
+  "fields": {
+    "estudiante": "000029",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:23:00.626Z",
+    "id_transaccion": "1325347392",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 94,
+  "fields": {
+    "estudiante": "000030",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:23:44.625Z",
+    "id_transaccion": "1325347430",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 95,
+  "fields": {
+    "estudiante": "000031",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "pending",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:28:21.171Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 96,
+  "fields": {
+    "estudiante": "000032",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T22:29:20.963Z",
+    "id_transaccion": "1342384591",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 97,
+  "fields": {
+    "estudiante": "000033",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Pendiente",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-11T22:30:19.372Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_54PM.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 98,
+  "fields": {
+    "estudiante": "000034",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "mercadopago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-11T23:39:47.649Z",
+    "id_transaccion": "1325348272",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 99,
+  "fields": {
+    "estudiante": "000035",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "credito_1",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:30:50.561Z",
+    "id_transaccion": "1325348804",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 100,
+  "fields": {
+    "estudiante": "000036",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "credito_3",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:32:51.387Z",
+    "id_transaccion": "1325348828",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 101,
+  "fields": {
+    "estudiante": "000037",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "debito",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:34:14.889Z",
+    "id_transaccion": "1325348992",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 103,
+  "fields": {
+    "estudiante": "000038",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-12T00:35:59.074Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_56PM.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 105,
+  "fields": {
+    "estudiante": "000039",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "pagofacil",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:45:40.881Z",
+    "id_transaccion": "1325348942",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 106,
+  "fields": {
+    "estudiante": "000040",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "rapipago",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:47:00.500Z",
+    "id_transaccion": "1325348948",
+    "link_comprobante": "http://128.0.0.1:8000/listado_pagos/",
+    "archivo_comprobante": "comprobantes/Leonardo_Phoenix_10_A_fluffy_disheveled_cat_looking_thoroughly_0_vT7EJ2r.jpg",
+    "observaciones": "APRO"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 107,
+  "fields": {
+    "estudiante": "000041",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "debito",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:48:51.082Z",
+    "id_transaccion": "1325349096",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "APRO"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 108,
+  "fields": {
+    "estudiante": "000042",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "credito_1",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:53:03.078Z",
+    "id_transaccion": "1325349130",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "APRO"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 109,
+  "fields": {
+    "estudiante": "000043",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "credito_2",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:54:41.744Z",
+    "id_transaccion": "1342391975",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "APRO"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 110,
+  "fields": {
+    "estudiante": "000044",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-12T00:55:51.242Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "APRO"
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 111,
+  "fields": {
+    "estudiante": "000047",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "credito_2",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-17T17:01:51.582Z",
+    "id_transaccion": "1342496625",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 112,
+  "fields": {
+    "estudiante": "000048",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "credito_3",
+    "estado_pago": "Aprobado",
+    "monto": "120000.00",
+    "fecha_pago": "2025-11-17T17:03:13.696Z",
+    "id_transaccion": "1342496657",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 113,
+  "fields": {
+    "estudiante": "000049",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T17:42:12.524Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_59PM.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 114,
+  "fields": {
+    "estudiante": "000050",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T17:44:12.432Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_59PM_DGW6SDS.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 115,
+  "fields": {
+    "estudiante": "000051",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T17:45:14.740Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_54PM_x8yiUOI.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 116,
+  "fields": {
+    "estudiante": "000052",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T17:46:53.768Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_54PM_3hgmXFc.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 117,
+  "fields": {
+    "estudiante": "000053",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T18:01:39.748Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_54PM_nCHMEIH.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 118,
+  "fields": {
+    "estudiante": "000054",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T18:02:53.361Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_4_43PM.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 119,
+  "fields": {
+    "estudiante": "000055",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T18:04:37.216Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_54PM_f0d3CPH.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 120,
+  "fields": {
+    "estudiante": "000056",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T18:08:40.362Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_54PM_MsvwgWb.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 121,
+  "fields": {
+    "estudiante": "000057",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T18:09:24.479Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_4_43PM_wk4BJNn.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 122,
+  "fields": {
+    "estudiante": "000058",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-17T18:11:05.004Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_56PM_gvQPBMn.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 123,
+  "fields": {
+    "estudiante": "000059",
+    "comision": "000010",
+    "plataforma": "web",
+    "medio_pago": "transferencia_bancaria",
+    "estado_pago": "Verificando",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-18T01:24:30.413Z",
+    "id_transaccion": "",
+    "link_comprobante": null,
+    "archivo_comprobante": "comprobantes/Generated_Image_October_06_2025_-_5_56PM_8UBGfko.png",
+    "observaciones": null
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 124,
+  "fields": {
+    "estudiante": "000060",
+    "comision": "000010",
+    "plataforma": "web_gratis",
+    "medio_pago": "inscripcion_gratuita",
+    "estado_pago": "Aprobado",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-27T23:57:09.826Z",
+    "id_transaccion": "GRATIS_24",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "Inscripción gratuita desde clase promo. Curso: Desarrollo web. Comisión: 25874."
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 125,
+  "fields": {
+    "estudiante": "000061",
+    "comision": "000010",
+    "plataforma": "web_gratis",
+    "medio_pago": "inscripcion_gratuita",
+    "estado_pago": "Aprobado",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-28T00:02:57.459Z",
+    "id_transaccion": "GRATIS_23",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "Inscripción gratuita desde clase promo. Curso: Desarrollo web. Comisión: 25874."
+  }
+},
+{
+  "model": "plataforma.registropago",
+  "pk": 126,
+  "fields": {
+    "estudiante": "000062",
+    "comision": "000010",
+    "plataforma": "web_gratis",
+    "medio_pago": "inscripcion_gratuita",
+    "estado_pago": "Aprobado",
+    "monto": "0.00",
+    "fecha_pago": "2025-11-28T00:10:10.802Z",
+    "id_transaccion": "GRATIS_37",
+    "link_comprobante": null,
+    "archivo_comprobante": "",
+    "observaciones": "Inscripción gratuita desde clase promo. Curso: Desarrollo web. Comisión: 25874."
+  }
+}
+]
