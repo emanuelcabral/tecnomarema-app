@@ -1246,14 +1246,14 @@
     "estudiante": "000002",
     "comision": "000001",
     "plataforma": "Mercado Pago",
-    "medio_pago": "Tarjeta cr閐ito",
+    "medio_pago": "Tarjeta cr茅dito",
     "estado_pago": "Aprobado",
     "monto": "50.00",
     "fecha_pago": "2025-07-10T14:35:00Z",
     "id_transaccion": "TX123456789",
     "link_comprobante": "https://example.com/comprobante/1",
     "archivo_comprobante": "",
-    "observaciones": "Pago al d韆"
+    "observaciones": "Pago al d铆a"
   }
 },
 {
@@ -2001,7 +2001,7 @@
     "id_transaccion": "GRATIS_24",
     "link_comprobante": null,
     "archivo_comprobante": "",
-    "observaciones": "Inscripci髇 gratuita desde clase promo. Curso: Desarrollo web. Comisi髇: 25874."
+    "observaciones": "Inscripci贸n gratuita desde clase promo. Curso: Desarrollo web. Comisi贸n: 25874."
   }
 },
 {
@@ -2018,7 +2018,7 @@
     "id_transaccion": "GRATIS_23",
     "link_comprobante": null,
     "archivo_comprobante": "",
-    "observaciones": "Inscripci髇 gratuita desde clase promo. Curso: Desarrollo web. Comisi髇: 25874."
+    "observaciones": "Inscripci贸n gratuita desde clase promo. Curso: Desarrollo web. Comisi贸n: 25874."
   }
 },
 {
@@ -2035,7 +2035,7 @@
     "id_transaccion": "GRATIS_37",
     "link_comprobante": null,
     "archivo_comprobante": "",
-    "observaciones": "Inscripci髇 gratuita desde clase promo. Curso: Desarrollo web. Comisi髇: 25874."
+    "observaciones": "Inscripci贸n gratuita desde clase promo. Curso: Desarrollo web. Comisi贸n: 25874."
   }
 }
 ]
