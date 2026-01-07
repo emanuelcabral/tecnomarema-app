@@ -2790,6 +2790,1590 @@
   }
 },
 {
+  "model": "plataforma.curso",
+  "pk": "01",
+  "fields": {
+    "nombre_curso": "Desarrollo web",
+    "estado_curso": "Disponible",
+    "fecha_creacion": "2025-06-30T00:00:00Z",
+    "descripcion": "Aprende HTML, CSS, Sass, Git y Bootstrap para crear sitios web modernos y responsivos.",
+    "consigna_proyecto": "Desarrollar una web aplicando todos los contenidos vistos durante la cursada. El sitio debe cumplir con los siguientes requisitos mínimos:\r\n    \r\n\r\n    <ul>\r\n      <li>Debe contar con un mínimo de 4 secciones, incluyendo <code>index.html</code>.</li>\r\n      <li>Utilizar HTML y CSS.</li>\r\n      <li>Implementar Bootstrap y Sass.</li>\r\n      <li>El sitio debe ser responsivo (mobile, tablet y desktop).</li>\r\n      <li>Se debe trabajar con Git y GitHub, y subir el proyecto a un servidor.</li>\r\n    </ul>\r\n\r\n    <p class=\"mt-4\" style=\"color: #12f693;\"><strong>Elementos obligatorios a incluir:</strong></p>\r\n    <ul>\r\n      <li>Barra de navegación con enlaces funcionales.</li>\r\n      <li>No se permiten sitios One Page ni Landing Pages.</li>\r\n      <li>No se permite el uso de textos de ejemplo como \"Lorem ipsum\".</li>\r\n      <li>Mínimo 4 archivos HTML.</li>\r\n      <li>Aplicar SEO básico: <code>keywords</code>, <code>description</code> y atributos <code>alt</code> en imágenes.</li>\r\n    </ul>\r\n\r\n    <p class=\"mt-4\" style=\"color: #12f693;\"><strong>Entregables:</strong></p>\r\n    <ul>\r\n      <li>Link al repositorio de GitHub (código fuente).</li>\r\n      <li>Link a GitHub Pages (versión visual del sitio).</li>\r\n      <li>Link del servidor utilizado (Netlify, Vercel, 000webhost o InfinityFree).</li>\r\n    </ul>\r\n\r\n    <p class=\"mt-4\" style=\"color: #12f693;\"><strong>Criterios de evaluación:</strong></p>\r\n    <ul>\r\n      <li>Código legible, ordenado y bien aplicado.</li>\r\n      <li>Estructura de maquetado correcta.</li>\r\n      <li>Estética general del sitio.</li>\r\n      <li>Tecnología y herramientas utilizadas.</li>\r\n      <li>Contenido suficiente, claro y de calidad.</li>\r\n      <li>Se valora la creatividad y la dedicación.</li>\r\n    </ul>\r\n",
+    "duracion": "40",
+    "precio_original": "210000.00",
+    "precio_final": "125000.00",
+    "modalidad": "online_vivo",
+    "icono01": "iconos_cursos/html5.svg",
+    "icono02": "iconos_cursos/css3.svg",
+    "icono03": "iconos_cursos/sass.svg",
+    "icono04": "iconos_cursos/bootstrap.svg",
+    "icono05": "iconos_cursos/git.svg",
+    "icono06": "iconos_cursos/github.svg",
+    "icono07": "",
+    "icono08": "",
+    "icono09": "",
+    "icono10": "",
+    "icono11": "",
+    "icono12": ""
+  }
+},
+{
+  "model": "plataforma.curso",
+  "pk": "02",
+  "fields": {
+    "nombre_curso": "Inteligencia Artificial",
+    "estado_curso": "Disponible",
+    "fecha_creacion": "2025-08-08T00:00:00Z",
+    "descripcion": "Introducción práctica a IA con aplicaciones reales en distintos sectores.",
+    "consigna_proyecto": "Proyecto Integrador Final: Introducción a la Inteligencia Artificial\r\nDesarrollar una presentación (Word, PowerPoint, Canva, Google Slides, Video o Sitio Web), cualquiera de estas alternativas, aplicando los contenidos y herramientas de IA explorados.\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Requisitos Mínimos:</strong></p> <ul> <li> <strong style=\"color: rgb(214, 51, 132);\">Formato Flexible:</strong>\r\n\r\n\r\nLa entrega puede ser una presentación digital, un documento, un video o un sitio web. </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Interacciones con Chatbots:</strong>\r\n\r\n\r\nDebe incluir un mínimo de 4 prompts enviados y sus respuestas obtenidas de cualquier IA conversacional (ej. ChatGPT, Gemini, Copilot, Grok, Claude, etc.). </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Imágenes Generadas por IA:</strong>\r\n\r\n\r\nDebe incluir un mínimo de 4 imágenes generadas con una herramienta de IA (Text-to-Image). </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Audio Generado por IA:</strong>\r\n\r\n\r\nDebe incluir un mínimo de 1 audio generado con alguna herramienta de IA (Text-to-Speech o música). </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Detalle de Herramientas:</strong>\r\n\r\n\r\nSe deben detallar las herramientas de IA utilizadas para la generación de todos los elementos. </li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Elementos obligatorios a incluir:</strong></p> <ul> <li>Se debe detallar el prompt exacto utilizado para generar cada respuesta de chatbot, imagen y audio.</li> <li>Se debe incluir capturas y/o links de los chatbots, audios, videos y/o sitios web para poder visualizar el contenido generado.</li> <li>El contenido debe ser suficiente, claro y de calidad, generado por las herramientas de IA.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Opcionales (Puntos extra por dedicación):</strong></p> <ul> <li>Generación de un video con la IA.</li> <li>Generación de una Landing Page / sitio web generado con la IA.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Modo de Entrega:</strong></p> <ul> <li>Se debe entregar link a Google Drive, link a Google Slides, PowerPoint, Canva y/o cualquier otro similar.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>¡ATENCIÓN! Requisito de Links Públicos:</strong></p> <ul> <li><strong style=\"color: rgb(214, 51, 132);\">EL LINK DE ENTREGA DEBE SER SIEMPRE PÚBLICO</strong> para su correcta visualización y evaluación.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Aprobación del Curso y Certificación:</strong></p> <ul> <li>Aprobación del curso con una nota <strong style=\"color: rgb(214, 51, 132);\">IGUAL O SUPERIOR A 7</strong>.</li> <li><strong style=\"color: rgb(214, 51, 132);\">NOTA IMPORTANTE:</strong> El alumno recibirá certificado <strong style=\"color: rgb(214, 51, 132);\">SOLO SI APRUEBA</strong> la entrega del proyecto.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Criterios de evaluación:</strong></p> <ul> <li>Cumplimiento de los requisitos mínimos obligatorios (4 prompts, 4 imágenes, 1 audio).</li> <li>Claridad, orden y estructura de la presentación final.</li> <li>Detalle de las herramientas utilizadas y de los prompts enviados.</li> <li>Calidad y relevancia del contenido generado por la IA.</li> <li>Se valora la creatividad y la dedicación en el uso de las herramientas.</li> </ul>\r\n\r\n¡MUCHOS ÉXITOS CON SU ENTREGA!",
+    "duracion": "12",
+    "precio_original": "165400.00",
+    "precio_final": "75000.00",
+    "modalidad": "online_vivo",
+    "icono01": "iconos_cursos/ia.png",
+    "icono02": "iconos_cursos/openai.webp",
+    "icono03": "iconos_cursos/copilot.webp",
+    "icono04": "iconos_cursos/gemini.png",
+    "icono05": "",
+    "icono06": "",
+    "icono07": "",
+    "icono08": "",
+    "icono09": "",
+    "icono10": "",
+    "icono11": "",
+    "icono12": ""
+  }
+},
+{
+  "model": "plataforma.curso",
+  "pk": "03",
+  "fields": {
+    "nombre_curso": "Python",
+    "estado_curso": "proximo",
+    "fecha_creacion": "2025-11-07T00:00:00Z",
+    "descripcion": "Aprende los fundamentos de Python y empieza a escribir tus propios programas desde cero.",
+    "consigna_proyecto": "Nada por ahora",
+    "duracion": "50",
+    "precio_original": "290000.00",
+    "precio_final": "180000.00",
+    "modalidad": "online_vivo",
+    "icono01": "iconos_cursos/python.svg",
+    "icono02": "",
+    "icono03": "",
+    "icono04": "",
+    "icono05": "",
+    "icono06": "",
+    "icono07": "",
+    "icono08": "",
+    "icono09": "",
+    "icono10": "",
+    "icono11": "",
+    "icono12": ""
+  }
+},
+{
+  "model": "plataforma.curso",
+  "pk": "04",
+  "fields": {
+    "nombre_curso": "Javascript",
+    "estado_curso": "proximo",
+    "fecha_creacion": "2026-04-03T00:00:00Z",
+    "descripcion": "Domina JavaScript y construye sitios web dinámicos, interactivos y modernos desde el navegador.",
+    "consigna_proyecto": "None",
+    "duracion": "38",
+    "precio_original": "250000.00",
+    "precio_final": "15000.00",
+    "modalidad": "online_vivo",
+    "icono01": "iconos_cursos/javascript.svg",
+    "icono02": "",
+    "icono03": "",
+    "icono04": "",
+    "icono05": "",
+    "icono06": "",
+    "icono07": "",
+    "icono08": "",
+    "icono09": "",
+    "icono10": "",
+    "icono11": "",
+    "icono12": ""
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000001",
+  "fields": {
+    "id_curso": "01",
+    "numero_comision": 11790,
+    "fecha_inicio": "2026-03-02",
+    "fecha_fin": "2026-05-11",
+    "dia1": "lunes",
+    "dia2": "miércoles",
+    "dia3": null,
+    "horario1": "20hs a 22hs",
+    "horario2": "20hs a 22hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "proximo"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000002",
+  "fields": {
+    "id_curso": "02",
+    "numero_comision": 20735,
+    "fecha_inicio": "2026-02-18",
+    "fecha_fin": "2026-03-25",
+    "dia1": "Miércoles",
+    "dia2": null,
+    "dia3": null,
+    "horario1": "20:30hs",
+    "horario2": "22:30hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "proximo"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000003",
+  "fields": {
+    "id_curso": "03",
+    "numero_comision": 12345,
+    "fecha_inicio": "2025-10-07",
+    "fecha_fin": "2025-12-04",
+    "dia1": "lunes",
+    "dia2": "jueves",
+    "dia3": null,
+    "horario1": "20:30hs",
+    "horario2": "20:30hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000004",
+  "fields": {
+    "id_curso": "02",
+    "numero_comision": 56013,
+    "fecha_inicio": "2025-12-19",
+    "fecha_fin": "2025-06-22",
+    "dia1": "Miércoles",
+    "dia2": "Viernes",
+    "dia3": null,
+    "horario1": "20:30hs",
+    "horario2": "20:30hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000005",
+  "fields": {
+    "id_curso": "04",
+    "numero_comision": 30512,
+    "fecha_inicio": "2025-12-17",
+    "fecha_fin": "2025-09-26",
+    "dia1": "Miércoles",
+    "dia2": "Viernes",
+    "dia3": null,
+    "horario1": "20hs",
+    "horario2": "22hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000006",
+  "fields": {
+    "id_curso": "01",
+    "numero_comision": 96325,
+    "fecha_inicio": "2025-06-25",
+    "fecha_fin": "2025-08-28",
+    "dia1": "martes",
+    "dia2": "jueves",
+    "dia3": null,
+    "horario1": "20:30hs",
+    "horario2": "22:30hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000008",
+  "fields": {
+    "id_curso": "01",
+    "numero_comision": 35789,
+    "fecha_inicio": "2025-12-08",
+    "fecha_fin": "2025-09-24",
+    "dia1": "martes",
+    "dia2": "jueves",
+    "dia3": null,
+    "horario1": "18hs",
+    "horario2": "21hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000009",
+  "fields": {
+    "id_curso": "01",
+    "numero_comision": 65478,
+    "fecha_inicio": "2025-12-09",
+    "fecha_fin": "2025-12-10",
+    "dia1": "martes",
+    "dia2": "jueves",
+    "dia3": null,
+    "horario1": "19hs a 21hs",
+    "horario2": "19hs a 21hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000010",
+  "fields": {
+    "id_curso": "01",
+    "numero_comision": 25874,
+    "fecha_inicio": "2025-12-15",
+    "fecha_fin": "2026-02-02",
+    "dia1": "martes",
+    "dia2": "jueves",
+    "dia3": null,
+    "horario1": "19hs a 21hs",
+    "horario2": "19hs a 21hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "en_curso"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000011",
+  "fields": {
+    "id_curso": "04",
+    "numero_comision": 31596,
+    "fecha_inicio": "2025-08-20",
+    "fecha_fin": "2025-11-30",
+    "dia1": "Lunes",
+    "dia2": "Miércoles",
+    "dia3": null,
+    "horario1": "20hs",
+    "horario2": "20hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.comision",
+  "pk": "000012",
+  "fields": {
+    "id_curso": "02",
+    "numero_comision": 36975,
+    "fecha_inicio": "2025-10-30",
+    "fecha_fin": "2025-11-11",
+    "dia1": "Martes",
+    "dia2": "Jueves",
+    "dia3": null,
+    "horario1": "20hs",
+    "horario2": "20hs",
+    "horario3": null,
+    "duracion_clase": "2hs",
+    "estado_comision": "finalizado"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 1,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 0,
+    "nombre_clase": "Presentación del Curso",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 2,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 1,
+    "nombre_clase": "Introducción a HTML ",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSWQTmHXS7JokOI65QHsFKL5r6W9VmC1m1HQOPzDUVYPXRomW376WXNPKy3zMclkw/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 3,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 2,
+    "nombre_clase": "Conociendo a HTML",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vRQ9pKTowW3lsLHVixPgdFYJA0gBsWGdWywo-_drqUxbrf85jXbjigu2ADEOPox5A/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 4,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 3,
+    "nombre_clase": "Presentando a CSS",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vT4kwrbYVQ6ILG0OqcPhoA-CpsVSMig5Qc_K-NmpNcgPbyiQxr6kKhkR5DRxoZppQ/pubembed?start=false&loop=false&delayms=3000\n"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 5,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 4,
+    "nombre_clase": "Primeros pasos con CSS",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSAbWbdkGlH2uvETvAsPmhtJNsJvMZaNv-ZNTB6S9Xk6Wv4PV_Qz8vQJNPmakgXSg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 6,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 5,
+    "nombre_clase": "Modelo de cajas",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vTR9bFkJuesdAi7th1xuBRiOnKJElR9mdi8AN-wNwSrLTUMPlL8yCd1sXp2f-_DVg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 7,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 6,
+    "nombre_clase": "Flexbox",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vRpRuH4cPHbAkd3JTnjrixSo0HKO_akfbliPFxaD_MUZVa7lWuKx5megTtsNFUUIg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 8,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 7,
+    "nombre_clase": "Introducción a Grids",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vR3qA80MkCNCFnBeBQpkGDV1GL-YnBUvGj-dVXgMywinlfCte-GfXr7Yub1rTpyyA/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 9,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 8,
+    "nombre_clase": "Sitios Responsivos (media + grid + flex)",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQW3SHQVf03MWOBDeXpqPSjcQ_r4YPvc_equhr6YqdxKggrDAicCUI_mgUv599YcA/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 10,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 9,
+    "nombre_clase": "Pseudoclases y Pseudoelementos + BEM",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQtohoYN5OZLSn0DVRvNzGgXDBpbyMCFrJ_pY64xAwo3mpMziTq230uWvlGQBKhog/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 11,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 10,
+    "nombre_clase": "Animaciones 1",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vTEHHui9kPKbBq_Bx9OMxk5q5J35Wyr_UyzZCqgLykrDOllLejOXCp-iVGPVuywmA/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 12,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 11,
+    "nombre_clase": "Animaciones 2",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vTabRZUrveyHlY3W2k4xH4JsQxG8k2U-maYUuJnJKiPuwfaO23Zr59cnJlQHMySlg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 13,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 12,
+    "nombre_clase": "Frameworks, librerías y Bootstrap",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vTnOMUAzqnCV37DKIvaj6vDBAy5U5KpjIg23bGgO8_Ol8pveMuPFSNV2IwYOQMaSg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 14,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 13,
+    "nombre_clase": "Maquetando con Bootstrap",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSjBQyDCNwTE9F4QqfZUEBtG0qTkc3IBUzuAqMHBJq2qlsyxUQfyb3yEz9IF2_W2A/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 15,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 14,
+    "nombre_clase": "Git",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSAtHgiRwg1n2fQJ4UDUib1-zXPh6O6_Q15by17pw9WqdZ9SO53SwFVGuTHpEO6lA/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 16,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 15,
+    "nombre_clase": "GitHub",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQvR4qsWb7MJmqmP3hFtI-XWHd9290mDUNCd4EaH-tsumEbKeYoeIPqptyx02qSNg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 17,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 16,
+    "nombre_clase": "SASS",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQrVOPh2zyrCNS92FEfM1YGg-uPjwOgBfsvwwdI8I6YD7nCtDiDnSOh9jLRcV6Dhw/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 18,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 17,
+    "nombre_clase": "SASS parte 2",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQQdZ-hRUiZTJlkFvp_ClH9OfoNccieD2lDfCFH9Z4Ema4EJiAq00L1IavoUkk7BQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 19,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 18,
+    "nombre_clase": "SEO",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vRy4o74lrWrLlbdt3h6CXR1Spds7OmRRVZHFsSxN0KsNSAkhUROXNJOzXXqe2FBng/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 20,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 19,
+    "nombre_clase": "Servidores",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSsUbBu0wz_EZSxEVeiHbGOARcwMzSFDDsbOyXScT65uP21yQuxcd6TKMb5E_hc0A/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 21,
+  "fields": {
+    "curso": "01",
+    "numero_clase": 20,
+    "nombre_clase": "Final del curso",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQh4l7DpLAjQYgT6LPGZSpGhL7oYty1_0mAjJUp7IkefKDK8palVS8B7ctx-uJuoQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 22,
+  "fields": {
+    "curso": "02",
+    "numero_clase": 1,
+    "nombre_clase": "Primeros pasos con la IA",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vTEr-cI745fSLL_Fb1wZAwDMKPIIt1oqQHqqkAPvy7euOF3uTTVS2OwHsYdw8TCLA/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 23,
+  "fields": {
+    "curso": "02",
+    "numero_clase": 2,
+    "nombre_clase": "Prompt Engineering",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSexej9_DmgyBApNJs_QvjGMjqOjX-emhNrHVU3HuxdzrDHApejwtFgy9g_5zpxFQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 24,
+  "fields": {
+    "curso": "02",
+    "numero_clase": 3,
+    "nombre_clase": "Generación de imágenes",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQnR-Q-hXx0Ws3JTzhIKdlfOwutY2H0-EvzOe0hhrSoDBHZU6jzh8uxhKSPDDDRXQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 25,
+  "fields": {
+    "curso": "02",
+    "numero_clase": 4,
+    "nombre_clase": "Generación de Audio con IA",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vRtCTB6IyRw2Ux3RK-8FBrp14WKRCBx1n3vokByC6m8sKQIA0ttSHDNNFwZ3jAf3g/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 26,
+  "fields": {
+    "curso": "02",
+    "numero_clase": 5,
+    "nombre_clase": "Generación de sitios web",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQwFoH48eYQ64g3zI0I8nzT7OG4uN4zmJivaGBrOZGnVaGSZu3Ei6lUDkfZOxQebg/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 27,
+  "fields": {
+    "curso": "02",
+    "numero_clase": 6,
+    "nombre_clase": "Clase final",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vSZmPrjml7tqoTbmGdzMxaf3aYbmEyjFDh-LDBBi3nVkps8Hqu5eKB_fW6JeDsCFziQmB3nSSwlQHwJ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 32,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 1,
+    "nombre_clase": "Introducción a Python",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 33,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 2,
+    "nombre_clase": "Numeros y strings",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 34,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 3,
+    "nombre_clase": "listas y tuplas",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 35,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 4,
+    "nombre_clase": "conjuntos y diccionarios",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 36,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 5,
+    "nombre_clase": "metodos de colecciones",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 37,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 6,
+    "nombre_clase": "operadores basicos y expresiones",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 38,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 7,
+    "nombre_clase": "controladores de flujo 1",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 39,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 8,
+    "nombre_clase": "controladores de flujo 2",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 40,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 9,
+    "nombre_clase": "Funciones 1",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 41,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 10,
+    "nombre_clase": "Funciones 2",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 42,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 11,
+    "nombre_clase": "Excepciones",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 43,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 12,
+    "nombre_clase": "POO 1",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 44,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 13,
+    "nombre_clase": "POO 2",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 45,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 14,
+    "nombre_clase": "Herencia",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 46,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 15,
+    "nombre_clase": "Scripts, modulos y paquetes",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 47,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 16,
+    "nombre_clase": "manejo de archivos y datos",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 48,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 17,
+    "nombre_clase": "git",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 49,
+  "fields": {
+    "curso": "03",
+    "numero_clase": 18,
+    "nombre_clase": "github",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 50,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 1,
+    "nombre_clase": "Introdución a JS",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 51,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 2,
+    "nombre_clase": "sintaxis y variables",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 52,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 3,
+    "nombre_clase": "control de flujos",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 53,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 4,
+    "nombre_clase": "ciclos e iteraciones",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 54,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 5,
+    "nombre_clase": "funciones",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 55,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 6,
+    "nombre_clase": "objetos",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 56,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 7,
+    "nombre_clase": "arrays",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 57,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 8,
+    "nombre_clase": "funciones de orden superior",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 58,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 9,
+    "nombre_clase": "Dom funciones de orden superior",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 59,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 10,
+    "nombre_clase": "eventos - dom",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 60,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 11,
+    "nombre_clase": "storage y json",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 61,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 12,
+    "nombre_clase": "workshp storage json",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 62,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 13,
+    "nombre_clase": "operaciones avanzadas",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 63,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 14,
+    "nombre_clase": "librerias operadores avanzados",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 64,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 15,
+    "nombre_clase": "asincronias y promesas",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 65,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 16,
+    "nombre_clase": "ajax y fetch",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 66,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 17,
+    "nombre_clase": "framework y nodejs 1",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clase",
+  "pk": 67,
+  "fields": {
+    "curso": "04",
+    "numero_clase": 18,
+    "nombre_clase": "framework y nodejs 2",
+    "estado_clase": "Activo",
+    "ppt": "https://docs.google.com/presentation/d/e/2PACX-1vQIsOxTaVT69zLMMQc8yahXpBeCd5OtzwWl4XwKfzwK7NKt90dE_QmmUmZB4r8PgQ/pubembed?start=false&loop=false&delayms=3000"
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 37,
+  "fields": {
+    "clase": 22,
+    "comision": "000002",
+    "fecha": "2026-02-18",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 38,
+  "fields": {
+    "clase": 23,
+    "comision": "000002",
+    "fecha": "2026-02-25",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 39,
+  "fields": {
+    "clase": 24,
+    "comision": "000002",
+    "fecha": "2026-03-04",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 40,
+  "fields": {
+    "clase": 25,
+    "comision": "000002",
+    "fecha": "2026-03-11",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 41,
+  "fields": {
+    "clase": 26,
+    "comision": "000002",
+    "fecha": "2026-03-18",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 42,
+  "fields": {
+    "clase": 27,
+    "comision": "000002",
+    "fecha": "2026-03-25",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 43,
+  "fields": {
+    "clase": 1,
+    "comision": "000001",
+    "fecha": "2026-03-02",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 44,
+  "fields": {
+    "clase": 2,
+    "comision": "000001",
+    "fecha": "2026-03-04",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 45,
+  "fields": {
+    "clase": 3,
+    "comision": "000001",
+    "fecha": "2026-03-09",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 46,
+  "fields": {
+    "clase": 4,
+    "comision": "000001",
+    "fecha": "2026-03-11",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 47,
+  "fields": {
+    "clase": 5,
+    "comision": "000001",
+    "fecha": "2026-03-16",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 48,
+  "fields": {
+    "clase": 6,
+    "comision": "000001",
+    "fecha": "2026-03-18",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 49,
+  "fields": {
+    "clase": 7,
+    "comision": "000001",
+    "fecha": "2026-03-23",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 50,
+  "fields": {
+    "clase": 8,
+    "comision": "000001",
+    "fecha": "2026-03-25",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 51,
+  "fields": {
+    "clase": 9,
+    "comision": "000001",
+    "fecha": "2026-03-30",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 52,
+  "fields": {
+    "clase": 10,
+    "comision": "000001",
+    "fecha": "2026-04-01",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 53,
+  "fields": {
+    "clase": 11,
+    "comision": "000001",
+    "fecha": "2026-04-06",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 54,
+  "fields": {
+    "clase": 12,
+    "comision": "000001",
+    "fecha": "2026-04-08",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 55,
+  "fields": {
+    "clase": 13,
+    "comision": "000001",
+    "fecha": "2026-04-13",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 56,
+  "fields": {
+    "clase": 14,
+    "comision": "000001",
+    "fecha": "2026-04-15",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 57,
+  "fields": {
+    "clase": 15,
+    "comision": "000001",
+    "fecha": "2026-04-20",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 58,
+  "fields": {
+    "clase": 16,
+    "comision": "000001",
+    "fecha": "2026-04-22",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 59,
+  "fields": {
+    "clase": 17,
+    "comision": "000001",
+    "fecha": "2026-04-27",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 60,
+  "fields": {
+    "clase": 18,
+    "comision": "000001",
+    "fecha": "2026-04-29",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 61,
+  "fields": {
+    "clase": 19,
+    "comision": "000001",
+    "fecha": "2026-05-04",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 62,
+  "fields": {
+    "clase": 20,
+    "comision": "000001",
+    "fecha": "2026-05-06",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 63,
+  "fields": {
+    "clase": 21,
+    "comision": "000001",
+    "fecha": "2026-05-11",
+    "horario": "20:30:00",
+    "hora_fin": "22:30:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 64,
+  "fields": {
+    "clase": 32,
+    "comision": "000003",
+    "fecha": "2025-10-07",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 65,
+  "fields": {
+    "clase": 33,
+    "comision": "000003",
+    "fecha": "2025-10-09",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 66,
+  "fields": {
+    "clase": 34,
+    "comision": "000003",
+    "fecha": "2025-10-14",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 67,
+  "fields": {
+    "clase": 35,
+    "comision": "000003",
+    "fecha": "2025-10-16",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 68,
+  "fields": {
+    "clase": 36,
+    "comision": "000003",
+    "fecha": "2025-10-21",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 69,
+  "fields": {
+    "clase": 37,
+    "comision": "000003",
+    "fecha": "2025-10-23",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 70,
+  "fields": {
+    "clase": 38,
+    "comision": "000003",
+    "fecha": "2025-10-28",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 71,
+  "fields": {
+    "clase": 39,
+    "comision": "000003",
+    "fecha": "2025-10-30",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 72,
+  "fields": {
+    "clase": 40,
+    "comision": "000003",
+    "fecha": "2025-11-04",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 73,
+  "fields": {
+    "clase": 41,
+    "comision": "000003",
+    "fecha": "2025-11-06",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 74,
+  "fields": {
+    "clase": 42,
+    "comision": "000003",
+    "fecha": "2025-11-11",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 75,
+  "fields": {
+    "clase": 43,
+    "comision": "000003",
+    "fecha": "2025-11-13",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 76,
+  "fields": {
+    "clase": 44,
+    "comision": "000003",
+    "fecha": "2025-11-18",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 77,
+  "fields": {
+    "clase": 45,
+    "comision": "000003",
+    "fecha": "2025-11-20",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 78,
+  "fields": {
+    "clase": 46,
+    "comision": "000003",
+    "fecha": "2025-11-25",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 79,
+  "fields": {
+    "clase": 47,
+    "comision": "000003",
+    "fecha": "2025-11-27",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 80,
+  "fields": {
+    "clase": 48,
+    "comision": "000003",
+    "fecha": "2025-12-02",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
+  "model": "plataforma.clasecomision",
+  "pk": 81,
+  "fields": {
+    "clase": 49,
+    "comision": "000003",
+    "fecha": "2025-12-04",
+    "horario": "20:00:00",
+    "hora_fin": "22:00:00",
+    "link": "",
+    "video": ""
+  }
+},
+{
   "model": "plataforma.registropago",
   "pk": 1,
   "fields": {
@@ -3589,309 +5173,1500 @@
   }
 },
 {
-  "model": "plataforma.curso",
-  "pk": "01",
+  "model": "plataforma.inscripcionclasegratis",
+  "pk": 1,
   "fields": {
-    "nombre_curso": "Desarrollo web",
-    "estado_curso": "Disponible",
-    "fecha_creacion": "2025-06-30T00:00:00Z",
-    "descripcion": "Aprende HTML, CSS, Sass, Git y Bootstrap para crear sitios web modernos y responsivos.",
-    "consigna_proyecto": "Desarrollar una web aplicando todos los contenidos vistos durante la cursada. El sitio debe cumplir con los siguientes requisitos mínimos:\r\n    \r\n\r\n    <ul>\r\n      <li>Debe contar con un mínimo de 4 secciones, incluyendo <code>index.html</code>.</li>\r\n      <li>Utilizar HTML y CSS.</li>\r\n      <li>Implementar Bootstrap y Sass.</li>\r\n      <li>El sitio debe ser responsivo (mobile, tablet y desktop).</li>\r\n      <li>Se debe trabajar con Git y GitHub, y subir el proyecto a un servidor.</li>\r\n    </ul>\r\n\r\n    <p class=\"mt-4\" style=\"color: #12f693;\"><strong>Elementos obligatorios a incluir:</strong></p>\r\n    <ul>\r\n      <li>Barra de navegación con enlaces funcionales.</li>\r\n      <li>No se permiten sitios One Page ni Landing Pages.</li>\r\n      <li>No se permite el uso de textos de ejemplo como \"Lorem ipsum\".</li>\r\n      <li>Mínimo 4 archivos HTML.</li>\r\n      <li>Aplicar SEO básico: <code>keywords</code>, <code>description</code> y atributos <code>alt</code> en imágenes.</li>\r\n    </ul>\r\n\r\n    <p class=\"mt-4\" style=\"color: #12f693;\"><strong>Entregables:</strong></p>\r\n    <ul>\r\n      <li>Link al repositorio de GitHub (código fuente).</li>\r\n      <li>Link a GitHub Pages (versión visual del sitio).</li>\r\n      <li>Link del servidor utilizado (Netlify, Vercel, 000webhost o InfinityFree).</li>\r\n    </ul>\r\n\r\n    <p class=\"mt-4\" style=\"color: #12f693;\"><strong>Criterios de evaluación:</strong></p>\r\n    <ul>\r\n      <li>Código legible, ordenado y bien aplicado.</li>\r\n      <li>Estructura de maquetado correcta.</li>\r\n      <li>Estética general del sitio.</li>\r\n      <li>Tecnología y herramientas utilizadas.</li>\r\n      <li>Contenido suficiente, claro y de calidad.</li>\r\n      <li>Se valora la creatividad y la dedicación.</li>\r\n    </ul>\r\n",
-    "duracion": "40",
-    "precio_original": "210000.00",
-    "precio_final": "125000.00",
-    "modalidad": "online_vivo",
-    "icono01": "iconos_cursos/html5.svg",
-    "icono02": "iconos_cursos/css3.svg",
-    "icono03": "iconos_cursos/sass.svg",
-    "icono04": "iconos_cursos/bootstrap.svg",
-    "icono05": "iconos_cursos/git.svg",
-    "icono06": "iconos_cursos/github.svg",
-    "icono07": "",
-    "icono08": "",
-    "icono09": "",
-    "icono10": "",
-    "icono11": "",
-    "icono12": ""
+    "nombre": "ema",
+    "apellido": "Cabrall",
+    "dni": "35613572",
+    "fecha_nacimiento": "2000-01-01",
+    "genero": "Masculino",
+    "telefono": "1122334455",
+    "email": "micorreo@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Buenos Aires",
+    "dias": "Lunes, Martes, Miércoles, Jueves, Viernes, Sábado",
+    "horarios": "Mañana, Tarde, Noche",
+    "nivel_pc": 5,
+    "exp_programacion": "He aprendido algo, pero no soy experto.",
+    "nivel_programacion": 9,
+    "tecnologias": "HTML, CSS, Bootstrap, Git, GitHub, Python, PHP",
+    "creado": "2025-07-03T13:56:57.327Z"
   }
 },
 {
-  "model": "plataforma.curso",
-  "pk": "02",
+  "model": "plataforma.inscripcionclasegratis",
+  "pk": 23,
   "fields": {
-    "nombre_curso": "Inteligencia Artificial",
-    "estado_curso": "Disponible",
-    "fecha_creacion": "2025-08-08T00:00:00Z",
-    "descripcion": "Introducción práctica a IA con aplicaciones reales en distintos sectores.",
-    "consigna_proyecto": "Proyecto Integrador Final: Introducción a la Inteligencia Artificial\r\nDesarrollar una presentación (Word, PowerPoint, Canva, Google Slides, Video o Sitio Web), cualquiera de estas alternativas, aplicando los contenidos y herramientas de IA explorados.\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Requisitos Mínimos:</strong></p> <ul> <li> <strong style=\"color: rgb(214, 51, 132);\">Formato Flexible:</strong>\r\n\r\n\r\nLa entrega puede ser una presentación digital, un documento, un video o un sitio web. </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Interacciones con Chatbots:</strong>\r\n\r\n\r\nDebe incluir un mínimo de 4 prompts enviados y sus respuestas obtenidas de cualquier IA conversacional (ej. ChatGPT, Gemini, Copilot, Grok, Claude, etc.). </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Imágenes Generadas por IA:</strong>\r\n\r\n\r\nDebe incluir un mínimo de 4 imágenes generadas con una herramienta de IA (Text-to-Image). </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Audio Generado por IA:</strong>\r\n\r\n\r\nDebe incluir un mínimo de 1 audio generado con alguna herramienta de IA (Text-to-Speech o música). </li>\r\n\r\n\r\n<li> <strong style=\"color: rgb(214, 51, 132);\">Detalle de Herramientas:</strong>\r\n\r\n\r\nSe deben detallar las herramientas de IA utilizadas para la generación de todos los elementos. </li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Elementos obligatorios a incluir:</strong></p> <ul> <li>Se debe detallar el prompt exacto utilizado para generar cada respuesta de chatbot, imagen y audio.</li> <li>Se debe incluir capturas y/o links de los chatbots, audios, videos y/o sitios web para poder visualizar el contenido generado.</li> <li>El contenido debe ser suficiente, claro y de calidad, generado por las herramientas de IA.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Opcionales (Puntos extra por dedicación):</strong></p> <ul> <li>Generación de un video con la IA.</li> <li>Generación de una Landing Page / sitio web generado con la IA.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Modo de Entrega:</strong></p> <ul> <li>Se debe entregar link a Google Drive, link a Google Slides, PowerPoint, Canva y/o cualquier otro similar.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>¡ATENCIÓN! Requisito de Links Públicos:</strong></p> <ul> <li><strong style=\"color: rgb(214, 51, 132);\">EL LINK DE ENTREGA DEBE SER SIEMPRE PÚBLICO</strong> para su correcta visualización y evaluación.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Aprobación del Curso y Certificación:</strong></p> <ul> <li>Aprobación del curso con una nota <strong style=\"color: rgb(214, 51, 132);\">IGUAL O SUPERIOR A 7</strong>.</li> <li><strong style=\"color: rgb(214, 51, 132);\">NOTA IMPORTANTE:</strong> El alumno recibirá certificado <strong style=\"color: rgb(214, 51, 132);\">SOLO SI APRUEBA</strong> la entrega del proyecto.</li> </ul>\r\n\r\n<p class=\"mt-4\" style=\"color: rgb(214, 51, 132);\"><strong>Criterios de evaluación:</strong></p> <ul> <li>Cumplimiento de los requisitos mínimos obligatorios (4 prompts, 4 imágenes, 1 audio).</li> <li>Claridad, orden y estructura de la presentación final.</li> <li>Detalle de las herramientas utilizadas y de los prompts enviados.</li> <li>Calidad y relevancia del contenido generado por la IA.</li> <li>Se valora la creatividad y la dedicación en el uso de las herramientas.</li> </ul>\r\n\r\n¡MUCHOS ÉXITOS CON SU ENTREGA!",
-    "duracion": "12",
-    "precio_original": "165400.00",
-    "precio_final": "75000.00",
-    "modalidad": "online_vivo",
-    "icono01": "iconos_cursos/ia.png",
-    "icono02": "iconos_cursos/openai.webp",
-    "icono03": "iconos_cursos/copilot.webp",
-    "icono04": "iconos_cursos/gemini.png",
-    "icono05": "",
-    "icono06": "",
-    "icono07": "",
-    "icono08": "",
-    "icono09": "",
-    "icono10": "",
-    "icono11": "",
-    "icono12": ""
+    "nombre": "Maximo",
+    "apellido": "daswe",
+    "dni": "15200300",
+    "fecha_nacimiento": "2000-01-01",
+    "genero": "Prefiero no decir",
+    "telefono": "1511330012",
+    "email": "tecnomaximo@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Buenos Aires",
+    "dias": "Lunes, Miércoles, Jueves",
+    "horarios": "Ninguno",
+    "nivel_pc": 4,
+    "exp_programacion": "He aprendido algo, pero no soy experto.",
+    "nivel_programacion": 3,
+    "tecnologias": "HTML, Git, GitHub, Tailwind, Angular, SQL",
+    "creado": "2025-11-27T22:51:06.532Z"
   }
 },
 {
-  "model": "plataforma.curso",
-  "pk": "03",
+  "model": "plataforma.inscripcionclasegratis",
+  "pk": 24,
   "fields": {
-    "nombre_curso": "Python",
-    "estado_curso": "proximo",
-    "fecha_creacion": "2025-11-07T00:00:00Z",
-    "descripcion": "Aprende los fundamentos de Python y empieza a escribir tus propios programas desde cero.",
-    "consigna_proyecto": "Nada por ahora",
-    "duracion": "50",
-    "precio_original": "290000.00",
-    "precio_final": "180000.00",
-    "modalidad": "online_vivo",
-    "icono01": "iconos_cursos/python.svg",
-    "icono02": "",
-    "icono03": "",
-    "icono04": "",
-    "icono05": "",
-    "icono06": "",
-    "icono07": "",
-    "icono08": "",
-    "icono09": "",
-    "icono10": "",
-    "icono11": "",
-    "icono12": ""
+    "nombre": "edgar",
+    "apellido": "balboa",
+    "dni": "22000145",
+    "fecha_nacimiento": "2010-12-03",
+    "genero": "Masculino",
+    "telefono": "1511330012",
+    "email": "tecnomar@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Corrientes",
+    "dias": "Lunes, Martes, Miércoles",
+    "horarios": "Ninguno",
+    "nivel_pc": 5,
+    "exp_programacion": "He aprendido algo, pero no soy experto.",
+    "nivel_programacion": 5,
+    "tecnologias": "JavaScript, Tailwind, React, Django, SQL",
+    "creado": "2025-11-27T23:03:23.452Z"
   }
 },
 {
-  "model": "plataforma.curso",
-  "pk": "04",
+  "model": "plataforma.inscripcionclasegratis",
+  "pk": 25,
   "fields": {
-    "nombre_curso": "Javascript",
-    "estado_curso": "proximo",
-    "fecha_creacion": "2026-04-03T00:00:00Z",
-    "descripcion": "Domina JavaScript y construye sitios web dinámicos, interactivos y modernos desde el navegador.",
-    "consigna_proyecto": "None",
-    "duracion": "38",
-    "precio_original": "250000.00",
-    "precio_final": "15000.00",
-    "modalidad": "online_vivo",
-    "icono01": "iconos_cursos/javascript.svg",
-    "icono02": "",
-    "icono03": "",
-    "icono04": "",
-    "icono05": "",
-    "icono06": "",
-    "icono07": "",
-    "icono08": "",
-    "icono09": "",
-    "icono10": "",
-    "icono11": "",
-    "icono12": ""
+    "nombre": "claudio",
+    "apellido": "daswer",
+    "dni": "11253456",
+    "fecha_nacimiento": "2006-02-28",
+    "genero": "Masculino",
+    "telefono": "1511330018",
+    "email": "tecn@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Buenos Aires",
+    "dias": "Ninguno",
+    "horarios": "Ninguno",
+    "nivel_pc": 1,
+    "exp_programacion": "Sí, tengo experiencia.",
+    "nivel_programacion": 1,
+    "tecnologias": "Ninguna",
+    "creado": "2025-11-27T23:17:14.998Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000001",
+  "model": "plataforma.inscripcionclasegratis",
+  "pk": 26,
   "fields": {
-    "id_curso": "01",
-    "numero_comision": 11790,
-    "fecha_inicio": "2026-03-02",
-    "fecha_fin": "2026-05-11",
-    "dia1": "lunes",
-    "dia2": "miércoles",
-    "dia3": null,
-    "horario1": "20hs a 22hs",
-    "horario2": "20hs a 22hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "proximo"
+    "nombre": "miguel",
+    "apellido": "Bremer",
+    "dni": "20350565",
+    "fecha_nacimiento": "2009-02-16",
+    "genero": "Masculino",
+    "telefono": "1122335586",
+    "email": "miguelbremer@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Buenos Aires",
+    "dias": "Lunes, Miércoles, Viernes",
+    "horarios": "Ninguno",
+    "nivel_pc": 7,
+    "exp_programacion": "Sí, tengo experiencia.",
+    "nivel_programacion": 6,
+    "tecnologias": "HTML, CSS, SASS, Bootstrap",
+    "creado": "2025-11-28T20:17:32.498Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000002",
+  "model": "plataforma.inscripcionclasegratis",
+  "pk": 27,
   "fields": {
-    "id_curso": "02",
-    "numero_comision": 20735,
-    "fecha_inicio": "2026-02-18",
-    "fecha_fin": "2026-03-25",
-    "dia1": "Miércoles",
-    "dia2": null,
-    "dia3": null,
-    "horario1": "20:30hs",
-    "horario2": "22:30hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "proximo"
+    "nombre": "oscar",
+    "apellido": "Bremer",
+    "dni": "20350566",
+    "fecha_nacimiento": "2009-02-16",
+    "genero": "Masculino",
+    "telefono": "1122335586",
+    "email": "oscarbremer@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Buenos Aires",
+    "dias": "Lunes, Martes, Miércoles, Viernes",
+    "horarios": "Ninguno",
+    "nivel_pc": 7,
+    "exp_programacion": "Sí, tengo experiencia.",
+    "nivel_programacion": 6,
+    "tecnologias": "HTML, CSS, SASS, Bootstrap, JavaScript",
+    "creado": "2025-11-28T20:18:24.858Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000003",
+  "model": "plataforma.inscripcioniapromo",
+  "pk": 33,
   "fields": {
-    "id_curso": "03",
-    "numero_comision": 12345,
-    "fecha_inicio": "2025-10-07",
-    "fecha_fin": "2025-12-04",
-    "dia1": "lunes",
-    "dia2": "jueves",
-    "dia3": null,
-    "horario1": "20:30hs",
-    "horario2": "20:30hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "nombre": "Maximo",
+    "apellido": "araujo",
+    "dni": "00000000",
+    "fecha_nacimiento": "2000-01-01",
+    "genero": "Prefiero no decir",
+    "telefono": "1511330012",
+    "email": "tecnomarema.ar@gmail.com",
+    "pais": "Argentina",
+    "provincia": null,
+    "dias": "Martes",
+    "horarios": "Mediodía (12 a 14 hs)",
+    "nivel_pc": 1,
+    "exp_programacion": "Sí, tengo experiencia.",
+    "nivel_programacion": 6,
+    "creado": "2025-11-27T21:34:03.835Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000004",
+  "model": "plataforma.inscripcioniapromo",
+  "pk": 36,
   "fields": {
-    "id_curso": "02",
-    "numero_comision": 56013,
-    "fecha_inicio": "2025-12-19",
-    "fecha_fin": "2025-06-22",
-    "dia1": "Miércoles",
-    "dia2": "Viernes",
-    "dia3": null,
-    "horario1": "20:30hs",
-    "horario2": "20:30hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "nombre": "Maximo",
+    "apellido": "adsa",
+    "dni": "22000145",
+    "fecha_nacimiento": "2010-12-08",
+    "genero": "Masculino",
+    "telefono": "1122334477",
+    "email": "tecnomarema.argen@gmail.com",
+    "pais": "Argentina",
+    "provincia": "Mendoza",
+    "dias": "Martes,Jueves,Viernes",
+    "horarios": "Mediodía (12 a 14 hs),Tarde (14 a 18 hs)",
+    "nivel_pc": 5,
+    "exp_programacion": "Sí, tengo experiencia.",
+    "nivel_programacion": 7,
+    "creado": "2025-11-27T22:47:30.381Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000005",
+  "model": "plataforma.inscripcioniapromo",
+  "pk": 37,
   "fields": {
-    "id_curso": "04",
-    "numero_comision": 30512,
-    "fecha_inicio": "2025-12-17",
-    "fecha_fin": "2025-09-26",
-    "dia1": "Miércoles",
-    "dia2": "Viernes",
-    "dia3": null,
-    "horario1": "20hs",
-    "horario2": "22hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "nombre": "Maximo",
+    "apellido": "daswel",
+    "dni": "21000112",
+    "fecha_nacimiento": "2006-06-14",
+    "genero": "Masculino",
+    "telefono": "1122334455",
+    "email": "coder.@gmail.com",
+    "pais": "Argentina",
+    "provincia": "CABA",
+    "dias": "Ninguno",
+    "horarios": "Ninguno",
+    "nivel_pc": 1,
+    "exp_programacion": "Sí, tengo experiencia.",
+    "nivel_programacion": 1,
+    "creado": "2025-11-27T23:16:03.071Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000006",
+  "model": "plataforma.valoracionalumno",
+  "pk": 28,
   "fields": {
-    "id_curso": "01",
-    "numero_comision": 96325,
-    "fecha_inicio": "2025-06-25",
-    "fecha_fin": "2025-08-28",
-    "dia1": "martes",
-    "dia2": "jueves",
-    "dia3": null,
-    "horario1": "20:30hs",
-    "horario2": "22:30hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "id_estudiante": "000001",
+    "id_usuario": "000001",
+    "nombre_usuario": "marema",
+    "clase": 31,
+    "curso_id": null,
+    "curso_nombre": null,
+    "comision_id": null,
+    "numero_clase": null,
+    "nombre_clase": null,
+    "preferencia_clase": "me_gusto",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "buena clase",
+    "fecha_valoracion": "2025-06-17T15:50:43.947Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000008",
+  "model": "plataforma.valoracionalumno",
+  "pk": 30,
   "fields": {
-    "id_curso": "01",
-    "numero_comision": 35789,
-    "fecha_inicio": "2025-12-08",
-    "fecha_fin": "2025-09-24",
-    "dia1": "martes",
-    "dia2": "jueves",
-    "dia3": null,
-    "horario1": "18hs",
-    "horario2": "21hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "id_estudiante": "000001",
+    "id_usuario": "000001",
+    "nombre_usuario": "marema",
+    "clase": 30,
+    "curso_id": null,
+    "curso_nombre": null,
+    "comision_id": null,
+    "numero_clase": null,
+    "nombre_clase": null,
+    "preferencia_clase": "mas_o_menos",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "buena",
+    "fecha_valoracion": "2025-06-18T14:21:24.478Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000009",
+  "model": "plataforma.valoracionalumno",
+  "pk": 37,
   "fields": {
-    "id_curso": "01",
-    "numero_comision": 65478,
-    "fecha_inicio": "2025-12-09",
-    "fecha_fin": "2025-12-10",
-    "dia1": "martes",
-    "dia2": "jueves",
-    "dia3": null,
-    "horario1": "19hs a 21hs",
-    "horario2": "19hs a 21hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "id_estudiante": "000002",
+    "id_usuario": "000002",
+    "nombre_usuario": "marema2",
+    "clase": 29,
+    "curso_id": "02",
+    "curso_nombre": "Inteligencia Artificial",
+    "comision_id": "000004",
+    "numero_clase": 8,
+    "nombre_clase": "Creación de Videos con IA",
+    "preferencia_clase": "me_gusto",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "fafafaaaaaaaaaaaaaaafffffffffaaaaaaaaaaaaaaaafffffffffffffaaaaaaaaaaa",
+    "fecha_valoracion": "2025-06-30T00:24:54.534Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000010",
+  "model": "plataforma.valoracionalumno",
+  "pk": 38,
   "fields": {
-    "id_curso": "01",
-    "numero_comision": 25874,
-    "fecha_inicio": "2025-12-15",
-    "fecha_fin": "2026-02-02",
-    "dia1": "martes",
-    "dia2": "jueves",
-    "dia3": null,
-    "horario1": "19hs a 21hs",
-    "horario2": "19hs a 21hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "en_curso"
+    "id_estudiante": "000002",
+    "id_usuario": "000002",
+    "nombre_usuario": "marema2",
+    "clase": 31,
+    "curso_id": "02",
+    "curso_nombre": "Inteligencia Artificial",
+    "comision_id": "000004",
+    "numero_clase": 10,
+    "nombre_clase": "Futuro de la IA y Oportunidades Laborales",
+    "preferencia_clase": "me_gusto",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "hola ahra si?",
+    "fecha_valoracion": "2025-06-30T00:25:21.724Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000011",
+  "model": "plataforma.valoracionalumno",
+  "pk": 39,
   "fields": {
-    "id_curso": "04",
-    "numero_comision": 31596,
-    "fecha_inicio": "2025-08-20",
-    "fecha_fin": "2025-11-30",
-    "dia1": "Lunes",
-    "dia2": "Miércoles",
-    "dia3": null,
-    "horario1": "20hs",
-    "horario2": "20hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "id_estudiante": "000002",
+    "id_usuario": "000002",
+    "nombre_usuario": "marema2",
+    "clase": 30,
+    "curso_id": "02",
+    "curso_nombre": "Inteligencia Artificial",
+    "comision_id": "000004",
+    "numero_clase": 9,
+    "nombre_clase": "Prompt Engineering Avanzado",
+    "preferencia_clase": "me_gusto",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "y ahor y ahora?",
+    "fecha_valoracion": "2025-06-30T00:35:59.985Z"
   }
 },
 {
-  "model": "plataforma.comision",
-  "pk": "000012",
+  "model": "plataforma.valoracionalumno",
+  "pk": 40,
   "fields": {
-    "id_curso": "02",
-    "numero_comision": 36975,
-    "fecha_inicio": "2025-10-30",
-    "fecha_fin": "2025-11-11",
-    "dia1": "Martes",
-    "dia2": "Jueves",
-    "dia3": null,
-    "horario1": "20hs",
-    "horario2": "20hs",
-    "horario3": null,
-    "duracion_clase": "2hs",
-    "estado_comision": "finalizado"
+    "id_estudiante": "000002",
+    "id_usuario": "000002",
+    "nombre_usuario": "marema2",
+    "clase": 28,
+    "curso_id": "02",
+    "curso_nombre": "Inteligencia Artificial",
+    "comision_id": "000004",
+    "numero_clase": 7,
+    "nombre_clase": "Análisis de Datos con IA",
+    "preferencia_clase": "no_me_gusto",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "sisis",
+    "fecha_valoracion": "2025-06-30T00:37:54.691Z"
+  }
+},
+{
+  "model": "plataforma.valoracionalumno",
+  "pk": 41,
+  "fields": {
+    "id_estudiante": "000002",
+    "id_usuario": "000002",
+    "nombre_usuario": "marema2",
+    "clase": 28,
+    "curso_id": "02",
+    "curso_nombre": "Inteligencia Artificial",
+    "comision_id": "000004",
+    "numero_clase": 7,
+    "nombre_clase": "Análisis de Datos con IA",
+    "preferencia_clase": "mas_o_menos",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "sisis",
+    "fecha_valoracion": "2025-06-30T00:37:54.710Z"
+  }
+},
+{
+  "model": "plataforma.valoracionalumno",
+  "pk": 45,
+  "fields": {
+    "id_estudiante": "000002",
+    "id_usuario": "000002",
+    "nombre_usuario": "marema2",
+    "clase": 75,
+    "curso_id": "05",
+    "curso_nombre": "Desarrollo web_v2",
+    "comision_id": "000007",
+    "numero_clase": 7,
+    "nombre_clase": "Introducción a Grids",
+    "preferencia_clase": "me_gusto",
+    "rol_profe": 10,
+    "contenido": 10,
+    "plataforma": 10,
+    "streaming": 1,
+    "comentarios": "llllllllllll",
+    "fecha_valoracion": "2025-06-30T00:55:49.927Z"
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 1,
+  "fields": {
+    "tipo": "general",
+    "comision": null,
+    "creado": "2025-06-23T01:57:14.504Z",
+    "participantes": [
+      "000002"
+    ]
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 2,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000004",
+    "creado": "2025-07-06T21:09:49.293Z",
+    "participantes": [
+      "000002"
+    ]
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 3,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000003",
+    "creado": "2025-07-06T21:09:50.709Z",
+    "participantes": []
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 4,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000001",
+    "creado": "2025-07-06T21:09:52.031Z",
+    "participantes": [
+      "000002"
+    ]
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 5,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000002",
+    "creado": "2025-07-06T21:09:53.292Z",
+    "participantes": [
+      "000002"
+    ]
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 6,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000005",
+    "creado": "2025-07-06T21:09:54.572Z",
+    "participantes": []
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 7,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000006",
+    "creado": "2025-07-06T21:09:55.678Z",
+    "participantes": []
+  }
+},
+{
+  "model": "plataforma.chat",
+  "pk": 237,
+  "fields": {
+    "tipo": "comision",
+    "comision": "000009",
+    "creado": "2025-12-13T00:30:53.972Z",
+    "participantes": [
+      "000002"
+    ]
+  }
+},
+{
+  "model": "plataforma.chat_participantes",
+  "pk": 2129,
+  "fields": {
+    "chat": 1,
+    "perfilusuario": "000002"
+  }
+},
+{
+  "model": "plataforma.chat_participantes",
+  "pk": 2143,
+  "fields": {
+    "chat": 2,
+    "perfilusuario": "000002"
+  }
+},
+{
+  "model": "plataforma.chat_participantes",
+  "pk": 2144,
+  "fields": {
+    "chat": 5,
+    "perfilusuario": "000002"
+  }
+},
+{
+  "model": "plataforma.chat_participantes",
+  "pk": 2145,
+  "fields": {
+    "chat": 237,
+    "perfilusuario": "000002"
+  }
+},
+{
+  "model": "plataforma.chat_participantes",
+  "pk": 2146,
+  "fields": {
+    "chat": 4,
+    "perfilusuario": "000002"
+  }
+},
+{
+  "model": "plataforma.entregaproyecto",
+  "pk": 1,
+  "fields": {
+    "estudiante": "000002",
+    "curso": "02",
+    "comision": "000002",
+    "titulo": "Ejemplo6",
+    "descripcion": "asdsadasda",
+    "link_github": "https://www.elnueve.com.ar/",
+    "link_pages": "https://www.elnueve.com.ar/",
+    "link_servidor": "https://www.elnueve.com.ar/",
+    "link_adicional": "https://www.elnueve.com.ar/",
+    "archivo_1": "entregas/humedad.docx",
+    "archivo_2": "entregas/clase_9.pptx",
+    "archivo_3": "entregas/recetario_wafles_con_gluten.pdf",
+    "imagen": "entregas/imagenes/plataforma1.png",
+    "video": "entregas/videos/2025-04-10_22-26-01.mkv",
+    "audio": "entregas/audios/quizzie.mp3",
+    "comentarios_adicionales": "hola este es mi comentario",
+    "fecha_entrega": "2025-06-19T22:23:28.052Z",
+    "nota": "7.50",
+    "feedback": "este esres ra ad asdasd asdada sdadasdasda dadadasdasdasda aadasdasdasdad a a adadadadasda ad adadadadadad adadadasdasd asdadasdadadada daadadadada s"
+  }
+},
+{
+  "model": "plataforma.entregaproyecto",
+  "pk": 3,
+  "fields": {
+    "estudiante": "000002",
+    "curso": "01",
+    "comision": "000001",
+    "titulo": "fsdf asfasf",
+    "descripcion": "gdgdf as f",
+    "link_github": "https://www.url.com",
+    "link_pages": "https://www.url.com",
+    "link_servidor": "https://www.url.com",
+    "link_adicional": null,
+    "archivo_1": "",
+    "archivo_2": "",
+    "archivo_3": "",
+    "imagen": "",
+    "video": "",
+    "audio": "",
+    "comentarios_adicionales": "adsfasfdas",
+    "fecha_entrega": "2025-06-28T17:44:33.349Z",
+    "nota": "8.00",
+    "feedback": "fasfdasd a ds as asda sddasd adasdasda"
+  }
+},
+{
+  "model": "plataforma.entregaproyecto",
+  "pk": 4,
+  "fields": {
+    "estudiante": "000003",
+    "curso": "02",
+    "comision": "000002",
+    "titulo": "adasd",
+    "descripcion": "asdasd",
+    "link_github": "https://www.elnueve.com.ar/",
+    "link_pages": "https://www.elnueve.com.ar/",
+    "link_servidor": "https://www.elnueve.com.ar/",
+    "link_adicional": "https://www.elnueve.com.ar/",
+    "archivo_1": "",
+    "archivo_2": "",
+    "archivo_3": "",
+    "imagen": "",
+    "video": "",
+    "audio": "",
+    "comentarios_adicionales": "asdasd",
+    "fecha_entrega": "2025-06-19T22:23:28.052Z",
+    "nota": null,
+    "feedback": ""
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 762,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Cómo se llama el campo de la informática que desarrolla sistemas que simulan la inteligencia humana?",
+    "opcion_a": "Machine Learning",
+    "opcion_b": "Inteligencia Artificial (IA)",
+    "opcion_c": "Robótica Avanzada",
+    "opcion_d": "Algoritmos Predictivos",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 763,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Cuál es la rama de la IA que permite a las máquinas aprender de los datos sin ser programadas explícitamente?",
+    "opcion_a": "Machine Learning (Aprendizaje Automático)",
+    "opcion_b": "Deep Learning",
+    "opcion_c": "Modelado Estadístico",
+    "opcion_d": "Programación Orientada a Objetos",
+    "respuesta_correcta": "a"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 764,
+  "fields": {
+    "clase": 22,
+    "texto": "¿En qué se inspiran los modelos computacionales conocidos como Redes Neuronales?",
+    "opcion_a": "En el sistema nervioso de los insectos",
+    "opcion_b": "En los circuitos lógicos",
+    "opcion_c": "En el cerebro humano y sus neuronas",
+    "opcion_d": "En los algoritmos de búsqueda",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 765,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Cómo se llama el primer programa conversacional simple, creado en 1966, que simulaba un terapeuta?",
+    "opcion_a": "AlphaGo",
+    "opcion_b": "Deep Blue",
+    "opcion_c": "GPT",
+    "opcion_d": "ELIZA",
+    "respuesta_correcta": "d"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 766,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Cuál es el modelo de arquitectura de IA, base de modelos como GPT, que permite a la IA analizar y generar texto coherente?",
+    "opcion_a": "Modelo Booleano",
+    "opcion_b": "Modelo Transformer",
+    "opcion_c": "Modelo de Cadenas de Markov",
+    "opcion_d": "Modelo de Regresión Lineal",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 767,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Qué nombre recibe la entrada o instrucción de texto que se le da a un modelo generativo para guiar su respuesta?",
+    "opcion_a": "Debug",
+    "opcion_b": "Pipeline",
+    "opcion_c": "Prompt",
+    "opcion_d": "Script",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 768,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Qué tipo de modelos de IA se centran en crear nuevas instancias de datos a partir de un conjunto de entrenamiento (ej: textos, imágenes, audios)?",
+    "opcion_a": "Modelos Discriminativos",
+    "opcion_b": "Modelos Generativos",
+    "opcion_c": "Modelos de Clasificación",
+    "opcion_d": "Modelos de Regresión",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 769,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Qué característica de la IA permite simular procesos cognitivos como el reconocimiento de patrones y el razonamiento?",
+    "opcion_a": "Las Interfaces de Usuario",
+    "opcion_b": "Las Redes Neuronales",
+    "opcion_c": "El Hardware de la PC",
+    "opcion_d": "El Almacenamiento en la Nube",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 770,
+  "fields": {
+    "clase": 22,
+    "texto": "¿En qué se basa el Machine Learning para hacer predicciones y tomar decisiones?",
+    "opcion_a": "En la programación manual de reglas",
+    "opcion_b": "En patrones y ejemplos de datos previos",
+    "opcion_c": "En el hardware de la computadora",
+    "opcion_d": "En la fecha actual del sistema",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 771,
+  "fields": {
+    "clase": 22,
+    "texto": "¿Cuál es la etapa de la IA que se centra en resolver problemas difíciles y funcionar bien en muchas áreas diferentes?",
+    "opcion_a": "Algoritmos Especializados",
+    "opcion_b": "Modelos Fundacionales",
+    "opcion_c": "Código Abierto",
+    "opcion_d": "Sistemas Operativos",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 772,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Cómo se llama la técnica de escribir instrucciones para obtener una respuesta precisa de la IA?",
+    "opcion_a": "Code Writing",
+    "opcion_b": "Prompt Engineering",
+    "opcion_c": "Data Mining",
+    "opcion_d": "Web Scraping",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 773,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué elemento del prompt define el papel o la identidad (ej: 'experto') que la IA debe adoptar?",
+    "opcion_a": "Audiencia",
+    "opcion_b": "Rol",
+    "opcion_c": "Formato",
+    "opcion_d": "Límite",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 774,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué característica de la IA le permite tener conversaciones lógicas y fluidas?",
+    "opcion_a": "Producción Creativa",
+    "opcion_b": "Diálogo Coherente",
+    "opcion_c": "Aprendizaje Dinámico",
+    "opcion_d": "Resolución Informada",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 775,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué elemento del prompt se usa para definir el número máximo de palabras o la extensión del texto?",
+    "opcion_a": "El Contexto",
+    "opcion_b": "El Tono",
+    "opcion_c": "El Límite",
+    "opcion_d": "La Tarea",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 776,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué elemento de un prompt especifica la estructura deseada para el resultado (ej: 'lista de puntos', 'tabla de 3 columnas')?",
+    "opcion_a": "La Tarea",
+    "opcion_b": "El Formato (Format)",
+    "opcion_c": "El Tono",
+    "opcion_d": "La Audiencia",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 777,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Cuál es la utilidad del elemento 'Contexto' en un prompt?",
+    "opcion_a": "Indicar la acción principal a realizar",
+    "opcion_b": "Proporcionar la información de fondo necesaria",
+    "opcion_c": "Definir si es formal o informal",
+    "opcion_d": "Establecer un límite de palabras",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 778,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué elemento del prompt define si la respuesta debe ser 'formal', 'humorística' o 'seria'?",
+    "opcion_a": "El Contexto",
+    "opcion_b": "El Tono (Tone)",
+    "opcion_c": "El Límite",
+    "opcion_d": "La Audiencia",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 779,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué funcionalidad de Gemini permite crear asistentes de IA muy especializados para tareas específicas?",
+    "opcion_a": "Plugins",
+    "opcion_b": "Gems",
+    "opcion_c": "Macros",
+    "opcion_d": "Templates",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 780,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué característica de los modelos generativos se refiere a que pueden 'mejorar su desempeño con el tiempo'?",
+    "opcion_a": "Diálogo Coherente",
+    "opcion_b": "Aprendizaje Dinámico",
+    "opcion_c": "Resolución Estática",
+    "opcion_d": "Producción Creativa",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 781,
+  "fields": {
+    "clase": 23,
+    "texto": "¿Qué elemento del prompt define la acción principal que debe realizar el modelo (ej: 'Escribe', 'Resume', 'Traduce')?",
+    "opcion_a": "El Tono",
+    "opcion_b": "El Contexto",
+    "opcion_c": "La Tarea (Task)",
+    "opcion_d": "El Límite",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 782,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Cuál es el proceso fundamental de la IA para crear imágenes a partir de una descripción escrita?",
+    "opcion_a": "Extracción de Datos",
+    "opcion_b": "Texto a Texto (Text-to-Text)",
+    "opcion_c": "Texto a Imagen (Text-to-Image)",
+    "opcion_d": "Análisis Predictivo",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 783,
+  "fields": {
+    "clase": 24,
+    "texto": "¿En qué se basan las redes neuronales para crear nuevas instancias de imágenes, según el material?",
+    "opcion_a": "El hardware de la computadora",
+    "opcion_b": "Grandes conjuntos de datos (datasets) de entrenamiento",
+    "opcion_c": "Las opiniones de los usuarios en tiempo real",
+    "opcion_d": "Algoritmos de búsqueda de Google",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 784,
+  "fields": {
+    "clase": 24,
+    "texto": "Para obtener una imagen de alta calidad, ¿cuál es la parte del prompt más importante para definir el resultado?",
+    "opcion_a": "El Contexto General",
+    "opcion_b": "La descripción del estilo o la técnica artística",
+    "opcion_c": "El número de píxeles",
+    "opcion_d": "La mención de la herramienta usada",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 785,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Qué modelo de IA es específicamente mencionado en el material por su arquitectura basada en Transformers y su capacidad para generar contenido?",
+    "opcion_a": "Deep Blue",
+    "opcion_b": "ELIZA",
+    "opcion_c": "GPT (Generative Pre-trained Transformer)",
+    "opcion_d": "AlphaGo",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 786,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Cuál es un desafío común al intentar determinar si una imagen fue generada por IA o es real?",
+    "opcion_a": "La falta de color en las imágenes",
+    "opcion_b": "La baja resolución de la mayoría de las imágenes",
+    "opcion_c": "La incapacidad de la IA para generar rostros humanos",
+    "opcion_d": "La extrema calidad y el realismo de los resultados",
+    "respuesta_correcta": "d"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 787,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Cuál es la función del Prompt en la generación de imágenes?",
+    "opcion_a": "Crear el código fuente de la imagen",
+    "opcion_b": "Establecer la acción principal y el tema de la imagen",
+    "opcion_c": "Abrir la galería de imágenes del usuario",
+    "opcion_d": "Definir la herramienta de dibujo utilizada",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 788,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Qué herramienta de IA es una alternativa popular mencionada en las referencias de la clase para la generación de imágenes?",
+    "opcion_a": "Microsoft Excel",
+    "opcion_b": "Adobe Firefly",
+    "opcion_c": "Zoom",
+    "opcion_d": "GitHub Copilot",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 789,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Qué dato interesante menciona la clase sobre la regulación actual de imágenes creadas con IA?",
+    "opcion_a": "Se exige la publicación de un watermark en todas las imágenes IA",
+    "opcion_b": "La IA automáticamente adjudica los créditos de autoría al modelo",
+    "opcion_c": "No existe una resolución que obligue a los creadores a aclarar si la imagen es generada con IA",
+    "opcion_d": "Todos los prompts de imagen deben estar registrados legalmente",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 790,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Cuál es un beneficio clave de la Generación de Imágenes para un creador de contenido?",
+    "opcion_a": "Reemplazar el uso de motores de búsqueda",
+    "opcion_b": "Crear imágenes originales y específicas sin habilidades de dibujo",
+    "opcion_c": "Garantizar la perfección y la falta de errores en todas las creaciones",
+    "opcion_d": "Reducir la velocidad de procesamiento de imágenes",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 791,
+  "fields": {
+    "clase": 24,
+    "texto": "¿Qué concepto clave se refuerza con las actividades de creación de imágenes con un estilo específico (ej: Van Gogh, Ghibli)?",
+    "opcion_a": "El Aprendizaje Dinámico",
+    "opcion_b": "La Capacidad de Clonación",
+    "opcion_c": "La Generación Controlada por Estilo",
+    "opcion_d": "El Análisis Predictivo",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 792,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Cuál es el propósito de los Modelos Fundacionales en el contexto de la IA, según la clase?",
+    "opcion_a": "Escribir código de programación",
+    "opcion_b": "Proporcionar las ideas básicas para que la IA pueda resolver problemas difíciles en muchas áreas",
+    "opcion_c": "Clasificar correos electrónicos como spam",
+    "opcion_d": "Solo generar imágenes y sitios web",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 793,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Cómo se llama el proceso de generar voz a partir de un prompt o texto escrito?",
+    "opcion_a": "Voz a Texto (Voice-to-Text)",
+    "opcion_b": "Texto a Voz (Text-to-Speech o TTS)",
+    "opcion_c": "Análisis Espectral",
+    "opcion_d": "Compresión de Audio",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 794,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Cuál es el modelo computacional, inspirado en el cerebro humano, que usa la IA para procesar información y aprender de los datos?",
+    "opcion_a": "Máquinas de Turing",
+    "opcion_b": "Redes Neuronales",
+    "opcion_c": "Motores de Búsqueda",
+    "opcion_d": "Lógica Booleana",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 795,
+  "fields": {
+    "clase": 25,
+    "texto": "Además del TTS, ¿qué otra aplicación de IA en audio es muy utilizada, sobre todo para imitar voces famosas o personalizadas?",
+    "opcion_a": "Síntesis Musical",
+    "opcion_b": "Clonación y Síntesis de Voz",
+    "opcion_c": "Análisis de Texto",
+    "opcion_d": "Detección de Objetos",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 796,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Cuál es la herramienta de clonación y síntesis de voz mencionada en el material por su capacidad de imitar voces famosas y personajes?",
+    "opcion_a": "Canva",
+    "opcion_b": "GitHub Copilot",
+    "opcion_c": "FakeYou",
+    "opcion_d": "Adobe Firefly",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 797,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Cuál es un caso de uso común de la clonación de voz y la generación de audio con IA?",
+    "opcion_a": "Diseño de logotipos empresariales",
+    "opcion_b": "Creación de proyectos creativos, doblaje y memes",
+    "opcion_c": "Análisis de la calidad del aire",
+    "opcion_d": "Reemplazo de la programación de páginas web",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 798,
+  "fields": {
+    "clase": 25,
+    "texto": "En el contexto de la Generación de Audios, ¿qué es la alta fidelidad de un audio generado?",
+    "opcion_a": "Que el audio sea muy corto",
+    "opcion_b": "Que el audio se escuche igual que la voz real y tenga calidad de estudio",
+    "opcion_c": "Que el audio solo se pueda reproducir en un tipo de dispositivo",
+    "opcion_d": "Que el audio esté en formato MP3",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 799,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Qué concepto es un requisito para que la IA realice tareas sofisticadas como el reconocimiento de voz y la predicción de datos?",
+    "opcion_a": "Una velocidad de internet baja",
+    "opcion_b": "La arquitectura basada en Redes Neuronales",
+    "opcion_c": "Tener el micrófono apagado",
+    "opcion_d": "Un modelo de IA estático (que no aprende)",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 800,
+  "fields": {
+    "clase": 25,
+    "texto": "¿Cómo se llama la actividad práctica de clase donde se escucha un clip para determinar si es generado por IA?",
+    "opcion_a": "Análisis de Patrones",
+    "opcion_b": "Generación Creativa",
+    "opcion_c": "Reconocimiento de Audios",
+    "opcion_d": "Auditoría Financiera",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 801,
+  "fields": {
+    "clase": 25,
+    "texto": "En el contexto de la generación de audio, si la IA crea una nueva pieza musical completa, ¿a qué característica de los modelos fundacionales se alude?",
+    "opcion_a": "Diálogo Coherente",
+    "opcion_b": "Producción Creativa",
+    "opcion_c": "Resolución Informada",
+    "opcion_d": "Aprendizaje Supervisado",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 802,
+  "fields": {
+    "clase": 26,
+    "texto": "En el contexto de la IA, ¿por qué se enfatiza la Calidad de los datos por sobre la Cantidad?",
+    "opcion_a": "Los datos de mala calidad facilitan la toma de decisiones",
+    "opcion_b": "Los datos de calidad garantizan eficiencia, eficacia y mejor toma de decisiones",
+    "opcion_c": "Los datos de calidad ocupan menos espacio en el servidor",
+    "opcion_d": "Los datos deben ser más baratos de obtener",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 803,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Qué herramienta de asistencia de programación sugiere fragmentos de código y acelera la creación de software?",
+    "opcion_a": "Microsoft Word",
+    "opcion_b": "GitHub Copilot",
+    "opcion_c": "Adobe Firefly",
+    "opcion_d": "FakeYou",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 804,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Cuál es la principal ventaja de utilizar una IA (como GitHub Copilot) en el proceso de desarrollo de software?",
+    "opcion_a": "Aumentar la dificultad del código",
+    "opcion_b": "Reemplazar completamente al desarrollador humano",
+    "opcion_c": "Aumentar la productividad y reducir errores en el código",
+    "opcion_d": "Crear videojuegos 3D completos",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 805,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Qué herramienta mencionada en las referencias permite diseñar sitios web de forma visual y asistida por IA?",
+    "opcion_a": "Microsoft Excel",
+    "opcion_b": "Framer",
+    "opcion_c": "VALL-E X",
+    "opcion_d": "GPT-4",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 806,
+  "fields": {
+    "clase": 26,
+    "texto": "Además del código, ¿qué otra aplicación de Microsoft se menciona que integra Microsoft Copilot para asistencia inteligente y contextual?",
+    "opcion_a": "Paint y Solitario",
+    "opcion_b": "Word, Excel y PowerPoint (Microsoft 365)",
+    "opcion_c": "Adobe Photoshop y Premiere",
+    "opcion_d": "Google Chrome y Firefox",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 807,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Qué facilita un buen dato, según el tema de la Calidad de los Datos?",
+    "opcion_a": "Procesamiento y análisis de la información",
+    "opcion_b": "La creación de fallas en el software",
+    "opcion_c": "La dificultad de procesar grandes volúmenes",
+    "opcion_d": "La generación de código manual",
+    "respuesta_correcta": "a"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 808,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Qué riesgo existe si se entrena a una IA de programación con código de baja calidad?",
+    "opcion_a": "El código resultante será de alta calidad",
+    "opcion_b": "El código resultante será deficiente y con errores",
+    "opcion_c": "La IA se apagará automáticamente",
+    "opcion_d": "Se generarán imágenes en lugar de código",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 809,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Cuál es el objetivo de herramientas como Microsoft Copilot al integrarse a aplicaciones de productividad?",
+    "opcion_a": "Reemplazar los sistemas operativos",
+    "opcion_b": "Aumentar la productividad empresarial mediante asistencia contextual",
+    "opcion_c": "Cifrar datos de forma automática",
+    "opcion_d": "Diseñar modelos 3D de personajes",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 810,
+  "fields": {
+    "clase": 26,
+    "texto": "¿Qué herramienta de diseño de interfaz de usuario asistido por IA, similar a Framer, se menciona en las referencias de la clase?",
+    "opcion_a": "Netflix",
+    "opcion_b": "Uizard",
+    "opcion_c": "Spotify",
+    "opcion_d": "Gemini",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 811,
+  "fields": {
+    "clase": 26,
+    "texto": "En la programación con IA, ¿qué es un fragmento de código?",
+    "opcion_a": "Un error de programación",
+    "opcion_b": "Una porción corta y funcional de código que resuelve una tarea específica",
+    "opcion_c": "El resultado de una imagen IA",
+    "opcion_d": "Un sitio web completo",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 812,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Cómo se llama el contenido (audio, imagen o video) falso, pero altamente realista, creado con IA?",
+    "opcion_a": "Deepfakes",
+    "opcion_b": "Smart Content",
+    "opcion_c": "Metadata",
+    "opcion_d": "Algoritmos Predictivos",
+    "respuesta_correcta": "a"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 813,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Cuál es el objetivo principal de los Modelos Detectores de IA?",
+    "opcion_a": "Crear nuevos Deepfakes",
+    "opcion_b": "Distinguir contenido real de contenido artificial",
+    "opcion_c": "Traducir idiomas en tiempo real",
+    "opcion_d": "Mejorar la calidad de las imágenes borrosas",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 814,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Qué tipo de información analizan los modelos detectores para verificar la autenticidad de un archivo?",
+    "opcion_a": "El color de fondo de la pantalla",
+    "opcion_b": "Metadatos y patrones de manipulación típicos de IA",
+    "opcion_c": "Las redes sociales del creador",
+    "opcion_d": "La velocidad de carga del archivo",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 815,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Qué tipo de archivos, además de imágenes y videos, analizan los Modelos Detectores de IA?",
+    "opcion_a": "Documentos PDF antiguos",
+    "opcion_b": "Archivos de texto, código y audio",
+    "opcion_c": "Tablas de Excel y presentaciones de PowerPoint",
+    "opcion_d": "Cálculos matemáticos",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 816,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Qué problema ético buscan resolver los Modelos Detectores en el contenido digital?",
+    "opcion_a": "La escasez de imágenes en internet",
+    "opcion_b": "La falta de variedad en los prompts",
+    "opcion_c": "La desinformación y la suplantación de identidad",
+    "opcion_d": "El alto costo de las herramientas de IA",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 817,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Cuál es la base tecnológica avanzada utilizada para crear los Deepfakes?",
+    "opcion_a": "Aprendizaje Supervisado",
+    "opcion_b": "Sistemas de Bases de Datos SQL",
+    "opcion_c": "Deep Learning (Aprendizaje Profundo)",
+    "opcion_d": "Análisis Booleano",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 818,
+  "fields": {
+    "clase": 27,
+    "texto": "Al usar Modelos Detectores, ¿qué es esencial proteger que puede ser vulnerado por los Deepfakes?",
+    "opcion_a": "Los derechos de autor y la autenticidad de la obra original",
+    "opcion_b": "La versión del navegador web",
+    "opcion_c": "El color de la carcasa del computador",
+    "opcion_d": "La velocidad del procesador",
+    "respuesta_correcta": "a"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 819,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Qué significa que un archivo tenga autenticidad al ser evaluado por un detector?",
+    "opcion_a": "Si el archivo se puede abrir correctamente en el computador",
+    "opcion_b": "Si el archivo es real, genuino y no generado por IA o manipulado",
+    "opcion_c": "Si el archivo tiene muchos píxeles",
+    "opcion_d": "Si el archivo está en formato de audio",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 820,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Cuál es una de las mayores preocupaciones éticas con respecto a la IA generativa de voz (Clase 4)?",
+    "opcion_a": "Que la IA no sepa cantar ópera",
+    "opcion_b": "El uso indebido de la clonación de voz para fraudes o engaños",
+    "opcion_c": "Que el audio generado sea demasiado largo",
+    "opcion_d": "Que la IA use un acento incorrecto",
+    "respuesta_correcta": "b"
+  }
+},
+{
+  "model": "plataforma.pregunta",
+  "pk": 821,
+  "fields": {
+    "clase": 27,
+    "texto": "¿Qué hace que los Deepfakes sean tan peligrosos para la confianza pública?",
+    "opcion_a": "Su incapacidad para generar imágenes a color",
+    "opcion_b": "Su bajo costo de producción",
+    "opcion_c": "Su alto nivel de realismo que simula la realidad a la perfección",
+    "opcion_d": "Su formato de archivo exclusivo (ej: .dfk)",
+    "respuesta_correcta": "c"
+  }
+},
+{
+  "model": "plataforma.puntajequiz",
+  "pk": 37,
+  "fields": {
+    "estudiante": "000002",
+    "clase": 22,
+    "comision": "000002",
+    "puntaje_inicial": 10,
+    "puntaje_maximo": 10
+  }
+},
+{
+  "model": "plataforma.puntajequiz",
+  "pk": 38,
+  "fields": {
+    "estudiante": "000002",
+    "clase": 23,
+    "comision": "000002",
+    "puntaje_inicial": 9,
+    "puntaje_maximo": 9
+  }
+},
+{
+  "model": "plataforma.puntajequiz",
+  "pk": 39,
+  "fields": {
+    "estudiante": "000002",
+    "clase": 24,
+    "comision": "000002",
+    "puntaje_inicial": 9,
+    "puntaje_maximo": 10
+  }
+},
+{
+  "model": "plataforma.puntajequiz",
+  "pk": 40,
+  "fields": {
+    "estudiante": "000002",
+    "clase": 25,
+    "comision": "000002",
+    "puntaje_inicial": 8,
+    "puntaje_maximo": 8
+  }
+},
+{
+  "model": "plataforma.puntajequiz",
+  "pk": 41,
+  "fields": {
+    "estudiante": "000002",
+    "clase": 26,
+    "comision": "000002",
+    "puntaje_inicial": 9,
+    "puntaje_maximo": 9
+  }
+},
+{
+  "model": "plataforma.puntajequiz",
+  "pk": 42,
+  "fields": {
+    "estudiante": "000002",
+    "clase": 27,
+    "comision": "000002",
+    "puntaje_inicial": 10,
+    "puntaje_maximo": 10
+  }
+},
+{
+  "model": "plataforma.reprogramaciondeclase",
+  "pk": 5,
+  "fields": {
+    "clase_afectada": 37,
+    "estado_final": "Reprogramada",
+    "accion_solicitada": "1",
+    "motivo_principal": "Suministro_Luz",
+    "motivo_detalle": null,
+    "fecha_original": "2025-12-17",
+    "fecha_reprogramada": "2026-01-07",
+    "fecha_registro": "2025-12-10T20:47:24.054Z",
+    "notificado_correo": true
+  }
+},
+{
+  "model": "plataforma.reprogramaciondeclase",
+  "pk": 6,
+  "fields": {
+    "clase_afectada": 43,
+    "estado_final": "Reprogramada",
+    "accion_solicitada": "1",
+    "motivo_principal": "Problemas_Tecnicos",
+    "motivo_detalle": null,
+    "fecha_original": "2025-12-15",
+    "fecha_reprogramada": "2025-12-17",
+    "fecha_registro": "2025-12-10T22:51:58.933Z",
+    "notificado_correo": true
+  }
+},
+{
+  "model": "plataforma.suscriptor",
+  "pk": 1,
+  "fields": {
+    "nombre": "marcos",
+    "email": "tecnomarema.ar@gmail.com",
+    "fecha": "2025-07-26T00:55:07.298Z"
+  }
+},
+{
+  "model": "plataforma.suscriptor",
+  "pk": 2,
+  "fields": {
+    "nombre": "miguel",
+    "email": "tecnomarema.arg@gmail.com",
+    "fecha": "2025-11-13T20:06:26.353Z"
+  }
+},
+{
+  "model": "plataforma.suscriptor",
+  "pk": 3,
+  "fields": {
+    "nombre": "andres",
+    "email": "tecnomarema.arge@gmail.com",
+    "fecha": "2025-12-13T01:21:45.304Z"
+  }
+},
+{
+  "model": "plataforma.suscriptor",
+  "pk": 4,
+  "fields": {
+    "nombre": "clara",
+    "email": "miguelbremer@gmail.com",
+    "fecha": "2025-12-13T01:37:12.481Z"
+  }
+},
+{
+  "model": "plataforma.suscriptor",
+  "pk": 5,
+  "fields": {
+    "nombre": "mateo",
+    "email": "mateoasdad@gmail.com",
+    "fecha": "2025-12-13T01:42:56.998Z"
   }
 }
 ]
