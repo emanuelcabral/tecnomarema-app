@@ -380,7 +380,7 @@
 {% for curso in cursos %}
 <div class="curso-card">
     <!-- Asumiendo que tienes una imagen en static/img/ que se llama igual que el curso en minúsculas sin espacios -->
-    <img src="{% static 'img/' %}{{ curso.nombre_curso|lower }}.jpg" class="curso-img" alt="{{ curso.nombre_curso }}">
+    <img src="{% static 'img/' %}{{ curso.nombre_curso }}.jpg" class="curso-img" alt="{{ curso.nombre_curso }}">
     
     <div class="flex-grow-1">
         <div class="d-flex justify-content-between align-items-center">
