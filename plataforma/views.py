@@ -6013,3 +6013,10 @@ def enviar_newsletter_en_background(request):
             )
         except:
             pass
+
+##################################################################################
+###                    view de la promo de desarrollo web                      ###
+##################################################################################
+
+def promo_desarrolloweb(request):
+    return render(request, 'educativa/promo_desarrolloweb.html')

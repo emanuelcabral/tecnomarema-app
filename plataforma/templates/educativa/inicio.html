@@ -1,483 +1,1100 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     {% load static %}
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- SEO inicia -->
-    <meta name="description" content=" Tecno Marema es una escuela Digital de Tecnología orientada a la programación Fullstack con cursos sincronicos, clases online, trasmitiendo la pasión por aprender. Inspirando a nuestros estudiantes a abrazar el aprendizaje como un viaje constante y emocionante.">
-    <meta name="keywords" content="tecno, marema, tecno marema, educación digital, cursos, programación, desarrollo web, institución educativa, escuela digital, clases en vivo, aprende a programar, clases sincronicas, aprende desde cero, creación de sitios, crear paginas web, html , css , sass , js , bs, bootstrap, git, github, servidores, SEO, javascript, python, tecnologias, backend, frontend, fullstack, front, back, back-end, front-end">
-    <!-- SEO fin -->
-    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
-    <!-- bttn css inicia -->
-    <link rel="stylesheet" href="{% static 'css/bttn.css' %}">
-    <!-- bttn css fin -->
-    <!-- fontawesome inicia -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
-        crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <!-- fontawesome fin -->
-    <!-- jquery inicia -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- jquery fin -->
-    <!-- BS 5.1 inicia -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <!-- BS 5.1 fin -->
-    <!-- AOS inicia -->
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
-    <!-- AOS fin -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <title>Tecno Marema</title>
-    <script src="{% static 'js/menu-contextual.js' %}"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon" />
+    <title>Tecno Marema - Academia</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+      @font-face {
+        font-family: barber;
+        src: url(../static/fonts/BarberChop.otf);
+      }
+      
+      @font-face {
+        font-family: qikober;
+        src: url(../static/fonts/Qikober.otf);
+      }
+      
+      @font-face {
+        font-family: Region;
+        src: url(../static/fonts/Region.ttf);
+      }
+      
+      @font-face {
+        font-family: Right;
+        src: url(../static/fonts/Right-Swipe-Sans.otf);
+      }
+      
+      html {
+        scroll-behavior: smooth;
+      }
+      
+      body {
+        background-color: #111;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+        /*no permitir la seleccion*/
+        -webkit-user-select: none; /* Chrome, Safari */
+        -moz-user-select: none;    /* Firefox */
+        -ms-user-select: none;     /* IE/Edge */
+        user-select: none;         /* Estándar */
+      }
+      
+      .resalte {
+        /* color:#cf30ff}; */
+        color: #12f693;
+        text-shadow: 0 0 8px #12f693;
+      }
+      
+      /* .neon-green { color: #12f693; text-shadow: 0 0 8px #12f693; }
+          .neon-pink { color: #cf30ff; text-shadow: 0 0 6px #cf30ff; }
+          .neon-cyan { color: #00f7ff; text-shadow: 0 0 5px #00f7ff; } */
+      .btn-neon {
+        border: 2px solid #cf30ff;
+        color: #cf30ff;
+        background-color: transparent;
+        transition: 0.3s;
+      }
+      .btn-neon:hover {
+        background-color: #cf30ff;
+        color: #111;
+        box-shadow: 0 0 10px #cf30ff;
+      }
+      .section-title {
+        text-align: center;
+        color: #12f693;
+        margin-bottom: 40px;
+        text-shadow: 0 0 10px #12f693;
+      }
+      .course-card {
+        background-color: #1a1a1a;
+        border: 1px solid #12f693;
+        padding: 20px;
+        border-radius: 10px;
+        transition: transform 0.3s;
+      }
+      .course-card:hover {
+        transform: scale(1.05);
+        /* box-shadow: 0 0 12px #cf30ff; */
+        box-shadow: 0 0 12px #12f693;
+      }
+      .faq-item {
+        background-color: #1a1a1a;
+        border-left: 4px solid #12f693;
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border-radius: 8px;
+      }
+      
+      /*btn mas info  inicia*/
+      .btn-mas-info {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #12f693;
+        color: #000;
+        border: none;
+        border-radius: 7px;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 16px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      
+      .btn-mas-info:hover {
+        background-color: #cf30ff;
+        color: #fff;
+      }
+      
+      .btn-mas-info i {
+        margin-right: 8px;
+      }
+      /*btn mas info fin*/
+      
+      footer {
+        background-color: #000;
+        color: #12f693;
+        padding: 20px;
+        text-align: center;
+        border-top: 2px solid #cf30ff;
+      }
+      .course-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+      
+      .navbar {
+        font-size: 20px;
+      }
+      
+      #inicio {
+        background-color: #111;
+        background-image: linear-gradient(180deg, rgba(34, 34, 34, 0.8), /* tono oscuro semi */ rgba(17, 17, 17, 0.6) 50%, rgba(17, 17, 17, 0) 100%), radial-gradient(250% 180% at 80% 20%, rgba(18, 246, 147, 0.15) 0%, rgba(18, 246, 147, 0.05) 40%, rgba(17, 17, 17, 0) 100%), radial-gradient(300% 220% at 20% 80%, rgba(18, 246, 147, 0.08) 0%, rgba(17, 17, 17, 0.05) 60%, rgba(17, 17, 17, 0) 100%);
+        background-repeat: no-repeat;
+        background-size: cover;
+      }
+      .img-call {
+        height: 450px;
+        width: 50%;
+        /* border: 5px solid #12f693; */
+        border-radius: 10px;
+      }
+      
+      .img-call img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 5px solid #12f693;
+        border-radius: 20px;
+        box-shadow: 2px 2px 15px 5px #12f693;
+        -webkit-perspective: 240px;
+        perspective: 240px;
+      }
+      
+      h1 {
+        font-family: barber, sans-serif;
+        text-align: left;
+        /* font-family: Region, sans-serif; */
+        /* font-family: Qikober, sans-serif; */
+        /* font-family: Right, sans-serif; */
+      }
+      
+      /* testimonial inicia */
+      
+      .testimonial-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      
+      .testimonial-card {
+        background-color: #111;
+        border: 1px solid #12f693;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 0 20px rgba(18, 246, 147, 0.2);
+        transition: transform 0.3s ease;
+      }
+      
+      .testimonial-image-container {
+        overflow: hidden;
+        height: 250px;
+      }
+      
+      .testimonial-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+      
+      .testimonial-image-container img:hover {
+        transform: scale(1.1);
+      }
+      
+      .testimonial-content {
+        padding: 20px;
+      }
+      
+      .testimonial-name {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #12f693;
+        margin-bottom: 10px;
+      }
+      
+      .testimonial-text {
+        font-size: 0.95rem;
+        line-height: 1.4;
+      }
+      
+      /* testimonial fin */
+      
+      /* contador inicia */
+      
+      /* Estilo del número contador */
+      .cont-numero {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: #12f693; /* Verde neón */
+        transition: transform 0.3s ease-in-out;
+      }
+      
+      /* Título debajo del número */
+      .cont-title {
+        margin-top: 0.5rem;
+        font-size: 1.1rem;
+        color: #ccc; /* Gris claro */
+      }
+      
+      /* Animación al activarse */
+      .cont-numero.animate {
+        animation: pop 0.6s ease-in-out;
+      }
+      
+      /* Keyframes para animación tipo "pop" */
+      @keyframes pop {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.3);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      
+      /* contador fin */
+      
+      /* navbar inicio */
+      
+      /* NAVBAR BASE */
+      .navbar {
+        background-color: #111;
+        position: relative;
+        z-index: 10;
+        border-bottom: 3px solid transparent;
+        font-size: 1.2rem;
+      }
+      
+      /* EFECTO NEÓN CYBERPUNK */
+      .navbar::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 3px;
+        width: 100%;
+        background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+        animation: neonGlow 4s linear infinite;
+      }
+      
+      @keyframes neonGlow {
+        0% {
+          background-position: 0%;
+        }
+        100% {
+          background-position: 100%;
+        }
+      }
+      
+      .navbar::after {
+        background-size: 200% auto;
+      }
+      
+      /* LOGO */
+      .navbar-brand {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.3rem;
+      }
+      
+      .navbar-brand span.white {
+        color: #fff;
+      }
+      
+      .navbar-brand span.green {
+        color: #12f693;
+      }
+      
+      .navbar-brand img {
+        height: 30px;
+        margin-left: 10px;
+      }
+      
+      /* LINKS */
+      .navbar-nav .nav-link {
+        color: #fff !important;
+        transition: 0.3s;
+      }
+      
+      .navbar-nav .nav-link:hover {
+        color: #12f693 !important;
+      }
+      
+      /* eliminar borde outline del menu hamburguesa */
+      .navbar-toggler:focus,
+      .navbar-toggler:active,
+      .navbar-toggler.collapsed:focus {
+        outline: none;
+        box-shadow: none;
+      }
+      
+      /* BOTÓN LOGIN */
+      .btn-login {
+        margin-left: 10px;
+        background-color: #12f693;
+        color: #000;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+        font-size: 1.3rem;
+      }
+      
+      .btn-login:hover {
+        background-color: #0cd680;
+        color: #000;
+      }
+      
+      /* BOTÓN INSCRIPCIÓN */
+      .btn-inscripcion {
+        margin-left: 10px;
+        background-color: #cf30ff;
+        color: #fff;
+        font-weight: bold;
+        border: none;
+        transition: 0.3s;
+        font-size: 1.3rem;
+      }
+      
+      .btn-inscripcion:hover {
+        background-color: #a120cc;
+        color: #fff;
+      }
+      
+      /* BOTÓN HAMBURGUESA */
+      .navbar-toggler {
+        border-color: #12f693;
+      }
+      
+      .navbar-toggler-icon {
+        background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+      }
+      
+      /* navbar fin */
+      
+      /* footer inicia */
+      
+      /* linea animada inicia */
+      .borde-animado {
+        width: 100%;
+        height: 4px; /* grosor del borde */
+        background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+        background-size: 600% 100%;
+        animation: animarBorde 4s linear infinite;
+      }
+      
+      @keyframes animarBorde {
+        0% {
+          background-position: 0% 0;
+        }
+        100% {
+          background-position: 600% 0;
+        }
+      }
+      /* linea animada fin */
+      
+      .text-magenta {
+        color: #cf30ff;
+      }
+      
+      .newsletter-input::placeholder {
+        color: #ccc;
+        opacity: 1;
+      }
+      
+      .newsletter-input:focus {
+        border-color: #12f693;
+        box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.99);
+        background-color: #111;
+        color: #fff;
+      }
+      
+      .btn-suscribirme {
+        background-color: #cf30ff;
+        color: white;
+        transition: background-color 0.3s ease;
+        border: none;
+      }
+      
+      .btn-suscribirme:hover {
+        background-color: #12f693;
+        color: black;
+      }
+      
+      footer a {
+        color: white;
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+      
+      footer a:hover {
+        color: #cf30ff;
+      }
+      
+      .footer-icon {
+        transition: color 0.3s ease;
+      }
+      
+      .footer-icon:hover {
+        color: #cf30ff;
+      }
+      
+      .bi-linkedin:hover {
+        color: #0e76a8;
+      }
+      
+      .bi-facebook:hover {
+        color: #1877f2;
+      }
+      
+      .bi-youtube:hover {
+        color: #ff0000;
+      }
+      
+      .bi-instagram:hover {
+        color: #e1306c;
+      }
+      
+      .bi-discord:hover {
+        color: #7289da;
+      }
+      
+      footer {
+        border-top: 1px solid #444;
+      }
+      
+      /* footer fin */
+      
+      /* subir inicia */
+      
+      .subir {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #12f693;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        box-shadow: 0 4px 8px rgba(18, 246, 147, 0.6);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+        text-decoration: none;
+        color: black; /* color del ícono */
+        z-index: 9999;
+      }
+      
+      .subir:hover {
+        background-color: #0ebf6f;
+        transform: scale(1.1);
+        color: black; /* si quieres que cambie el color del ícono también, cámbialo aquí */
+      }
+      
+      .btn-disabled {
+        background-color: #555;
+      }
+      
+      .btn-disabled:hover {
+        background-color: #555;
+      }
+      
+      /* subir fin */
+      
+      @media only screen and (max-width: 768px) {
+        .hero {
+          width: 100%;
+        }
+      
+        .banner-img {
+          order: 1;
+        }
+      
+        .banner {
+          order: 2;
+          text-align: center;
+          width: 100% !important;
+          max-width: 100%;
+        }
+      
+        .img-call {
+          height: auto !important;
+          margin-bottom: 10px;
+          width: 100% !important;
+          max-width: 100%;
+        }
+      
+        .img-call img {
+          width: 100%;
+          height: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark px-3">
+      <div class="container-fluid">
+        <!-- LOGO -->
+        <a class="navbar-brand" href="#">
+          <span class="white">Tecno</span><span class="green">Marema</span>
+          <img src="{% static 'img/logo-marema.png' %}" alt="Logo" />
+        </a>
 
-    
-</head>
-<body>
-    <!-- navbar inicia -->
-    <nav class="navbar navbar-expand-md navbar-dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Tecno <span>Marema </span><img src="{% static 'img/logo-marema.png' %}" alt="logo"
-                    height="50px"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
-                <!-- <span class="navbar-toggler-icon"></span> -->
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <div class="collapse navbar-collapse" id="collapsibleNavbar">
-                <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Inicio</a>
-                    </li>
-                    <!-- <li class="nav-item">
-                        <a class="nav-link" href="#sumate">Sumate</a>
-                    </li> -->
-                    <li class="nav-item">
-                        <a class="nav-link" href="#nosotros">Nosotros</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#clases">Clases</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#testimonios">Testimonios</a>
-                    </li>
-                    <li class="nav-item" id="li-login">
-                        <a class="nav-link" href="{% url 'login' %}" id="btn-login">Ingresa</a>
-                    </li>
-                    <li class="nav-item" id="li-inscripcion">
-                        <a class="nav-link" href="#inscripcion" id="btn-inscripcion">Inscripción</a>
-                    </li>                    
-                </ul>
-            </div>
+        <!-- HAMBURGUESA -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+          <!-- <span class="navbar-toggler-icon"></span> -->
+          <!-- <i class="bi bi-three-dots" style="color: #12f693 !important;"></i> -->
+          <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+        </button>
+
+        <!-- MENÚ -->
+        <div class="collapse navbar-collapse" id="navbarContenido">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+            <li class="nav-item">
+              <a class="nav-link" href="#inicio">Inicio</a>
+            </li>
+            {% comment %} {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %} {% endcomment %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a>
+                </li>
+            {% comment %} {% endif %} {% endcomment %}
+            <li class="nav-item">
+              <a class="nav-link" href="#cursos">Cursos</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#info">Info</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#testimonios">Testimonios</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'faq' %}">FAQ</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#redes">Redes</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contacto">Contacto</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'inscripcion' %}" class="btn btn-inscripcion btn-sm"><i class="bi bi-pencil me-1"></i>Inscripción</a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'login' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Login</a>
+            </li>
+          </ul>
         </div>
+      </div>
     </nav>
-    <!-- navbar fin -->
-    <!-- carrousel inicia -->
-    <main class="slider container-fluid">
-        <!-- Carousel -->
-        <div id="demo" class="carousel slide" data-bs-ride="carousel">
 
-            <!-- Indicators/dots -->
-            <div class="carousel-indicators">
-                <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
-                <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
-                <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
-            </div>
-
-            <!-- The slideshow/carousel -->
-            <div class="carousel-inner">
-                <div class="carousel-item active" data-bs-interval="5000">
-                    <img src="{% static 'img/hero1.jpg' %}" alt="" class="d-block w-100">
-                    <div class="carousel-caption">
-                        <div class="call">
-                            <!-- <img src="img/logo-marema.png" alt="logo"> -->
-                            <img src="{% static 'img/logo-marema.png' %}" alt="logo">
-                            <h1>Tecno Marema</h1>
-                            <p>Transforma tu aprendizaje en el camino hacia el siguiente nivel.
-                                <i class="fa-solid fa-rocket"></i>
-                            </p>
-                            <a class="btn-slider" target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item" data-bs-interval="5000">
-                    <!-- <img src="img/software-developer-6521720_1920.jpg" alt="" class="d-block w-100"> -->
-                    <img src="{% static 'img/desarrollo.jpg' %}" alt="" class="d-block w-100">
-                    <div class="carousel-caption">
-                        <div class="call">
-                            <!-- <img src="img/logo-marema.png" alt="logo"> -->
-                            <img src="{% static 'img/logo-marema.png' %}" alt="logo">
-                            <h1>Tecno Marema</h1>
-                            <p>Impulsa tu evolución a través del aprendizaje hasta el siguiente nivel.
-                                <i class="fa-solid fa-rocket"></i>
-                            </p>
-                            <a class="btn-slider" target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="carousel-item" data-bs-interval="5000">
-                    <!-- <img src="img/laptop-5673901_1920.jpg" alt="" class="d-block w-100"> -->
-                    <img src="{% static 'img/laptop-5673901_1920.jpg' %}" alt="" class="d-block w-100">
-                    <div class="carousel-caption">
-                        <div class="call">
-                            <!-- <img src="img/logo-marema.png" alt="logo"> -->
-                            <img src="{% static 'img/logo-marema.png' %}" alt="logo">
-                            <h1>Tecno Marema</h1>
-                            <p>Enciende tu potencial a través del aprendizaje y llega al siguiente nivel.
-                                <i class="fa-solid fa-rocket"></i>
-                            </p>
-                            <a class="btn-slider" target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Left and right controls/icons -->
-            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-                <!-- <span class="carousel-control-prev-icon"></span> -->
-                <i class="fa-solid fa-angle-left fa-beat-fade"></i>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-                <!-- <span class="carousel-control-next-icon"></span> -->
-                <i class="fa-solid fa-angle-right fa-beat-fade"></i>
-            </button>
-        </div>
-    </main>
-    <!-- carrousel fin -->
-    <!-- video inicia -->
-    <div class="container-fluid promo">
+    <!-- Hero -->
+    <section id="inicio" class="text-center py-5">
+      <div class="container d-flex flex-wrap justify-content-center hero">
         <div class="row">
-            <h2 class="h2" id="promo">Aprende hoy</h2>
-            <h2 class="text-center pasos-title">¿Te gustaría aprender a desarrollar sitios?</h2>
-        </div>
-        <div class="row d-flex justify-content-center">
-            <!-- <video class="col-md-8 offset-md-1" src="video/promo.mp4" controls></video> -->
-            <video class="col-md-8 offset-md-1" src="{% static 'video/promo.mp4' %}" controls></video>
-        </div>
-    </div>
-    <!-- video fin -->
-    <!-- Pasos inicia -->
-    <div class="container-fluid pasos">
-        <div class="row">
-            <h2 class="h2" id="sumate">Sumate</h2>
-            <h2 class="text-center pasos-title">Que necesitas para comenzar?</h2>
-        </div>
-        <div class="row d-flex justify-content-center">
-            <article class="paso col-lg-3" data-aos="fade-right" data-aos-duration="2000" data-aos-delay="300">
-                <h2 class="numero">1</h2>
-                <h3 class="feat">Pasión por Aprender:</h3>
-                <p>En el corazón de nuestra filosofía está la pasión por aprender. Inspiramos a nuestros estudiantes a
-                    abrazar el aprendizaje como un viaje constante y emocionante. Creemos que la curiosidad es el motor
-                    que impulsa el crecimiento, y animamos a nuestros alumnos a buscar el conocimiento con entusiasmo y
-                    vigor. La pasión por aprender no solo alimenta las mentes, sino también el alma, y en Marema,
-                    celebramos el acto de descubrir y explorar.</p>
-                <a href="#inscripcion">Mas info</a>
-            </article>
+          <div class="col-sm-6 text-start banner">
+            <!-- <h1 class="display-4 neon-green">Bienvenido a Tecno Marema</h1> -->
+            <!-- <h1 class="display-4 neon-green">Impulsa tu futuro en el mundo tecnológico.</h1> -->
+            <h1 class="display-4 neon-green">Da el primer paso o sube <span class="resalte">al siguiente nivel</span> en tecnomarema</h1>
+            <!-- <p class="lead text-white-50">Formate como programador full stack con JavaScript, Python e Inteligencia Artificial.</p> -->
 
-            <article class="paso col-lg-3" data-aos="zoom-in" data-aos-duration="2000" data-aos-delay="300">
-                <h2 class="numero">2</h2>
-                <h3 class="feat">Compromiso con la Excelencia:</h3>
-                <p>El compromiso es la base de todo lo que hacemos en Marema. Fomentamos un compromiso inquebrantable
-                    con la excelencia, tanto en la calidad de la educación que brindamos como en las metas que
-                    perseguimos. Cada miembro de la comunidad Marema se compromete a dar lo mejor de sí y a buscar la
-                    mejora continua en todas las áreas. Creemos que la excelencia es el resultado de un compromiso
-                    constante con la superación personal y profesional.</p>
-                <a href="#inscripcion">Mas info</a>
-            </article>
+            <ul class="list-unstyled d-flex flex-column justify-content-center gap-4 fs-5">
+              <li class="d-flex align-items-center">
+                <i class="bi bi-laptop text-success me-2 fs-4"></i> Online, en vivo y flexible
+              </li>
+              <li class="d-flex align-items-center">
+                <i class="bi bi-tools text-success me-2 fs-4"></i> Aprendizaje práctico y real
+              </li>
+              <li class="d-flex align-items-center">
+                <i class="bi bi-person-check text-success me-2 fs-4"></i> Acompañamiento personalizado
+              </li>
+              <li class="d-flex align-items-center">
+                <i class="bi bi-unlock text-success me-2 fs-4"></i> Primera clase gratis
+              </li>
+            </ul>
 
-            <article class="paso col-lg-3" data-aos="fade-left" data-aos-duration="2000" data-aos-delay="300">
-                <h2 class="numero">3</h2>
-                <h3 class="feat">Dedicación al Éxito:</h3>
-                <p>La dedicación es el puente que conecta la visión con la realidad. En Marema, inculcamos la dedicación
-                    como una brújula que guía a nuestros estudiantes hacia el éxito. Creemos que la dedicación es lo que
-                    impulsa la persistencia en momentos desafiantes y lleva a la realización de metas a largo plazo.
-                    Fomentamos la dedicación en cada paso del camino, inspirando a nuestros alumnos a trabajar
-                    arduamente, enfrentar obstáculos y alcanzar logros significativos.</p>
-                <a href="#inscripcion">Mas info</a>
-            </article>
+            <a href="#cursos" class="btn btn-neon btn-lg mt-3 fw-bold"><i class="bi bi-mortarboard"></i> Inicia hoy!</a>
+          </div>
+          <div class="img-call col-sm-6">
+            <img src="{% static 'img/hero02.jpg' %}" alt="imagen principal" class="course-image banner-img" />
+          </div>
         </div>
-    </div>
-    <!-- Pasos fin -->
-    <!-- nosotros inicia -->
-    <h2 class="h2" id="nosotros">Nosotros</h2>
-    <div class="container-fluid nosotros">
+      </div>
+    </section>
+
+    <!-- Cursos -->
+    <section id="cursos" class="py-5">
+      <div class="container">
+        <h2 class="section-title">Nuestros Cursos</h2>
+        <div class="row g-4">
+          <div class="col-md-6 col-lg-3">
+            <div class="course-card">
+              <img src="{% static 'img/desarrollo.jpg' %}" alt="Desarrollo Web" class="course-image" />
+              <h4 class="text-white">Desarrollo Web</h4>
+              <p>HTML, CSS, Git y Bootstrap para crear sitios desde cero.</p>
+              <a href="{% url 'desarrollo_web_compra' %}" class="btn-mas-info"><i class="fas fa-circle-info"></i> Más info</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="course-card">
+              <img src="{% static 'img/IA.jpg' %}" alt="Inteligencia Artificial" class="course-image" />
+              <h4 class="text-white">Inteligencia Artificial</h4>
+              <p>Introducción a algoritmos y modelos de IA aplicados.</p>
+              <a href="{% url 'inteligencia_artificial_compra' %}" class="btn-mas-info btn-mas-info"><i class="fas fa-circle-info"></i>Más info</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="course-card">
+              <img src="{% static 'img/python.png' %}" alt="Python" class="course-image" />
+              <h4 class="text-white">Python</h4>
+              <p>Automatización, data science y desarrollo backend.</p>
+              <a href="#mas-info" class="btn-mas-info btn-disabled"><i class="fas fa-circle-info"></i>Proximamente</a>
+            </div>
+          </div>
+          <div class="col-md-6 col-lg-3">
+            <div class="course-card">
+              <img src="{% static 'img/js5.jpeg' %}" alt="JavaScript" class="course-image" />
+              <h4 class="text-white">JavaScript</h4>
+              <p>DOM, lógica, animaciones y proyectos interactivos.</p>
+              <a href="#mas-info" class="btn-mas-info btn-disabled"><i class="fas fa-circle-info"></i>Proximamente</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Beneficios -->
+    <section id="info" class="py-5 bg-black">
+      <div class="container">
+        <h2 class="section-title">¿Por qué elegirnos?</h2>
+        <div class="row text-white-50 text-center">
+          <div class="col-md-4">
+            <h5 class="text-white">🎯 100% práctico</h5>
+            <p>Proyectos reales desde el primer día.</p>
+          </div>
+          <div class="col-md-4">
+            <h5 class="text-white">💼 Enfoque profesional</h5>
+            <p>Formación alineada con lo que buscan las empresas.</p>
+          </div>
+          <div class="col-md-4">
+            <h5 class="text-white">🚀 Tecnología actual</h5>
+            <p>Herramientas y lenguajes usados en el mundo real.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Plataforma inicia -->
+    <section class="container my-5">
+      <div class="row align-items-center">
+        <!-- Texto Izquierda -->
+        <div class="col-md-6">
+          <h2 class="mb-4" style="color: #12f693; font-weight: 700;">Aprende con nuestra plataforma exclusiva y transforma tu futuro digital</h2>
+          <p class="lead text-white">Explorá contenidos de alto nivel, creados por profesionales apasionados, con acceso inmediato, dinámico y visualmente inmersivo. Empezá hoy tu camino en la tecnología, a tu ritmo y sin límites.</p>
+        </div>
+
+        <!-- Imagen Derecha -->
+        <div class="col-md-6 text-center">
+          <img src="{% static 'img/chico-gamer.jpg' %}" alt="Plataforma educativa" class="img-fluid rounded" style="border: 3px solid #12f693; box-shadow: 0 0 15px #12f693;" />
+        </div>
+      </div>
+    </section>
+
+    <section class="container my-5">
+      <div class="row align-items-center">
+        <!-- Imagen Izquierda -->
+        <div class="col-md-6 text-center">
+          <img src="{% static 'img/plataforma-monitor.png' %}" alt="Plataforma educativa" class="img-fluid rounded" style="filter: drop-shadow( 0 0 15px #12f693)" />
+        </div>
+
+        <!-- Texto Derecha -->
+        <div class="col-md-6">
+          <h2 class="mb-4" style="color: #12f693; font-weight: 700;">Visualizá tu progreso desde cualquier dispositivo</h2>
+          <p class="lead text-white">Nuestra interfaz está diseñada para ofrecerte una experiencia clara, intuitiva y poderosa. Desde el primer clic, vas a sentir que estás en el lugar correcto para crecer, aprender y avanzar.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="container my-5">
+      <div class="row align-items-center">
+        <!-- Texto Izquierda -->
+        <div class="col-md-6">
+          <h2 class="mb-4" style="color: #12f693; font-weight: 700;">Conectate, aprendé y crecé en tiempo real</h2>
+          <p class="lead text-white">Nuestras clases en vivo te permiten aprender junto a profesionales y otros estudiantes que comparten tu pasión. Cada encuentro es una oportunidad para preguntar, participar y avanzar acompañado. Sentí el ritmo de una clase real, con el apoyo que necesitás y la energía de una comunidad activa. Empezá hoy y viví la experiencia de aprender tecnología cara a cara, desde donde estés.</p>
+        </div>
+
+        <!-- Imagen Derecha -->
+        <div class="col-md-6 text-center">
+          <img src="{% static 'img/virtual1.png' %}" alt="Plataforma educativa" class="img-fluid rounded" style="filter: drop-shadow( 0 0 15px #12f693)" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Plataforma fin -->
+
+    <!-- Metodología -->
+    <section class="py-5" style="background-color: #000;">
+      <div class="container text-white">
+        <h2 class="text-center mb-5" style="color: #12f693;">Nuestra Metodología</h2>
         <div class="row">
-            <aside class="col-md-5 nosotros-left"></aside>
-            <aside class="col-md-7 nosotros-right">
-                <h2>Tecno Marema</h2>
-                <h3>Descubre Tu Pasión por la Tecnología</h3>
-                <p>En el corazón de la innovación y el aprendizaje, surge Tecno Marema, una institución apasionada por
-                    guiar a los alumnos hacia el emocionante mundo de la tecnología de la información. En Tecno Marema,
-                    creemos en el poder de la educación para transformar vidas y abrir puertas hacia un futuro lleno de
-                    posibilidades.</p>
-                <p>Nuestra misión es clara: capacitar a los estudiantes para que se sumerjan con confianza en el vasto
-                    universo de la tecnología. En esta ocasión, estamos encantados de presentar nuestro emocionante
-                    curso de Desarrollo Web, una ventana abierta a la creación y la innovación en línea.</p>
-                <h3>Desarrollo Web: Construye el Futuro Digital</h3>
-                <p>El curso de Desarrollo Web de Tecno Marema es una invitación a explorar y dominar las herramientas
-                    fundamentales que impulsan la web moderna. En un mundo donde la presencia en línea es esencial,
-                    brindamos a nuestros alumnos las habilidades necesarias para crear sitios web cautivadores y
-                    funcionales desde cero.</p>
-                <p>Nuestros estudiantes serán guiados por expertos apasionados y experimentados en el campo del
-                    desarrollo web. A lo largo del curso, se sumergirán en conceptos esenciales, desde las bases de HTML
-                    y CSS, hasta la potencia de tecnologías como Sass y Bootstrap para dar estilo y estructura a sus
-                    creaciones. Pero eso no es todo, también explorarán el poder de control de versiones con Git y la
-                    colaboración efectiva utilizando GitHub.</p>
-                <p>En Tecno Marema, no solo enseñamos habilidades técnicas, sino que también fomentamos la creatividad y
-                    el pensamiento crítico. Animamos a nuestros estudiantes a experimentar, preguntar y desafiarse a sí
-                    mismos en un entorno de aprendizaje colaborativo y de apoyo.</p>
-                <button onclick="window.location.href='#inscripcion'" type="button" class="btn bttn-pill bttn-lg">Mas info</button>
-            </aside>
-        </div>
-    </div>
-    <!-- nosotros fin -->
-    <!-- Profesor inicia -->
-    <h2 class="h2">El Profesor</h2>
-    <div class="container-fluid profesor">
-        <div class="row ">
-            <div class="profe-desc col-lg-5 offset-lg-2" data-aos="zoom-in-up" data-aos-duration="2000" data-aos-delay="300">
-                <h4>Nuestro Profe</h4>
-                <h2>Emanuel Cabral</h2>
-                <p>Desarrollador Web Fullstack con mas de 10 años de experiencia, profesor en diferentes areas como
-                    HTML, CSS, SASS, BOOTSTRAP, GIT, GITHUB, PYTHON, entre otros.</p>
-                <p>Creador de Contenidos de Cursos Frontend, para diferentes instituciones destacadas de la Argentina y
-                    latinoamerica</p>
-                <a href="#inscripcion">Mas info</a>
+          <!-- Aprendizaje Activo -->
+          <div class="col-md-6 mb-4">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-lightbulb-fill fs-1 me-3" style="color: #12f693;"></i>
+              <div>
+                <h4 class="mb-2" style="color: #12f693;">Aprendizaje Activo</h4>
+                <p>Clases interactivas con ejercicios prácticos y desafíos semanales.</p>
+              </div>
             </div>
-            <div class="profe-img col-lg-3 offset-lg-1" data-aos="flip-right" data-aos-duration="2000" data-aos-delay="300"></div>
-        </div>
-    </div>
-    <!-- Profesor fin -->
-    <!-- Clases inicia -->
-    <h2 class="h2" id="clases">El Contenido</h2>
-    <div class="container-fluid clases">
-        <div class="row clases-cont d-flex justify-content-center">
-            <h3>El Temario - Curso de Desarrollo Web</h3>
-            <div class="clases1 col-md-4">
-                <ul>
-                    <li>Clase 0 <p>Presentacion del Curso</p>
-                    </li>
-                    <li>Clase 1 <p>Conociendo a HTML</p>
-                    </li>
-                    <li>Clase 2 <p>Introducion a HTML</p>
-                    </li>
-                    <li>Clase 3 <p>Presentando a CSS</p>
-                    </li>
-                    <li>Clase 4 <p>Primeros Pasos con CSS</p>
-                    </li>
-                    <li>Clase 5 <p>Modelo de cajas</p>
-                    </li>
-                    <li>Clase 6 <p>Flexbox</p>
-                    </li>
-                    <li>Clase 7 <p>Introducion a Grids</p>
-                    </li>
-                    <li>Clase 8 <p>Sitios Responsivos(media + grid + flex)</p>
-                    </li>
-                    <li>Clase 9 <p>Pseudoclases y Pseudoelementos + BEM</p>
-                    </li>
-                    <li>Clase 10 <p>Animaciones 1</p>
-                    </li>
-                </ul>
+          </div>
+
+          <!-- Mentoría Personalizada -->
+          <div class="col-md-6 mb-4">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-person-check-fill fs-1 me-3" style="color: #12f693;"></i>
+              <div>
+                <h4 class="mb-2" style="color: #12f693;">Mentoría Personalizada</h4>
+                <p>Seguimiento individual para potenciar tu desarrollo profesional.</p>
+              </div>
             </div>
-            <div class="clases2 col-md-4">
-                <ul>
-                    <li>Clase 11 <p>Animaciones 2</p>
-                    </li>
-                    <li>Clase 12 <p>Frameworks, librerias y Bootstrap</p>
-                    </li>
-                    <li>Clase 13 <p>Maquetando con Bootstrap</p>
-                    </li>
-                    <li>Clase 14 <p>Git</p>
-                    </li>
-                    <li>Clase 15 <p>Github</p>
-                    </li>
-                    <li>Clase 16 <p>SASS</p>
-                    </li>
-                    <li>Clase 17 <p>SASS parte 2</p>
-                    </li>
-                    <li>Clase 18 <p>SEO</p>
-                    </li>
-                    <li>Clase 19 <p>Servidores</p>
-                    </li>
-                    <li>Clase 20 <p>Final del curso</p>
-                    </li>
-                </ul>
-            </div>
+          </div>
         </div>
-    </div>
-    <!-- Clases fin -->
+      </div>
+    </section>
+
+    <!-- Testimonios -->
+    <section id="testimonios" class="py-5">
+      <div class="container">
+        <h2 class="section-title">Lo que dicen nuestros alumnos</h2>
+
+        <div class="testimonial-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-image-container">
+              <img src="{% static 'img/perfil04.avif' %}" alt="Testimonio Alumna" />
+            </div>
+            <div class="testimonial-content">
+              <div class="testimonial-name">Lucía Gómez</div>
+              <div class="testimonial-text">“Tecno Marema me cambió la vida. Aprendí desde cero y hoy ya tengo mi primera web publicada. ¡Increíble comunidad!”</div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-image-container">
+              <img src="{% static 'img/perfil03.avif' %}" alt="Testimonio Alumno" />
+            </div>
+            <div class="testimonial-content">
+              <div class="testimonial-name">Martín Reyes</div>
+              <div class="testimonial-text">“Me encantó el curso. Todo súper claro, el profe tiene mucha onda, la plataforma es muy cómoda y el diseño es espectacular. ¡Re mil recomendable!”</div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-image-container">
+              <img src="{% static 'img/perfil00.jpeg' %}" alt="Testimonio Alumna" />
+            </div>
+            <div class="testimonial-content">
+              <div class="testimonial-name">Florencia Torres</div>
+              <div class="testimonial-text">“Antes pensaba que la tecnología no era para mí. Hoy entiendo HTML, CSS y hago mis propios proyectos. ¡Gracias Tecno Marema!”</div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="testimonial-image-container">
+              <img src="{% static 'img/perfil01.jpeg' %}" alt="Testimonio Alumno" />
+            </div>
+            <div class="testimonial-content">
+              <div class="testimonial-name">Ezequiel Fernández</div>
+              <div class="testimonial-text">“Recomiendo el curso al 100%. El profe explica genial, la plataforma está buenísima y el estilo es único.”</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- contador inicia -->
-    <h2 class="h2">Datos</h2>
-    <div class="container-fluid contador">
-        <div class="row d-flex justify-content-center">
-            <h3>El Valor de la experiencia</h3>
-            <article class="col-md-2">
-                <div class="cont-numero">+5000</div>
-                <div class="cont-title">Alumnos</div>
-            </article>
 
-            <article class="col-md-2">
-                <div class="cont-numero">+60</div>
-                <div class="cont-title">Cursos Dictados</div>
-            </article>
+    <!-- 🔢 Sección del contador -->
+    <section id="contador" class="py-5 text-center text-white" style="background-color: #000;">
+      <div class="container">
+        <h2 class="mb-4">Nuestros logros</h2>
+        <div class="row justify-content-center">
+          <!-- Cada artículo representa una métrica -->
+          <article class="col-md-2 col-6 mb-4">
+            <div class="cont-numero" data-target="5000">+0</div>
+            <div class="cont-title">Alumnos</div>
+          </article>
 
-            <article class="col-md-2">
-                <div class="cont-numero">+10</div>
-                <div class="cont-title">Años de experiencia</div>
-            </article>
+          <article class="col-md-2 col-6 mb-4">
+            <div class="cont-numero" data-target="60">+0</div>
+            <div class="cont-title">Cursos Dictados</div>
+          </article>
 
-            <article class="col-md-2">
-                <div class="cont-numero">+1500</div>
-                <div class="cont-title">Horas de clases</div>
-            </article>
+          <article class="col-md-2 col-6 mb-4">
+            <div class="cont-numero" data-target="10">+0</div>
+            <div class="cont-title">Años de experiencia</div>
+          </article>
+
+          <article class="col-md-2 col-6 mb-4">
+            <div class="cont-numero" data-target="1500">+0</div>
+            <div class="cont-title">Horas de clases</div>
+          </article>
         </div>
-    </div>
+      </div>
+    </section>
+
     <!-- contador fin -->
 
-    <!-- testimonial inicia -->
-    <h2 class="h2" id="testimonios">Testimonios</h2>
-    <section class="testimonial">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6 d-none d-lg-block">
-                    <ol class="carousel-indicators tabs">
-                        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active">
-                            <figure>
-                                <!-- <img src="img/ivan.jfif" class="img-fluid" alt="ivan" width="200px" > -->
-                                <img src="{% static 'img/ivan.jfif' %}" class="img-fluid" alt="jesica" width="200px" >
-                            </figure>
-                        </li>
-                        <li data-target="#carouselExampleIndicators" data-slide-to="1">
-                            <figure>
-                                <!-- <img src="img/andrea1.jpg" class="img-fluid" alt="andrea"> -->
-                                <img src="{% static 'img/andrea1.jpg' %}" class="img-fluid" alt="jesica" width="200px" >
-                            </figure>
-                        </li>
-                        <li data-target="#carouselExampleIndicators" data-slide-to="2">
-                            <figure>
-                                <!-- <img src="img/andrea.jpg" class="img-fluid" alt="jesica" width="200px" > -->
-                                <img src="{% static 'img/andrea.jpg' %}" class="img-fluid" alt="jesica" width="200px" >
-                            </figure>
-                        </li>
-                    </ol>
-                </div>
-                <div class="col-lg-6 d-flex justify-content-center align-items-center">
-                    <div id="carouselExampleIndicators" data-interval="false" class="carousel slide" data-ride="carousel">
-                        <h3>QUE DICEN NUESTROS ALUMNOS</h3>
-                        <h1>TESTIMONIOS</h1>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <div class="quote-wrapper">
-                                    <p>Emanuel fue mi primer profesor, con él asenté las bases de frontend. Sus clases fueron excelentes, aprendí de manera didáctica y dinámica conceptos de HTML, CSS, Flexbox, Grid, animaciones y Bootstrap, ademas de compartirnos herramientas para usar en los proyectos. Siempre estuvo predispuesto a resolver dudas propias y del grupo, como así también en darnos un freedback constructivo ante los trabajos prácticos propuestos. Excelente docente. Siempre agradecido.</p>
-                                    <h3>Iván josé Vila</h3>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="quote-wrapper">
-                                    <p>Dar tres clases en una y que todo el contenido se comprenda es algo que no cualquier docente, de cualquier ambito, puede lograr. Impecable manejo de los tiempos y clarisima forma de abordar cada concepto. Gracias!</p>
-                                    <h3>Andrea Di Marco</h3>
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="quote-wrapper">
-                                    <p>Excelente profesor. Te mantiene entretenido y prestando atención en la clase. Le mete mucha onda, lo que te permite que si estas cansado por el horario no te pierdas</p>
-                                    <h3>Yesica Rubira</h3>
-                                </div>
-                            </div>
-                        </div>
-                        <ol class="carousel-indicators indicators">
-                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
-                            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
+    <!-- Preguntas Frecuentes -->
+    <section id="faq" class="py-5 bg-black">
+      <div class="container">
+        <h2 class="section-title">Preguntas Frecuentes</h2>
+        <div class="faq-item text-white-50">
+          <h5 class="text-white">📅 ¿Cuánto duran los cursos?</h5>
+          <p>La duración depende de cada curso, pero todos incluyen entre 6 y 24 clases de 2 horas cada una.</p>
         </div>
+        <div class="faq-item text-white-50">
+          <h5 class="text-white">💻 ¿Necesito conocimientos previos?</h5>
+          <p>No, nuestros cursos están diseñados para partir desde cero y acompañarte paso a paso.</p>
+        </div>
+        <div class="faq-item text-white-50">
+          <h5 class="text-white">📍 ¿Las clases son online o presenciales?</h5>
+          <p>100% online en vivo vía Jitsi Meet, con acceso a grabaciones y material complementario.</p>
+        </div>
+        <div class="faq-item text-white-50">
+          <h5 class="text-white">🎓 ¿Recibo certificado?</h5>
+          <p>Sí, al finalizar cada curso obtenés un certificado digital avalado por Tecno Marema.</p>
+        </div>
+      </div>
     </section>
-    <!-- testimonial fin -->
 
-    <!-- inscripcion inicia -->
-    <h2 class="h2" id="inscripcion">Inscripción</h2>
-    <div class="container-fluid inscri">
+    <!-- Footer -->
+
+    <!-- FOOTER -->
+    <div class="borde-animado"></div>
+    <footer class="bg-black text-white py-5">
+      <div class="container">
         <div class="row">
-            <h3 >Inscribete al curso de Desarrollo web</h3>
-            <h4>🚀 ¡Eleva tus Habilidades con el Curso de Desarrollo Web en Marema! 🚀</h4>
+          <!-- Mapa del sitio -->
+          <div class="col-md-3 mb-4">
+            <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
+            <ul class="list-unstyled">
+              <li>
+                <a href="#inicio">Inicio</a>
+              </li>
+              <li>
+                <a href="#cursos">Cursos</a>
+              </li>
+              <li>
+                <a href="#info">Info</a>
+              </li>
+              <li>
+                <a href="#testimonios">Testimonios</a>
+              </li>
+              <li>
+                <a href="#faq">FAQ</a>
+              </li>
+              <li>
+                <a href="{% url 'inscripcion' %}">Inscripción</a>
+              </li>
+              <li>
+                <a href="{% url 'login' %}">Login</a>
+              </li>
+              <li>
+                <a href="#contacto">Contacto</a>
+              </li>
+            </ul>
+          </div>
 
-            <p>¿Estás listo para llevar tus habilidades al siguiente nivel? En Marema, te invitamos a ser parte de nuestra comunidad de apasionados por la tecnología y el aprendizaje. Nuestro curso de Desarrollo Web es tu pasaporte hacia el emocionante mundo del diseño y creación de sitios web.</p>
-                
-            <h4>🌐 ¿Qué Aprenderás?</h4>
-                
-            <p>Desde las bases de HTML y CSS hasta la magia de Sass y Bootstrap, nuestro curso te sumergirá en las herramientas esenciales del desarrollo web. Aprenderás a construir sitios atractivos y funcionales desde cero, mientras dominas las últimas tecnologías de la industria. ¡No importa si eres principiante o ya tienes experiencia, nuestro programa está diseñado para todos los niveles!</p>
-                
-            <h4>💡 ¿Por Qué Marema?</h4>
-                
-            <p>En Marema, no solo adquieres habilidades técnicas, sino también un enfoque personalizado. Nuestro equipo de instructores experimentados está comprometido con tu éxito y te guiará en cada paso. Además, serás parte de una comunidad de mentes curiosas y colaborativas, listas para explorar y aprender juntas.</p>
-                
-            <h4>🎯 Aprovecha la Oportunidad</h4>
-                
-            <p>El momento es ahora. La tecnología está transformando el mundo y tú puedes ser parte de esta revolución. ¡Inscríbete en nuestro curso de Desarrollo Web y comienza a construir tu camino hacia una carrera emocionante y llena de posibilidades!</p>
-                
-            <h4>📅 Fecha de Inicio: Proximamente</h4>
-                
-            <!-- <p>🔗 Para más información e inscripciones, visita nuestro sitio web: [Insertar enlace al sitio web de inscripciones]</p> -->
-                
-            <p>¡No dejes que esta oportunidad pase! ¡Inscríbete hoy y comienza tu viaje hacia el éxito en el mundo del desarrollo web con Marema!</p>
-                
-            <p>¡Inscríbete Ahora a la primera clase es gratis ⬇!</p>
-            <!-- <a href="https://70k4tqvu3w6.typeform.com/to/h4RYVBWi">Incribete ahora</a> -->
-            <!-- <a href="pages/inscripcripcion.html">Incribete ahora</a> -->
-            <!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLScPNHaVJW1U14XxisjC3KjmAxTFDBKGlcsgmWmQR0VXCHyEXA/viewform?edit2=2_ABaOnuduriNd6t5RXV3Ef2c8J87hEOn9ef8HWr017YuXekCuDhmtDCCt1rY6DTmnhWtkkEQ">Incribete ahora</a> -->
-            <a target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
+          <!-- Redes sociales -->
+          <div id="redes" class="col-md-3 mb-4">
+            <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
+            <div class="d-flex justify-content-center gap-3">
+              <a href="https://www.linkedin.com/in/tecnomarema/" target="_blank" class="fs-4 footer-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+              <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" class="fs-4 footer-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+              <a href="https://www.youtube.com/@TecnoMarema" target="_blank" class="fs-4 footer-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+              <a href="https://www.instagram.com/tecno.marema/" target="_blank" class="fs-4 footer-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+              <a href="https://discord.com/invite/D7kwJMK4nE" target="_blank" class="fs-4 footer-icon" aria-label="Discord"><i class="bi bi-discord"></i></a>
+            </div>
+          </div>
 
+          <!-- Contacto -->
+          <div id="contacto" class="col-md-3 mb-4">
+            <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
+            <p class="mb-1">
+              <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
+              <a class="text-break" href="mailto:contacto@tecnomarema.com">tecnomarema.arg@gmail.com</a>
+            </p>
+          </div>
+
+          <!-- Newsletter -->
+<!-- Newsletter Mejorado con AJAX + Modal -->
+          <div class="col-md-3 mb-4">
+            <h5 class="text-uppercase fw-bold text-magenta">Newsletter</h5>
+            <p class="small">Suscribite y mantenete al día con novedades, recursos y contenidos exclusivos en tu correo.</p>
+
+            <form id="newsletter-form">
+              {% csrf_token %}
+              <input type="text" name="nombre" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input" placeholder="Tu nombre" required />
+              <input type="email" name="email" class="form-control mb-2 bg-dark text-white border-secondary newsletter-input" placeholder="Tu email" required />
+              <button type="submit" class="btn btn-sm w-100 btn-suscribirme">
+                <i class="bi bi-envelope-paper-heart me-1"></i> Suscribirme
+              </button>
+              <div id="newsletter-status" class="mt-2 small text-center"></div>
+            </form>
+          </div>
+
+        <!-- Derechos y condiciones -->
+        <hr class="border-secondary" />
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center small text-secondary">
+          <div class="mb-2 mb-md-0">© 2025 Tecno Marema. Todos los derechos reservados.</div>
+          <div>
+            <a href="{% url 'terminos_y_condiciones' %}">Términos y Condiciones</a>
+          </div>
         </div>
-    </div>
-    <!-- inscripcion fin -->
-
-    <!-- footer inicia -->
-    <footer class="container-fluid footer">
-        <div class="row pre-footer"></div>
-        <div class="row pie">
-            <a class="navbar-brand" href="#">Tecno <span>Marema </span><img src="{% static 'img/logo-marema.png' %}" alt="logo"
-                    height="50px"></a>
-            <p class="col-xs-12">Todos los derechos son reservados por copyright</p>
-            <p class="col-xs-12">Desarrollo y diseño por <span> Your Dreams Web</span></p>
-        </div>
+      </div>
     </footer>
-    <!-- footer fin -->
-    <!-- boton subir inicia -->
-    <a href="#" class="subir">
-        <i class="fa-solid fa-chevron-up fa-bounce"></i>
-    </a>
-    <!-- boton subir fin -->
-    <!-- boton what inicia -->
-    <a href="#" class="what">
-        <i class="fa-brands fa-whatsapp"></i>
-    </a>
-    <!-- boton what fin -->
 
+    <!-- btn subir inicia -->
+    <a href="#" class="subir" aria-label="Subir al inicio" id="btnSubir"><i class="bi bi-chevron-up"></i></a>
+    <!-- btn subir fin -->
 
-    <!-- script testimonial inicia -->
-    <!-- <script src="testimonial.js"></script> -->
-    <script src="{% static 'js/testimonial.js' %}"></script>
-    <!-- script testimonial fin -->
-    <!-- Aos inicia -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- Modal Newsletter -->
+    <div class="modal fade" id="newsletterModal" tabindex="-1" aria-labelledby="newsletterModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-black border-2" style="border-color: #12f693 !important;">
+          <div class="modal-header border-0 text-success">
+            <h5 class="modal-title" id="newsletterModalLabel">
+              <i class="bi bi-check-circle-fill me-2"></i>¡Perfecto!
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-white text-center py-5">
+            <p id="modal-message" class="fs-4 mb-0"></p>
+            <div class="mt-4">
+              <i class="bi bi-stars text-success" style="font-size: 4rem;"></i>
+            </div>
+          </div>
+          <div class="modal-footer border-0 justify-content-center pb-4">
+            <button type="button" class="btn btn-neon px-5 py-2" data-bs-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- script subir inicia -->
     <script>
-        AOS.init();
+      document.getElementById('btnSubir').addEventListener('click', function (event) {
+        event.preventDefault()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      })
     </script>
-    <!-- Aos fin -->
+    <!-- scrpt subir fin -->
 
-    <!-- BS 5.1 inicia -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    <!-- codigo contador inicia -->
+
+    <script>
+      // Espera a que el DOM esté completamente cargado
+      document.addEventListener('DOMContentLoaded', () => {
+        // Selecciona todos los elementos con clase .cont-numero
+        const counters = document.querySelectorAll('.cont-numero')
+      
+        // Función que anima el conteo de un número hasta su valor objetivo
+        const animateCount = (el, target) => {
+          let count = 0
+          const speed = 50 // Cuanto menor, más rápido
+          const increment = Math.ceil(target / speed) // Incremento por frame
+      
+          const update = () => {
+            count += increment
+            if (count >= target) {
+              el.textContent = `+${target}` // Finaliza con el número exacto
+            } else {
+              el.textContent = `+${count}` // Actualiza progresivamente
+              requestAnimationFrame(update) // Sigue el ciclo de animación
+            }
+          }
+      
+          // Reinicia el contenido y la animación CSS
+          el.textContent = '+0'
+          el.classList.remove('animate') // Quita clase para reiniciar
+          void el.offsetWidth // Fuerza reflow del navegador
+          el.classList.add('animate') // Vuelve a aplicar la animación
+      
+          update() // Comienza el conteo
+        }
+      
+        // Observa cuando la sección del contador entra en pantalla
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                // Ejecuta la animación en cada número visible
+                counters.forEach((counter) => {
+                  const target = parseInt(counter.getAttribute('data-target'))
+                  animateCount(counter, target)
+                })
+              }
+            })
+          },
+          { threshold: 0.6 }
+        ) // 60% del elemento visible para activarse
+      
+        // Aplica el observer a la sección del contador
+        observer.observe(document.querySelector('#contador'))
+      })
     </script>
-    <!-- BS 5.1 fin -->
-    <!-- BS 4.6 inicia -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
-    <!-- BS 4.6 fin -->
-    
-    
+
+    <!-- codigo contador fin -->
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- Newsletter AJAX + Modal -->
+    <script>
+      document.getElementById('newsletter-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const statusDiv = document.getElementById('newsletter-status');
+        const modalMessage = document.getElementById('modal-message');
+        const modal = new bootstrap.Modal(document.getElementById('newsletterModal'));
+
+        statusDiv.innerHTML = '<small class="text-info"><i class="bi bi-hourglass-split"></i> Enviando...</small>';
+
+        fetch("{% url 'newsletter' %}", {
+          method: 'POST',
+          body: new FormData(form),
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status === 'success') {
+            modalMessage.textContent = '¡Gracias por suscribirte! Pronto recibirás novedades exclusivas 🎉';
+            form.reset();
+          } else if (data.status === 'exists') {
+            modalMessage.textContent = '¡Ya estabas suscrito! Gracias igual por tu interés ❤️';
+          } else {
+            modalMessage.textContent = data.message || 'Ocurrió un error. Intentá de nuevo.';
+          }
+          statusDiv.innerHTML = '';
+          modal.show();
+        })
+        .catch(err => {
+          console.error(err);
+          statusDiv.innerHTML = '<small class="text-danger">Error de conexión</small>';
+          modalMessage.textContent = 'Error de conexión. Revisá tu internet e intentá de nuevo.';
+          modal.show();
+        });
+      });
+    </script>
+
+
+
     <!-- Bloqueo de boton derecho y f12 inicio -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -509,7 +1126,6 @@
         });
     </script>
     <!-- Bloqueo de boton derecho y f12 fin -->
-    
 
-</body>
+  </body>
 </html>
