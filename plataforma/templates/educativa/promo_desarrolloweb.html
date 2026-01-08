@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- SEO inicia -->
+    <meta name="description" content=" Tecno Marema es una escuela Digital de Tecnología orientada a la programación Fullstack con cursos sincronicos, clases online, trasmitiendo la pasión por aprender. Inspirando a nuestros estudiantes a abrazar el aprendizaje como un viaje constante y emocionante.">
+    <meta name="keywords" content="tecno, marema, tecno marema, educación digital, cursos, programación, desarrollo web, institución educativa, escuela digital, clases en vivo, aprende a programar, clases sincronicas, aprende desde cero, creación de sitios, crear paginas web, html , css , sass , js , bs, bootstrap, git, github, servidores, SEO, javascript, python, tecnologias, backend, frontend, fullstack, front, back, back-end, front-end">
+    <!-- SEO fin -->
+    <link rel="shortcut icon" href="{% static 'img/logo-marema.png' %}" type="image/x-icon">
+    <!-- bttn css inicia -->
+    <link rel="stylesheet" href="{% static 'css/bttn.css' %}">
+    <!-- bttn css fin -->
+    <!-- fontawesome inicia -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- fontawesome fin -->
+    <!-- jquery inicia -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- jquery fin -->
+    <!-- BS 5.1 inicia -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <!-- BS 5.1 fin -->
+    <!-- AOS inicia -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <!-- AOS fin -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <title>Tecno Marema</title>
+    <script src="{% static 'js/menu-contextual.js' %}"></script>
+
+    
+</head>
+<body>
+    <!-- navbar inicia -->
+    <nav class="navbar navbar-expand-md navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Tecno <span>Marema </span><img src="{% static 'img/logo-marema.png' %}" alt="logo"
+                    height="50px"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
+                <!-- <span class="navbar-toggler-icon"></span> -->
+                <i class="fa-solid fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Inicio</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <a class="nav-link" href="#sumate">Sumate</a>
+                    </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#nosotros">Nosotros</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#clases">Clases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#testimonios">Testimonios</a>
+                    </li>
+                    <li class="nav-item" id="li-login">
+                        <a class="nav-link" href="{% url 'login' %}" id="btn-login">Ingresa</a>
+                    </li>
+                    <li class="nav-item" id="li-inscripcion">
+                        <a class="nav-link" href="#inscripcion" id="btn-inscripcion">Inscripción</a>
+                    </li>                    
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- navbar fin -->
+    <!-- carrousel inicia -->
+    <main class="slider container-fluid">
+        <!-- Carousel -->
+        <div id="demo" class="carousel slide" data-bs-ride="carousel">
+
+            <!-- Indicators/dots -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active"></button>
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="2"></button>
+            </div>
+
+            <!-- The slideshow/carousel -->
+            <div class="carousel-inner">
+                <div class="carousel-item active" data-bs-interval="5000">
+                    <img src="{% static 'img/hero1.jpg' %}" alt="" class="d-block w-100">
+                    <div class="carousel-caption">
+                        <div class="call">
+                            <!-- <img src="img/logo-marema.png" alt="logo"> -->
+                            <img src="{% static 'img/logo-marema.png' %}" alt="logo">
+                            <h1>Tecno Marema</h1>
+                            <p>Transforma tu aprendizaje en el camino hacia el siguiente nivel.
+                                <i class="fa-solid fa-rocket"></i>
+                            </p>
+                            <a class="btn-slider" target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item" data-bs-interval="5000">
+                    <!-- <img src="img/software-developer-6521720_1920.jpg" alt="" class="d-block w-100"> -->
+                    <img src="{% static 'img/desarrollo.jpg' %}" alt="" class="d-block w-100">
+                    <div class="carousel-caption">
+                        <div class="call">
+                            <!-- <img src="img/logo-marema.png" alt="logo"> -->
+                            <img src="{% static 'img/logo-marema.png' %}" alt="logo">
+                            <h1>Tecno Marema</h1>
+                            <p>Impulsa tu evolución a través del aprendizaje hasta el siguiente nivel.
+                                <i class="fa-solid fa-rocket"></i>
+                            </p>
+                            <a class="btn-slider" target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item" data-bs-interval="5000">
+                    <!-- <img src="img/laptop-5673901_1920.jpg" alt="" class="d-block w-100"> -->
+                    <img src="{% static 'img/laptop-5673901_1920.jpg' %}" alt="" class="d-block w-100">
+                    <div class="carousel-caption">
+                        <div class="call">
+                            <!-- <img src="img/logo-marema.png" alt="logo"> -->
+                            <img src="{% static 'img/logo-marema.png' %}" alt="logo">
+                            <h1>Tecno Marema</h1>
+                            <p>Enciende tu potencial a través del aprendizaje y llega al siguiente nivel.
+                                <i class="fa-solid fa-rocket"></i>
+                            </p>
+                            <a class="btn-slider" target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Left and right controls/icons -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                <!-- <span class="carousel-control-prev-icon"></span> -->
+                <i class="fa-solid fa-angle-left fa-beat-fade"></i>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                <!-- <span class="carousel-control-next-icon"></span> -->
+                <i class="fa-solid fa-angle-right fa-beat-fade"></i>
+            </button>
+        </div>
+    </main>
+    <!-- carrousel fin -->
+    <!-- video inicia -->
+    <div class="container-fluid promo">
+        <div class="row">
+            <h2 class="h2" id="promo">Aprende hoy</h2>
+            <h2 class="text-center pasos-title">¿Te gustaría aprender a desarrollar sitios?</h2>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <!-- <video class="col-md-8 offset-md-1" src="video/promo.mp4" controls></video> -->
+            <video class="col-md-8 offset-md-1" src="{% static 'video/promo.mp4' %}" controls></video>
+        </div>
+    </div>
+    <!-- video fin -->
+    <!-- Pasos inicia -->
+    <div class="container-fluid pasos">
+        <div class="row">
+            <h2 class="h2" id="sumate">Sumate</h2>
+            <h2 class="text-center pasos-title">Que necesitas para comenzar?</h2>
+        </div>
+        <div class="row d-flex justify-content-center">
+            <article class="paso col-lg-3" data-aos="fade-right" data-aos-duration="2000" data-aos-delay="300">
+                <h2 class="numero">1</h2>
+                <h3 class="feat">Pasión por Aprender:</h3>
+                <p>En el corazón de nuestra filosofía está la pasión por aprender. Inspiramos a nuestros estudiantes a
+                    abrazar el aprendizaje como un viaje constante y emocionante. Creemos que la curiosidad es el motor
+                    que impulsa el crecimiento, y animamos a nuestros alumnos a buscar el conocimiento con entusiasmo y
+                    vigor. La pasión por aprender no solo alimenta las mentes, sino también el alma, y en Marema,
+                    celebramos el acto de descubrir y explorar.</p>
+                <a href="#inscripcion">Mas info</a>
+            </article>
+
+            <article class="paso col-lg-3" data-aos="zoom-in" data-aos-duration="2000" data-aos-delay="300">
+                <h2 class="numero">2</h2>
+                <h3 class="feat">Compromiso con la Excelencia:</h3>
+                <p>El compromiso es la base de todo lo que hacemos en Marema. Fomentamos un compromiso inquebrantable
+                    con la excelencia, tanto en la calidad de la educación que brindamos como en las metas que
+                    perseguimos. Cada miembro de la comunidad Marema se compromete a dar lo mejor de sí y a buscar la
+                    mejora continua en todas las áreas. Creemos que la excelencia es el resultado de un compromiso
+                    constante con la superación personal y profesional.</p>
+                <a href="#inscripcion">Mas info</a>
+            </article>
+
+            <article class="paso col-lg-3" data-aos="fade-left" data-aos-duration="2000" data-aos-delay="300">
+                <h2 class="numero">3</h2>
+                <h3 class="feat">Dedicación al Éxito:</h3>
+                <p>La dedicación es el puente que conecta la visión con la realidad. En Marema, inculcamos la dedicación
+                    como una brújula que guía a nuestros estudiantes hacia el éxito. Creemos que la dedicación es lo que
+                    impulsa la persistencia en momentos desafiantes y lleva a la realización de metas a largo plazo.
+                    Fomentamos la dedicación en cada paso del camino, inspirando a nuestros alumnos a trabajar
+                    arduamente, enfrentar obstáculos y alcanzar logros significativos.</p>
+                <a href="#inscripcion">Mas info</a>
+            </article>
+        </div>
+    </div>
+    <!-- Pasos fin -->
+    <!-- nosotros inicia -->
+    <h2 class="h2" id="nosotros">Nosotros</h2>
+    <div class="container-fluid nosotros">
+        <div class="row">
+            <aside class="col-md-5 nosotros-left"></aside>
+            <aside class="col-md-7 nosotros-right">
+                <h2>Tecno Marema</h2>
+                <h3>Descubre Tu Pasión por la Tecnología</h3>
+                <p>En el corazón de la innovación y el aprendizaje, surge Tecno Marema, una institución apasionada por
+                    guiar a los alumnos hacia el emocionante mundo de la tecnología de la información. En Tecno Marema,
+                    creemos en el poder de la educación para transformar vidas y abrir puertas hacia un futuro lleno de
+                    posibilidades.</p>
+                <p>Nuestra misión es clara: capacitar a los estudiantes para que se sumerjan con confianza en el vasto
+                    universo de la tecnología. En esta ocasión, estamos encantados de presentar nuestro emocionante
+                    curso de Desarrollo Web, una ventana abierta a la creación y la innovación en línea.</p>
+                <h3>Desarrollo Web: Construye el Futuro Digital</h3>
+                <p>El curso de Desarrollo Web de Tecno Marema es una invitación a explorar y dominar las herramientas
+                    fundamentales que impulsan la web moderna. En un mundo donde la presencia en línea es esencial,
+                    brindamos a nuestros alumnos las habilidades necesarias para crear sitios web cautivadores y
+                    funcionales desde cero.</p>
+                <p>Nuestros estudiantes serán guiados por expertos apasionados y experimentados en el campo del
+                    desarrollo web. A lo largo del curso, se sumergirán en conceptos esenciales, desde las bases de HTML
+                    y CSS, hasta la potencia de tecnologías como Sass y Bootstrap para dar estilo y estructura a sus
+                    creaciones. Pero eso no es todo, también explorarán el poder de control de versiones con Git y la
+                    colaboración efectiva utilizando GitHub.</p>
+                <p>En Tecno Marema, no solo enseñamos habilidades técnicas, sino que también fomentamos la creatividad y
+                    el pensamiento crítico. Animamos a nuestros estudiantes a experimentar, preguntar y desafiarse a sí
+                    mismos en un entorno de aprendizaje colaborativo y de apoyo.</p>
+                <button onclick="window.location.href='#inscripcion'" type="button" class="btn bttn-pill bttn-lg">Mas info</button>
+            </aside>
+        </div>
+    </div>
+    <!-- nosotros fin -->
+    <!-- Profesor inicia -->
+    <h2 class="h2">El Profesor</h2>
+    <div class="container-fluid profesor">
+        <div class="row ">
+            <div class="profe-desc col-lg-5 offset-lg-2" data-aos="zoom-in-up" data-aos-duration="2000" data-aos-delay="300">
+                <h4>Nuestro Profe</h4>
+                <h2>Emanuel Cabral</h2>
+                <p>Desarrollador Web Fullstack con mas de 10 años de experiencia, profesor en diferentes areas como
+                    HTML, CSS, SASS, BOOTSTRAP, GIT, GITHUB, PYTHON, entre otros.</p>
+                <p>Creador de Contenidos de Cursos Frontend, para diferentes instituciones destacadas de la Argentina y
+                    latinoamerica</p>
+                <a href="#inscripcion">Mas info</a>
+            </div>
+            <div class="profe-img col-lg-3 offset-lg-1" data-aos="flip-right" data-aos-duration="2000" data-aos-delay="300"></div>
+        </div>
+    </div>
+    <!-- Profesor fin -->
+    <!-- Clases inicia -->
+    <h2 class="h2" id="clases">El Contenido</h2>
+    <div class="container-fluid clases">
+        <div class="row clases-cont d-flex justify-content-center">
+            <h3>El Temario - Curso de Desarrollo Web</h3>
+            <div class="clases1 col-md-4">
+                <ul>
+                    <li>Clase 0 <p>Presentacion del Curso</p>
+                    </li>
+                    <li>Clase 1 <p>Conociendo a HTML</p>
+                    </li>
+                    <li>Clase 2 <p>Introducion a HTML</p>
+                    </li>
+                    <li>Clase 3 <p>Presentando a CSS</p>
+                    </li>
+                    <li>Clase 4 <p>Primeros Pasos con CSS</p>
+                    </li>
+                    <li>Clase 5 <p>Modelo de cajas</p>
+                    </li>
+                    <li>Clase 6 <p>Flexbox</p>
+                    </li>
+                    <li>Clase 7 <p>Introducion a Grids</p>
+                    </li>
+                    <li>Clase 8 <p>Sitios Responsivos(media + grid + flex)</p>
+                    </li>
+                    <li>Clase 9 <p>Pseudoclases y Pseudoelementos + BEM</p>
+                    </li>
+                    <li>Clase 10 <p>Animaciones 1</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="clases2 col-md-4">
+                <ul>
+                    <li>Clase 11 <p>Animaciones 2</p>
+                    </li>
+                    <li>Clase 12 <p>Frameworks, librerias y Bootstrap</p>
+                    </li>
+                    <li>Clase 13 <p>Maquetando con Bootstrap</p>
+                    </li>
+                    <li>Clase 14 <p>Git</p>
+                    </li>
+                    <li>Clase 15 <p>Github</p>
+                    </li>
+                    <li>Clase 16 <p>SASS</p>
+                    </li>
+                    <li>Clase 17 <p>SASS parte 2</p>
+                    </li>
+                    <li>Clase 18 <p>SEO</p>
+                    </li>
+                    <li>Clase 19 <p>Servidores</p>
+                    </li>
+                    <li>Clase 20 <p>Final del curso</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- Clases fin -->
+    <!-- contador inicia -->
+    <h2 class="h2">Datos</h2>
+    <div class="container-fluid contador">
+        <div class="row d-flex justify-content-center">
+            <h3>El Valor de la experiencia</h3>
+            <article class="col-md-2">
+                <div class="cont-numero">+5000</div>
+                <div class="cont-title">Alumnos</div>
+            </article>
+
+            <article class="col-md-2">
+                <div class="cont-numero">+60</div>
+                <div class="cont-title">Cursos Dictados</div>
+            </article>
+
+            <article class="col-md-2">
+                <div class="cont-numero">+10</div>
+                <div class="cont-title">Años de experiencia</div>
+            </article>
+
+            <article class="col-md-2">
+                <div class="cont-numero">+1500</div>
+                <div class="cont-title">Horas de clases</div>
+            </article>
+        </div>
+    </div>
+    <!-- contador fin -->
+
+    <!-- testimonial inicia -->
+    <h2 class="h2" id="testimonios">Testimonios</h2>
+    <section class="testimonial">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 d-none d-lg-block">
+                    <ol class="carousel-indicators tabs">
+                        <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active">
+                            <figure>
+                                <!-- <img src="img/ivan.jfif" class="img-fluid" alt="ivan" width="200px" > -->
+                                <img src="{% static 'img/ivan.jfif' %}" class="img-fluid" alt="jesica" width="200px" >
+                            </figure>
+                        </li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="1">
+                            <figure>
+                                <!-- <img src="img/andrea1.jpg" class="img-fluid" alt="andrea"> -->
+                                <img src="{% static 'img/andrea1.jpg' %}" class="img-fluid" alt="jesica" width="200px" >
+                            </figure>
+                        </li>
+                        <li data-target="#carouselExampleIndicators" data-slide-to="2">
+                            <figure>
+                                <!-- <img src="img/andrea.jpg" class="img-fluid" alt="jesica" width="200px" > -->
+                                <img src="{% static 'img/andrea.jpg' %}" class="img-fluid" alt="jesica" width="200px" >
+                            </figure>
+                        </li>
+                    </ol>
+                </div>
+                <div class="col-lg-6 d-flex justify-content-center align-items-center">
+                    <div id="carouselExampleIndicators" data-interval="false" class="carousel slide" data-ride="carousel">
+                        <h3>QUE DICEN NUESTROS ALUMNOS</h3>
+                        <h1>TESTIMONIOS</h1>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="quote-wrapper">
+                                    <p>Emanuel fue mi primer profesor, con él asenté las bases de frontend. Sus clases fueron excelentes, aprendí de manera didáctica y dinámica conceptos de HTML, CSS, Flexbox, Grid, animaciones y Bootstrap, ademas de compartirnos herramientas para usar en los proyectos. Siempre estuvo predispuesto a resolver dudas propias y del grupo, como así también en darnos un freedback constructivo ante los trabajos prácticos propuestos. Excelente docente. Siempre agradecido.</p>
+                                    <h3>Iván josé Vila</h3>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="quote-wrapper">
+                                    <p>Dar tres clases en una y que todo el contenido se comprenda es algo que no cualquier docente, de cualquier ambito, puede lograr. Impecable manejo de los tiempos y clarisima forma de abordar cada concepto. Gracias!</p>
+                                    <h3>Andrea Di Marco</h3>
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="quote-wrapper">
+                                    <p>Excelente profesor. Te mantiene entretenido y prestando atención en la clase. Le mete mucha onda, lo que te permite que si estas cansado por el horario no te pierdas</p>
+                                    <h3>Yesica Rubira</h3>
+                                </div>
+                            </div>
+                        </div>
+                        <ol class="carousel-indicators indicators">
+                            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- testimonial fin -->
+
+    <!-- inscripcion inicia -->
+    <h2 class="h2" id="inscripcion">Inscripción</h2>
+    <div class="container-fluid inscri">
+        <div class="row">
+            <h3 >Inscribete al curso de Desarrollo web</h3>
+            <h4>🚀 ¡Eleva tus Habilidades con el Curso de Desarrollo Web en Marema! 🚀</h4>
+
+            <p>¿Estás listo para llevar tus habilidades al siguiente nivel? En Marema, te invitamos a ser parte de nuestra comunidad de apasionados por la tecnología y el aprendizaje. Nuestro curso de Desarrollo Web es tu pasaporte hacia el emocionante mundo del diseño y creación de sitios web.</p>
+                
+            <h4>🌐 ¿Qué Aprenderás?</h4>
+                
+            <p>Desde las bases de HTML y CSS hasta la magia de Sass y Bootstrap, nuestro curso te sumergirá en las herramientas esenciales del desarrollo web. Aprenderás a construir sitios atractivos y funcionales desde cero, mientras dominas las últimas tecnologías de la industria. ¡No importa si eres principiante o ya tienes experiencia, nuestro programa está diseñado para todos los niveles!</p>
+                
+            <h4>💡 ¿Por Qué Marema?</h4>
+                
+            <p>En Marema, no solo adquieres habilidades técnicas, sino también un enfoque personalizado. Nuestro equipo de instructores experimentados está comprometido con tu éxito y te guiará en cada paso. Además, serás parte de una comunidad de mentes curiosas y colaborativas, listas para explorar y aprender juntas.</p>
+                
+            <h4>🎯 Aprovecha la Oportunidad</h4>
+                
+            <p>El momento es ahora. La tecnología está transformando el mundo y tú puedes ser parte de esta revolución. ¡Inscríbete en nuestro curso de Desarrollo Web y comienza a construir tu camino hacia una carrera emocionante y llena de posibilidades!</p>
+                
+            <h4>📅 Fecha de Inicio: Proximamente</h4>
+                
+            <!-- <p>🔗 Para más información e inscripciones, visita nuestro sitio web: [Insertar enlace al sitio web de inscripciones]</p> -->
+                
+            <p>¡No dejes que esta oportunidad pase! ¡Inscríbete hoy y comienza tu viaje hacia el éxito en el mundo del desarrollo web con Marema!</p>
+                
+            <p>¡Inscríbete Ahora a la primera clase es gratis ⬇!</p>
+            <!-- <a href="https://70k4tqvu3w6.typeform.com/to/h4RYVBWi">Incribete ahora</a> -->
+            <!-- <a href="pages/inscripcripcion.html">Incribete ahora</a> -->
+            <!-- <a href="https://docs.google.com/forms/d/e/1FAIpQLScPNHaVJW1U14XxisjC3KjmAxTFDBKGlcsgmWmQR0VXCHyEXA/viewform?edit2=2_ABaOnuduriNd6t5RXV3Ef2c8J87hEOn9ef8HWr017YuXekCuDhmtDCCt1rY6DTmnhWtkkEQ">Incribete ahora</a> -->
+            <a target="_blank" href="https://tally.so/r/w4GKMd">Incribete ahora</a>
+
+        </div>
+    </div>
+    <!-- inscripcion fin -->
+
+    <!-- footer inicia -->
+    <footer class="container-fluid footer">
+        <div class="row pre-footer"></div>
+        <div class="row pie">
+            <a class="navbar-brand" href="#">Tecno <span>Marema </span><img src="{% static 'img/logo-marema.png' %}" alt="logo"
+                    height="50px"></a>
+            <p class="col-xs-12">Todos los derechos son reservados por copyright</p>
+            <p class="col-xs-12">Desarrollo y diseño por <span> Your Dreams Web</span></p>
+        </div>
+    </footer>
+    <!-- footer fin -->
+    <!-- boton subir inicia -->
+    <a href="#" class="subir">
+        <i class="fa-solid fa-chevron-up fa-bounce"></i>
+    </a>
+    <!-- boton subir fin -->
+    <!-- boton what inicia -->
+    <a href="#" class="what">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+    <!-- boton what fin -->
+
+
+    <!-- script testimonial inicia -->
+    <!-- <script src="testimonial.js"></script> -->
+    <script src="{% static 'js/testimonial.js' %}"></script>
+    <!-- script testimonial fin -->
+    <!-- Aos inicia -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init();
+    </script>
+    <!-- Aos fin -->
+
+    <!-- BS 5.1 inicia -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
+    <!-- BS 5.1 fin -->
+    <!-- BS 4.6 inicia -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    <!-- BS 4.6 fin -->
+    
+    
+    <!-- Bloqueo de boton derecho y f12 inicio -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // A. Deshabilitar el Menú Contextual (Botón Derecho)
+            document.addEventListener('contextmenu', event => event.preventDefault());
+
+            // B. Deshabilitar F12 y Atajos de DevTools
+            document.onkeydown = function(e) {
+                // Bloquea F12
+                if (e.keyCode == 123) { 
+                    return false;
+                }
+                
+                // Bloquea Ctrl+Shift+I (Inspeccionar)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                    return false;
+                }
+
+                // Bloquea Ctrl+Shift+J (Consola)
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                    return false;
+                }
+
+                // Bloquea Ctrl+U (Ver Código Fuente)
+                if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                    return false;
+                }
+            };
+        });
+    </script>
+    <!-- Bloqueo de boton derecho y f12 fin -->
+    
+
+</body>
+</html>

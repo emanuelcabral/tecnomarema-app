@@ -313,6 +313,8 @@ path('crear-clases/', views.crear_clases_comision_view, name='crear_clases_comis
 
 path('administrador/envio-newsletter/', views.envio_y_edicion_de_newsletter, name='envio-newsletter'),
 
+path('promo-desarrollo-web/', views.promo_desarrolloweb, name='promo_desarrolloweb'), #http://127.0.0.1:8000/promo-desarrollo-web/
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
