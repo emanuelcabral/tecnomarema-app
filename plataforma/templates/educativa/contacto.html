@@ -12,6 +12,18 @@
 
     <title>Contacto - Plataforma</title>
     <style>
+
+        body, * {
+        -webkit-user-select: none !important;
+        -moz-user-select: none !important;
+        -ms-user-select: none !important;
+        user-select: none !important;
+        }
+        img {
+            -webkit-user-drag: none;
+            user-drag: none;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0d0d0d;
@@ -20,7 +32,6 @@
             background-position: center;
             color: #e0e0e0;
         }
-
 
         /* navbar inicio */
 
@@ -285,9 +296,10 @@
         }
 
     </style>
+
 </head>
 
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 
     <!-- NAVBAR -->
@@ -334,7 +346,7 @@
         Bienvenido {{ nombre_usuario }} a <strong>TecnoMarema 🚀</strong>
     </div>
     <h1 class="mt-5 p-2">¿Necesitas soporte o información? Contáctanos fácilmente.</h1>
-    <div class="container d-flex justify-content-center  contenedor-general mb-5" style="margin-bottom: 50px;">
+    <div class="container d-flex justify-content-center  contenedor-general mb-5 flex-fill" style="margin-bottom: 50px;">
 
         <main>
             <h2>Contacto</h2>
@@ -359,13 +371,13 @@
 
     </div>
 
-    <!-- footer inicia -->
-  <footer class="mt-5 position-absolute bottom-0 w-100" style="background-color: #111; color: #888; text-align: center; font-size: 0.9rem; padding: 1.2rem 0; position: relative; border-top: 3px solid transparent;">
+    <!-- footer incia -->
+    <footer style="background-color: #111; color: #888; text-align: center; font-size: 0.9rem; padding: 1.2rem 0; position: relative; border-top: 3px solid transparent;">
     <div style="position: absolute; top: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(90deg, #12f693, #cf30ff, #12f693); background-size: 200% auto; animation: neonGlow 4s linear infinite;"></div>
     <div class="container">
-      <small>© {% now "Y" %} Tecnomarema · Todos los derechos reservados</small>
+        <small>© {% now "Y" %} Tecnomarema · Todos los derechos reservados</small>
     </div>
-  </footer>
+    </footer>
     <!-- footer fin -->
 
     <!-- Modal -->
@@ -477,19 +489,6 @@
     document.body.style.mozUserSelect = 'none';
     document.body.style.msUserSelect = 'none';
 </script>
-
-<style>
-    body, * {
-        -webkit-user-select: none !important;
-        -moz-user-select: none !important;
-        -ms-user-select: none !important;
-        user-select: none !important;
-    }
-    img {
-        -webkit-user-drag: none;
-        user-drag: none;
-    }
-</style>
 
 <!-- --------------------------------------------------------------------------------------------------------- -->
 
