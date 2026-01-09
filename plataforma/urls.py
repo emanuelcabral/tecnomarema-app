@@ -26,7 +26,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     # ---------- PÚBLICAS ----------
     path('', views.inicio, name='inicio'),  # Página de inicio - http://127.0.0.1:8000/
-    path('home/', views.home, name='home'),  # Página principal - http://127.0.0.1:8000/home/
+    # path('home/', views.home, name='home'),  # Página principal - http://127.0.0.1:8000/home/
     path('login/', views.login_view, name='login'),  # Login de usuario - http://127.0.0.1:8000/login/
     path('logout/', LogoutView.as_view(), name='logout'),  # Cerrar sesión - http://127.0.0.1:8000/logout/
     # path('logout/', LogoutView.as_view(next_page='login'), name='logout'),  # Cerrar sesión con redirección

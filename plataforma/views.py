@@ -31,21 +31,6 @@ from django.conf import settings
 def inicio(request):
     return render(request, 'educativa/inicio.html')
 
-def home(request):
-    return render(request, 'educativa/home.html')
-#---------------------------------------------------------------------------------------------
-# from django.shortcuts import render
-
-# def home(request):
-#     context = {}
-    
-#     # 1. Verificar si el usuario está autenticado
-#     if request.user.is_authenticated:
-#         # 2. Asignar el objeto request.user (que es tu PerfilUsuario) a la clave 'usuario'
-#         context['usuario'] = request.user
-        
-#     return render(request, 'educativa/home.html', context)
-
 #---------------------------------------------------------------------------------------------
 
 def login_view(request):
@@ -1204,7 +1189,7 @@ def guardar_valoracion(request):
 
         return redirect('agradecimiento')
 
-    return redirect('home')
+    return redirect('inicio')
 
 
 
@@ -4740,23 +4725,6 @@ def listado_pagos(request):
 ####--------------------------------------subscriptores---------------------------------------####
 ##################################################################################################
 
-# from django.shortcuts import render, redirect
-# from .forms import SuscriptorForm
-# from django.contrib import messages
-
-# def newsletter_view(request):
-#     if request.method == 'POST':
-#         form = SuscriptorForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             messages.success(request, '¡Gracias por suscribirte!')
-#             return redirect('inicio')  # Cambiá esto al nombre real de tu URL o plantilla
-#     else:
-#         form = SuscriptorForm()
-    
-#     return render(request, 'home.html', {'form': form})
-
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
@@ -4794,8 +4762,8 @@ def newsletter_view(request):
         return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
 
     # Si es una petición normal (alguien entra directo a /newsletter/)
-    # Puedes redirigir al home o mostrar algo
-    return redirect('home')  # o 'inicio', según tu name en urls.py
+    # Puedes redirigir al inicio o mostrar algo
+    return redirect('inicio')  # o 'inicio', según tu name en urls.py
 
 
 ##################################################################################################
