@@ -21,6 +21,8 @@ from .views import alumno_alta_exitosa_view
 # from .views import el_curso_view
 from .views import curso_detalle_view
 
+from django.views.generic import RedirectView
+
 urlpatterns = [
     # ---------- PÚBLICAS ----------
     path('', views.inicio, name='inicio'),  # Página de inicio - http://127.0.0.1:8000/
@@ -314,6 +316,9 @@ path('crear-clases/', views.crear_clases_comision_view, name='crear_clases_comis
 path('administrador/envio-newsletter/', views.envio_y_edicion_de_newsletter, name='envio-newsletter'),
 
 path('promo-desarrollo-web/', views.promo_desarrolloweb, name='promo_desarrolloweb'), #http://127.0.0.1:8000/promo-desarrollo-web/
+
+
+path('robots.txt', RedirectView.as_view(url=os.path.join(settings.STATIC_URL, 'txt/robots.txt'))),
 
 ]
 
