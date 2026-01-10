@@ -173,6 +173,8 @@ def inscripcion(request):
         "MERCADOPAGO_PUBLIC_KEY": settings.MERCADOPAGO_PUBLIC_KEY
     })
 #---------------------------------------------------------------------------------
+
+from decimal import Decimal, InvalidOperation
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
@@ -180,19 +182,9 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
-
-
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.utils import timezone
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.conf import settings
-from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso
+from .models import DatosDeEstudiantes, PerfilUsuario, Comision, RegistroPago, Curso, Cupon
 import mercadopago
+import traceback
 
 
 @csrf_exempt
@@ -201,6 +193,9 @@ def guardar_datos_inscripcion_paga(request):
         return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
 
     sdk = mercadopago.SDK(settings.MERCADOPAGO_ACCESS_TOKEN)
+
+    cupon = None
+    descuento_aplicado = Decimal('0')
 
     try:
         # ============================
@@ -217,7 +212,7 @@ def guardar_datos_inscripcion_paga(request):
         genero = request.POST.get("genero", "")
         curso_id = request.POST.get("curso_id") or request.POST.get("curso")
         comision_id = request.POST.get("comision_id") or request.POST.get("comision")
-        monto_dinamico = float(request.POST.get("monto", 0)) or 0.0
+        monto_dinamico_str = request.POST.get("monto", "0").strip()
         id_estudiante_front = request.POST.get("id_estudiante", "").strip()
 
         # Mercado Pago
@@ -248,6 +243,46 @@ def guardar_datos_inscripcion_paga(request):
             return JsonResponse({"status": "error", "msg": "Comisión no encontrada"}, status=400)
 
         # ============================
+        # CÁLCULO PRECISO DEL MONTO CON CUPÓN
+        # ============================
+        monto_base = curso_obj.precio_final  # Es DecimalField → ya es Decimal
+
+        cupon_codigo = request.POST.get("cupon", "").strip().upper()
+        if cupon_codigo:
+            try:
+                cupon = Cupon.objects.get(codigo__iexact=cupon_codigo)
+                if not cupon.es_valido():
+                    return JsonResponse({"status": "error", "msg": "Cupón inválido o expirado"}, status=400)
+
+                descuento_aplicado = Decimal(cupon.descuento_porcentaje)
+
+                monto = monto_base * (Decimal('1') - (descuento_aplicado / Decimal('100')))
+                monto = monto.quantize(Decimal('0.01'))  # Redondeo bancario estándar
+
+            except Cupon.DoesNotExist:
+                return JsonResponse({"status": "error", "msg": "Cupón no encontrado"}, status=400)
+            except Exception as e:
+                return JsonResponse({"status": "error", "msg": f"Error procesando cupón: {str(e)}"}, status=400)
+        else:
+            monto = monto_base
+
+        # Convertimos el monto enviado por el frontend a Decimal (solo para debug)
+        try:
+            monto_dinamico = Decimal(monto_dinamico_str).quantize(Decimal('0.01'))
+        except (InvalidOperation, ValueError):
+            monto_dinamico = Decimal('0')
+
+        # Debug obligatorio para que veas qué está pasando
+        diferencia = abs(monto - monto_dinamico)
+        print(f"[MONTO-DEBUG] Backend calcula: {monto}")
+        print(f"[MONTO-DEBUG] Frontend envió: {monto_dinamico}")
+        print(f"[MONTO-DEBUG] Diferencia: {diferencia}")
+        print(f"[MONTO-DEBUG] Curso: {curso_obj.nombre_curso} | Cupón: {cupon_codigo or 'NINGUNO'} | Desc: {descuento_aplicado}%")
+
+        # ¡ESTO ES LO QUE CAMBIA TODO! → YA NO BLOQUEAMOS EL PROCESO
+        # El backend recalcula y usa SU monto, ignoramos diferencias de centavos
+
+        # ============================
         # VALIDAR DUPLICADOS
         # ============================
         if DatosDeEstudiantes.objects.filter(dni=documento).exists():
@@ -262,40 +297,22 @@ def guardar_datos_inscripcion_paga(request):
         # ============================
         # DETERMINAR MEDIO DE PAGO
         # ============================
-        medio_pago_db = "mercadopago"  # valor por defecto
+        medio_pago_db = "mercadopago"
         medio_pago_texto = "Mercado Pago"
         estado_pago = "Pendiente"
         id_transaccion = ""
 
         if comprobante and not token:
-            # TRANSFERENCIA
             medio_pago_db = "transferencia_bancaria"
             medio_pago_texto = "Transferencia bancaria"
             estado_pago = "Verificando"
 
         elif token and payment_method_id:
-            # TARJETA O EFECTIVO
-            if payment_method_id in ["rapipago", "pagofacil"]:
-                medio_pago_db = payment_method_id
-                medio_pago_texto = "Rapipago" if payment_method_id == "rapipago" else "Pago Fácil"
-                estado_pago = "pendiente"
-
-            elif payment_method_id.lower().startswith("deb"):
-                medio_pago_db = "debito"
-                medio_pago_texto = "Débito"
-                estado_pago = "Aprobado"
-
-            else:
-                cuotas = max(1, installments)
-                medio_pago_db = f"credito_{cuotas}"
-                medio_pago_texto = f"Crédito en {cuotas} cuota{'s' if cuotas > 1 else ''}"
-                estado_pago = "Aprobado"
-
-            # PROCESAR PAGO CON MERCADO PAGO
+            # Procesamiento de Mercado Pago
             payment_data = {
-                "transaction_amount": monto_dinamico,
+                "transaction_amount": float(monto),  # Usamos el monto del backend
                 "token": token,
-                "description": f"Inscripción {curso_obj.nombre_curso} - Comisión {comision_id}",
+                "description": f"Inscripción {curso_obj.nombre_curso} - Comisión {comision.numero_comision}",
                 "installments": installments,
                 "payment_method_id": payment_method_id,
                 "payer": {"email": email}
@@ -304,30 +321,24 @@ def guardar_datos_inscripcion_paga(request):
             result = sdk.payment().create(payment_data)
             payment = result["response"]
 
-            status_mp = payment["status"]
+            status_mp = payment.get("status")
 
-            # --- PAGOS EN EFECTIVO (Rapipago, Pago Fácil) ---
-            if payment_method_id in ["rapipago", "pagofacil"] and status_mp == "pending" and payment.get("status_detail") == "pending_waiting_payment":
-                # ÉXITO: el cliente debe pagar en efectivo
+            if payment_method_id in ["rapipago", "pagofacil"] and status_mp == "pending":
                 id_transaccion = str(payment["id"])
                 estado_pago = "pendiente"
                 medio_pago_db = payment_method_id
                 medio_pago_texto = "Rapipago" if payment_method_id == "rapipago" else "Pago Fácil"
 
-            # --- TARJETA APROBADA ---
             elif status_mp == "approved":
                 id_transaccion = str(payment["id"])
                 estado_pago = "Aprobado"
+                medio_pago_db = "credito" if "credito" in payment_method_id.lower() else payment_method_id
 
-            # --- CUALQUIER OTRO ESTADO (rechazado, error, etc.) ---
             else:
                 return JsonResponse({
                     "status": "error",
                     "msg": f"Pago no aprobado: {payment.get('status_detail', status_mp)}"
                 }, status=400)
-
-            id_transaccion = str(payment["id"])
-            estado_pago = "Aprobado"
 
         # ============================
         # GENERAR ID ESTUDIANTE
@@ -351,7 +362,7 @@ def guardar_datos_inscripcion_paga(request):
             telefono=telefono, genero=genero
         )
 
-        # Asignar a comisión
+        # Asignar comisión (primer slot disponible)
         for i in range(1, 10):
             if getattr(estudiante, f'cursando{i}') is None:
                 setattr(estudiante, f'cursando{i}', comision)
@@ -368,71 +379,107 @@ def guardar_datos_inscripcion_paga(request):
         usuario_id = str(int(ultimo_usuario.id_usuario) + 1).zfill(6) if ultimo_usuario else "000001"
 
         usuario = PerfilUsuario.objects.create(
-            id_usuario=usuario_id, id_estudiante=estudiante,
-            nombre_usuario=documento, correo=email, rol="alumno", is_active=True
+            id_usuario=usuario_id,
+            id_estudiante=estudiante,
+            nombre_usuario=documento,
+            correo=email,
+            rol="alumno",
+            is_active=True
         )
-        usuario.set_password("pass1234")
+        usuario.set_password("pass1234")  # ← Considera generar contraseña aleatoria en producción
         usuario.save()
 
         # ============================
         # REGISTRAR PAGO
         # ============================
         RegistroPago.objects.create(
-            estudiante=estudiante, comision=comision, plataforma="web",
-            medio_pago=medio_pago_db, estado_pago=estado_pago,
-            monto=monto_dinamico, fecha_pago=timezone.now(),
-            id_transaccion=id_transaccion, archivo_comprobante=comprobante
+            estudiante=estudiante,
+            comision=comision,
+            plataforma="web",
+            medio_pago=medio_pago_db,
+            estado_pago=estado_pago,
+            monto=monto,  # Guardamos Decimal
+            fecha_pago=timezone.now(),
+            id_transaccion=id_transaccion,
+            archivo_comprobante=comprobante
         )
 
         # ============================
-        # CORREO INTERNO
+        # MARCAR USO DEL CUPÓN (¡SOLO SI TODO SALIÓ BIEN!)
         # ============================
+        if cupon and descuento_aplicado > 0:
+            cupon.usos_actuales += 1
+            cupon.save()
+            print(f"[CUPÓN OK] Uso registrado: {cupon.codigo} ({descuento_aplicado}%)")
+
+        # ============================
+        # ENVÍO DE CORREOS
+        # ============================
+        # Correo interno (admin)
         context_interno = {
-            "nombre": nombre, "apellido": apellido, "email": email,
-            "documento": documento, "curso": curso_obj.nombre_curso,
-            "comision": comision.numero_comision, "pais": pais,
-            "provincia": provincia, "telefono": telefono,
-            "medio_pago": medio_pago_texto,  # ← Texto legible
-            # "fecha": timezone.now().strftime('%Y-%m-%d %H:%M:%S')
+            "nombre": nombre,
+            "apellido": apellido,
+            "email": email,
+            "documento": documento,
+            "curso": curso_obj.nombre_curso,
+            "comision": comision.numero_comision,
+            "pais": pais,
+            "provincia": provincia,
+            "telefono": telefono,
+            "medio_pago": medio_pago_texto,
+            "monto": monto,
             "fecha": timezone.now()
         }
         html_interno = render_to_string("registration/registro_pago.html", context_interno)
         email_interno = EmailMultiAlternatives(
-            "Nuevo alumno inscripto", strip_tags(html_interno),
-            settings.DEFAULT_FROM_EMAIL, ["tecnomarema.ar@gmail.com"]
+            "Nuevo alumno inscripto",
+            strip_tags(html_interno),
+            settings.DEFAULT_FROM_EMAIL,
+            ["tecnomarema.ar@gmail.com"]
         )
         email_interno.attach_alternative(html_interno, "text/html")
-        email_interno.send()
+        email_interno.send(fail_silently=True)
 
-        # ============================
-        # CORREO AL ALUMNO
-        # ============================
+        # Correo de bienvenida al alumno
         context_bienvenida = {
-            "nombre": f"{nombre} {apellido}", "usuario": documento,
-            "password": "pass1234", "curso": curso_obj.nombre_curso,
+            "nombre": f"{nombre} {apellido}",
+            "usuario": documento,
+            "password": "pass1234",
+            "curso": curso_obj.nombre_curso,
             "comision": comision.numero_comision,
-            "reset_url": "https://tecnomarema.com/reset-password"
+            "reset_url": "https://tecnomarema.com.ar/reset-password/"  # ← Ajusta según tu URL real
         }
         html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
         email_alumno = EmailMultiAlternatives(
-            "Bienvenido/a a Tecno Marema", strip_tags(html_bienvenida),
-            settings.DEFAULT_FROM_EMAIL, [email]
+            "Bienvenido/a a Tecno Marema",
+            strip_tags(html_bienvenida),
+            settings.DEFAULT_FROM_EMAIL,
+            [email]
         )
         email_alumno.attach_alternative(html_bienvenida, "text/html")
-        email_alumno.send()
+        email_alumno.send(fail_silently=True)
 
+        # Éxito
         return JsonResponse({
             "status": "ok",
             "id_estudiante": nuevo_id,
             "id_usuario": usuario_id,
-            "medio_pago": medio_pago_texto
+            "medio_pago": medio_pago_texto,
+            "monto_final": str(monto)
         })
 
     except Exception as e:
-        print("ERROR:", e)
-        import traceback; traceback.print_exc()
-        return JsonResponse({"status": "error", "msg": "Error del servidor"}, status=500)
+        # Revertir cupón SOLO si se había aplicado antes
+        if cupon and descuento_aplicado > 0:
+            cupon.usos_actuales = max(0, cupon.usos_actuales - 1)
+            cupon.save()
 
+        print("ERROR GRAVE en guardar_datos_inscripcion_paga:")
+        traceback.print_exc()
+        return JsonResponse({
+            "status": "error",
+            "msg": "Error interno del servidor. Contacta soporte."
+        }, status=500)
 
 #-------------------------------------------------------------------------------
 
@@ -2566,24 +2613,36 @@ import json
 @csrf_exempt
 def procesar_pago_mercado(request):
     if request.method == "POST":
+        # Asegúrate de que este TOKEN sea el de Producción o Test correspondiente
         sdk = mercadopago.SDK("TU_ACCESS_TOKEN_AQUI")
-        datos = json.loads(request.body)
+        
+        try:
+            datos = json.loads(request.body)
 
-        pago = {
-            "transaction_amount": float(datos["transaction_amount"]),
-            "token": datos["token"],
-            "description": "Pago inscripción TecnoMarema",
-            "installments": int(datos["installments"]),
-            "payment_method_id": datos["payment_method_id"],
-            "issuer_id": datos["issuer_id"],
-            "payer": {
-                "email": datos["payer"]["email"],
-                "identification": datos["payer"]["identification"]
+            # Para Mercado Pago, el monto que viaja en el "token" de seguridad
+            # debe ser EXACTAMENTE igual al transaction_amount enviado aquí.
+            pago = {
+                "transaction_amount": float(datos["transaction_amount"]),
+                "token": datos["token"],
+                "description": datos.get("description", "Pago inscripción TecnoMarema"),
+                "installments": int(datos["installments"]),
+                "payment_method_id": datos["payment_method_id"],
+                "issuer_id": datos["issuer_id"],
+                "payer": {
+                    "email": datos["payer"]["email"],
+                    "identification": datos["payer"]["identification"]
+                }
             }
-        }
 
-        resultado = sdk.payment().create(pago)
-        return JsonResponse(resultado["response"])
+            resultado = sdk.payment().create(pago)
+            
+            # Log para debug (opcional, quítalo en producción)
+            print("Resultado MP:", resultado["status"]) 
+
+            return JsonResponse(resultado["response"])
+            
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
     
     return JsonResponse({"status": "error"}, status=400)
 
@@ -5988,3 +6047,85 @@ def enviar_newsletter_en_background(request):
 
 def promo_desarrolloweb(request):
     return render(request, 'educativa/promo_desarrolloweb.html')
+
+
+##################################################################################
+###                       validar cupon de descuento                           ###
+##################################################################################
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from .models import Cupon, Curso, Comision, DatosDeEstudiantes, PerfilUsuario, RegistroPago
+
+@csrf_exempt
+def validar_cupon(request):
+    """Valida si un cupón existe y es aplicable."""
+    if request.method == "POST":
+        # Usamos request.POST porque el JS envía FormData
+        cupon_codigo = request.POST.get("cupon", "").strip().upper()
+        try:
+            cupon = Cupon.objects.get(codigo__iexact=cupon_codigo)
+            if cupon.es_valido():
+                return JsonResponse({"status": "ok", "descuento": cupon.descuento_porcentaje})
+            else:
+                return JsonResponse({"status": "error", "msg": "Cupón expirado o inválido"})
+        except Cupon.DoesNotExist:
+            return JsonResponse({"status": "error", "msg": "Cupón no encontrado"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "msg": str(e)})
+    return JsonResponse({"status": "error", "msg": "Método no permitido"}, status=405)
+
+################################################################################################
+#----------------------------------alta y edicion cupones--------------------------------------#
+################################################################################################
+
+@session_required  # Si usas este decorador para sesiones personalizadas
+def alta_y_edicion_cupones(request, codigo=None):
+    guardado_exitoso = False
+    cupon = None
+
+    if codigo:
+        cupon = get_object_or_404(Cupon, codigo=codigo)
+
+    if request.method == 'POST':
+        codigo_post = request.POST.get('codigo', '').strip().upper()
+        descuento_porcentaje = int(request.POST.get('descuento_porcentaje', 0))
+        fecha_inicio = request.POST.get('fecha_inicio')
+        fecha_vencimiento = request.POST.get('fecha_vencimiento') or None
+        usos_maximos = int(request.POST.get('usos_maximos', 0))
+        usos_actuales = int(request.POST.get('usos_actuales', 0)) if cupon else 0  # No editable, solo para edición
+        activo = 'activo' in request.POST
+
+        if cupon:
+            # Edición
+            cupon.codigo = codigo_post
+            cupon.descuento_porcentaje = descuento_porcentaje
+            cupon.fecha_inicio = fecha_inicio
+            cupon.fecha_vencimiento = fecha_vencimiento
+            cupon.usos_maximos = usos_maximos
+            cupon.usos_actuales = usos_actuales  # Mantiene el valor actual
+            cupon.activo = activo
+            cupon.save()
+        else:
+            # Alta nueva
+            cupon = Cupon.objects.create(
+                codigo=codigo_post,
+                descuento_porcentaje=descuento_porcentaje,
+                fecha_inicio=fecha_inicio,
+                fecha_vencimiento=fecha_vencimiento,
+                usos_maximos=usos_maximos,
+                usos_actuales=0,
+                activo=activo
+            )
+
+        guardado_exitoso = True
+        # Opcional: redirect a la misma página para nueva alta, o al panel
+        # return redirect('alta_y_edicion_cupones')
+
+    context = {
+        'cupon': cupon,
+        'guardado_exitoso': guardado_exitoso
+    }
+    return render(request, 'administrador/alta_y_edicion_cupones.html', context)

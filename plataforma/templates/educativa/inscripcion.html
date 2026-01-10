@@ -521,14 +521,12 @@
       <h5 class="mb-4">Elige el medio de pago</h5>
 
       <div class="list-group mb-4">
-        <!-- Transferencia -->
         <label class="list-group-item">
           <input class="form-check-input me-2" type="radio" name="medioPagoPaso3"
                  value="transferencia" checked onchange="onMedioPaso3Change(this)">
-          <strong>Transferencia bancaria</strong> - Precio final: <span class="detallePrecioFinal">-</span>
+          <strong>Transferencia bancaria</strong> - Precio final: $<span class="detallePrecioFinal">-</span>
         </label>
 
-        <!-- Mercado Pago -->
         <label class="list-group-item">
           <input class="form-check-input me-2" type="radio" name="medioPagoPaso3"
                  value="mercadopago" onchange="onMedioPaso3Change(this)">
@@ -551,28 +549,32 @@
       </ul>
     </div>
 
-          <div class="col-md-4 summary-section">
-            <div class="info-box">
-              <h5>Detalle de la inscripción</h5>
-              <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
-              <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
-              <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
-              <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
-              <p><strong>Precio final: $<span class="detallePrecioFinal">-</span></strong></p>
+    <div class="col-md-4 summary-section">
+      <div class="info-box">
+        <h5>Detalle de la inscripción</h5>
+        <p><strong>Curso de:</strong> <span class="detalleNombreCurso">-</span></p>
+        <p><strong>Modalidad:</strong> <span class="detalleModalidadCurso">-</span></p>
+        <p><del>Precio original: $<span class="detallePrecioOriginal">-</span></del></p>
+        <p><span class="text-success">Descuento: -$<span class="detalleDescuento">-</span></span></p>
 
-              <div class="mt-3">
-                <label for="cupon" class="form-label">Consigue el Descuento aplicando el cupón:</label>
-                <input type="text" class="form-control mb-2" id="cupon" placeholder="DESCUENTO">
-                <button class="btn btn-custom w-100">Aplicar código</button>
-              </div>
+        <p id="lineaDescuentoCupon" style="display: none;">
+          <span class="text-success">Descuento por cupón: -$<span id="detalleDescuentoCupon">0</span></span>
+        </p>
 
-              <hr class="my-4">
-              <div class="tick-icon mb-2">Acceso total a la plataforma</div>
-              <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
-              <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
-            </div>
-          </div>
-    
+        <p><strong>Precio final: $<span id="precioFinal" class="detallePrecioFinal">-</span></strong></p>
+
+        <div class="mt-3">
+          <label for="cuponDescuento" class="form-label">Consigue el Descuento aplicando el cupón:</label>
+          <input type="text" class="form-control mb-2" id="cuponDescuento" placeholder="DESCUENTO">
+          <button type="button" class="btn btn-custom w-100" onclick="aplicarCupon()">Aplicar código</button>
+        </div>
+
+        <hr class="my-4">
+        <div class="tick-icon mb-2">Acceso total a la plataforma</div>
+        <div class="tick-icon mb-2">Acceso al material exclusivo.</div>
+        <div class="tick-icon mb-2">Puedes presenciar la primera clase sin costo.</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -747,33 +749,34 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   function obtenerDatosCurso() {
-    const cursoSelect = document.getElementById("curso");
-    const comisionSelect = document.getElementById("comision");
+      const cursoSelect = document.getElementById("curso");
+      const comisionSelect = document.getElementById("comision");
+      // Buscamos el elemento donde se muestra el precio final en el resumen
+      const elPrecioFinal = document.getElementById("precioFinal");
 
-    if (!cursoSelect?.value || !comisionSelect?.value) {
-      console.warn("Falta curso o comisión");
-      return null;
-    }
+      if (!cursoSelect?.value || !comisionSelect?.value || !elPrecioFinal) {
+          console.warn("Falta curso, comisión o elemento de precio");
+          return null;
+      }
 
-    const cursoId = cursoSelect.value;
-    const cursoData = cursos[cursoId];
-    if (!cursoData) {
-      console.warn("Curso no encontrado en 'cursos':", cursoId);
-      return null;
-    }
+      const cursoId = cursoSelect.value;
+      const cursoData = cursos[cursoId];
+      
+      // Obtenemos el monto actual que está viendo el usuario (ya sea el original o con descuento)
+      // Usamos limpiarPrecio para convertir "$ 100.000" en 100000
+      const montoActual = limpiarPrecio(elPrecioFinal.innerText);
 
-    const precioFinal = parseFloat(cursoData.precio_final);
-    if (isNaN(precioFinal) || precioFinal <= 0) {
-      console.warn("Precio inválido:", cursoData.precio_final);
-      return null;
-    }
+      if (isNaN(montoActual) || montoActual <= 0) {
+          console.warn("Monto inválido detectado:", elPrecioFinal.innerText);
+          return null;
+      }
 
-    return {
-      curso_id: cursoId,
-      comision_id: comisionSelect.value,
-      monto: precioFinal,
-      nombre_curso: cursoData.nombre
-    };
+      return {
+          curso_id: cursoId,
+          comision_id: comisionSelect.value,
+          monto: montoActual, // Este es el valor que recibirá la SDK de Mercado Pago
+          nombre_curso: cursoData ? cursoData.nombre : "Curso"
+      };
   }
 
   // --- Construcción del FormData (USADO POR BRICK Y TRANSFERENCIA) ---
@@ -831,22 +834,29 @@ document.addEventListener("DOMContentLoaded", async () => {
     return formData;
   }
 
-  // --- Inicializar / destruir Brick ---
+// --- Inicializar / destruir Brick ---
   async function crearYMontarBrick(datos) {
     const bricksBuilder = mp.bricks();
     if (window.paymentBrickController) {
-      try { await window.paymentBrickController.unmount(); } catch (e) { console.warn(e); }
+      try { 
+        await window.paymentBrickController.unmount();
+        // PARCHE 1: Limpiamos la referencia para que no queden procesos fantasma
+        window.paymentBrickController = null; 
+      } catch (e) { console.warn(e); }
     }
 
+    // PARCHE 2: Aseguramos que el monto sea entero (Mercado Pago falla con decimales)
+    const montoSeguro = Math.round(datos.monto);
+
     const settings = {
-      initialization: { amount: datos.monto, currency: 'ARS' },
+      initialization: { amount: montoSeguro, currency: 'ARS' },
       customization: {
         paymentMethods: { creditCard: "all", debitCard: "all", ticket: "all" },
         visual: { style: { theme: "dark" } }
       },
       callbacks: {
         onReady: () => {
-          console.log("Payment Brick listo");
+          console.log("Payment Brick listo con monto: " + montoSeguro);
           if (typeof hidePreloader === 'function') hidePreloader();
         },
         onSubmit: async (formData) => {
@@ -886,7 +896,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           fd.append("curso_id", datosCurso.curso_id);
           fd.append("comision_id", datosCurso.comision_id);
           fd.append("nombre_curso", datosCurso.nombre_curso);
-          fd.append("monto", datosCurso.monto);
+          
+          // PARCHE 3: Usamos 'set' en lugar de 'append' y enviamos el monto que el Brick "selló"
+          // Esto evita que el backend reciba el precio viejo
+          fd.set("monto", montoSeguro);
 
           showPreloader();
           try {
@@ -908,7 +921,7 @@ document.addEventListener("DOMContentLoaded", async () => {
               } else {
                 mostrarModalPersonalizado(
                   "¡Pago Aprobado!",
-                  `¡Listo! Pago de $${datosCurso.monto} aprobado.\n\nCurso: ${datosCurso.nombre_curso}\n\nTe enviamos todo a ${email}.`
+                  `¡Listo! Pago de $${montoSeguro} aprobado.\n\nCurso: ${datosCurso.nombre_curso}\n\nTe enviamos todo a ${email}.`
                 );
               }
               localStorage.removeItem('id_estudiante_temp');
@@ -932,6 +945,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const container = document.getElementById("paymentBrick_container");
       if (!container) throw new Error("Contenedor no encontrado");
+      
+      // PARCHE 4: Limpieza física del HTML antes de crear el nuevo
       container.innerHTML = "";
       container.style.minHeight = "380px";
 
@@ -1010,7 +1025,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   console.log("Payment Brick listo (se activa en paso4)");
+  //se agrega a window para poder refrescar desde consola si es necesario por el cupon de descuento
+  window.refrescarPago = inicializarPaymentBrick;
+
 });
+
+
 </script>
 
 
@@ -1704,5 +1724,174 @@ function mostrarModalPersonalizado(titulo = "Mensaje", mensaje = "Algo ocurrió.
 }
 </script>
 
+
+
+<!-- ########################################################### -->
+<!--                    cupon de descuento                       -->
+<!-- ########################################################### -->
+<script>
+/**
+ * 1. Limpieza robusta de precios (mejorada)
+ * Convierte cualquier formato de precio argentino a número con 2 decimales
+ */
+function limpiarPrecio(texto) {
+    if (!texto) return 0;
+    
+    // 1. Quitamos todo lo que no sea número, coma o punto
+    let limpio = texto
+        .replace(/[^0-9,.-]/g, '')     // solo números, coma y punto
+        .replace(/\./g, '')            // quitamos puntos de miles
+        .replace(',', '.')             // coma → punto decimal
+        .trim();
+
+    // 2. Convertimos y forzamos 2 decimales
+    const numero = parseFloat(limpio);
+    return isNaN(numero) ? 0 : Number(numero.toFixed(2));
+}
+
+/**
+ * 2. Aplicar Cupón - Versión mejorada con máxima precisión
+ */
+function aplicarCupon() {
+    const cuponInput = document.getElementById("cuponDescuento");
+    const cupon = cuponInput.value.trim().toUpperCase();
+    
+    if (!cupon) {
+        mostrarModalPersonalizado("Atención", "Por favor, ingresá un código.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("cupon", cupon);
+
+    fetch("/validar_cupon/", {
+        method: "POST",
+        headers: { "X-CSRFToken": getCookie("csrftoken") },
+        body: formData,
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error HTTP ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === "ok") {
+            const porcentaje = Number(data.descuento); // ya debería venir como número
+            
+            // Elementos del DOM
+            const detalleDescCupon = document.getElementById("detalleDescuentoCupon");
+            const lineaCupon = document.getElementById("lineaDescuentoCupon");
+            const inputMontoOculto = document.getElementById("monto");
+            const preciosFinales = document.querySelectorAll(".detallePrecioFinal");
+
+            // Obtenemos precio base del curso (muy importante: fuente única de verdad)
+            const cursoSelect = document.getElementById("curso");
+            const cursoId = cursoSelect.value;
+            
+            // Aseguramos que el precio sea un número limpio con 2 decimales
+            let precioBaseStr = cursos[cursoId]?.precio_final?.toString() || "0";
+            const precioBase = limpiarPrecio(precioBaseStr);
+
+            console.log(`[DEBUG] Precio base original: ${precioBaseStr} → limpio: ${precioBase}`);
+
+            // Cálculo preciso
+            const valorDescuento = Number((precioBase * (porcentaje / 100)).toFixed(2));
+            const nuevoTotal = Number((precioBase - valorDescuento).toFixed(2));
+
+            // Formateador para visualización (con coma como separador decimal)
+            const formateador = new Intl.NumberFormat('es-AR', {
+                style: 'decimal',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+
+            // Actualización visual
+            if (lineaCupon) lineaCupon.style.display = "block";
+            if (detalleDescCupon) {
+                detalleDescCupon.innerText = formateador.format(valorDescuento);
+            }
+            
+            preciosFinales.forEach(span => {
+                span.innerText = formateador.format(nuevoTotal);
+            });
+
+            // Campo oculto para el backend → SIEMPRE con punto decimal y 2 decimales
+            if (inputMontoOculto) {
+                const montoString = nuevoTotal.toFixed(2); // "12345.67"
+                inputMontoOculto.value = montoString;
+                console.log(`[DEBUG] Monto oculto actualizado: ${montoString}`);
+            }
+
+            // Reinicio del Payment Brick (si existe)
+            if (typeof window.refrescarPago === 'function') {
+                window.refrescarPago();
+                console.log(`[BRICK] Reiniciado con monto: ${nuevoTotal.toFixed(2)}`);
+            }
+
+            mostrarModalPersonalizado("¡Éxito!", `Se aplicó un ${porcentaje}% de descuento.`);
+
+            // Deshabilitamos input y botón
+            cuponInput.disabled = true;
+            const btnCupon = document.querySelector("button[onclick='aplicarCupon()']");
+            if (btnCupon) btnCupon.disabled = true;
+
+        } else {
+            mostrarModalPersonalizado("Cupón no válido", data.msg || "El código no es válido o está expirado.");
+        }
+    })
+    .catch(error => {
+        console.error("[ERROR CUPÓN]", error);
+        mostrarModalPersonalizado("Error", "No se pudo validar el cupón. Intenta de nuevo.");
+    });
+}
+
+/**
+ * 3. Función auxiliar para crear/montar el Payment Brick con precisión
+ * (llamar esta función cuando refresques el brick)
+ */
+async function crearYMontarBrick(datos) {
+    try {
+        // Aseguramos precisión máxima
+        const montoRaw = datos.monto || 0;
+        const montoExacto = Number(parseFloat(montoRaw).toFixed(2));
+
+        console.log(`[BRICK] Montando con monto exacto: ${montoExacto}`);
+
+        // Aquí iría tu lógica de inicialización del Payment Brick
+        // Ejemplo:
+        /*
+        const settings = {
+            initialization: {
+                amount: montoExacto,
+                currency: 'ARS'
+            }
+        };
+        window.mp.bricks().create("paymentBrick", "paymentBrick_container", settings);
+        */
+
+    } catch (err) {
+        console.error("[ERROR BRICK]", err);
+    }
+}
+
+/**
+ * 4. Obtener cookie CSRF (sin cambios)
+ */
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>
 </body>
 </html>

@@ -317,6 +317,12 @@ path('administrador/envio-newsletter/', views.envio_y_edicion_de_newsletter, nam
 
 path('promo-desarrollo-web/', views.promo_desarrolloweb, name='promo_desarrolloweb'), #http://127.0.0.1:8000/promo-desarrollo-web/
 
+path('validar_cupon/', views.validar_cupon, name='validar_cupon'),
+
+# En urls.py (agregar a urlpatterns)
+path('alta_y_edicion_cupones/', views.alta_y_edicion_cupones, name='alta_y_edicion_cupones'),
+path('alta_y_edicion_cupones/<str:codigo>/', views.alta_y_edicion_cupones, name='alta_y_edicion_cupones_edit'),
+
 
 path('robots.txt', RedirectView.as_view(url=os.path.join(settings.STATIC_URL, 'txt/robots.txt'))),
 
