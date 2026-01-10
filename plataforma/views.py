@@ -447,7 +447,7 @@ def guardar_datos_inscripcion_paga(request):
             "password": "pass1234",
             "curso": curso_obj.nombre_curso,
             "comision": comision.numero_comision,
-            "reset_url": "https://tecnomarema.com.ar/reset-password/"  # ← Ajusta según tu URL real
+            "reset_url": "https://tecnomarema.com.ar/login/"  # ← Ajusta según tu URL real
         }
         html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
         email_alumno = EmailMultiAlternatives(
