@@ -977,3 +977,44 @@ class Newsletter(models.Model):
             if kwargs.get('force_insert') is False and kwargs.get('force_update') is False:
                 pass
         super().save(*args, **kwargs)
+
+
+
+##################################################################################################
+#----------------------------------cupones de descuento------------------------------------------#
+##################################################################################################
+
+from django.db import models
+from django.utils import timezone
+
+class Cupon(models.Model):
+    codigo = models.CharField(max_length=50, unique=True, help_text="Código del cupón (ej: DESC20)")
+    descuento_porcentaje = models.PositiveIntegerField(default=0, help_text="Porcentaje de descuento (ej: 20 para 20%)")
+    fecha_inicio = models.DateField(default=timezone.now, help_text="Fecha de inicio de validez")
+    fecha_vencimiento = models.DateField(null=True, blank=True, help_text="Fecha de expiración (opcional)")
+    usos_maximos = models.PositiveIntegerField(default=0, help_text="Máximo de usos (0 = ilimitado)")
+    usos_actuales = models.PositiveIntegerField(default=0)
+    activo = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.codigo} ({self.descuento_porcentaje}% off)"
+
+    def es_valido(self):
+        hoy = timezone.now().date()
+        if not self.activo:
+            return False
+        if self.fecha_vencimiento and hoy > self.fecha_vencimiento:
+            return False
+        if self.usos_maximos > 0 and self.usos_actuales >= self.usos_maximos:
+            return False
+        return True
+
+    def aplicar(self):
+        if self.es_valido():
+            self.usos_actuales += 1
+            self.save()
+            return self.descuento_porcentaje
+        return 0
+    
+
+##################################################################################################
