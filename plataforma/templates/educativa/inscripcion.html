@@ -331,6 +331,30 @@
       <div class="tab-pane fade show active" id="paso1" role="tabpanel">
         <div class="d-flex flex-wrap mt-4 gap-4">
           <div class="form-section">
+
+
+<div id="quick-login-card" class="card mb-4 border-0 shadow-sm" style="border-radius: 12px;">
+    <div class="card-header border-0" style="background-color: #12f693; color: #000; padding: 8px 15px; font-weight: bold; font-size: 0.8rem;">
+        ¿YA ERES ALUMNO? <span style="font-weight: normal; opacity: 0.8;">Identifícate aquí</span>
+    </div>
+    <div class="card-body bg-light" style="padding: 15px;">
+        <div class="row gx-2"> 
+            <div class="col-sm-5">
+                <input type="text" id="quick_user" class="form-control form-control-sm" placeholder="Usuario o Correo">
+            </div>
+            <div class="col-sm-7">
+                <div class="input-group input-group-sm">
+                    <input type="password" id="quick_pass" class="form-control" placeholder="Contraseña">
+                    <button class="btn btn-dark fw-bold" type="button" onclick="loginRapido()" id="btn-quick" style="background-color: #000; min-width: 80px;">
+                        ENTRAR
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div id="login-msg" class="mt-1 small" style="font-size: 0.75rem;"></div>
+    </div>
+</div>
+
             <h4>¿Quieres inscribirte?</h4>
             <p>Inscripción - Ingresa tus datos</p>
             <form action="/inscripcion/" method="post" id="form-registro">
@@ -1893,5 +1917,75 @@ function getCookie(name) {
     return cookieValue;
 }
 </script>
+
+<!-- ########################################################### -->
+<!--           login rápido y autocompletar datos (9)            -->
+<!-- ########################################################### -->
+<script>
+/**
+ * LOGIN RÁPIDO - TECNO MAREMA
+ * Autocompletado de datos incluyendo Fecha de Nacimiento
+ */
+function loginRapido() {
+    const userInput = document.getElementById('quick_user').value;
+    const passInput = document.getElementById('quick_pass').value;
+    const btn = document.getElementById('btn-quick');
+    const msg = document.getElementById('login-msg');
+
+    if(!userInput || !passInput) return;
+
+    btn.innerHTML = "...";
+    btn.disabled = true;
+
+    fetch('/login_autocompletar/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({ username: userInput, password: passInput })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // RELLENAR DATOS PERSONALES
+            // Buscamos por atributo 'name' para mayor seguridad con Django Forms
+            const setVal = (name, val) => {
+                let el = document.getElementsByName(name)[0];
+                if(el) el.value = val;
+            };
+
+            setVal('nombre', data.nombre);
+            setVal('apellido', data.apellido);
+            setVal('dni', data.dni);
+            setVal('correo', data.correo);
+            setVal('telefono', data.telefono);
+            
+            // CAMPO DE FECHA DE NACIMIENTO
+            setVal('fecha_nacimiento', data.fecha_nacimiento);
+
+            msg.innerHTML = "<span class='text-success fw-bold'>✔ ¡Perfil de Alumno cargado!</span>";
+            
+            // Bloqueamos campos críticos
+            if(document.getElementsByName('dni')[0]) document.getElementsByName('dni')[0].readOnly = true;
+
+            setTimeout(() => {
+                document.getElementById('quick-login-card').style.display = 'none';
+            }, 1200);
+        } else {
+            btn.innerHTML = "ENTRAR";
+            btn.disabled = false;
+            msg.innerHTML = "<span class='text-danger'>" + data.error + "</span>";
+        }
+    })
+    .catch(error => {
+        btn.innerHTML = "ENTRAR";
+        btn.disabled = false;
+        msg.innerHTML = "<span class='text-danger'>Error de conexión</span>";
+    });
+}
+</script>
+
+
 </body>
 </html>
