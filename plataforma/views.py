@@ -226,7 +226,7 @@ def guardar_datos_inscripcion_paga(request):
         # ============================
         # VALIDACIONES BÁSICAS
         # ============================
-        if not all([nombre, apellido, documento, email, curso_id, comision_id, id_estudiante_front]):
+        if not all([nombre, apellido, documento, email, curso_id, comision_id]):
             return JsonResponse({"status": "error", "msg": "Faltan datos obligatorios"}, status=400)
 
         # ============================
@@ -245,7 +245,7 @@ def guardar_datos_inscripcion_paga(request):
         # ============================
         # CÁLCULO PRECISO DEL MONTO CON CUPÓN
         # ============================
-        monto_base = curso_obj.precio_final  # Es DecimalField → ya es Decimal
+        monto_base = curso_obj.precio_final
 
         cupon_codigo = request.POST.get("cupon", "").strip().upper()
         if cupon_codigo:
@@ -255,9 +255,8 @@ def guardar_datos_inscripcion_paga(request):
                     return JsonResponse({"status": "error", "msg": "Cupón inválido o expirado"}, status=400)
 
                 descuento_aplicado = Decimal(cupon.descuento_porcentaje)
-
                 monto = monto_base * (Decimal('1') - (descuento_aplicado / Decimal('100')))
-                monto = monto.quantize(Decimal('0.01'))  # Redondeo bancario estándar
+                monto = monto.quantize(Decimal('0.01'))
 
             except Cupon.DoesNotExist:
                 return JsonResponse({"status": "error", "msg": "Cupón no encontrado"}, status=400)
@@ -266,33 +265,118 @@ def guardar_datos_inscripcion_paga(request):
         else:
             monto = monto_base
 
-        # Convertimos el monto enviado por el frontend a Decimal (solo para debug)
+        # Debug de monto
         try:
             monto_dinamico = Decimal(monto_dinamico_str).quantize(Decimal('0.01'))
         except (InvalidOperation, ValueError):
             monto_dinamico = Decimal('0')
 
-        # Debug obligatorio para que veas qué está pasando
-        diferencia = abs(monto - monto_dinamico)
         print(f"[MONTO-DEBUG] Backend calcula: {monto}")
         print(f"[MONTO-DEBUG] Frontend envió: {monto_dinamico}")
-        print(f"[MONTO-DEBUG] Diferencia: {diferencia}")
+        print(f"[MONTO-DEBUG] Diferencia: {abs(monto - monto_dinamico)}")
         print(f"[MONTO-DEBUG] Curso: {curso_obj.nombre_curso} | Cupón: {cupon_codigo or 'NINGUNO'} | Desc: {descuento_aplicado}%")
 
-        # ¡ESTO ES LO QUE CAMBIA TODO! → YA NO BLOQUEAMOS EL PROCESO
-        # El backend recalcula y usa SU monto, ignoramos diferencias de centavos
+        # ============================
+        # LÓGICA PRINCIPAL: BUSCAR Y EDITAR SI EXISTE (esto es lo que querías)
+        # ============================
+        estudiante = DatosDeEstudiantes.objects.filter(dni=documento).first()
+
+        if estudiante:
+            # ALUMNO YA EXISTE → SOLO EDITAR / AGREGAR CURSO
+            print(f"[EDICIÓN] Editando alumno existente: {estudiante.nombre} {estudiante.apellido} - ID {estudiante.id_estudiante}")
+
+            # Actualizar solo campos que cambiaron
+            if estudiante.nombre != nombre:
+                estudiante.nombre = nombre
+            if estudiante.apellido != apellido:
+                estudiante.apellido = apellido
+            if estudiante.correo != email:
+                estudiante.correo = email
+            if estudiante.telefono != telefono:
+                estudiante.telefono = telefono
+            if pais and estudiante.pais != pais:
+                estudiante.pais = pais
+            if provincia and estudiante.provincia != provincia:
+                estudiante.provincia = provincia
+            if fecha_nacimiento and estudiante.fecha_nacimiento != fecha_nacimiento:
+                estudiante.fecha_nacimiento = fecha_nacimiento
+            if genero and estudiante.genero != genero:
+                estudiante.genero = genero
+
+            # Agregar nuevo curso en slot libre
+            slot_asignado = False
+            for i in range(1, 10):
+                campo = f'cursando{i}'
+                if getattr(estudiante, campo) is None:
+                    setattr(estudiante, campo, comision)
+                    slot_asignado = True
+                    break
+
+            if not slot_asignado:
+                return JsonResponse({
+                    "status": "error",
+                    "msg": "El alumno ya alcanzó el máximo de 9 cursos permitidos"
+                }, status=400)
+
+            estudiante.save()
+
+        else:
+            # ALUMNO NUEVO → Crear
+            print("[CREACIÓN] Creando alumno nuevo")
+
+            ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
+            nuevo_id = str(int(ultimo.id_estudiante) + 1).zfill(6) if ultimo else "000001"
+
+            while DatosDeEstudiantes.objects.filter(id_estudiante=nuevo_id).exists():
+                nuevo_id = str(int(nuevo_id) + 1).zfill(6)
+
+            estudiante = DatosDeEstudiantes.objects.create(
+                id_estudiante=nuevo_id,
+                nombre=nombre,
+                apellido=apellido,
+                dni=documento,
+                correo=email,
+                fecha_nacimiento=fecha_nacimiento,
+                pais=pais,
+                provincia=provincia,
+                telefono=telefono,
+                genero=genero,
+                cursando1=comision  # primer curso
+            )
 
         # ============================
-        # VALIDAR DUPLICADOS
+        # USUARIO: Siempre buscar y reutilizar (nunca crear duplicado)
         # ============================
-        if DatosDeEstudiantes.objects.filter(dni=documento).exists():
-            return JsonResponse({"status": "error", "msg": "DNI ya registrado"}, status=400)
-        if DatosDeEstudiantes.objects.filter(correo=email).exists():
-            return JsonResponse({"status": "error", "msg": "Email ya registrado"}, status=400)
-        if PerfilUsuario.objects.filter(nombre_usuario=documento).exists():
-            return JsonResponse({"status": "error", "msg": "DNI ya es usuario"}, status=400)
-        if PerfilUsuario.objects.filter(correo=email).exists():
-            return JsonResponse({"status": "error", "msg": "Email ya es usuario"}, status=400)
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=documento).first()
+
+        # Seguridad extra: buscar también por correo
+        if not usuario:
+            usuario = PerfilUsuario.objects.filter(correo__iexact=email).first()
+
+        if usuario:
+            print(f"[USUARIO EXISTENTE] Reutilizando usuario ID {usuario.id_usuario}")
+            if usuario.correo != email:
+                usuario.correo = email
+                usuario.save(update_fields=['correo'])
+            if usuario.id_estudiante != estudiante:
+                usuario.id_estudiante = estudiante
+                usuario.save(update_fields=['id_estudiante'])
+        else:
+            # Solo crear si es realmente nuevo (primera inscripción)
+            print("[USUARIO NUEVO] Creando PerfilUsuario")
+            ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
+            usuario_id = str(int(ultimo_usuario.id_usuario) + 1).zfill(6) if ultimo_usuario else "000001"
+
+            usuario = PerfilUsuario.objects.create(
+                id_usuario=usuario_id,
+                id_estudiante=estudiante,
+                nombre_usuario=documento,
+                correo=email,
+                rol="alumno",
+                is_active=True
+            )
+            usuario.set_password("pass1234")  # CAMBIAR EN PRODUCCIÓN!!!
+            usuario.save()
 
         # ============================
         # DETERMINAR MEDIO DE PAGO
@@ -308,9 +392,8 @@ def guardar_datos_inscripcion_paga(request):
             estado_pago = "Verificando"
 
         elif token and payment_method_id:
-            # Procesamiento de Mercado Pago
             payment_data = {
-                "transaction_amount": float(monto),  # Usamos el monto del backend
+                "transaction_amount": float(monto),
                 "token": token,
                 "description": f"Inscripción {curso_obj.nombre_curso} - Comisión {comision.numero_comision}",
                 "installments": installments,
@@ -341,55 +424,6 @@ def guardar_datos_inscripcion_paga(request):
                 }, status=400)
 
         # ============================
-        # GENERAR ID ESTUDIANTE
-        # ============================
-        if id_estudiante_front.startswith('TEMP') or not id_estudiante_front.isdigit():
-            ultimo = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
-            nuevo_id = str(int(ultimo.id_estudiante) + 1).zfill(6) if ultimo else "000001"
-        else:
-            nuevo_id = id_estudiante_front
-
-        while DatosDeEstudiantes.objects.filter(id_estudiante=nuevo_id).exists():
-            nuevo_id = str(int(nuevo_id) + 1).zfill(6)
-
-        # ============================
-        # CREAR ESTUDIANTE
-        # ============================
-        estudiante = DatosDeEstudiantes.objects.create(
-            id_estudiante=nuevo_id,
-            nombre=nombre, apellido=apellido, dni=documento, correo=email,
-            fecha_nacimiento=fecha_nacimiento, pais=pais, provincia=provincia,
-            telefono=telefono, genero=genero
-        )
-
-        # Asignar comisión (primer slot disponible)
-        for i in range(1, 10):
-            if getattr(estudiante, f'cursando{i}') is None:
-                setattr(estudiante, f'cursando{i}', comision)
-                estudiante.save()
-                break
-        else:
-            estudiante.delete()
-            return JsonResponse({"status": "error", "msg": "Máximo de comisiones alcanzado"}, status=400)
-
-        # ============================
-        # CREAR USUARIO
-        # ============================
-        ultimo_usuario = PerfilUsuario.objects.order_by('-id_usuario').first()
-        usuario_id = str(int(ultimo_usuario.id_usuario) + 1).zfill(6) if ultimo_usuario else "000001"
-
-        usuario = PerfilUsuario.objects.create(
-            id_usuario=usuario_id,
-            id_estudiante=estudiante,
-            nombre_usuario=documento,
-            correo=email,
-            rol="alumno",
-            is_active=True
-        )
-        usuario.set_password("pass1234")  # ← Considera generar contraseña aleatoria en producción
-        usuario.save()
-
-        # ============================
         # REGISTRAR PAGO
         # ============================
         RegistroPago.objects.create(
@@ -398,14 +432,14 @@ def guardar_datos_inscripcion_paga(request):
             plataforma="web",
             medio_pago=medio_pago_db,
             estado_pago=estado_pago,
-            monto=monto,  # Guardamos Decimal
+            monto=monto,
             fecha_pago=timezone.now(),
             id_transaccion=id_transaccion,
             archivo_comprobante=comprobante
         )
 
         # ============================
-        # MARCAR USO DEL CUPÓN (¡SOLO SI TODO SALIÓ BIEN!)
+        # MARCAR USO DEL CUPÓN
         # ============================
         if cupon and descuento_aplicado > 0:
             cupon.usos_actuales += 1
@@ -415,6 +449,12 @@ def guardar_datos_inscripcion_paga(request):
         # ============================
         # ENVÍO DE CORREOS
         # ============================
+        # Para determinar si es nueva o adicional (usamos existencia previa)
+        es_nueva = not DatosDeEstudiantes.objects.filter(dni=documento).exists()  # Nota: esto se evalúa antes de crear
+
+        titulo_correo = "Nuevo alumno inscripto" if es_nueva else "Inscripción adicional"
+        saludo = "¡Bienvenido/a a Tecno Marema!" if es_nueva else "¡Bienvenido/a nuevamente!"
+
         # Correo interno (admin)
         context_interno = {
             "nombre": nombre,
@@ -428,11 +468,12 @@ def guardar_datos_inscripcion_paga(request):
             "telefono": telefono,
             "medio_pago": medio_pago_texto,
             "monto": monto,
-            "fecha": timezone.now()
+            "fecha": timezone.now(),
+            "es_nueva": es_nueva
         }
         html_interno = render_to_string("registration/registro_pago.html", context_interno)
         email_interno = EmailMultiAlternatives(
-            "Nuevo alumno inscripto",
+            titulo_correo,
             strip_tags(html_interno),
             settings.DEFAULT_FROM_EMAIL,
             ["tecnomarema.ar@gmail.com"]
@@ -440,18 +481,19 @@ def guardar_datos_inscripcion_paga(request):
         email_interno.attach_alternative(html_interno, "text/html")
         email_interno.send(fail_silently=True)
 
-        # Correo de bienvenida al alumno
+        # Correo al alumno
         context_bienvenida = {
             "nombre": f"{nombre} {apellido}",
             "usuario": documento,
-            "password": "pass1234",
+            "password": "pass1234",  # CAMBIAR EN PRODUCCIÓN
             "curso": curso_obj.nombre_curso,
             "comision": comision.numero_comision,
-            "reset_url": "https://tecnomarema.com.ar/login/"  # ← Ajusta según tu URL real
+            "reset_url": "https://tecnomarema.com.ar/login/",
+            "saludo": saludo
         }
         html_bienvenida = render_to_string("registration/bienvenida_paga.html", context_bienvenida)
         email_alumno = EmailMultiAlternatives(
-            "Bienvenido/a a Tecno Marema",
+            saludo,
             strip_tags(html_bienvenida),
             settings.DEFAULT_FROM_EMAIL,
             [email]
@@ -462,14 +504,13 @@ def guardar_datos_inscripcion_paga(request):
         # Éxito
         return JsonResponse({
             "status": "ok",
-            "id_estudiante": nuevo_id,
-            "id_usuario": usuario_id,
+            "id_estudiante": estudiante.id_estudiante,
+            "id_usuario": usuario.id_usuario if usuario else None,
             "medio_pago": medio_pago_texto,
             "monto_final": str(monto)
         })
 
     except Exception as e:
-        # Revertir cupón SOLO si se había aplicado antes
         if cupon and descuento_aplicado > 0:
             cupon.usos_actuales = max(0, cupon.usos_actuales - 1)
             cupon.save()
@@ -478,9 +519,8 @@ def guardar_datos_inscripcion_paga(request):
         traceback.print_exc()
         return JsonResponse({
             "status": "error",
-            "msg": "Error interno del servidor. Contacta soporte."
+            "msg": f"Error interno: {str(e)}"  # temporal - podés quitar str(e) en producción
         }, status=500)
-
 #-------------------------------------------------------------------------------
 
 
@@ -6129,3 +6169,49 @@ def alta_y_edicion_cupones(request, codigo=None):
         'guardado_exitoso': guardado_exitoso
     }
     return render(request, 'administrador/alta_y_edicion_cupones.html', context)
+
+
+############################################################################################
+##----------------------------------login_autocompletar-----------------------------------##
+############################################################################################
+
+from django.contrib.auth import authenticate, login
+from django.http import JsonResponse
+import json
+from .models import DatosDeEstudiantes, PerfilUsuario
+
+def login_autocompletar(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            entrada = data.get('username')
+            password = data.get('password')
+
+            user_obj = PerfilUsuario.objects.filter(correo__iexact=entrada).first() or \
+                       PerfilUsuario.objects.filter(nombre_usuario__iexact=entrada).first()
+            
+            username_final = user_obj.nombre_usuario if user_obj else entrada
+            user = authenticate(request, username=username_final, password=password)
+            
+            if user is not None:
+                login(request, user)
+                # Filtramos usando 'correo' que es el campo real en tu modelo según el error
+                estudiante = DatosDeEstudiantes.objects.filter(correo__iexact=user.correo).first()
+                
+                if estudiante:
+                    return JsonResponse({
+                        'success': True,
+                        'nombre': estudiante.nombre,
+                        'apellido': estudiante.apellido,
+                        'dni': estudiante.dni,
+                        'correo': estudiante.correo,
+                        'telefono': estudiante.telefono,
+                        # Formateamos la fecha para que el input HTML la entienda (YYYY-MM-DD)
+                        'fecha_nacimiento': estudiante.fecha_nacimiento.strftime('%Y-%m-%d') if estudiante.fecha_nacimiento else ''
+                    })
+                return JsonResponse({'success': False, 'error': 'Usuario válido sin ficha de alumno.'})
+            
+            return JsonResponse({'success': False, 'error': 'Usuario o contraseña incorrectos.'})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False})

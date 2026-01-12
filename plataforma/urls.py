@@ -323,6 +323,8 @@ path('validar_cupon/', views.validar_cupon, name='validar_cupon'),
 path('alta_y_edicion_cupones/', views.alta_y_edicion_cupones, name='alta_y_edicion_cupones'),
 path('alta_y_edicion_cupones/<str:codigo>/', views.alta_y_edicion_cupones, name='alta_y_edicion_cupones_edit'),
 
+path('login_autocompletar/', views.login_autocompletar, name='login_autocompletar'),
+
 
 path('robots.txt', RedirectView.as_view(url=os.path.join(settings.STATIC_URL, 'txt/robots.txt'))),
 
