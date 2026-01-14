@@ -335,8 +335,41 @@ WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 # ==========================================================
 # Base de datos - Soporte local + Render (DATABASE_URL)
 # ==========================================================
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'tecnomarema'),
+#         'USER': os.getenv('DB_USER', 'postgres'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', '9560'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+# }
+
+# # Si hay DATABASE_URL (Render), la usa automáticamente (sobrescribe lo anterior)
+# DATABASES['default'] = dj_database_url.config(
+#     conn_max_age=600,
+#     conn_health_checks=True,
+#     ssl_require=True if not DEBUG else False
+# )
+
+# ==========================================================
+# Base de datos - Soporte local + producción (Render/Railway)
+# ==========================================================
+import dj_database_url
+
 DATABASES = {
-    'default': {
+    'default': dj_database_url.config(
+        default=os.getenv('DATABASE_URL', None),  # Render lo provee automáticamente
+        conn_max_age=600,
+        conn_health_checks=True,
+        ssl_require=True if not DEBUG else False
+    )
+}
+
+# Fallback local si no hay DATABASE_URL (tu config actual)
+if 'default' not in DATABASES or not DATABASES['default']:
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.getenv('DB_NAME', 'tecnomarema'),
         'USER': os.getenv('DB_USER', 'postgres'),
@@ -344,14 +377,6 @@ DATABASES = {
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '5432'),
     }
-}
-
-# Si hay DATABASE_URL (Render), la usa automáticamente (sobrescribe lo anterior)
-DATABASES['default'] = dj_database_url.config(
-    conn_max_age=600,
-    conn_health_checks=True,
-    ssl_require=True if not DEBUG else False
-)
 
 # ==========================================================
 # Validación de contraseñas
