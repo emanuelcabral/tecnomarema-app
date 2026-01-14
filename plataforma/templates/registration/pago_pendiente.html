@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Completa tu pago - Tecno Marema</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background-color: #111;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background: #ffffff;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    .header {
+      background: linear-gradient(135deg, #12f693 0%, #0eb77a 100%);
+      color: white;
+      padding: 40px 30px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    .content {
+      padding: 30px;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .btn {
+      display: inline-block;
+      background: #12f693;
+      color: #000 !important;
+      font-weight: bold;
+      padding: 16px 40px;
+      margin: 20px 0;
+      text-decoration: none;
+      border-radius: 50px;
+      font-size: 18px;
+      transition: all 0.3s;
+    }
+    .btn:hover {
+      background: #0eb77a;
+      transform: translateY(-2px);
+    }
+    .info-box {
+      background: #f8f9fa;
+      border-left: 5px solid #12f693;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 6px;
+    }
+    .footer {
+      background: #f4f4f4;
+      padding: 20px;
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      border-top: 1px solid #eee;
+    }
+    @media only screen and (max-width: 600px) {
+      .content { padding: 20px; }
+      .header { padding: 30px 20px; }
+      .btn { width: 100%; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>¡Tu inscripción está casi lista!</h1>
+    </div>
+
+    <div class="content">
+      <p>Hola <strong>{{ nombre }}</strong>,</p>
+
+      <p>¡Gracias por inscribirte al curso <strong>{{ curso }}</strong> (comisión {{ comision }})!</p>
+
+      <!-- <p>El monto total es <strong>${{ monto|floatformat:2 }}</strong> y elegiste pagar mediante <strong>{{ medio_pago }}</strong>.</p> -->
+      <!-- <p>El monto total es <strong>${{ monto|floatformat:"2"|default:"0,00" }}</strong> y elegiste pagar mediante <strong>{{ medio_pago }}</strong>.</p> -->
+       <p>El monto total es <strong>$ {{ monto}}</strong> y elegiste pagar mediante <strong>{{ medio_pago }}</strong>.</p>
+
+      <div class="info-box">
+        <strong>Próximo paso: completá el pago para reservar tu lugar</strong><br>
+        El pago se confirma en pocas horas y te enviaremos acceso inmediato al curso.
+      </div>
+
+      <h3>¿Cómo pagar ahora?</h3>
+      <ol style="padding-left: 20px; margin: 20px 0;">
+        <li>Hacé clic en el botón de abajo para ver/descargar tu comprobante oficial:</li>
+        <li>Mostralo en tu celular o imprimilo.</li>
+        <li>Acercate a un local de <strong>{{ medio_pago }}</strong> y aboná el monto exacto.</li>
+      </ol>
+
+      <p style="text-align: center;">
+        <a href="{{ ticket_url }}" target="_blank" class="btn">
+          Ver / Descargar Comprobante de Pago
+        </a>
+      </p>
+
+      <p style="font-size: 14px; color: #555; text-align: center; margin-top: 30px;">
+        <em>El comprobante incluye el código de barras, número de referencia y todos los detalles necesarios.</em>
+      </p>
+
+      <p>¡Estamos emocionados de tenerte con nosotros!</p>
+      <p>Saludos cordiales,<br>
+      <strong>Equipo Tecno Marema</strong></p>
+    </div>
+
+    <div class="footer">
+      Tecno Marema © {{ 'now'|date:"Y" }} • <a href="https://tecnomarema.com.ar" style="color: #12f693;">www.tecnomarema.com.ar</a>
+    </div>
+  </div>
+
+</body>
+</html>
