@@ -588,7 +588,7 @@ class RegistroPago(models.Model):
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_pago = models.DateTimeField()
     id_transaccion = models.CharField(max_length=100)
-    link_comprobante = models.URLField(blank=True, null=True)
+    link_comprobante = models.URLField(max_length=1000,blank=True,null=True,help_text="URL del comprobante de pago (Mercado Pago - pagos en efectivo)") 
     archivo_comprobante = models.FileField(upload_to='comprobantes/', blank=True, null=True)
     observaciones = models.TextField(blank=True, null=True)
     
