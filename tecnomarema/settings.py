@@ -413,13 +413,28 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # ==========================================================
 # Email
 # ==========================================================
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+# EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
+# EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+# EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+EMAIL_HOST = 'smtp.resend.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'resend'  # Siempre este valor
+EMAIL_HOST_PASSWORD = os.getenv('RESEND_API_KEY')
+DEFAULT_FROM_EMAIL = 'Tecno Marema <no-reply@tecnomarema.com.ar>'  # Cambia si verificaste dominio
+
+# Opcional: Si querés usar el SDK directo de Resend (más rápido)
+# pip install resend
+# En tus vistas, en vez de EmailMultiAlternatives:
+# import resend
+# resend.api_key = os.getenv('RESEND_API_KEY')
+# resend.Emails.send({...})
 
 if not all([EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL]):
     print("⚠️ Advertencia: Configuración de email incompleta en .env")
