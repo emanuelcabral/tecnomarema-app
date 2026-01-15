@@ -451,6 +451,9 @@ DEFAULT_FROM_EMAIL = 'Tecno Marema <no-reply@tecnomarema.com.ar>'
 if not all([EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, DEFAULT_FROM_EMAIL]):
     print("⚠️ Advertencia: Configuración de email incompleta en .env")
 
+
+print("EMAIL CONFIG USADA: Resend (host: smtp.resend.com, port: 587)")
+
 # ==========================================================
 # Mercado Pago - Switch test/producción
 # ==========================================================
