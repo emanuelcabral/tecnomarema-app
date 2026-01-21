@@ -42,7 +42,7 @@ class BrevoBackend(BaseEmailBackend):
             url = "https://api.brevo.com/v3/smtp/email"
             
             data = {
-                "sender": {"name": "Tecno Marema", "email": message.from_email},
+                "sender": {"email": "tecnomarema.ar@gmail.com"},  # solo email verificado, sin name
                 "to": [{"email": e} for e in message.to],
                 "subject": message.subject,
                 "textContent": message.body,
