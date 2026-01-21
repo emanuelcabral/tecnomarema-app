@@ -868,7 +868,8 @@ if BREVO_API_KEY:
 else:
     print("⚠️ FALTA BREVO_API_KEY EN RENDER")
 
-DEFAULT_FROM_EMAIL = 'Tecno Marema <no-reply@tecnomarema.com.ar>'  # Cambia si verificás dominio en Brevo
+# DEFAULT_FROM_EMAIL = 'Tecno Marema <no-reply@tecnomarema.com.ar>'  # Cambia si verificás dominio en Brevo
+DEFAULT_FROM_EMAIL = 'Tecno Marema <tecnomarema.ar@gmail.com>'
 
 # ==========================================================
 # Mercado Pago - Switch test/producción
