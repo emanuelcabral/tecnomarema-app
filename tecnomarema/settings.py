@@ -652,6 +652,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # No usamos SMTP (bloqueado en free tier)
 # Usamos variables de entorno que YA pusiste en Render
 
+EMAIL_BACKEND = 'plataforma.mail_backends.MailgunBackend'
+
 MAILGUN_API_KEY = os.getenv('MAILGUN_API_KEY')
 MAILGUN_DOMAIN = os.getenv('MAILGUN_DOMAIN')
 MAILGUN_BASE_URL = os.getenv('MAILGUN_BASE_URL', 'https://api.mailgun.net/v3')
