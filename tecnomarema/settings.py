@@ -761,7 +761,7 @@ CHANNEL_LAYERS = {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             "hosts": [("127.0.0.1", 6379)],  # Local
-            # En producción Render: descomenta y usa REDIS_URL si lo tenés
+            # En producción Render: descomenta y usa REDIS_URL
             # "hosts": [os.getenv('REDIS_URL')],
         },
     },
@@ -857,19 +857,18 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # ==========================================================
-# Email - Brevo API (300/día gratis, sin límite de destinatarios, API HTTP)
+# Email - Brevo API (adaptado, usa HTTP, sin bloqueos en Render free)
 # ==========================================================
 EMAIL_BACKEND = 'plataforma.mail_backends.BrevoBackend'
 
 BREVO_API_KEY = os.getenv('BREVO_API_KEY')
 
+DEFAULT_FROM_EMAIL = 'Tecno Marema <tecnomarema.ar@gmail.com>'  # Usa el verificado en Brevo
+
 if BREVO_API_KEY:
     print("EMAIL CONFIG USADA: Brevo API (HTTP) - 300/día free")
 else:
     print("⚠️ FALTA BREVO_API_KEY EN RENDER")
-
-# DEFAULT_FROM_EMAIL = 'Tecno Marema <no-reply@tecnomarema.com.ar>'  # Cambia si verificás dominio en Brevo
-DEFAULT_FROM_EMAIL = 'Tecno Marema <tecnomarema.ar@gmail.com>'
 
 # ==========================================================
 # Mercado Pago - Switch test/producción
