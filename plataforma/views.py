@@ -178,7 +178,7 @@ from decimal import Decimal, InvalidOperation
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from django.utils import timezone
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import send_mail, EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
@@ -365,7 +365,7 @@ def guardar_datos_inscripcion_paga(request):
             usuario.set_password("pass1234")
             usuario.save()
 
-        # DETERMINAR MEDIO DE PAGO (¡aquí está la mejora!)
+        # DETERMINAR MEDIO DE PAGO
         medio_pago_db = "mercadopago"
         medio_pago_texto = "Mercado Pago"
         estado_pago = "Pendiente"
@@ -428,7 +428,7 @@ def guardar_datos_inscripcion_paga(request):
                 id_transaccion = str(payment["id"])
                 estado_pago = "pendiente"
 
-                # Extracción robusta del ticket_url (captura el de tu log)
+                # Extracción robusta del ticket_url
                 ticket_url = ""
                 td = payment.get("transaction_details", {})
                 ticket_url = td.get("external_resource_url") or td.get("ticket_url") or ""
@@ -498,7 +498,7 @@ def guardar_datos_inscripcion_paga(request):
             cupon.save()
             print(f"[CUPÓN OK] Uso registrado: {cupon.codigo} ({descuento_aplicado}%)")
 
-        # ENVÍO DE CORREOS
+        # ENVÍO DE CORREOS (adaptado a Brevo - usa send_mail para que pase por el backend custom)
         es_nueva = not DatosDeEstudiantes.objects.filter(dni=documento).exists()
 
         titulo_correo = "Nuevo alumno inscripto" if es_nueva else "Inscripción adicional"
@@ -515,20 +515,21 @@ def guardar_datos_inscripcion_paga(request):
             "pais": pais,
             "provincia": provincia,
             "telefono": telefono,
-            "medio_pago": medio_pago_texto,  # Ahora especifica Crédito/Débito/Cuotas
+            "medio_pago": medio_pago_texto,
             "monto": monto,
             "fecha": timezone.now(),
             "es_nueva": es_nueva
         }
         html_interno = render_to_string("registration/registro_pago.html", context_interno)
-        email_interno = EmailMultiAlternatives(
-            titulo_correo,
-            strip_tags(html_interno),
-            settings.DEFAULT_FROM_EMAIL,
-            ["tecnomarema.ar@gmail.com"]
+        send_mail(
+            subject=titulo_correo,
+            message=strip_tags(html_interno),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=["tecnomarema.ar@gmail.com"],
+            html_message=html_interno,
+            fail_silently=False,
         )
-        email_interno.attach_alternative(html_interno, "text/html")
-        email_interno.send(fail_silently=True)
+        print("[EMAIL INTERNO] Enviado vía Brevo a admin")
 
         # Correo al alumno - SIEMPRE (acceso)
         context_alumno = {
@@ -541,14 +542,15 @@ def guardar_datos_inscripcion_paga(request):
             "saludo": saludo
         }
         html_alumno = render_to_string("registration/bienvenida_paga.html", context_alumno)
-        email_alumno = EmailMultiAlternatives(
-            "Acceso a tu curso - Tecno Marema",
-            strip_tags(html_alumno),
-            settings.DEFAULT_FROM_EMAIL,
-            [email]
+        send_mail(
+            subject="Acceso a tu curso - Tecno Marema",
+            message=strip_tags(html_alumno),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            html_message=html_alumno,
+            fail_silently=False,
         )
-        email_alumno.attach_alternative(html_alumno, "text/html")
-        email_alumno.send(fail_silently=False)
+        print(f"[EMAIL ALUMNO] Enviado vía Brevo a {email}")
 
         # Correo adicional de pendiente (solo cuando corresponde)
         if estado_pago == "pendiente" and ticket_url:
@@ -562,15 +564,15 @@ def guardar_datos_inscripcion_paga(request):
                 "instrucciones": "Pagá en el local con este comprobante antes de que venza."
             }
             html_pendiente = render_to_string("registration/pago_pendiente.html", context_pendiente)
-            email_pendiente = EmailMultiAlternatives(
-                f"Completa tu pago en {medio_pago_texto} - Tecno Marema",
-                strip_tags(html_pendiente),
-                settings.DEFAULT_FROM_EMAIL,
-                [email]
+            send_mail(
+                subject=f"Completa tu pago en {medio_pago_texto} - Tecno Marema",
+                message=strip_tags(html_pendiente),
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                html_message=html_pendiente,
+                fail_silently=False,
             )
-            email_pendiente.attach_alternative(html_pendiente, "text/html")
-            email_pendiente.send(fail_silently=False)
-            print(f"[EMAIL PENDIENTE] Enviado a {email} con ticket: {ticket_url}")
+            print(f"[EMAIL PENDIENTE] Enviado vía Brevo a {email} con ticket: {ticket_url}")
 
         # Éxito - respuesta completa
         return JsonResponse({
