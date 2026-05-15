@@ -69,7 +69,15 @@
         <li class="nav-item"><a href="{% url 'listado_proyectos' %}" class="nav-link"><i class="bi bi-upload me-2"></i>Entregas</a></li>
         <li class="nav-item"><a href="{% url 'listado_pagos' %}" class="nav-link"><i class="bi bi-cash me-2"></i>Pagos</a></li>
         <li class="nav-item"><a href="{% url 'vista_chat' %}" class="nav-link"><i class="bi bi-chat me-2"></i>Chat</a></li>
-        <li class="nav-item mt-3"><a href="{% url 'logout' %}" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li>
+        <!-- <li class="nav-item mt-3"><a href="{% url 'logout' %}" class="nav-link text-danger"><i class="bi bi-box-arrow-right me-2"></i>Salir</a></li> -->
+         <li class="nav-item mt-3">
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="nav-link text-danger border-0 bg-transparent">
+            <i class="bi bi-box-arrow-right me-2"></i>Salir
+        </button>
+    </form>
+</li>
       </ul>
     </div>
 

@@ -196,6 +196,10 @@
 </form>
 
 <script>
+  const chatActual = "general";
+</script>
+
+<script>
 let imagenBlob = null;
 
 // Pegar con Ctrl+V
@@ -267,26 +271,58 @@ document.getElementById('mensaje-input').addEventListener('keydown', function(e)
   <!-- actualizar badges inicia -->
    <script>
 function actualizarBadges() {
-  fetch("{% url 'mensajes_nuevos_view' %}")
+  fetch('/mensajes_nuevos/')
     .then(res => res.json())
     .then(data => {
       const contenedor = document.querySelector('.chat-list');
       contenedor.innerHTML = ''; // limpia
 
       // Chat general
-      contenedor.innerHTML += `
-        <button class="${data.general > 0 ? 'fw-bold text-success' : ''}">
-          # General
-          ${data.general > 0 ? `<span class="badge bg-danger ms-2">${data.general}</span>` : ''}
-        </button>
-      `;
+      // contenedor.innerHTML += `
+      //   <button class="${data.general > 0 ? 'fw-bold text-success' : ''}">
+      //     # General
+      //     ${data.general > 0 ? `<span class="badge bg-danger ms-2">${data.general}</span>` : ''}
+      //   </button>
+      // `;
+      const mostrarGeneral =
+      data.general > 0 && chatActual !== 'general';
+
+    contenedor.innerHTML += `
+      <button>
+        # General
+        ${mostrarGeneral
+          ? `<span class="badge bg-danger ms-2">${data.general}</span>`
+          : ''}
+      </button>
+    `;
+
+    // Chats de comisión
+for (const comisionId in data.comisiones) {
+
+  const cantidad = data.comisiones[comisionId];
+
+  const mostrarBadge =
+    cantidad > 0 &&
+    chatActual !== `comision-${comisionId}`;
+
+  contenedor.innerHTML += `
+    <button onclick="location.href='/chat/comision/${comisionId}/'">
+      # Comisión ${comisionId}
+      ${mostrarBadge
+        ? `<span class="badge bg-danger ms-2">${cantidad}</span>`
+        : ''}
+    </button>
+  `;
+}
 
       // Chats privados
       data.privados.forEach(p => {
         contenedor.innerHTML += `
           <button onclick="location.href='/chat/privado/${p.nombre}/'">
             @ ${p.nombre}
-            ${p.nuevos > 0 ? `<span class="badge bg-success ms-2">${p.nuevos}</span>` : ''}
+            ${p.nuevos > 0 && chatActual !== `privado-${p.nombre}`
+  ? `<span class="badge bg-danger ms-2">${p.nuevos}</span>`
+  : ''}
           </button>
         `;
       });

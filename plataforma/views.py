@@ -1866,12 +1866,13 @@ def obtener_estado_comision(fecha_inicio, fecha_fin):
         return 'finalizado'
     
 #----------------------------------------------------------------
-comisiones = Comision.objects.all()
+def actualizar_comisiones():
+    comisiones = Comision.objects.all()
 
-for comision in comisiones:
-    estado = obtener_estado_comision(comision.fecha_inicio, comision.fecha_fin)
-    comision.estado_comision = estado
-    comision.save()  # Esto guarda el estado en la base de datos
+    for comision in comisiones:
+        estado = obtener_estado_comision(comision.fecha_inicio, comision.fecha_fin)
+        comision.estado_comision = estado
+        comision.save()
 
 ###############################################################################
 ##---------------------traer nombres de clases-------------------------------##
@@ -3515,7 +3516,15 @@ def chat_general(request):
         return redirect('chat_general')
 
     # 👇 ACTUALIZA LECTURA
-    actualizar_lectura(chat_general_obj, usuario)
+    # actualizar_lectura(chat_general_obj, usuario)
+    # ✅ marcar mensajes como leídos
+    chat_general_obj.mensajes.filter(
+        leido=False
+    ).exclude(
+        remitente=usuario
+    ).update(
+        leido=True
+    )
 
     mensajes = chat_general_obj.mensajes.select_related('remitente').order_by('creado')
 
@@ -3523,7 +3532,7 @@ def chat_general(request):
         'chat_general': chat_general_obj,
         'chat': chat_general_obj,
         'mensajes': mensajes,
-        'comision': comision,
+        # 'comision': usuario.comision,
         'usuario': usuario,
         'nombre_usuario': nombre_usuario,
         'usuarios_destino': [],
@@ -3537,33 +3546,83 @@ def chat_general(request):
 ###----------------------------el polling del chat---------------------------------##
 #####################################################################################
 
+# from zoneinfo import ZoneInfo
+# from django.utils import timezone
+# from django.http import JsonResponse
+# from .models import Chat  # Asegurate de tener este import
+
+# def obtener_mensajes(request):
+#     chat_general = Chat.objects.get(tipo='general')
+#     mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
+
+#     tz_arg = ZoneInfo('America/Argentina/Buenos_Aires')
+
+#     lista = []
+#     for m in mensajes:
+#         local_time = timezone.localtime(m.creado, tz_arg).strftime("%d/%m %H:%M")
+#         lista.append({
+#             'id': m.id,
+#             'usuario': m.remitente.nombre_usuario,
+#             'texto': m.texto,
+#             'hora': local_time,
+#             'fecha': m.creado.isoformat(),  # 👈 AÑADÍ ESTA LÍNEA
+#             'creado': m.creado.isoformat(), # 👈 Y TAMBIÉN ESTA SI TU JS LA USA
+#             'archivo_url': m.archivo.url if m.archivo else None,
+#             'archivo_name': m.archivo.name.split('/')[-1] if m.archivo else None,
+#             'destacado': m.destacado,  # 👈 AGREGÁ ESTA LÍNEA
+#         })
+
+#     return JsonResponse({'mensajes': lista})
+
 from zoneinfo import ZoneInfo
 from django.utils import timezone
 from django.http import JsonResponse
-from .models import Chat  # Asegurate de tener este import
+from .models import Chat
 
 def obtener_mensajes(request):
+
+    usuario_id = request.session.get('usuario_id')
+
     chat_general = Chat.objects.get(tipo='general')
-    mensajes = chat_general.mensajes.select_related('remitente').order_by('creado')
+
+    mensajes = chat_general.mensajes.select_related(
+        'remitente'
+    ).order_by('creado')
 
     tz_arg = ZoneInfo('America/Argentina/Buenos_Aires')
 
     lista = []
+
     for m in mensajes:
-        local_time = timezone.localtime(m.creado, tz_arg).strftime("%d/%m %H:%M")
+
+        local_time = timezone.localtime(
+            m.creado,
+            tz_arg
+        ).strftime("%d/%m %H:%M")
+
         lista.append({
             'id': m.id,
             'usuario': m.remitente.nombre_usuario,
             'texto': m.texto,
             'hora': local_time,
-            'fecha': m.creado.isoformat(),  # 👈 AÑADÍ ESTA LÍNEA
-            'creado': m.creado.isoformat(), # 👈 Y TAMBIÉN ESTA SI TU JS LA USA
+            'fecha': m.creado.isoformat(),
+            'creado': m.creado.isoformat(),
             'archivo_url': m.archivo.url if m.archivo else None,
             'archivo_name': m.archivo.name.split('/')[-1] if m.archivo else None,
-            'destacado': m.destacado,  # 👈 AGREGÁ ESTA LÍNEA
+            'destacado': m.destacado,
         })
 
-    return JsonResponse({'mensajes': lista})
+    # ✅ contador real de no leídos
+    no_leidos = mensajes.filter(
+        leido=False
+    ).exclude(
+        remitente__id_usuario=usuario_id
+    ).count()
+
+    return JsonResponse({
+        'mensajes': lista,
+        'no_leidos': no_leidos
+    })
 
 ########################################################################################
 ###---------------------obtener mensajes por comision--------------------------------###
@@ -3588,7 +3647,8 @@ def obtener_mensajes_comision(request, id_comision):
             'texto': m.texto,
             'archivo_url': m.archivo.url if m.archivo else '',
             'archivo_nombre': m.archivo.name.split('/')[-1] if m.archivo else '',
-            'hora': m.creado.strftime("%d/%m %H:%M"),
+            # 'hora': m.creado.strftime("%d/%m %H:%M"),
+            'hora': timezone.localtime(m.creado, ZoneInfo("America/Argentina/Buenos_Aires")).strftime("%d/%m %H:%M"),
             'fecha': m.creado.isoformat(),
             'destacado': m.destacado,
             'creado': m.creado.isoformat(),
@@ -3822,7 +3882,15 @@ def chat_comision_view(request, id_comision):
     # Mensajes
     mensajes = Mensaje.objects.filter(chat=chat).select_related('remitente').order_by('creado')
 
-    actualizar_lectura(chat, usuario)
+    # actualizar_lectura(chat, usuario)
+    # ✅ marcar mensajes como leídos
+    chat.mensajes.filter(
+        leido=False
+    ).exclude(
+        remitente=usuario
+    ).update(
+        leido=True
+    )
 
     return render(request, 'educativa/chat.html', {
         'chat': chat,
@@ -3916,6 +3984,8 @@ def obtener_chat_privado(remitente, destinatario):
         chat.participantes.add(remitente, destinatario)
     return chat
 
+from django.db.models import Q, Max  # Asegúrate de tener estas importaciones
+
 @session_required
 def chat_privado(request, nombre_usuario_destino):
     remitente = get_object_or_404(PerfilUsuario, nombre_usuario=request.session['usuario_logueado'])
@@ -3929,46 +3999,53 @@ def chat_privado(request, nombre_usuario_destino):
         if destinatario.rol not in ['alumno', 'tutor', 'profesor'] or not comparten_comision(remitente, destinatario):
             return redirect('chat_general')
 
-    # Obtener o crear chat privado único
+    # 1. Obtener chat actual y resetear contador a 0
     chat = obtener_chat_privado(remitente, destinatario)
+    chat.mensajes.filter(leido=False).exclude(remitente=remitente).update(leido=True)
 
     mensajes = chat.mensajes.select_related('remitente').order_by('creado')
 
-    # Obtener comisiones del remitente para mostrar posibles usuarios destino
+    # 2. LÓGICA DE ORDENAMIENTO DE LA BARRA LATERAL (CORREGIDA)
+    # Buscamos los chats ordenados por el mensaje más reciente
+    mis_chats = Chat.objects.filter(
+        participantes=remitente, 
+        tipo='privado'
+    ).annotate(
+        ultima_actividad=Max('mensajes__creado')
+    ).order_by('-ultima_actividad')
+
+    usuarios_destino_ordenados = []
+    ids_ya_incluidos = set()
+
+    for c in mis_chats:
+        # CAMBIO CLAVE: Usamos .pk para evitar el AttributeError
+        otro = c.participantes.exclude(pk=remitente.pk).first()
+        if otro:
+            usuarios_destino_ordenados.append(otro)
+            ids_ya_incluidos.add(otro.pk)
+
+    # 3. Obtener el resto de contactos de comisiones (lógica original)
     comisiones = []
     if remitente.id_estudiante:
         est_rem = remitente.id_estudiante
-        comisiones = [
-            est_rem.cursando1, est_rem.cursando2, est_rem.cursando3, est_rem.cursando4,
-            est_rem.cursando5, est_rem.cursando6, est_rem.cursando7, est_rem.cursando8, est_rem.cursando9
-        ]
-        comisiones = [c for c in comisiones if c]
+        comisiones = [c for c in [est_rem.cursando1, est_rem.cursando2, est_rem.cursando3, 
+                                  est_rem.cursando4, est_rem.cursando5, est_rem.cursando6, 
+                                  est_rem.cursando7, est_rem.cursando8, est_rem.cursando9] if c]
 
-    # Alumnos que comparten esas comisiones
-    alumnos = PerfilUsuario.objects.filter(
-        Q(rol='profesor') | Q(rol='profesor') | Q(rol='tutor'),
+    contactos_comision = PerfilUsuario.objects.filter(
+        Q(rol__in=['profesor', 'tutor', 'alumno']),
         id_estudiante__in=DatosDeEstudiantes.objects.filter(
-            Q(cursando1__in=comisiones) | Q(cursando2__in=comisiones) |
-            Q(cursando3__in=comisiones) | Q(cursando4__in=comisiones) |
-            Q(cursando5__in=comisiones) | Q(cursando6__in=comisiones) |
-            Q(cursando7__in=comisiones) | Q(cursando8__in=comisiones) |
-            Q(cursando9__in=comisiones)
+            Q(cursando1__in=comisiones) | Q(cursando2__in=comisiones) | Q(cursando3__in=comisiones) |
+            Q(cursando4__in=comisiones) | Q(cursando5__in=comisiones) | Q(cursando6__in=comisiones) |
+            Q(cursando7__in=comisiones) | Q(cursando8__in=comisiones) | Q(cursando9__in=comisiones)
         )
-    )
+    ).exclude(pk=remitente.pk)
 
-    # Tutores y profesores desde las comisiones
-    tutores = []
-    profesores = []
-    for com in comisiones:
-        if hasattr(com, 'tutores'):
-            tutores.extend(com.tutores.all())
-        elif hasattr(com, 'tutor') and com.tutor:
-            tutores.append(com.tutor)
-        if hasattr(com, 'profesor') and com.profesor:
-            profesores.append(com.profesor)
-
-    usuarios_destino = set(alumnos).union(tutores).union(profesores)
-    usuarios_destino.discard(remitente)
+    # Combinamos: Primero los activos (por fecha), luego los que no tienen mensajes
+    for u in contactos_comision:
+        if u.pk not in ids_ya_incluidos:
+            usuarios_destino_ordenados.append(u)
+            ids_ya_incluidos.add(u.pk)
 
     actualizar_lectura(chat, remitente)
 
@@ -3978,11 +4055,9 @@ def chat_privado(request, nombre_usuario_destino):
         'usuario': remitente,
         'nombre_usuario': remitente.nombre_usuario,
         'destinatario': destinatario,
-        'usuarios_destino': list(usuarios_destino),
+        'usuarios_destino': usuarios_destino_ordenados,
         'comision': None,
     })
-
-
 
 ##################################################################################################
 ###---------------------Enviar mensaje a chat privado------------------------------------------###
@@ -4200,7 +4275,7 @@ def obtener_mensajes_privado(request, id):
         'texto': m.texto,
         'archivo_url': m.archivo.url if m.archivo else '',
         'archivo_nombre': m.archivo.name.split('/')[-1] if m.archivo else '',
-        'hora': m.creado.strftime("%d/%m %H:%M"),
+        'hora': timezone.localtime(m.creado, ZoneInfo("America/Argentina/Buenos_Aires")).strftime("%d/%m %H:%M"),
         'fecha': m.creado.isoformat(),
         'destacado': m.destacado,
         'creado': m.creado.isoformat(),
@@ -4418,12 +4493,14 @@ def obtener_badges(request):
 #-------------------------------------------------------------------------------------------------------------------
 # from django.http import JsonResponse
 from django.db.models import Count, Q
-from .models import Chat, LecturaMensaje, PerfilUsuario
 from django.http import JsonResponse
-from .models import Chat, PerfilUsuario, Mensaje
+
+from .models import Chat, LecturaMensaje, PerfilUsuario, Mensaje
+
 
 def mensajes_nuevos_view(request):
     nombre_usuario = request.session.get('usuario_logueado')
+
     if not nombre_usuario:
         return JsonResponse({'error': 'no logueado'}, status=401)
 
@@ -4438,27 +4515,84 @@ def mensajes_nuevos_view(request):
         'privados': [],
     }
 
-    chats = Chat.objects.filter(participantes=usuario).select_related('comision').prefetch_related('mensajes')
+    chats = (
+        Chat.objects
+        .filter(participantes=usuario)
+        .select_related('comision')
+        .prefetch_related('participantes', 'mensajes')
+    )
 
     for chat in chats:
-        mensajes_no_leidos = chat.mensajes.filter(leido=False).exclude(remitente=usuario)
 
+        # mensajes no leídos que NO envió el usuario actual
+        mensajes_no_leidos = (
+            chat.mensajes
+            .filter(leido=False)
+            .exclude(remitente=usuario)
+        )
+
+        cantidad = mensajes_no_leidos.count()
+
+        # =========================
+        # CHAT GENERAL
+        # =========================
         if chat.tipo == 'general':
-            data['general'] = mensajes_no_leidos.count()
+            data['general'] = cantidad
 
+        # =========================
+        # COMISIONES
+        # =========================
         elif chat.tipo == 'comision' and chat.comision:
-            data['comisiones'][chat.comision.id_comision] = mensajes_no_leidos.count()
 
+            data['comisiones'][chat.comision.id_comision] = cantidad
+
+        # =========================
+        # PRIVADOS
+        # =========================
         elif chat.tipo == 'privado':
-            otro = chat.participantes.exclude(id=usuario.id).first()
-            if otro and mensajes_no_leidos.exists():
+
+            # IMPORTANTE:
+            # PerfilUsuario usa id_usuario, NO id
+            otro = (
+                chat.participantes
+                .exclude(id_usuario=usuario.id_usuario)
+                .first()
+            )
+
+            if otro:
+
                 ultimo = mensajes_no_leidos.last()
+
                 data['privados'].append({
+                    'id': otro.id_usuario,
                     'id_usuario': otro.id_usuario,
-                    'nombre': otro.nombre_usuario,
-                    'nuevos': mensajes_no_leidos.count(),
-                    'ultimo_texto': ultimo.texto[:30] if ultimo.texto else '',
-                    'hora': ultimo.creado.strftime('%H:%M'),
+                    'username': otro.nombre_usuario,
+                    'nombre': (
+                        f'{otro.id_estudiante.nombre} {otro.id_estudiante.apellido}'
+                        if otro.id_estudiante
+                        else f'{otro.id_empleado.nombre} {otro.id_empleado.apellido}'
+                        if otro.id_empleado
+                        else otro.nombre_usuario
+                    ),
+
+                    'display_name': (
+                        f'{otro.id_estudiante.nombre} {otro.id_estudiante.apellido}'
+                        if otro.id_estudiante
+                        else f'{otro.id_empleado.nombre} {otro.id_empleado.apellido}'
+                        if otro.id_empleado
+                        else otro.nombre_usuario
+                    ),
+                    'nuevos': cantidad,
+                    'ultimo_texto': (
+                        ultimo.texto[:30]
+                        if ultimo and ultimo.texto
+                        else ''
+                    ),
+                    'hora': (
+                        ultimo.creado.strftime('%H:%M')
+                        if ultimo
+                        else ''
+                    ),
                 })
 
     return JsonResponse(data)
@@ -4468,7 +4602,12 @@ def mensajes_nuevos_view(request):
 from .models import LecturaMensaje
 
 def actualizar_lectura(chat, usuario):
-    ultimo = chat.mensajes.order_by('-creado').first()
+    ultimo = (
+    chat.mensajes
+    .exclude(remitente=usuario)
+    .order_by('-creado')
+    .first()
+)
     if not ultimo:
         return
     lectura, _ = LecturaMensaje.objects.get_or_create(usuario=usuario, chat=chat)
