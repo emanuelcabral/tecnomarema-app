@@ -328,6 +328,8 @@ path('login_autocompletar/', views.login_autocompletar, name='login_autocompleta
 
 path('robots.txt', RedirectView.as_view(url=os.path.join(settings.STATIC_URL, 'txt/robots.txt'))),
 
+path('mensajes_nuevos/', views.mensajes_nuevos_view, name='mensajes_nuevos'),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

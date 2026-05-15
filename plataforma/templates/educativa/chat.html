@@ -364,7 +364,9 @@
     <div class="collapse navbar-collapse" id="navbarContenido">
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
         {% comment %} <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.curso.id_curso %}">Volver al curso</a></li> {% endcomment %}
+        {% if comision and comision.id_comision %}
         <li class="nav-item"><a class="nav-link" href="{% url 'curso_detalle' comision.id_comision %}">Volver al curso</a></li>
+        {% endif %}
         <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
@@ -449,26 +451,29 @@
     <input type="text" id="buscador-usuarios" class="form-control mb-2" placeholder="Buscar usuario..." autocomplete="off" />
 
     <ul class="list-unstyled ps-2" id="lista-usuarios">
-      {% for u in usuarios_destino %}
-      <li>
-        <a href="{% url 'chat_privado' nombre_usuario_destino=u.nombre_usuario %}"
-          class="text-decoration-none {% if chat.tipo == 'privado' and destinatario.nombre_usuario == u.nombre_usuario %}fw-bold text-success{% else %}text-light{% endif %}">
-          <i class="bi bi-person-circle me-1"></i>
-          {% if u.id_estudiante %}
-            {{ u.id_estudiante.nombre }} {{ u.id_estudiante.apellido }}
-          {% elif u.id_empleado %}
-            {{ u.id_empleado.nombre }} {{ u.id_empleado.apellido }}
-          {% else %}
-            {{ u.nombre_usuario|capfirst }}
-          {% endif %}
-        </a>
-        <span id="pill-privado-{{ u.id_usuario }}" class="badge-pill ms-1" style="display: inline;">0</span>
-      </li>
-      {% empty %}
-      <li class="text-secondary">No hay usuarios disponibles</li>
-      {% endfor %}
-    </ul>
+  {% for u in usuarios_destino %}
+  <li class="usuario-item-busqueda"> <a href="{% url 'chat_privado' nombre_usuario_destino=u.nombre_usuario %}"
+      class="text-decoration-none {% if chat.tipo == 'privado' and destinatario.nombre_usuario == u.nombre_usuario %}fw-bold text-success{% else %}text-light{% endif %}">
+      <i class="bi bi-person-circle me-1"></i>
+      <span class="nombre-texto"> {% if u.id_estudiante %}
+          {{ u.id_estudiante.nombre }} {{ u.id_estudiante.apellido }}
+        {% elif u.id_empleado %}
+          {{ u.id_empleado.nombre }} {{ u.id_empleado.apellido }}
+        {% else %}
+          {{ u.nombre_usuario|capfirst }}
+        {% endif %}
+      </span>
+    </a>
+    <span id="pill-privado-{{ u.id_usuario }}" class="badge-pill ms-1" style="display: inline;">0</span>
+  </li>
+  {% empty %}
+  <li class="text-secondary">No hay usuarios disponibles</li>
+  {% endfor %}
+</ul>
+    <h4>chat recientes</h4>
   </div>
+
+  
 
   <!-- 🔹 Encabezado del chat actual (solo si es privado) -->
   {% if chat.tipo == 'privado' and destinatario %}
@@ -509,7 +514,13 @@
   {% if mensajes.exists %}
     {% for mensaje in mensajes %}
     <div class="message {% if mensaje.remitente.id_usuario == usuario.id_usuario %}from-me{% else %}from-other{% endif %}">
-      <strong style="color: #12f693;">{{ mensaje.remitente.nombre_usuario }}</strong><br>
+      <strong style="color: #12f693;">
+  {% if mensaje.remitente.id_estudiante %}
+    {{ mensaje.remitente.id_estudiante.nombre }} {{ mensaje.remitente.id_estudiante.apellido }}
+  {% else %}
+    {{ mensaje.remitente.nombre_usuario }}
+  {% endif %}
+</strong><br>
       {{ mensaje.texto|linebreaksbr }}
 
       {% if mensaje.archivo %}
@@ -753,14 +764,13 @@ document.getElementById('mensaje-input').addEventListener('keydown', function(e)
 
       // Solo el usuario propietario puede editar o borrar:
       if (m.usuario === usuarioLogueado) {
-        contenido += `
-        <button class="boton-chat btn-editar" data-id="{{ mensaje.id }}">
+      contenido += `
+        <button class="boton-chat btn-editar" data-id="${m.id}">
           <i class="bi bi-pencil"></i> Editar
         </button>
-        <button class="boton-chat btn-borrar" data-id="{{ mensaje.id }}">
+        <button class="boton-chat btn-borrar" data-id="${m.id}">
           <i class="bi bi-trash"></i> Borrar
         </button>
-
       `;
       }
 
@@ -891,15 +901,41 @@ document.getElementById('mensaje-input').addEventListener('keydown', function(e)
         badgeVisibleManualmente = true;
       }
 
-      if (estaAlFinal) {
-        badge.style.display = 'none';
-        badgeVisibleManualmente = false;
-        contadorMensajesNuevos = 0;
-        lista.scrollTop = lista.scrollHeight;
-      }
+      // if (estaAlFinal) {
+      //   badge.style.display = 'none';
+      //   badgeVisibleManualmente = false;
+      //   contadorMensajesNuevos = 0;
+      //   lista.scrollTop = lista.scrollHeight;
+      // }
 
-      pill.textContent = contadorMensajesNuevos > 0 ? contadorMensajesNuevos : '';
-      pill.style.display = contadorMensajesNuevos > 0 ? 'inline-block' : 'none';
+      // pill.textContent = contadorMensajesNuevos > 0 ? contadorMensajesNuevos : '';
+      // pill.style.display = contadorMensajesNuevos > 0 ? 'inline-block' : 'none';
+
+              if (estaAlFinal) {
+          badge.style.display = 'none';
+          badgeVisibleManualmente = false;
+          lista.scrollTop = lista.scrollHeight;
+        }
+
+        // ✅ usar contador REAL desde Django
+        // if (data.no_leidos > 0) {
+
+        //   pill.innerText = data.no_leidos;
+
+        //   pill.style.display = 'inline-block';
+
+        //   pill.classList.remove('bg-success');
+        //   pill.classList.add('bg-danger');
+
+        // } else {
+
+        //   pill.innerText = '0';
+
+        //   pill.style.display = 'inline-block';
+
+        //   pill.classList.remove('bg-danger');
+        //   pill.classList.add('bg-success');
+        // }
     });
 }
 
@@ -1512,7 +1548,11 @@ function cargarNotificaciones() {
         data.privados.forEach(priv => {
           const userId = priv.id;
           const username = priv.username || priv.nombre || priv.id;
-          const displayName = priv.display_name || priv.nombre || username;
+          const displayName =
+          priv.nombre_completo ||
+          priv.display_name ||
+          priv.nombre ||
+          username;
           const cantidad = priv.nuevos || 0;
 
           let boton = document.getElementById(`privado-${userId}`);
@@ -1648,6 +1688,31 @@ setInterval(cargarNotificaciones, 5000); // cada 5s
     document.body.style.msUserSelect = 'none'; {% endcomment %}
 </script>
 
+<!-- script del buscador inicia -->
+ <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const buscador = document.getElementById('buscador-usuarios');
+    const listaUsuarios = document.getElementById('lista-usuarios');
+    const items = listaUsuarios.getElementsByClassName('usuario-item');
+
+    buscador.addEventListener('input', function() {
+        const filtro = buscador.value.toLowerCase();
+
+        Array.from(items).forEach(function(item) {
+            // Buscamos el texto dentro del span "nombre-texto"
+            const textoNombre = item.querySelector('.nombre-texto').textContent.toLowerCase();
+            
+            if (textoNombre.includes(filtro)) {
+                item.style.display = ''; // Mostrar
+            } else {
+                item.style.display = 'none'; // Ocultar
+            }
+        });
+    });
+});
+</script>
+<!-- script del buscador fin -->
+
 <style>
     {% comment %} body, * {
         -webkit-user-select: none !important;
@@ -1662,6 +1727,31 @@ setInterval(cargarNotificaciones, 5000); // cada 5s
 </style>
 
 <!-- --------------------------------------------------------------------------------------------------------- -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const buscador = document.getElementById('buscador-usuarios');
+    const lista = document.getElementById('lista-usuarios');
+    
+    if (buscador && lista) {
+        buscador.addEventListener('input', function() {
+            const filtro = buscador.value.toLowerCase();
+            const items = lista.getElementsByClassName('usuario-item-busqueda');
+
+            Array.from(items).forEach(function(item) {
+                const nombre = item.querySelector('.nombre-texto').textContent.toLowerCase();
+                
+                // Si el nombre contiene lo que escribimos, se muestra, si no, se oculta
+                if (nombre.includes(filtro)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
+});
+</script>
 
 </body>
 </html>
