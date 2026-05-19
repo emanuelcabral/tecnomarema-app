@@ -731,6 +731,7 @@ ALLOWED_HOSTS = [
     'tecnomarema.com.ar',
     'www.tecnomarema.com.ar',
     '.ngrok-free.app',
+    '.ngrok-free.dev',
     'testserver',
 ]
 
@@ -739,6 +740,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://tecnomarema.com.ar',
     'https://www.tecnomarema.com.ar',
     'https://*.ngrok-free.app',
+    'https://*.ngrok-free.dev', 
 ]
 
 # Aplicaciones instaladas

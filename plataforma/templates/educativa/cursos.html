@@ -433,14 +433,14 @@
         <div class="col-lg-3 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
           <ul class="list-unstyled">
-            <li><a href="#inicio">Inicio</a></li>
-            <li><a href="#cursos">Cursos</a></li>
-            <li><a href="#info">Info</a></li>
-            <li><a href="#testimonios">Testimonios</a></li>
-            <li><a href="#faq">FAQ</a></li>
-            <li><a href="#inscripcion">Inscripción</a></li>
-            <li><a href="#login">Login</a></li>
-            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="{% url 'inicio' %}">Inicio</a></li>
+            <li><a href="{% url 'inicio' %}#cursos">Cursos</a></li>
+            <li><a href="{% url 'inicio' %}#info">Info</a></li>
+            <li><a href="{% url 'inicio' %}#testimonios">Testimonios</a></li>
+            <li><a href="{% url 'inicio' %}#faq">FAQ</a></li>
+            <li><a href="{% url 'inscripcion' %}">Inscripción</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+            <li><a href="{% url 'inicio' %}#contacto">Contacto</a></li>
           </ul>
         </div>
 
@@ -491,7 +491,7 @@
           © 2025 Tecno Marema. Todos los derechos reservados.
         </div>
         <div>
-          <a href="#terminos">Términos y Condiciones</a>
+          <a href="{% url 'terminos_y_condiciones' %}">Términos y Condiciones</a>
         </div>
       </div>
     </div>
