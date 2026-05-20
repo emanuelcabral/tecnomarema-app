@@ -733,6 +733,7 @@ ALLOWED_HOSTS = [
     '.ngrok-free.app',
     '.ngrok-free.dev',
     'testserver',
+    'tecnomarema-app-eb5q.onrender.com',
 ]
 
 CSRF_TRUSTED_ORIGINS = [
