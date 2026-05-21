@@ -807,12 +807,35 @@ WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 # ==========================================================
 # Base de datos - Soporte local + Render (DATABASE_URL)
 # ==========================================================
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=os.getenv('DATABASE_URL', None),
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#         ssl_require=True if not DEBUG else False
+#     )
+# }
+
+# # Fallback local si no hay DATABASE_URL
+# if 'default' not in DATABASES or not DATABASES['default']:
+#     DATABASES['default'] = {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': os.getenv('DB_NAME', 'tecnomarema'),
+#         'USER': os.getenv('DB_USER', 'postgres'),
+#         'PASSWORD': os.getenv('DB_PASSWORD', '9560'),
+#         'HOST': os.getenv('DB_HOST', 'localhost'),
+#         'PORT': os.getenv('DB_PORT', '5432'),
+#     }
+
+DATABASE_URL = os.getenv('DATABASE_URL', None)
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.getenv('DATABASE_URL', None),
+        default=DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
-        ssl_require=True if not DEBUG else False
+        # Neon requiere SSL siempre. Si estamos usando Neon, forzamos SSL aunque DEBUG sea True.
+        ssl_require=True if (DATABASE_URL and 'neon.tech' in DATABASE_URL) else (not DEBUG)
     )
 }
 
