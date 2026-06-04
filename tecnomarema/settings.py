@@ -734,6 +734,8 @@ ALLOWED_HOSTS = [
     '.ngrok-free.dev',
     'testserver',
     'tecnomarema-app-eb5q.onrender.com',
+    'tecnomarema.up.railway.app',
+    
 ]
 
 CSRF_TRUSTED_ORIGINS = [
@@ -741,7 +743,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://tecnomarema.com.ar',
     'https://www.tecnomarema.com.ar',
     'https://*.ngrok-free.app',
-    'https://*.ngrok-free.dev', 
+    'https://*.ngrok-free.dev',
+    'https://tecnomarema.up.railway.app', 
 ]
 
 # Aplicaciones instaladas
