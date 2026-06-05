@@ -399,6 +399,16 @@ def guardar_datos_inscripcion_paga(request):
             print("==============================")
 
             result = sdk.payment().create(payment_data)
+
+
+            # === DEBUG MERCADO PAGO ===
+            print("=== MP REQUEST ===")
+            print(payment_data)
+            print("=== MP RESPONSE ===")
+            print(result)
+            print("=================================")
+
+
             payment = result["response"]
 
             print("\n=== MERCADO PAGO RESPONSE COMPLETA ===")

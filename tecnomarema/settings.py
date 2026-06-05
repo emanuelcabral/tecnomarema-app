@@ -923,6 +923,26 @@ LOGIN_REDIRECT_URL = 'mis_cursos'
 LOGOUT_REDIRECT_URL = 'login'
 
 # ==========================================================
+# DEBUG MERCADO PAGO (Temporal - para diagnóstico)
+# ==========================================================
+print("=== MERCADO PAGO CONFIG EN RAILWAY ===")
+print(f"MODE: {MERCADOPAGO_MODE}")
+print(f"ACCESS_TOKEN definido: {'Sí' if MERCADOPAGO_ACCESS_TOKEN else 'NO'}")
+print(f"PUBLIC_KEY definido: {'Sí' if MERCADOPAGO_PUBLIC_KEY else 'NO'}")
+
+if MERCADOPAGO_PUBLIC_KEY:
+    print(f"PUBLIC_KEY empieza con: {MERCADOPAGO_PUBLIC_KEY[:15]}...")
+else:
+    print("❌ PUBLIC_KEY está vacío!")
+
+if MERCADOPAGO_ACCESS_TOKEN:
+    print(f"ACCESS_TOKEN empieza con: {MERCADOPAGO_ACCESS_TOKEN[:15]}...")
+else:
+    print("❌ ACCESS_TOKEN está vacío!")
+
+print("=====================================")
+
+# ==========================================================
 # Default primary key field type
 # ==========================================================
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
