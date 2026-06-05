@@ -301,6 +301,30 @@
 }
 
 
+/*----------------BTN HOME - inicia------------------------*/
+
+.btn-home {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #12f693;
+    color: #111;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 10px rgba(0,0,0,.15);
+    transition: all .25s ease;
+}
+
+.btn-home:hover {
+    background: #00e676;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,.2);
+}
+
+/*----------------BTN HOME - fin---------------------------*/
+
+
     </style>
   </head>
 <body>
@@ -1985,6 +2009,9 @@ function loginRapido() {
     });
 }
 </script>
+
+
+<a href="{% url 'inicio' %}" class="btn-home">Ir a Home</a>
 
 
 </body>
