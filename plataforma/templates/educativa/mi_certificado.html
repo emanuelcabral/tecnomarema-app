@@ -6,12 +6,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta property="og:title" content="Certificado de Curso - {{ curso.nombre_curso }}">
-<meta property="og:description" content="¡He completado exitosamente el curso '{{ curso.nombre_curso }}' en Tecno Marema! 🎓">
-<meta property="og:image" content="{{ url_imagen_certificado }}"> <!-- Asegúrate de que sea pública -->
-<meta property="og:url" content="{{ url_certificado }}">
-<meta property="og:type" content="website">
-
 <!-- ✅ Open Graph (Facebook, LinkedIn, etc.) -->
 <meta property="og:title" content="Certificado de Curso - {{ curso.nombre_curso }}">
 <meta property="og:description" content="¡He completado exitosamente el curso '{{ curso.nombre_curso }}' en Tecno Marema! 🎓">
@@ -317,38 +311,94 @@
         ← Volver al Curso
       </a>
     </div>
-<!-- script para descargar PNG inicia -->
+<!-- script para descargar PNG y guardar en servidor -->
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
 <script>
 function descargarCertificado() {
+
     const certificado = document.getElementById("certificado");
     const header = certificado.querySelector(".header-certificado");
 
-    // Guardamos el background original
+    // Guardamos el fondo original
     const bgOriginal = header.style.backgroundImage;
 
-    // Ocultar solo el fondo del header
+    // Ocultar fondo temporalmente
     header.style.backgroundImage = "none";
 
     html2canvas(certificado, {
-        scale: 2, // buena resolución
+        scale: 2,
         useCORS: true,
         backgroundColor: null
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = 'certificado.png';
-        link.href = canvas.toDataURL("image/png", 1.0);
+    })
+    .then(canvas => {
+
+        // ==========================
+        // DESCARGA LOCAL
+        // ==========================
+
+        const pngData = canvas.toDataURL("image/png", 1.0);
+
+        const link = document.createElement("a");
+        link.download = "certificado.png";
+        link.href = pngData;
         link.click();
 
-        // Restaurar el background original
+        // ==========================
+        // GUARDAR EN DJANGO
+        // ==========================
+
+        fetch("/guardar-certificado/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({
+                imagen: pngData,
+                curso: "{{ curso.id_curso }}",
+                estudiante: "{{ estudiante.id_estudiante }}"
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if (data.ok) {
+
+                console.log("Imagen guardada");
+
+                console.log("URL pública:");
+                console.log(data.url);
+
+                // Si querés usarla después:
+                window.urlImagenCertificado = data.url;
+
+            } else {
+
+                console.error("Error al guardar");
+
+            }
+
+        })
+        .catch(error => {
+
+            console.error("Error:", error);
+
+        });
+
+        // Restaurar fondo
         header.style.backgroundImage = bgOriginal;
-    }).catch(err => {
-        console.error("Error al generar el PNG:", err);
+
+    })
+    .catch(err => {
+
+        console.error("Error al generar PNG:", err);
+
         header.style.backgroundImage = bgOriginal;
+
     });
 }
 </script>
-
 
 <!-- script para descargar PNG fin -->
 
@@ -372,7 +422,7 @@ function descargarCertificado() {
           Compartir en X (Twitter)
         </a>
         <a class="btn btn-secondary btn-social" target="_blank"
-           href="https://www.linkedin.com/shareArticle?mini=true&url={{ url_certificado }}&title=Certificado%20de%20Curso&summary=He%20finalizado%20el%20curso%20{{ curso.nombre_curso }}">
+           href="https://www.linkedin.com/sharing/share-offsite/?url={{ url_certificado }}&title=Certificado%20de%20Curso&summary=He%20finalizado%20el%20curso%20{{ curso.nombre_curso }}">
           Compartir en LinkedIn
         </a>
       </div>

@@ -330,6 +330,8 @@ path('robots.txt', RedirectView.as_view(url=os.path.join(settings.STATIC_URL, 't
 
 path('mensajes_nuevos/', views.mensajes_nuevos_view, name='mensajes_nuevos'),
 
+path("guardar-certificado/", views.guardar_certificado,   name="guardar_certificado"),
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -6442,3 +6442,49 @@ def login_autocompletar(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False})
+
+
+############################################################################################
+##---------------------------Guardado de certificado en base------------------------------##
+############################################################################################
+import os
+import json
+import base64
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def guardar_certificado(request):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        imagen = data["imagen"]
+
+        formato, imgstr = imagen.split(";base64,")
+
+        archivo = base64.b64decode(imgstr)
+
+        nombre = "certificado.png"
+
+        ruta = os.path.join(
+            settings.MEDIA_ROOT,
+            "certificados",
+            nombre
+        )
+
+        os.makedirs(os.path.dirname(ruta), exist_ok=True)
+
+        with open(ruta, "wb") as f:
+            f.write(archivo)
+
+        return JsonResponse({
+            "ok": True,
+            "url": request.build_absolute_uri(
+                settings.MEDIA_URL +
+                "certificados/" +
+                nombre
+            )
+        })
