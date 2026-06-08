@@ -23,6 +23,12 @@ from .views import curso_detalle_view
 
 from django.views.generic import RedirectView
 
+
+from django.http import HttpResponse
+
+def test(request):
+    return HttpResponse("Django OK")
+
 urlpatterns = [
     # ---------- PÚBLICAS ----------
     path('', views.inicio, name='inicio'),  # Página de inicio - http://127.0.0.1:8000/
@@ -331,6 +337,8 @@ path('robots.txt', RedirectView.as_view(url=os.path.join(settings.STATIC_URL, 't
 path('mensajes_nuevos/', views.mensajes_nuevos_view, name='mensajes_nuevos'),
 
 path("guardar-certificado/", views.guardar_certificado,   name="guardar_certificado"),
+
+path("test/", test),
 
 ]
 
