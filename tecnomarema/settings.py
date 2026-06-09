@@ -713,6 +713,13 @@ import dj_database_url
 # Cargar variables de entorno desde .env
 load_dotenv()
 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'),
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'),
+}
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -758,6 +765,8 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'plataforma',
     'channels',
+    'cloudinary',
+    'cloudinary_storage',
 ]
 
 # Configuración de Channels (para chats en tiempo real)
@@ -888,6 +897,8 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # APPEND_SLASH = True
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # ==========================================================
 # Email - Brevo API (adaptado, usa HTTP, sin bloqueos en Render free)
