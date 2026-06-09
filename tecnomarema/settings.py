@@ -898,7 +898,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 # APPEND_SLASH = True
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 # ==========================================================
 # Email - Brevo API (adaptado, usa HTTP, sin bloqueos en Render free)
