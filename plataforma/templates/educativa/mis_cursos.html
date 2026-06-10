@@ -352,7 +352,7 @@
         {% if comision.id_curso.iconos_cargados %}
         <div class="d-flex align-items-center mb-3">
           {% for icono in comision.id_curso.iconos_cargados %}
-          <img src="{{ icono.url }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}"
+          <img src="{{ icono.url }}?v={{ timestamp }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}"
             style="height: 30px; padding-right: 15px;">
           {% endfor %}
         </div>
