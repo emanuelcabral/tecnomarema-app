@@ -904,7 +904,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # ==========================================================
 # Archivos subidos (media)
 # ==========================================================
-MEDIA_URL = '/media/'
+# MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'media'
 
 # APPEND_SLASH = True
