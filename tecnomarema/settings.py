@@ -921,7 +921,6 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # ==========================================================
 # Email - Brevo API (adaptado, usa HTTP, sin bloqueos en Render free)
