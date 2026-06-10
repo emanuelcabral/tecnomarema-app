@@ -918,7 +918,7 @@ STORAGES = {
     },
 }
 
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+# DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 # ==========================================================
 # Email - Brevo API (adaptado, usa HTTP, sin bloqueos en Render free)
