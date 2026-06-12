@@ -514,7 +514,7 @@
             <div class="d-flex justify-content-center align-items-start mb-3 flex-wrap" style="gap: 30px;">
               {% for icono in comision.id_curso.iconos_cargados %}
               <div class="text-center">
-                <img src="{{ icono.url }}?v={{ timestamp }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}" style="height: 50px;">
+                <img src="{{ icono.url }}" alt="Icono del curso {{ comision.id_curso.nombre_curso }}" style="height: 50px;">
                 <p class="mt-2 mb-0">{{ icono.name|cut:"iconos_cursos/"|cut:".png"|cut:".webp"|cut:".svg"|title }}</p>
               </div>
               {% endfor %}

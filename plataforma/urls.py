@@ -348,6 +348,16 @@ path("test/", test),
 # if settings.DEBUG is False:
 #     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+else:
+    # Sirve media incluso con DEBUG=False (hack funcional en Railway)
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {
+            'document_root': settings.MEDIA_ROOT,
+        }),
+    ]
+
 # Al final del archivo urls.py del proyecto
 handler400 = 'plataforma.views.error_400_view'
 handler403 = 'plataforma.views.error_403_view'
