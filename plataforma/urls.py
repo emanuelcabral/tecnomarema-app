@@ -26,6 +26,10 @@ from django.views.generic import RedirectView
 
 from django.http import HttpResponse
 
+
+from django.urls import re_path
+from django.views.static import serve
+
 def test(request):
     return HttpResponse("Django OK")
 
