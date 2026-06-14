@@ -5052,7 +5052,7 @@ def listado_valoraciones(request):
         valoracion.numero_comision_display = numero_comision 
         valoraciones_procesadas.append(valoracion)
         
-    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones_procesadas})
+    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones_procesadas,})
 
 ##################################################################################################
 ####----------------------------listado de proyectos------------------------------------------####
