@@ -5052,7 +5052,7 @@ def listado_valoraciones(request):
         valoracion.numero_comision_display = numero_comision 
         valoraciones_procesadas.append(valoracion)
         
-    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones_procesadas,})
+    return render(request, 'administrador/listado_valoraciones.html', {'valoraciones': valoraciones_procesadas,'nombre_usuario': request.session.get('usuario_logueado'),})
 
 ##################################################################################################
 ####----------------------------listado de proyectos------------------------------------------####
@@ -5060,7 +5060,7 @@ def listado_valoraciones(request):
 
 def listado_proyectos(request):
     entregas = EntregaProyecto.objects.select_related("estudiante", "curso", "comision")
-    return render(request, "administrador/listado_proyectos.html", {"entregas": entregas})
+    return render(request, "administrador/listado_proyectos.html", {"entregas": entregas, 'nombre_usuario': request.session.get('usuario_logueado'),})
 
 ##################################################################################################
 ####-----------------------------------listado de pagos---------------------------------------####
@@ -5519,6 +5519,7 @@ def asistencia_general_view(request, comision_id):
         'datos_tabla': datos_tabla_ordenada, # Se pasa la lista ORDENADA
         'total_clases': clases.count(),
         'usuario': request.user,
+        'nombre_usuario': request.session.get('usuario_logueado'),
     }
     return render(request, 'educativa/asistencia_general.html', contexto)
 
@@ -6137,6 +6138,7 @@ def calendario_view(request, comision_id):
         'clases': clases,
         'titulo': f'Calendario del Curso: {comision.id_curso.nombre_curso} | Comisión {comision.numero_comision}',
         'comision': comision,
+        'nombre_usuario': request.session.get('usuario_logueado'),
     }
     
     # 🚨 CORRECCIÓN: Referenciar el archivo dentro del subdirectorio 'educativa/'
