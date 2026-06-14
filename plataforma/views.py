@@ -2755,6 +2755,8 @@ def entrega_proyecto_view(request, comision_id):
         'estudiante': estudiante,
         'entrega_existente': entrega_existente,
         'fecha_limite': fecha_limite,
+        'usuario': request.session.get('usuario_logueado'),
+        'nombre_usuario': request.session.get('usuario_logueado'),
     })
 
 ################################################################################
