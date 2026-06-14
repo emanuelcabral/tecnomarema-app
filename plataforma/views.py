@@ -788,6 +788,8 @@ def valoraciones(request):
         'resumen_clases': resumen_clases,
         'resumen_general': resumen_general,
         'valoraciones': valoraciones,
+        'nombre_usuario': request.session.get('usuario_logueado'),
+        'usuario': request.session.get('usuario_logueado'),
     }
 
     return render(request, 'educativa/valoraciones.html', contexto)
@@ -3112,6 +3114,8 @@ def ver_entregas_proyectos(request, curso_id, comision_id):
         'total_entregas': total_entregas,
         'aprobados': aprobados,
         'desaprobados': desaprobados,
+        'nombre_usuario': request.session.get('usuario_logueado'),
+        'usuario': request.session.get('usuario_logueado'),
     }
     return render(request, 'educativa/entregas_de_proyectos.html', contexto)
 
