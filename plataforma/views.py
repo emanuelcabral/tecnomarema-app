@@ -900,7 +900,7 @@ def perfil_alumno_view(request):
     except PerfilUsuario.DoesNotExist:
         messages.error(request, 'Usuario no encontrado.')
         return redirect('login')
-    return render(request, 'educativa/perfil_alumno.html', {'usuario': usuario})
+    return render(request, 'educativa/perfil_alumno.html', {'usuario': usuario, 'nombre_usuario': nombre_usuario})
 
 # --- Formulario personalizado para reset ---
 class CustomPasswordResetForm(forms.Form):
