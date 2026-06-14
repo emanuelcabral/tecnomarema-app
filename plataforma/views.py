@@ -860,16 +860,34 @@ def saldo(request):
 
 
 # @session_required
+# def faq(request):
+#     return render(request, 'educativa/faq.html')
+
+# @session_required
+# def redes(request):
+#     return render(request, 'educativa/redes.html')
+
+# @session_required
+# def contacto(request):
+#     return render(request, 'educativa/contacto.html')
+
+@session_required
 def faq(request):
-    return render(request, 'educativa/faq.html')
+    return render(request, 'educativa/faq.html', {
+        'nombre_usuario': request.session.get('usuario_logueado')
+    })
 
 @session_required
 def redes(request):
-    return render(request, 'educativa/redes.html')
+    return render(request, 'educativa/redes.html', {
+        'nombre_usuario': request.session.get('usuario_logueado')
+    })
 
 @session_required
 def contacto(request):
-    return render(request, 'educativa/contacto.html')
+    return render(request, 'educativa/contacto.html', {
+        'nombre_usuario': request.session.get('usuario_logueado')
+    })
 
 @session_required
 def perfil_alumno_view(request):
