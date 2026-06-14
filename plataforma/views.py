@@ -6138,6 +6138,7 @@ def calendario_view(request, comision_id):
         'clases': clases,
         'titulo': f'Calendario del Curso: {comision.id_curso.nombre_curso} | Comisión {comision.numero_comision}',
         'comision': comision,
+        'usuario': request.session.get('usuario_logueado'),
         'nombre_usuario': request.session.get('usuario_logueado'),
     }
     
