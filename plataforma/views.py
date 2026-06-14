@@ -669,15 +669,23 @@ def terminos_y_condiciones(request):
 
 @session_required
 def videos_desarrollo_web(request):
-    return render(request, 'educativa/videos_desarrollo_web.html')
+    return render(request, 'educativa/videos_desarrollo_web.html', {
+        'nombre_usuario': request.session.get('usuario_logueado')
+    })
+
 
 @session_required
 def asistencia_alumnos(request):
-    return render(request, 'educativa/asistencia_alumnos.html')
+    return render(request, 'educativa/asistencia_alumnos.html', {
+        'nombre_usuario': request.session.get('usuario_logueado')
+    })
+
 
 @session_required
 def asistencia_general(request):
-    return render(request, 'educativa/asistencia_general.html')
+    return render(request, 'educativa/asistencia_general.html', {
+        'nombre_usuario': request.session.get('usuario_logueado')
+    })
 
 # @session_required
 # def valoraciones(request):
