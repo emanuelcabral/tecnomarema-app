@@ -323,7 +323,7 @@
                     <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
-                    {% if usuario.rol != 'profesor' or usuario.rol != 'tutor' %}
+                    {% if usuario.rol != 'profesor' and usuario.rol != 'tutor' %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
                     {% endif %}
                     <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
@@ -345,7 +345,7 @@
     </nav>
 
     <div class="barra-bienvenida">
-        Bienvenido {{ nombre_usuario }} a <strong>TecnoMarema 🚀</strong>
+        Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
     </div>
     <h1 class="mt-5 p-2">¿Necesitas soporte o información? Contáctanos fácilmente.</h1>
     <div class="container d-flex justify-content-center  contenedor-general mb-5 flex-fill" style="margin-bottom: 50px;">
