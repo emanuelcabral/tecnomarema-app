@@ -788,7 +788,7 @@ def valoraciones(request):
         'resumen_clases': resumen_clases,
         'resumen_general': resumen_general,
         'valoraciones': valoraciones,
-        'usuario': request.session.get('usuario_logueado'),
+        # 'usuario': request.session.get('usuario_logueado'),
         'nombre_usuario': request.session.get('usuario_logueado'),
     }
 
