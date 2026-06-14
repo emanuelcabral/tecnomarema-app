@@ -2755,7 +2755,7 @@ def entrega_proyecto_view(request, comision_id):
         'estudiante': estudiante,
         'entrega_existente': entrega_existente,
         'fecha_limite': fecha_limite,
-        # 'usuario': request.session.get('usuario_logueado'),
+        'usuario': request.session.get('usuario_logueado'),
         'nombre_usuario': request.session.get('usuario_logueado'),
     })
 
@@ -3064,6 +3064,7 @@ def valoraciones_filtradas(request, curso_id, comision_id):
         'total_inscritos': total_inscritos,
         'porcentaje_val_curso': porcentaje_val_curso,
         'comision': comision,
+        'nombre_usuario': request.session.get('usuario_logueado'),
     }
 
     return render(request, 'educativa/valoraciones.html', contexto)
