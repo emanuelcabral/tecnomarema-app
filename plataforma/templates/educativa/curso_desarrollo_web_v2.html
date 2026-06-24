@@ -634,7 +634,7 @@
 
         <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
         {% if cc.video %}
-          <iframe width="100%" height="400px" src="{{ cc.video }}" frameborder="0" allowfullscreen></iframe>
+          <iframe width="100%" height="400px" src="{{ cc.video }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         {% else %}
           <p>Clase grabada aún no disponible</p>
         {% endif %}
@@ -791,7 +791,7 @@ function mostrarClase(index) {
       ${clase.ppt ? `<iframe src="${clase.ppt}" width="100%" height="400px" frameborder="0"></iframe>` : `<p>Material aún no disponible</p>`}
 
       <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
-      ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" frameborder="0" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
+      ${clase.video ? `<iframe width="100%" height="400px" src="${clase.video}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>` : `<p>Clase grabada aún no disponible</p>`}
 
       <p class="mt-4"><strong class="badge badge-marema me-2">Quizzes:</strong></p>
 <a href="{% url 'hub_de_quizzes' curso.id_curso comision.id_comision estudiante.id_estudiante %}" class="btn btn-quizzes">Ir a Quizzes 🏆</a>
