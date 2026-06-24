@@ -662,7 +662,7 @@
 
         <p class="mt-4"><strong class="badge badge-marema me-2">Clase grabada:</strong></p>
         {% if cc.video %}
-          <iframe width="100%" height="400px" src="{{ cc.video }}" frameborder="0" allowfullscreen></iframe>
+          <iframe width="100%" height="400px" src="{{ cc.video }}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
         {% else %}
           <p>Clase grabada aún no disponible</p>
         {% endif %}
