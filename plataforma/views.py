@@ -4811,11 +4811,15 @@ def api_clases_estadisticas(request):
     if not comision_id:
         return JsonResponse([], safe=False)
     
-    clases = ClaseComision.objects.filter(comision_id=comision_id).select_related('clase')
+    clases = ClaseComision.objects.filter(
+        comision_id=comision_id
+    ).select_related('clase').order_by('clase__numero_clase')  # ← Ordenado por número de clase
+
     data = [{
         'id': c.clase.id,
         'nombre': f"Clase {c.clase.numero_clase}: {c.clase.nombre_clase}"
     } for c in clases]
+    
     return JsonResponse(data, safe=False)
 
 #----------------------------------------------------------------------------------------------------------
