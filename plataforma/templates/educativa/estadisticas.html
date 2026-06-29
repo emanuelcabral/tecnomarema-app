@@ -34,9 +34,10 @@
             border: 1px solid #12f693;
         }
         label {
+            margin-top: 1rem;
             color: #fff;
-            margin-top: 0.5rem;
         }
+        canvas { max-width: 100%; }
     </style>
 </head>
 <body>
@@ -75,6 +76,7 @@
     </div>
 </div>
 
+<!-- Gráficos Generales -->
 <div class="container">
     <div class="row">
         <div class="col-12 chart-container">
@@ -91,6 +93,7 @@
     </div>
 </div>
 
+<!-- Gráficos Desglosados -->
 <h3>Estadísticas por Pregunta (1-10)</h3>
 <div class="container">
     <div class="row">
@@ -115,19 +118,17 @@ function initCharts() {
 
     promedioChart = new Chart(document.getElementById('averageScoreChart'), {
         type: 'bar',
-        data: { labels: ["Rol Profe","Contenido","Plataforma","Streaming"], datasets: [{ data: [0,0,0,0], backgroundColor: "#12f693" }] },
-        options: { responsive: true }
+        data: { labels: ["Rol del profe", "Contenido", "Plataforma", "Streaming"], datasets: [{ data: [0,0,0,0], backgroundColor: "#12f693" }] },
+        options: { responsive: true, scales: { y: { max: 10 } } }
     });
 
     comparacionChart = new Chart(document.getElementById('comparisonChart'), {
         type: 'doughnut',
-        data: { labels: ["Valoraron","No valoraron"], datasets: [{ data: [0,0], backgroundColor: ["#00ffff","#555"] }] }
+        data: { labels: ["Valoraron", "No valoraron"], datasets: [{ data: [0,0], backgroundColor: ["#00ffff","#555"] }] }
     });
 }
 
 function actualizarGraficos(data) {
-    console.log("Actualizando gráficos con datos:", data);
-
     likedChart.data.datasets[0].data = [
         data.liked?.gustó?.total || 0,
         data.liked?.masomenos?.total || 0,
@@ -148,6 +149,27 @@ function actualizarGraficos(data) {
         data.valoraron_vs_no?.no_valoraron || 0
     ];
     comparacionChart.update();
+
+    actualizarGraficosPorPregunta(data.distribuciones || {});
+}
+
+function actualizarGraficosPorPregunta(dist) {
+    const labels = Array.from({length:10}, (_,i) => (i+1).toString());
+    const configs = [
+        {id:'professorRoleChart', data:dist.rol_profe || [], label:'Rol del Profesor'},
+        {id:'contentChart', data:dist.contenido || [], label:'Contenido'},
+        {id:'platformChart', data:dist.plataforma || [], label:'Plataforma'},
+        {id:'streamingChart', data:dist.streaming || [], label:'Streaming'}
+    ];
+
+    configs.forEach(({id, data, label}) => {
+        if (chartsPorPregunta[id]) chartsPorPregunta[id].destroy();
+        chartsPorPregunta[id] = new Chart(document.getElementById(id), {
+            type: 'bar',
+            data: { labels, datasets: [{ label, data, backgroundColor: '#12f693' }] },
+            options: { responsive: true, scales: { y: { beginAtZero: true, max: 10 } } }
+        });
+    });
 }
 
 // ==================== FILTROS ====================
@@ -163,21 +185,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let url = `/api/estadisticas_valoracion/?ambito=${ambito}`;
         if (id) url += `&id=${id}`;
 
-        console.log("🔍 Llamando a:", url);
-
         try {
             const res = await fetch(url);
-            console.log("Status:", res.status);
             const data = await res.json();
-            console.log("📊 Datos recibidos:", data);
             actualizarGraficos(data);
-        } catch (error) {
-            console.error("❌ Error en fetch:", error);
+        } catch (e) {
+            console.error(e);
         }
     }
 
     ambitoSelect.addEventListener('change', function () {
-        console.log("Cambio de ámbito a:", this.value);
         cursoSelect.disabled = comisionSelect.disabled = claseSelect.disabled = true;
         cursoSelect.innerHTML = '<option value="">Seleccione un curso</option>';
         comisionSelect.innerHTML = '<option value="">Seleccione una comisión</option>';
@@ -200,41 +217,31 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!this.value) return;
         const ambito = ambitoSelect.value;
         if (ambito === 'curso') actualizarEstadisticas('curso', this.value);
-        else {
-            fetch(`/api/comisiones_estadisticas/?curso=${this.value}`)
-                .then(r => r.json())
-                .then(data => {
-                    comisionSelect.innerHTML = '<option value="">Seleccione una comisión</option>';
-                    data.forEach(c => comisionSelect.add(new Option(c.nombre, c.id)));
-                    comisionSelect.disabled = false;
-                });
-        }
+        else fetch(`/api/comisiones_estadisticas/?curso=${this.value}`).then(r => r.json()).then(data => {
+            comisionSelect.innerHTML = '<option value="">Seleccione una comisión</option>';
+            data.forEach(c => comisionSelect.add(new Option(c.nombre, c.id)));
+            comisionSelect.disabled = false;
+        });
     });
 
     comisionSelect.addEventListener('change', function () {
         if (!this.value) return;
         const ambito = ambitoSelect.value;
         if (ambito === 'comision') actualizarEstadisticas('comision', this.value);
-        else {
-            fetch(`/api/clases_estadisticas/?comision=${this.value}`)
-                .then(r => r.json())
-                .then(data => {
-                    claseSelect.innerHTML = '<option value="">Seleccione una clase</option>';
-                    data.forEach(c => claseSelect.add(new Option(c.nombre, c.id)));
-                    claseSelect.disabled = false;
-                });
-        }
+        else fetch(`/api/clases_estadisticas/?comision=${this.value}`).then(r => r.json()).then(data => {
+            claseSelect.innerHTML = '<option value="">Seleccione una clase</option>';
+            data.forEach(c => claseSelect.add(new Option(c.nombre, c.id)));
+            claseSelect.disabled = false;
+        });
     });
 
     claseSelect.addEventListener('change', function () {
-        if (this.value && ambitoSelect.value === 'clase') {
-            actualizarEstadisticas('clase', this.value);
-        }
+        if (this.value && ambitoSelect.value === 'clase') actualizarEstadisticas('clase', this.value);
     });
 
-    // Inicial
     actualizarEstadisticas('institucion');
 });
 </script>
+
 </body>
 </html>
