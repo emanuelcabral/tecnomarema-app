@@ -4664,36 +4664,32 @@ def actualizar_lectura(chat, usuario):
 ###################################################################################################################
 
 from django.http import JsonResponse
-from .models import ValoracionAlumno, ClaseComision
 from django.db.models import Avg, Count
-from collections import defaultdict
+from .models import ValoracionAlumno
 
 def obtener_estadisticas_valoraciones(request):
-    clase_id = request.GET.get('clase')
-    ambito = request.GET.get('ambito')
+    ambito = request.GET.get('ambito', 'institucion')
+    filtro_id = request.GET.get('id')
+
+    print(f"DEBUG - Ámbito: {ambito} | ID: {filtro_id}")  # ← Debug
 
     valoraciones = ValoracionAlumno.objects.all()
 
-    if clase_id and clase_id.isdigit():
-        clase_id_num = int(clase_id)
+    # FILTRO SEGÚN ÁMBITO
+    if filtro_id:
+        if ambito == 'curso':
+            valoraciones = valoraciones.filter(curso_id=filtro_id)
+        elif ambito == 'comision':
+            valoraciones = valoraciones.filter(comision_id=filtro_id)
+        elif ambito == 'clase':
+            valoraciones = valoraciones.filter(clase_id=filtro_id)
 
-        if ambito == "clase":
-            valoraciones = valoraciones.filter(clase_id=clase_id_num)
+    print(f"DEBUG - Valoraciones encontradas: {valoraciones.count()}")  # ← Debug
 
-        elif ambito == "comision":
-            clase = ClaseComision.objects.filter(id=clase_id_num).first()
-            if clase:
-                valoraciones = valoraciones.filter(comision_id=clase.comision.id_comision)
-
-        elif ambito == "curso":
-            clase = ClaseComision.objects.filter(id=clase_id_num).first()
-            if clase and clase.comision and clase.comision.id_curso:
-                valoraciones = valoraciones.filter(curso_id=clase.comision.id_curso.id_curso)
-
-    # Recuento preferencia_clase
+    # Recuento de preferencias
     liked_counts = valoraciones.values('preferencia_clase').annotate(total=Count('valoracion_alumno_id'))
 
-    # Promedios generales
+    # Promedios
     promedio = valoraciones.aggregate(
         profe=Avg('rol_profe'),
         contenido=Avg('contenido'),
@@ -4702,16 +4698,13 @@ def obtener_estadisticas_valoraciones(request):
     )
 
     total_valoraron = valoraciones.count()
-    total_alumnos = valoraciones.values('id_estudiante').distinct().count()
-    total_no_valoraron = max(0, total_alumnos - total_valoraron)
 
-    # Estadísticas por pregunta: distribución 1 a 10
+    # Distribución 1-10 por pregunta
     def contar_valores_por_pregunta(campo):
-        # Diccionario de 1 a 10 con conteo inicial en 0
         conteo = {str(i): 0 for i in range(1, 11)}
         valores = valoraciones.values(campo).annotate(cantidad=Count('valoracion_alumno_id'))
         for v in valores:
-            valor = v[campo]
+            valor = v.get(campo)
             if valor and str(valor) in conteo:
                 conteo[str(valor)] = v['cantidad']
         return [conteo[str(i)] for i in range(1, 11)]
@@ -4729,14 +4722,13 @@ def obtener_estadisticas_valoraciones(request):
             'masomenos': next((x for x in liked_counts if x['preferencia_clase'] == 'mas_o_menos'), {'total': 0}),
             'nogusto': next((x for x in liked_counts if x['preferencia_clase'] == 'no_me_gusto'), {'total': 0}),
         },
-        'promedios': promedio,
+        'promedios': promedio or {},
         'valoraron_vs_no': {
             'valoraron': total_valoraron,
-            'no_valoraron': total_no_valoraron
+            'no_valoraron': 0
         },
         'distribuciones': distribuciones
     })
-
 #----------------------------------------------------------------------------------------------------
 
 def obtener_clases_opciones(request):
@@ -4785,6 +4777,50 @@ def obtener_clases(request):
     ]
     return JsonResponse({'clases': data})
 
+#----------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------
+
+# =====================================================
+# APIs SIMPLES PARA LOS SELECTS DE ESTADÍSTICAS
+# (No afectan tus vistas originales)
+# =====================================================
+
+from django.http import JsonResponse
+from .models import Curso, Comision, ClaseComision
+
+def api_cursos_estadisticas(request):
+    cursos = Curso.objects.all().order_by('id_curso')
+    data = [{'id': c.id_curso, 'nombre': c.nombre_curso} for c in cursos]
+    return JsonResponse(data, safe=False)
+
+
+def api_comisiones_estadisticas(request):
+    curso_id = request.GET.get('curso')
+    if not curso_id:
+        return JsonResponse([], safe=False)
+    
+    comisiones = Comision.objects.filter(id_curso_id=curso_id).order_by('numero_comision')
+    data = [{'id': c.id_comision, 'nombre': f"Comisión {c.numero_comision}"} for c in comisiones]
+    return JsonResponse(data, safe=False)
+
+
+def api_clases_estadisticas(request):
+    comision_id = request.GET.get('comision')
+    if not comision_id:
+        return JsonResponse([], safe=False)
+    
+    clases = ClaseComision.objects.filter(comision_id=comision_id).select_related('clase')
+    data = [{
+        'id': c.clase.id,
+        'nombre': f"Clase {c.clase.numero_clase}: {c.clase.nombre_clase}"
+    } for c in clases]
+    return JsonResponse(data, safe=False)
+
+#----------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------
 
 

@@ -344,6 +344,11 @@ path("guardar-certificado/", views.guardar_certificado,   name="guardar_certific
 
 path("test/", test),
 
+
+    path('api/cursos_estadisticas/', views.api_cursos_estadisticas, name='api_cursos_estadisticas'),
+    path('api/comisiones_estadisticas/', views.api_comisiones_estadisticas, name='api_comisiones_estadisticas'),
+    path('api/clases_estadisticas/', views.api_clases_estadisticas, name='api_clases_estadisticas'),
+
 ]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
