@@ -38,6 +38,17 @@
             color: #fff;
         }
         canvas { max-width: 100%; }
+        .btn-volver {
+            background-color: #cf30ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .btn-volver:hover {
+            background-color: #a120cc;
+        }
     </style>
 </head>
 <body>
@@ -242,6 +253,13 @@ document.addEventListener('DOMContentLoaded', function () {
     actualizarEstadisticas('institucion');
 });
 </script>
+
+<!-- Botón Volver Atrás -->
+<div class="mb-3">
+    <a href="{% url 'admin_panel' %}" class="btn btn-volver">
+        ← Volver Atrás
+    </a>
+</div>
 
 </body>
 </html>
