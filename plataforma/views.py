@@ -3534,7 +3534,6 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from .models import Comision
 
-
 # ==========================================================
 # EDITAR COMISIÓN
 # ==========================================================
@@ -3546,30 +3545,31 @@ def editar_comision(request):
 
         id_comision = request.POST.get("id")
 
-        comision = Comision.objects.get(
-            id_comision=id_comision
-        )
+        comision = Comision.objects.get(id_comision=id_comision)
 
-        numero_comision = int(request.POST.get("numero_comision"))
+        # -----------------------------
+        # VALIDACIÓN SEGURA
+        # -----------------------------
+        numero_comision = request.POST.get("numero_comision")
 
-        # Evitar números de comisión repetidos
-        if Comision.objects.exclude(
-            id_comision=id_comision
-        ).filter(
-            numero_comision=numero_comision
-        ).exists():
+        if numero_comision is not None:
+            try:
+                numero_comision = int(numero_comision)
+            except:
+                return JsonResponse({
+                    "success": False,
+                    "mensaje": "Número de comisión inválido."
+                }, status=400)
 
-            return JsonResponse({
-                "success": False,
-                "mensaje": "Ya existe otra comisión con ese número."
-            }, status=400)
-
+        # -----------------------------
+        # ASIGNACIÓN DE CAMPOS
+        # -----------------------------
         comision.numero_comision = numero_comision
         comision.fecha_inicio = request.POST.get("fecha_inicio")
         comision.fecha_fin = request.POST.get("fecha_fin")
         comision.dia1 = request.POST.get("dia1")
-        comision.horario1 = request.POST.get("horario1")
         comision.dia2 = request.POST.get("dia2")
+        comision.horario1 = request.POST.get("horario1")
         comision.horario2 = request.POST.get("horario2")
         comision.estado_comision = request.POST.get("estado_comision")
 
@@ -3581,21 +3581,12 @@ def editar_comision(request):
         })
 
     except Comision.DoesNotExist:
-
         return JsonResponse({
             "success": False,
             "mensaje": "La comisión no existe."
         }, status=404)
 
-    except ValueError:
-
-        return JsonResponse({
-            "success": False,
-            "mensaje": "El número de comisión es inválido."
-        }, status=400)
-
     except Exception as e:
-
         return JsonResponse({
             "success": False,
             "mensaje": str(e)
@@ -3611,12 +3602,14 @@ def editar_comision(request):
 def eliminar_comision(request):
     try:
 
-        ids = request.POST.getlist("ids[]")
+        # 🔴 CORRECCIÓN IMPORTANTE
+        # tu JS envía: data: { ids: ids }
+        ids = request.POST.getlist("ids")
 
         if not ids:
             return JsonResponse({
                 "success": False,
-                "mensaje": "No se recibió ninguna comisión para eliminar."
+                "mensaje": "No se recibieron IDs."
             }, status=400)
 
         eliminadas = Comision.objects.filter(
@@ -3630,12 +3623,10 @@ def eliminar_comision(request):
         })
 
     except Exception as e:
-
         return JsonResponse({
             "success": False,
             "mensaje": str(e)
         }, status=500)
-
 
 ###########################################################################
 ###------------------------chat-general---------------------------------###
