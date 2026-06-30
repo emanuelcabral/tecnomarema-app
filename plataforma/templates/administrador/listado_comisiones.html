@@ -1,54 +1,657 @@
 {% extends "administrador/base.html" %}
 {% block content %}
-<div class="container mt-5">
-  <h2 class="mb-4 text-success">Listado de Comisiones</h2>
-  <table id="tabla-comisiones" class="table table-dark table-striped">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Comision</th>
-        <th>Curso</th>
-        <th>Inicio</th>
-        <th>Fin</th>
-        <th>Dia 1</th>
-        <th>Horario 1</th>
-        <th>Dia 2</th>
-        <th>Horario 2</th>
-        <th>Estado</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for com in comisiones %}
-      <tr>
-        <td>{{ com.id_comision }}</td>
-        <td>{{ com.numero_comision }}</td>
-        <td>{{ com.id_curso.nombre_curso }}</td>
-        <td>{{ com.fecha_inicio|date:"j/n/Y" }}</td>
-        <td>{{ com.fecha_fin|date:"j/n/Y" }}</td>
-        <td>{{ com.dia1 }}</td>
-        <td>{{ com.horario1 }}</td>
-        <td>{{ com.dia2 }}</td>
-        <td>{{ com.horario2 }}</td>
-        <td>{{ com.estado_comision }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+
+.card-panel{
+    background:#1f1f1f;
+    border-radius:12px;
+    padding:25px;
+    box-shadow:0 0 15px rgba(0,0,0,.25);
+}
+
+.table-dark{
+    --bs-table-bg:#232323;
+}
+
+.toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+.toolbar .left,
+.toolbar .right{
+    display:flex;
+    gap:10px;
+    align-items:center;
+}
+
+.toolbar button{
+    min-width:140px;
+}
+
+.editable{
+    background:#2d2d2d !important;
+}
+
+.editable input,
+.editable select{
+    width:100%;
+}
+
+input[type="date"],
+input[type="time"],
+input[type="text"],
+select{
+    background:#2b2b2b;
+    color:white;
+    border:1px solid #555;
+    border-radius:5px;
+    padding:5px;
+}
+
+select option{
+    background:#2b2b2b;
+}
+
+.form-check-input{
+    cursor:pointer;
+}
+
+#tabla-comisiones td{
+    vertical-align:middle;
+}
+
+.badge-edit{
+    background:#198754;
+}
+
+</style>
+
+<div class="container-fluid mt-4">
+
+<div class="card-panel">
+
+<h2 class="text-success mb-4">
+Listado de Comisiones
+</h2>
+
+<div class="toolbar">
+
+<div class="left">
+
+<button
+id="btnEditar"
+class="btn btn-warning"
+disabled>
+
+<i class="bi bi-pencil-square"></i>
+
+Editar
+
+</button>
+
+<button
+id="btnEliminar"
+class="btn btn-danger"
+disabled>
+
+<i class="bi bi-trash"></i>
+
+Eliminar
+
+</button>
+
+</div>
+
+<div class="right">
+
+<button
+id="btnGuardar"
+class="btn btn-success d-none">
+
+<i class="bi bi-floppy"></i>
+
+Guardar cambios
+
+</button>
+
+<button
+id="btnCancelar"
+class="btn btn-secondary d-none">
+
+Cancelar
+
+</button>
+
+</div>
+
+</div>
+
+<table
+id="tabla-comisiones"
+class="table table-dark table-striped table-hover align-middle">
+
+<thead>
+
+<tr>
+
+<th width="40">
+
+<input
+type="checkbox"
+id="checkTodos">
+
+</th>
+
+<th>ID</th>
+
+<th>Comision</th>
+
+<th>Curso</th>
+
+<th>Inicio</th>
+
+<th>Fin</th>
+
+<th>Dia 1</th>
+
+<th>Horario 1</th>
+
+<th>Dia 2</th>
+
+<th>Horario 2</th>
+
+<th>Estado</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for com in comisiones %}
+
+<tr
+data-id="{{ com.id_comision }}">
+
+<td>
+
+<input
+type="checkbox"
+class="fila-check">
+
+</td>
+
+<td class="id">
+{{ com.id_comision }}
+</td>
+
+<td class="numero_comision">
+{{ com.numero_comision }}
+</td>
+
+<td>
+{{ com.id_curso.nombre_curso }}
+</td>
+
+<td
+class="fecha_inicio"
+data-original="{{ com.fecha_inicio|date:'Y-m-d' }}">
+
+{{ com.fecha_inicio|date:"d/m/Y" }}
+
+</td>
+
+<td
+class="fecha_fin"
+data-original="{{ com.fecha_fin|date:'Y-m-d' }}">
+
+{{ com.fecha_fin|date:"d/m/Y" }}
+
+</td>
+
+<td class="dia1">
+{{ com.dia1 }}
+</td>
+
+<td class="horario1">
+{{ com.horario1 }}
+</td>
+
+<td class="dia2">
+{{ com.dia2 }}
+</td>
+
+<td class="horario2">
+{{ com.horario2 }}
+</td>
+
+<td class="estado_comision">
+{{ com.estado_comision }}
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
 </div>
 
 <script>
-  $(document).ready(function() {
-    $('#tabla-comisiones').DataTable({
-      "order": [[ 0, "asc" ]],  // Orden inicial por ID
-      "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-      },
-      "columnDefs": [
-        { "orderable": true, "targets": [0,1,2,3,4,5,6,7,8,9] } // Todas ordenables
-      ]
-    });
-  });
+
+const dias=[
+"lunes",
+"martes",
+"miercoles",
+"jueves",
+"viernes",
+"sabado",
+"domingo"
+];
+
+const estados=[
+"proximo",
+"en_curso",
+"finalizado"
+];
+
+let tabla;
+
+let filaEditando=null;
+
+$(document).ready(function(){
+
+tabla=$("#tabla-comisiones").DataTable({
+
+order:[[1,"asc"]],
+
+language:{
+url:"//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+},
+
+columnDefs:[
+{
+orderable:false,
+targets:0
+}
+]
+
+});
+
+actualizarBotones();
+
+});
+
+$(document).on("change",".fila-check",function(){
+
+actualizarBotones();
+
+});
+
+$("#checkTodos").change(function(){
+
+$(".fila-check").prop(
+"checked",
+$(this).prop("checked")
+);
+
+actualizarBotones();
+
+});
+
+function actualizarBotones(){
+
+let cantidad=$(".fila-check:checked").length;
+
+$("#btnEliminar").prop(
+"disabled",
+cantidad==0
+);
+
+$("#btnEditar").prop(
+"disabled",
+cantidad!=1
+);
+
+}
+
+$("#btnEditar").click(function(){
+
+let fila=$(".fila-check:checked")
+.closest("tr");
+
+filaEditando=fila;
+
+fila.addClass("editable");
+
+let numero=fila.find(".numero_comision").text().trim();
+
+fila.find(".numero_comision").html(
+'<input type="text" class="form-control form-control-sm numero" value="'+numero+'">'
+);
+
+let inicio=fila.find(".fecha_inicio").attr("data-original");
+
+fila.find(".fecha_inicio").html(
+'<input type="date" class="form-control form-control-sm inicio" value="'+inicio+'">'
+);
+
+let fin=fila.find(".fecha_fin").attr("data-original");
+
+fila.find(".fecha_fin").html(
+'<input type="date" class="form-control form-control-sm fin" value="'+fin+'">'
+);
+
+function crearSelect(lista,valorActual){
+
+let html='<select class="form-select form-select-sm">';
+
+lista.forEach(function(item){
+
+html+='<option value="'+item+'"';
+
+if(item==valorActual)
+html+=' selected';
+
+html+='>'+item+'</option>';
+
+});
+
+html+='</select>';
+
+return html;
+
+}
+
+let dia1=fila.find(".dia1").text().trim();
+
+fila.find(".dia1").html(
+crearSelect(dias,dia1)
+);
+
+let dia2=fila.find(".dia2").text().trim();
+
+fila.find(".dia2").html(
+crearSelect(dias,dia2)
+);
+
+let estado=fila.find(".estado_comision").text().trim();
+
+fila.find(".estado_comision").html(
+crearSelect(estados,estado)
+);
+
+let hora1=fila.find(".horario1").text().trim();
+
+fila.find(".horario1").html(
+'<input type="time" class="form-control form-control-sm hora1" value="'+hora1+'">'
+);
+
+let hora2=fila.find(".horario2").text().trim();
+
+fila.find(".horario2").html(
+'<input type="time" class="form-control form-control-sm hora2" value="'+hora2+'">'
+);
+
+$("#btnGuardar").removeClass("d-none");
+
+$("#btnCancelar").removeClass("d-none");
+
+$("#btnEditar").addClass("d-none");
+
+$("#btnEliminar").addClass("d-none");
+
+$(".fila-check").prop("disabled",true);
+
+$("#checkTodos").prop("disabled",true);
+
+});
+
+$("#btnCancelar").click(function(){
+
+location.reload();
+
+});
+
+$("#btnGuardar").click(function(){
+
+let fila=filaEditando;
+
+let datos={
+
+id:fila.attr("data-id"),
+
+numero_comision:fila.find(".numero").val(),
+
+fecha_inicio:fila.find(".inicio").val(),
+
+fecha_fin:fila.find(".fin").val(),
+
+dia1:fila.find(".dia1 select").val(),
+
+horario1:fila.find(".hora1").val(),
+
+dia2:fila.find(".dia2 select").val(),
+
+horario2:fila.find(".hora2").val(),
+
+estado_comision:fila.find(".estado_comision select").val()
+
+};
+
+/*
+===========================================================
+CAMBIAR ESTA URL POR LA VISTA DE DJANGO
+===========================================================
+*/
+
+$.ajax({
+
+url:"/administrador/comisiones/editar/",
+
+method:"POST",
+
+headers:{
+"X-CSRFToken":"{{ csrf_token }}"
+},
+
+data:datos,
+
+success:function(respuesta){
+
+fila.removeClass("editable");
+
+fila.find(".numero_comision").text(datos.numero_comision);
+
+fila.find(".fecha_inicio")
+.attr("data-original",datos.fecha_inicio)
+.text(formatearFecha(datos.fecha_inicio));
+
+fila.find(".fecha_fin")
+.attr("data-original",datos.fecha_fin)
+.text(formatearFecha(datos.fecha_fin));
+
+fila.find(".dia1").text(datos.dia1);
+
+fila.find(".horario1").text(datos.horario1);
+
+fila.find(".dia2").text(datos.dia2);
+
+fila.find(".horario2").text(datos.horario2);
+
+fila.find(".estado_comision").text(datos.estado_comision);
+
+$("#btnGuardar").addClass("d-none");
+
+$("#btnCancelar").addClass("d-none");
+
+$("#btnEditar").removeClass("d-none");
+
+$("#btnEliminar").removeClass("d-none");
+
+$(".fila-check").prop("checked",false);
+
+$(".fila-check").prop("disabled",false);
+
+$("#checkTodos")
+.prop("checked",false)
+.prop("disabled",false);
+
+filaEditando=null;
+
+actualizarBotones();
+
+Swal.fire({
+
+icon:"success",
+
+title:"Comisión actualizada",
+
+timer:1500,
+
+showConfirmButton:false
+
+});
+
+},
+
+error:function(){
+
+Swal.fire({
+
+icon:"error",
+
+title:"Error",
+
+text:"No fue posible actualizar la comisión."
+
+});
+
+}
+
+});
+
+});
+
+$("#btnEliminar").click(function(){
+
+let filas=$(".fila-check:checked").closest("tr");
+
+let ids=[];
+
+filas.each(function(){
+
+ids.push($(this).attr("data-id"));
+
+});
+
+Swal.fire({
+
+title:"¿Eliminar comisión(es)?",
+
+text:"Esta acción no puede deshacerse.",
+
+icon:"warning",
+
+showCancelButton:true,
+
+confirmButtonColor:"#dc3545",
+
+confirmButtonText:"Eliminar",
+
+cancelButtonText:"Cancelar"
+
+}).then((result)=>{
+
+if(result.isConfirmed){
+
+$.ajax({
+
+url:"/administrador/comisiones/eliminar/",
+
+method:"POST",
+
+headers:{
+"X-CSRFToken":"{{ csrf_token }}"
+},
+
+traditional:true,
+
+data:{
+ids:ids
+},
+
+success:function(){
+
+filas.each(function(){
+
+tabla.row($(this)).remove().draw(false);
+
+});
+
+$("#checkTodos").prop("checked",false);
+
+actualizarBotones();
+
+Swal.fire({
+
+icon:"success",
+
+title:"Comisión(es) eliminada(s)",
+
+timer:1500,
+
+showConfirmButton:false
+
+});
+
+},
+
+error:function(){
+
+Swal.fire({
+
+icon:"error",
+
+title:"Error",
+
+text:"No fue posible eliminar la comisión."
+
+});
+
+}
+
+});
+
+}
+
+});
+
+});
+
+function formatearFecha(fecha){
+
+let partes=fecha.split("-");
+
+return partes[2]+"/"+partes[1]+"/"+partes[0];
+
+}
+
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% endblock %}
