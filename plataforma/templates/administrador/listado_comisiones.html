@@ -397,13 +397,13 @@ crearSelect(estados,estado)
 let hora1=fila.find(".horario1").text().trim();
 
 fila.find(".horario1").html(
-'<input type="time" class="form-control form-control-sm hora1" value="'+hora1+'">'
+'<input type="text" class="form-control form-control-sm hora1" value="'+hora1+'">'
 );
 
 let hora2=fila.find(".horario2").text().trim();
 
 fila.find(".horario2").html(
-'<input type="time" class="form-control form-control-sm hora2" value="'+hora2+'">'
+'<input type="text" class="form-control form-control-sm hora2" value="'+hora2+'">'
 );
 
 $("#btnGuardar").removeClass("d-none");
@@ -460,7 +460,7 @@ CAMBIAR ESTA URL POR LA VISTA DE DJANGO
 
 $.ajax({
 
-url:"/administrador/comisiones/editar/",
+url:"{% url 'editar_comision' %}",
 
 method:"POST",
 
