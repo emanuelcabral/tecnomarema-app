@@ -353,6 +353,9 @@ path("test/", test),
     path("comisiones/editar/", views.editar_comision, name="editar_comision"),
     path("comisiones/eliminar/", views.eliminar_comision, name="eliminar_comision"),
 
+    path("alumnos/editar/", views.editar_alumno, name="editar_alumno"),
+    path("alumnos/eliminar/", views.eliminar_alumno, name="eliminar_alumno"),
+
 ]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -3384,6 +3384,101 @@ def listado_alumnos_view(request):
                 .filter(perfilusuario__rol='alumno')
     return render(request, 'administrador/listado_alumnos.html', {'alumnos': alumnos})
 
+
+
+#############################################################################
+##-------------------Edicion y eliminacion de Alumnos----------------------##
+#############################################################################
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.db import transaction
+from .models import DatosDeEstudiantes, PerfilUsuario
+
+# ==========================================================
+# EDITAR ALUMNO
+# ==========================================================
+@require_POST
+def editar_alumno(request):
+    try:
+        id_alumno = request.POST.get("id")
+        alumno = DatosDeEstudiantes.objects.get(id_estudiante=id_alumno)
+        perfil = PerfilUsuario.objects.get(id_estudiante=id_alumno)
+
+        # Validaciones de duplicados
+        dni = request.POST.get("dni")
+        correo = request.POST.get("correo")
+        username = request.POST.get("username")
+
+        if DatosDeEstudiantes.objects.exclude(id_estudiante=id_alumno).filter(dni=dni).exists():
+            return JsonResponse({"success": False, "mensaje": "Ya existe otro alumno con ese DNI."})
+
+        if DatosDeEstudiantes.objects.exclude(id_estudiante=id_alumno).filter(correo=correo).exists():
+            return JsonResponse({"success": False, "mensaje": "Ya existe otro alumno con ese correo."})
+
+        if PerfilUsuario.objects.exclude(id_estudiante=id_alumno).filter(nombre_usuario=username).exists():
+            return JsonResponse({"success": False, "mensaje": "Ya existe otro alumno con ese nombre de usuario."})
+
+        # Actualizar DatosDeEstudiantes
+        alumno.nombre = request.POST.get("nombre")
+        alumno.apellido = request.POST.get("apellido")
+        alumno.dni = dni
+        alumno.correo = correo
+        alumno.pais = request.POST.get("pais")
+        alumno.provincia = request.POST.get("provincia")
+        alumno.telefono = request.POST.get("telefono")
+        alumno.fecha_nacimiento = request.POST.get("fecha_nacimiento")
+        alumno.genero = request.POST.get("genero")
+        alumno.save()
+
+        # Actualizar PerfilUsuario
+        perfil.nombre_usuario = username
+        perfil.correo = correo
+        perfil.save()
+
+        return JsonResponse({"success": True, "mensaje": "Alumno actualizado correctamente."})
+
+    except DatosDeEstudiantes.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "El alumno no existe."})
+    except PerfilUsuario.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "El perfil de usuario no existe."})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+# ==========================================================
+# ELIMINAR ALUMNOS
+# ==========================================================
+@require_POST
+def eliminar_alumno(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ningún alumno para eliminar."})
+
+        eliminados = 0
+        with transaction.atomic():
+            for id_alumno in ids:
+                try:
+                    alumno = DatosDeEstudiantes.objects.get(id_estudiante=id_alumno)
+                    perfil = PerfilUsuario.objects.get(id_estudiante=id_alumno)
+                    perfil.delete()
+                    alumno.delete()
+                    eliminados += 1
+                except DatosDeEstudiantes.DoesNotExist:
+                    continue
+                except PerfilUsuario.DoesNotExist:
+                    alumno.delete()
+                    eliminados += 1
+
+        return JsonResponse({"success": True, "mensaje": "Alumnos eliminados correctamente.", "cantidad": eliminados})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+#------------------------------------------------------------------------------
+
 # @session_required
 # def listado_cursos_view(request):
 #     cursos = Curso.objects.all().order_by('id_curso') 

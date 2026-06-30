@@ -1,90 +1,239 @@
 {% extends "administrador/base.html" %}
 {% block content %}
 
-<!-- CSS de los botones de DataTables (Bootstrap 5) -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- DataTables Buttons -->
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css">
-
-<div class="container mt-5">
-  <h2 class="mb-4 text-success">Listado de Alumnos</h2>
-  
-  <table id="tabla-alumnos" class="table table-dark table-striped table-bordered">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre completo</th>
-        <th>DNI</th>
-        <th>Email</th>
-        <th>Usuario</th>
-        <th>País</th>
-        <th>Provincia</th>
-        <th>Teléfono</th>
-        <th>Fecha Nacimiento</th>
-        <th>Genero</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for alumno in alumnos %}
-      <tr>
-        <td>{{ alumno.id_estudiante }}</td>
-        <td>{{ alumno.nombre }} {{ alumno.apellido }}</td>
-        <td>{{ alumno.dni }}</td>
-        <td>{{ alumno.correo }}</td>
-        <td>{{ alumno.perfilusuario.nombre_usuario }}</td>
-        <td>{{ alumno.pais }}</td>
-        <td>{{ alumno.provincia }}</td>
-        <td>{{ alumno.telefono }}</td>
-        <td>{{ alumno.fecha_nacimiento|date:"j/n/Y" }}</td>
-        <td>{{ alumno.genero }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-
-<!-- Scripts necesarios para el botón de impresión -->
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/dataTables.buttons.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.bootstrap5.min.js"></script>
 <script src="https://cdn.datatables.net/buttons/2.4.2/js/buttons.print.min.js"></script>
 
+
+<style>
+.card-panel{background:#1f1f1f;border-radius:12px;padding:25px;box-shadow:0 0 15px rgba(0,0,0,.25);}
+.table-dark{--bs-table-bg:#232323;}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:15px;}
+.toolbar .left,.toolbar .right{display:flex;gap:10px;align-items:center;}
+.toolbar button{min-width:140px;}
+.editable{background:#2d2d2d !important;}
+.editable input{width:100%;}
+input,select{background:#2b2b2b;color:white;border:1px solid #555;border-radius:5px;padding:5px;}
+select option{background:#2b2b2b;}
+.form-check-input{cursor:pointer;}
+</style>
+<div class="container-fluid mt-4">
+  <div class="card-panel">
+    <h2 class="text-success mb-4">Listado de Alumnos</h2>
+
+    <div class="toolbar">
+      <div class="left">
+        <button id="btnEditar" class="btn btn-warning" disabled>
+          <i class="bi bi-pencil-square"></i> Editar
+        </button>
+        <button id="btnEliminar" class="btn btn-danger" disabled>
+          <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+      <div class="right">
+        <button id="btnGuardar" class="btn btn-success d-none">
+          <i class="bi bi-floppy"></i> Guardar cambios
+        </button>
+        <button id="btnCancelar" class="btn btn-secondary d-none">Cancelar</button>
+      </div>
+    </div>
+    <table id="tabla-alumnos" class="table table-dark table-striped table-hover align-middle">
+      <thead>
+        <tr>
+          <th width="40"><input type="checkbox" id="checkTodos"></th>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>DNI</th>
+          <th>Correo</th>
+          <th>Usuario</th>
+          <th>País</th>
+          <th>Provincia</th>
+          <th>Teléfono</th>
+          <th>Fecha Nacimiento</th>
+          <th>Género</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for alumno in alumnos %}
+        <tr data-id="{{ alumno.id_estudiante }}">
+          <td><input type="checkbox" class="fila-check"></td>
+          <td class="id">{{ alumno.id_estudiante }}</td>
+          <td class="nombre">{{ alumno.nombre }}</td>
+          <td class="apellido">{{ alumno.apellido }}</td>
+          <td class="dni">{{ alumno.dni }}</td>
+          <td class="correo">{{ alumno.correo }}</td>
+          <td class="usuario">{{ alumno.perfilusuario.nombre_usuario }}</td>
+          <td class="pais">{{ alumno.pais }}</td>
+          <td class="provincia">{{ alumno.provincia }}</td>
+          <td class="telefono">{{ alumno.telefono }}</td>
+          <td class="fecha_nacimiento" data-original="{{ alumno.fecha_nacimiento|date:'Y-m-d' }}">
+            {{ alumno.fecha_nacimiento|date:"d/m/Y" }}
+          </td>
+          <td class="genero">{{ alumno.genero }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
 <script>
-  $(document).ready(function() {
-    $('#tabla-alumnos').DataTable({
-      dom: 'lBfrtip',  // ← Aquí está la "l" que trae de vuelta el selector de cantidad
-      pageLength: 50,  // Muestra 50 por defecto (puedes cambiarlo a 25 o 100 si quieres)
-      lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
-      buttons: [
-        {
-          extend: 'print',
-          text: 'Imprimir Listado Completo',
-          title: 'Listado Completo de Alumnos',
-          className: 'btn btn-success btn-sm',
-          orientation: 'landscape',
-          pageSize: 'A4',
-          messageTop: function () {
-            return 'Generado el ' + new Date().toLocaleDateString('es-ES') + ' a las ' + new Date().toLocaleTimeString('es-ES');
-          },
-          customize: function (win) {
-            $(win.document.body).css('font-size', '11pt');
-            $(win.document.body).find('table')
-              .addClass('compact')
-              .css({'font-size': 'inherit', 'width': '100%'});
-            $(win.document.body).find('button')
-              .css('margin','10px')
-              .text('Imprimir')
-              .addClass('btn btn-primary');
-          }
-        }
-      ],
-      "order": [[ 0, "asc" ]],
-      "language": {
-        "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+let tabla;
+let filaEditando=null;
+
+$(document).ready(function(){
+tabla=$("#tabla-alumnos").DataTable({
+  dom: 'lBfrtip',
+  pageLength: 50,
+  lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Todos"]],
+  buttons: [
+    {
+      extend: 'print',
+      text: 'Imprimir Listado Completo',
+      title: 'Listado Completo de Alumnos',
+      className: 'btn btn-success btn-sm',
+      orientation: 'landscape',
+      pageSize: 'A4',
+      messageTop: function () {
+        return 'Generado el ' + new Date().toLocaleDateString('es-ES') +
+               ' a las ' + new Date().toLocaleTimeString('es-ES');
       },
-      "columnDefs": [
-        { "orderable": true, "targets": [0, 1, 2, 3, 4, 5, 6, 8, 9] },
-        { "orderable": false, "targets": [7] }
-      ]
-    });
+      customize: function (win) {
+        $(win.document.body).css('font-size', '11pt');
+        $(win.document.body).find('table')
+          .addClass('compact')
+          .css({'font-size': 'inherit', 'width': '100%'});
+      }
+    }
+  ],
+  order:[[1,"asc"]],
+  language:{url:"//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"},
+  columnDefs:[{orderable:false,targets:0}]
+});
+
+  actualizarBotones();
+});
+
+$(document).on("change",".fila-check",actualizarBotones);
+
+$("#checkTodos").change(function(){
+  $(".fila-check").prop("checked",$(this).prop("checked"));
+  actualizarBotones();
+});
+
+function actualizarBotones(){
+  let cantidad=$(".fila-check:checked").length;
+  $("#btnEliminar").prop("disabled",cantidad==0);
+  $("#btnEditar").prop("disabled",cantidad!=1);
+}
+$("#btnEditar").click(function(){
+  let fila=$(".fila-check:checked").closest("tr");
+  filaEditando=fila;
+  fila.addClass("editable");
+
+  fila.find(".nombre").html('<input type="text" class="form-control form-control-sm nombre" value="'+fila.find(".nombre").text().trim()+'">');
+  fila.find(".apellido").html('<input type="text" class="form-control form-control-sm apellido" value="'+fila.find(".apellido").text().trim()+'">');
+  fila.find(".dni").html('<input type="text" class="form-control form-control-sm dni" value="'+fila.find(".dni").text().trim()+'">');
+  fila.find(".correo").html('<input type="email" class="form-control form-control-sm correo" value="'+fila.find(".correo").text().trim()+'">');
+  fila.find(".usuario").html('<input type="text" class="form-control form-control-sm usuario" value="'+fila.find(".usuario").text().trim()+'">');
+  fila.find(".pais").html('<input type="text" class="form-control form-control-sm pais" value="'+fila.find(".pais").text().trim()+'">');
+  fila.find(".provincia").html('<input type="text" class="form-control form-control-sm provincia" value="'+fila.find(".provincia").text().trim()+'">');
+  fila.find(".telefono").html('<input type="text" class="form-control form-control-sm telefono" value="'+fila.find(".telefono").text().trim()+'">');
+  fila.find(".fecha_nacimiento").html('<input type="date" class="form-control form-control-sm fecha_nacimiento" value="'+fila.find(".fecha_nacimiento").attr("data-original")+'">');
+  fila.find(".genero").html('<input type="text" class="form-control form-control-sm genero" value="'+fila.find(".genero").text().trim()+'">');
+
+  $("#btnGuardar,#btnCancelar").removeClass("d-none");
+  $("#btnEditar,#btnEliminar").addClass("d-none");
+  $(".fila-check,#checkTodos").prop("disabled",true);
+});
+
+$("#btnCancelar").click(function(){location.reload();});
+
+$("#btnGuardar").click(function(){
+  let fila=filaEditando;
+  let datos={
+    id:fila.attr("data-id"),
+    nombre:fila.find(".nombre input").val(),
+    apellido:fila.find(".apellido input").val(),
+    dni:fila.find(".dni input").val(),
+    correo:fila.find(".correo input").val(),
+    username:fila.find(".usuario input").val(),
+    pais:fila.find(".pais input").val(),
+    provincia:fila.find(".provincia input").val(),
+    telefono:fila.find(".telefono input").val(),
+    fecha_nacimiento:fila.find(".fecha_nacimiento input").val(),
+    genero:fila.find(".genero input").val()
+  };
+
+  $.ajax({
+    url:"{% url 'editar_alumno' %}",
+    method:"POST",
+    headers:{"X-CSRFToken":"{{ csrf_token }}"},
+    data:datos,
+    success:function(respuesta){
+      if(respuesta.success){
+        Swal.fire({icon:"success",title:"Alumno actualizado",timer:1500,showConfirmButton:false});
+        location.reload();
+      }else{
+        Swal.fire({icon:"error",title:"Error",text:respuesta.mensaje});
+      }
+    },
+    error:function(){
+      Swal.fire({icon:"error",title:"Error",text:"No fue posible actualizar el alumno."});
+    }
   });
+});
+
+$("#btnEliminar").click(function(){
+  let filas=$(".fila-check:checked").closest("tr");
+  let ids=[];
+  filas.each(function(){ ids.push($(this).attr("data-id")); });
+
+  Swal.fire({
+    title:"¿Eliminar alumno(s)?",
+    text:"Esta acción no puede deshacerse.",
+    icon:"warning",
+    showCancelButton:true,
+    confirmButtonColor:"#dc3545",
+    confirmButtonText:"Eliminar",
+    cancelButtonText:"Cancelar"
+  }).then((result)=>{
+    if(result.isConfirmed){
+      $.ajax({
+        url:"{% url 'eliminar_alumno' %}",
+        method:"POST",
+        headers:{"X-CSRFToken":"{{ csrf_token }}"},
+        traditional:true,
+        data:{ "ids[]": ids },
+        success:function(resp){
+          if(resp.success){
+            filas.each(function(){ tabla.row($(this)).remove().draw(false); });
+            $("#checkTodos").prop("checked",false);
+            actualizarBotones();
+            Swal.fire({icon:"success",title:"Alumno(s) eliminado(s)",timer:1500,showConfirmButton:false});
+          } else {
+            Swal.fire({icon:"error",title:"Error",text:resp.mensaje});
+          }
+        },
+        error:function(){
+          Swal.fire({icon:"error",title:"Error",text:"No fue posible eliminar el alumno."});
+        }
+      });
+    }
+  });
+});
+
+function formatearFecha(fecha){
+  let partes=fecha.split("-");
+  return partes[2]+"/"+partes[1]+"/"+partes[0];
+}
 </script>
 
 {% endblock %}
