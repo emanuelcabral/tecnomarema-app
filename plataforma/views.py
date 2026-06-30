@@ -3526,6 +3526,116 @@ def vista_chat_view(request):
     return render(request, 'administrador/chat_placeholder.html')
 
 
+#############################################################################################
+###-----------------eliminacion y edicion de Listado de comisiones------------------------###
+#############################################################################################
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Comision
+
+
+# ==========================================================
+# EDITAR COMISIÓN
+# ==========================================================
+
+@session_required
+@require_POST
+def editar_comision(request):
+    try:
+
+        id_comision = request.POST.get("id")
+
+        comision = Comision.objects.get(
+            id_comision=id_comision
+        )
+
+        numero_comision = int(request.POST.get("numero_comision"))
+
+        # Evitar números de comisión repetidos
+        if Comision.objects.exclude(
+            id_comision=id_comision
+        ).filter(
+            numero_comision=numero_comision
+        ).exists():
+
+            return JsonResponse({
+                "success": False,
+                "mensaje": "Ya existe otra comisión con ese número."
+            }, status=400)
+
+        comision.numero_comision = numero_comision
+        comision.fecha_inicio = request.POST.get("fecha_inicio")
+        comision.fecha_fin = request.POST.get("fecha_fin")
+        comision.dia1 = request.POST.get("dia1")
+        comision.horario1 = request.POST.get("horario1")
+        comision.dia2 = request.POST.get("dia2")
+        comision.horario2 = request.POST.get("horario2")
+        comision.estado_comision = request.POST.get("estado_comision")
+
+        comision.save()
+
+        return JsonResponse({
+            "success": True,
+            "mensaje": "Comisión actualizada correctamente."
+        })
+
+    except Comision.DoesNotExist:
+
+        return JsonResponse({
+            "success": False,
+            "mensaje": "La comisión no existe."
+        }, status=404)
+
+    except ValueError:
+
+        return JsonResponse({
+            "success": False,
+            "mensaje": "El número de comisión es inválido."
+        }, status=400)
+
+    except Exception as e:
+
+        return JsonResponse({
+            "success": False,
+            "mensaje": str(e)
+        }, status=500)
+
+
+# ==========================================================
+# ELIMINAR COMISIONES
+# ==========================================================
+
+@session_required
+@require_POST
+def eliminar_comision(request):
+    try:
+
+        ids = request.POST.getlist("ids[]")
+
+        if not ids:
+            return JsonResponse({
+                "success": False,
+                "mensaje": "No se recibió ninguna comisión para eliminar."
+            }, status=400)
+
+        eliminadas = Comision.objects.filter(
+            id_comision__in=ids
+        ).delete()
+
+        return JsonResponse({
+            "success": True,
+            "mensaje": "Comisiones eliminadas correctamente.",
+            "cantidad": eliminadas[0]
+        })
+
+    except Exception as e:
+
+        return JsonResponse({
+            "success": False,
+            "mensaje": str(e)
+        }, status=500)
+
 
 ###########################################################################
 ###------------------------chat-general---------------------------------###

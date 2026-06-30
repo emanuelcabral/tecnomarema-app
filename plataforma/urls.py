@@ -349,6 +349,10 @@ path("test/", test),
     path('api/comisiones_estadisticas/', views.api_comisiones_estadisticas, name='api_comisiones_estadisticas'),
     path('api/clases_estadisticas/', views.api_clases_estadisticas, name='api_clases_estadisticas'),
 
+
+    path("comisiones/editar/", views.editar_comision, name="editar_comision"),
+    path("comisiones/eliminar/", views.eliminar_comision, name="eliminar_comision"),
+
 ]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
