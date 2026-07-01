@@ -356,6 +356,18 @@ path("test/", test),
     path("alumnos/editar/", views.editar_alumno, name="editar_alumno"),
     path("alumnos/eliminar/", views.eliminar_alumno, name="eliminar_alumno"),
 
+    path("administrador/profesores/editar/", views.editar_profesor, name="editar_profesor"),
+    path("administrador/profesores/eliminar/", views.eliminar_profesor, name="eliminar_profesor"),
+
+    # dentro de urlpatterns
+    path("administrador/tutores/editar/", views.editar_tutor, name="editar_tutor"),
+    path("administrador/tutores/eliminar/", views.eliminar_tutor, name="eliminar_tutor"),
+
+    path("administrador/admins/editar/", views.editar_admin, name="editar_admin"),
+    path("administrador/admins/eliminar/", views.eliminar_admin, name="eliminar_admin"),
+
+
+
 ]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

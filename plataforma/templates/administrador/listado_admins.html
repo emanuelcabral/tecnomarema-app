@@ -2,25 +2,170 @@
 {% block content %}
 <div class="container mt-5">
   <h2 class="mb-4 text-success">Listado de Administradores</h2>
-  <table class="table table-dark table-striped">
+
+  <div class="toolbar mb-3">
+    <button id="btnEditar" class="btn btn-warning" disabled>
+      <i class="bi bi-pencil-square"></i> Editar
+    </button>
+    <button id="btnEliminar" class="btn btn-danger" disabled>
+      <i class="bi bi-trash"></i> Eliminar
+    </button>
+    <button id="btnGuardar" class="btn btn-success d-none">
+      <i class="bi bi-floppy"></i> Guardar cambios
+    </button>
+    <button id="btnCancelar" class="btn btn-secondary d-none">Cancelar</button>
+  </div>
+
+  <table id="tabla-admins" class="table table-dark table-striped">
     <thead>
       <tr>
+        <th><input type="checkbox" id="checkTodos"></th>
         <th>ID</th>
         <th>Nombre de usuario</th>
         <th>Correo</th>
         <th>Rol</th>
+        <th>Nombre</th>
+        <th>Apellido</th>
+        <th>Teléfono</th>
+        <th>Fecha Nacimiento</th>
+        <th>Género</th>
       </tr>
     </thead>
     <tbody>
       {% for user in usuarios %}
-      <tr>
-        <td>{{ user.id_usuario }}</td>
-        <td>{{ user.nombre_usuario }}</td>
-        <td>{{ user.correo }}</td>
-        <td>{{ user.rol }}</td>
+      <tr data-id="{{ user.id_usuario }}">
+        <td><input type="checkbox" class="fila-check"></td>
+        <td class="id">{{ user.id_usuario }}</td>
+        <td class="nombre_usuario">{{ user.nombre_usuario }}</td>
+        <td class="correo">{{ user.correo }}</td>
+        <td class="rol">{{ user.rol }}</td>
+        <td class="nombre">{{ user.id_estudiante.nombre }}</td>
+        <td class="apellido">{{ user.id_estudiante.apellido }}</td>
+        <td class="telefono">{{ user.id_estudiante.telefono }}</td>
+        <td class="fecha_nacimiento">{{ user.id_estudiante.fecha_nacimiento }}</td>
+        <td class="genero">{{ user.id_estudiante.genero }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
+
+<!-- Importar SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let filaEditando=null;
+
+function actualizarBotones(){
+  let cantidad=$(".fila-check:checked").length;
+  $("#btnEliminar").prop("disabled",cantidad==0);
+  $("#btnEditar").prop("disabled",cantidad!=1);
+}
+
+$(document).on("change",".fila-check",actualizarBotones);
+$("#checkTodos").change(function(){
+  $(".fila-check").prop("checked",$(this).prop("checked"));
+  actualizarBotones();
+});
+
+$("#btnEditar").click(function(){
+  let fila=$(".fila-check:checked").closest("tr");
+  filaEditando=fila;
+  fila.addClass("editable");
+
+  fila.find(".nombre_usuario").html('<input type="text" class="form-control form-control-sm nombre_usuario" value="'+fila.find(".nombre_usuario").text().trim()+'">');
+  fila.find(".correo").html('<input type="email" class="form-control form-control-sm correo" value="'+fila.find(".correo").text().trim()+'">');
+  fila.find(".rol").html('<input type="text" class="form-control form-control-sm rol" value="'+fila.find(".rol").text().trim()+'">');
+  fila.find(".nombre").html('<input type="text" class="form-control form-control-sm nombre" value="'+fila.find(".nombre").text().trim()+'">');
+  fila.find(".apellido").html('<input type="text" class="form-control form-control-sm apellido" value="'+fila.find(".apellido").text().trim()+'">');
+  fila.find(".telefono").html('<input type="text" class="form-control form-control-sm telefono" value="'+fila.find(".telefono").text().trim()+'">');
+  fila.find(".fecha_nacimiento").html('<input type="date" class="form-control form-control-sm fecha_nacimiento" value="'+fila.find(".fecha_nacimiento").text().trim()+'">');
+  fila.find(".genero").html('<input type="text" class="form-control form-control-sm genero" value="'+fila.find(".genero").text().trim()+'">');
+
+  $("#btnGuardar,#btnCancelar").removeClass("d-none");
+  $("#btnEditar,#btnEliminar").addClass("d-none");
+  $(".fila-check,#checkTodos").prop("disabled",true);
+});
+
+$("#btnCancelar").click(function(){location.reload();});
+
+$("#btnGuardar").click(function(){
+  let fila=filaEditando;
+  let datos={
+    id_usuario:fila.attr("data-id"),
+    nombre_usuario:fila.find(".nombre_usuario input").val(),
+    correo:fila.find(".correo input").val(),
+    rol:fila.find(".rol input").val(),
+    nombre:fila.find(".nombre input").val(),
+    apellido:fila.find(".apellido input").val(),
+    telefono:fila.find(".telefono input").val(),
+    fecha_nacimiento:fila.find(".fecha_nacimiento input").val(),
+    genero:fila.find(".genero input").val()
+  };
+
+  $.ajax({
+    url:"{% url 'editar_admin' %}",
+    method:"POST",
+    headers:{"X-CSRFToken":"{{ csrf_token }}"},
+    data:datos,
+    success:function(respuesta){
+      if(respuesta.success){
+        Swal.fire({
+          icon:"success",
+          title:"Administrador actualizado",
+          timer:1500,
+          showConfirmButton:false
+        }).then(()=>{ location.reload(); });
+      }else{
+        Swal.fire({icon:"error",title:"Error",text:respuesta.mensaje});
+      }
+    },
+    error:function(){
+      Swal.fire({icon:"error",title:"Error",text:"No fue posible actualizar el administrador."});
+    }
+  });
+});
+
+$("#btnEliminar").click(function(){
+  let filas=$(".fila-check:checked").closest("tr");
+  let ids=[];
+  filas.each(function(){ ids.push($(this).attr("data-id")); });
+
+  Swal.fire({
+    title:"¿Eliminar administrador(es)?",
+    text:"Esta acción no puede deshacerse.",
+    icon:"warning",
+    showCancelButton:true,
+    confirmButtonColor:"#dc3545",
+    confirmButtonText:"Eliminar",
+    cancelButtonText:"Cancelar"
+  }).then((result)=>{
+    if(result.isConfirmed){
+      $.ajax({
+        url:"{% url 'eliminar_admin' %}",
+        method:"POST",
+        headers:{"X-CSRFToken":"{{ csrf_token }}"},
+        traditional:true,
+        data:{ "ids[]": ids },
+        success:function(resp){
+          if(resp.success){
+            filas.each(function(){ $(this).remove(); });
+            Swal.fire({
+              icon:"success",
+              title:"Administrador(es) eliminado(s)",
+              timer:1500,
+              showConfirmButton:false
+            }).then(()=>{ location.reload(); });
+          } else {
+            Swal.fire({icon:"error",title:"Error",text:resp.mensaje});
+          }
+        },
+        error:function(){
+          Swal.fire({icon:"error",title:"Error",text:"No fue posible eliminar el administrador."});
+        }
+      });
+    }
+  });
+});
+</script>
 {% endblock %}

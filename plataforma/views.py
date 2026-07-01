@@ -3724,6 +3724,158 @@ def eliminar_comision(request):
         }, status=500)
 
 ###########################################################################
+###--------------edicion y eliminacion de profes------------------------###
+###########################################################################
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import PerfilUsuario
+
+@require_POST
+def editar_profesor(request):
+    try:
+        id_prof = request.POST.get("id_usuario")
+        profesor = PerfilUsuario.objects.get(id_usuario=id_prof, rol="profesor")
+
+        profesor.nombre_usuario = request.POST.get("nombre_usuario")
+        profesor.correo = request.POST.get("correo")
+        profesor.rol = request.POST.get("rol")
+
+        # Datos extendidos del estudiante vinculado
+        if profesor.id_estudiante:
+            estudiante = profesor.id_estudiante
+            estudiante.nombre = request.POST.get("nombre")
+            estudiante.apellido = request.POST.get("apellido")
+            estudiante.telefono = request.POST.get("telefono")
+            estudiante.fecha_nacimiento = request.POST.get("fecha_nacimiento")
+            estudiante.genero = request.POST.get("genero")
+            estudiante.save()
+
+        profesor.save()
+        return JsonResponse({"success": True, "mensaje": "Profesor actualizado correctamente."})
+
+    except PerfilUsuario.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "El profesor no existe."})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+@require_POST
+def eliminar_profesor(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ningún profesor para eliminar."})
+
+        eliminados = PerfilUsuario.objects.filter(id_usuario__in=ids, rol="profesor").delete()[0]
+        return JsonResponse({"success": True, "mensaje": "Profesores eliminados correctamente.", "cantidad": eliminados})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+
+###########################################################################
+###--------------edicion y eliminacion de tutores-----------------------###
+###########################################################################
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import PerfilUsuario
+
+@require_POST
+def editar_tutor(request):
+    try:
+        id_tutor = request.POST.get("id_usuario")
+        tutor = PerfilUsuario.objects.get(id_usuario=id_tutor, rol="tutor")
+
+        # Datos básicos del perfil
+        tutor.nombre_usuario = request.POST.get("nombre_usuario")
+        tutor.correo = request.POST.get("correo")
+        tutor.rol = request.POST.get("rol")
+
+        # Datos extendidos del estudiante vinculado
+        if tutor.id_estudiante:
+            estudiante = tutor.id_estudiante
+            estudiante.nombre = request.POST.get("nombre")
+            estudiante.apellido = request.POST.get("apellido")
+            estudiante.telefono = request.POST.get("telefono")
+            estudiante.fecha_nacimiento = request.POST.get("fecha_nacimiento")
+            estudiante.genero = request.POST.get("genero")
+            estudiante.save()
+
+        tutor.save()
+        return JsonResponse({"success": True, "mensaje": "Tutor actualizado correctamente."})
+
+    except PerfilUsuario.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "El tutor no existe."})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+@require_POST
+def eliminar_tutor(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ningún tutor para eliminar."})
+
+        eliminados = PerfilUsuario.objects.filter(id_usuario__in=ids, rol="tutor").delete()[0]
+        return JsonResponse({"success": True, "mensaje": "Tutores eliminados correctamente.", "cantidad": eliminados})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+###########################################################################
+###--------------edicion y eliminacion de admins------------------------###
+###########################################################################
+
+@require_POST
+def editar_admin(request):
+    try:
+        id_admin = request.POST.get("id_usuario")
+        admin = PerfilUsuario.objects.get(id_usuario=id_admin, rol="admin")
+
+        admin.nombre_usuario = request.POST.get("nombre_usuario")
+        admin.correo = request.POST.get("correo")
+        admin.rol = request.POST.get("rol")
+
+        # Datos extendidos del estudiante vinculado
+        if admin.id_estudiante:
+            estudiante = admin.id_estudiante
+            estudiante.nombre = request.POST.get("nombre")
+            estudiante.apellido = request.POST.get("apellido")
+            estudiante.telefono = request.POST.get("telefono")
+            estudiante.fecha_nacimiento = request.POST.get("fecha_nacimiento")
+            estudiante.genero = request.POST.get("genero")
+            estudiante.save()
+
+        admin.save()
+        return JsonResponse({"success": True, "mensaje": "Administrador actualizado correctamente."})
+
+    except PerfilUsuario.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "El administrador no existe."})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+@require_POST
+def eliminar_admin(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ningún administrador para eliminar."})
+
+        eliminados = PerfilUsuario.objects.filter(id_usuario__in=ids, rol="admin").delete()[0]
+        return JsonResponse({"success": True, "mensaje": "Administradores eliminados correctamente.", "cantidad": eliminados})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
+
+###########################################################################
 ###------------------------chat-general---------------------------------###
 ###########################################################################
 from django.core.files.uploadedfile import UploadedFile
