@@ -42,13 +42,14 @@ class BrevoBackend(BaseEmailBackend):
             url = "https://api.brevo.com/v3/smtp/email"
             
             data = {
-                "sender": {"email": "tecnomarema.ar@gmail.com"},  # solo email verificado, sin name
+                "sender": {"email": settings.DEFAULT_FROM_EMAIL},
                 "to": [{"email": e} for e in message.to],
                 "subject": message.subject,
-                "textContent": message.body,
             }
             
-            # Si tiene versión HTML
+            if message.body:  # solo si existe
+                data["textContent"] = message.body
+            
             if hasattr(message, 'alternatives'):
                 for content, mime in message.alternatives:
                     if mime == "text/html":
@@ -61,13 +62,9 @@ class BrevoBackend(BaseEmailBackend):
                 "content-type": "application/json"
             }
             
-            try:
-                response = requests.post(url, json=data, headers=headers)
-                response.raise_for_status()
-                print("Email enviado con Brevo OK")
-                num_sent += 1
-            except Exception as e:
-                print("Error Brevo:", str(e))
-                if not self.fail_silently:
-                    raise
+            response = requests.post(url, json=data, headers=headers)
+            print("Payload enviado:", data)
+            print("Respuesta:", response.status_code, response.text)
+            response.raise_for_status()
+            num_sent += 1
         return num_sent
