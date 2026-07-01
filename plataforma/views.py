@@ -805,6 +805,33 @@ def estadisticas(request):
     return render(request, 'educativa/estadisticas.html')
 
 
+##################################################################################
+###------------------------Eliminacion de Valoraciones-------------------------###
+##################################################################################
+
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import ValoracionAlumno
+
+@require_POST
+def eliminar_valoracion(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ninguna valoración para eliminar."})
+
+        # Convertir a enteros y descartar vacíos
+        ids = [int(i) for i in ids if i.strip().isdigit()]
+
+        eliminados = ValoracionAlumno.objects.filter(valoracion_alumno_id__in=ids).delete()[0]
+
+        return JsonResponse({"success": True, "mensaje": "Valoraciones eliminadas correctamente.", "cantidad": eliminados})
+
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+
 #-----------------------------------------------------------------
 
 from django.db.models import Sum
@@ -6711,8 +6738,6 @@ def crear_clases_comision_view(request):
     #------------------------------------newsletters-----------------------------------------------#
     ################################################################################################
 
-# plataforma/views.py → REEMPLAZÁ LA FUNCIÓN ENTERA POR ESTA
-
 from django.contrib import messages
 from django.contrib import messages
 from django.shortcuts import redirect
@@ -6798,6 +6823,51 @@ def enviar_newsletter_en_background(request):
             )
         except:
             pass
+
+################################################################################################
+#-------------------------Edicion y eliminacion de newsletter----------------------------------#
+################################################################################################
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from .models import Newsletter
+
+def listado_newsletters(request):
+    newsletters = Newsletter.objects.all()
+    return render(request, "administrador/listado_newsletters.html", {"newsletters": newsletters})
+
+@require_POST
+def editar_newsletter(request):
+    try:
+        nl = Newsletter.objects.get(id=request.POST.get("id"))
+        nl.numero_edicion = request.POST.get("numero_edicion")
+        nl.titulo_novedad = request.POST.get("titulo_novedad")
+        nl.extracto_novedad = request.POST.get("extracto_novedad")
+        nl.link_novedad = request.POST.get("link_novedad")
+        nl.titulo_promocion = request.POST.get("titulo_promocion")
+        nl.descuento = request.POST.get("descuento")
+        nl.codigo_cupon = request.POST.get("codigo_cupon")
+        nl.fecha_vencimiento = request.POST.get("fecha_vencimiento")
+        nl.link_promocion = request.POST.get("link_promocion")
+        nl.save()
+        return JsonResponse({"success": True, "mensaje": "Newsletter actualizada correctamente."})
+    except Newsletter.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "La newsletter no existe."})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+@require_POST
+def eliminar_newsletter(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ninguna newsletter para eliminar."})
+        eliminados = Newsletter.objects.filter(id__in=ids).delete()[0]
+        return JsonResponse({"success": True, "mensaje": "Newsletters eliminadas correctamente.", "cantidad": eliminados})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
 
 ##################################################################################
 ###                    view de la promo de desarrollo web                      ###
@@ -6887,6 +6957,49 @@ def alta_y_edicion_cupones(request, codigo=None):
         'guardado_exitoso': guardado_exitoso
     }
     return render(request, 'administrador/alta_y_edicion_cupones.html', context)
+
+
+############################################################################################
+##---------------------------Edicion de listado de cupones--------------------------------##
+############################################################################################
+
+from django.shortcuts import render
+from .models import Cupon
+
+def listado_cupones(request):
+    # Trae todos los cupones ordenados por fecha de vencimiento (los más próximos primero)
+    cupones = Cupon.objects.all().order_by('fecha_vencimiento')
+    return render(request, "administrador/listado_cupones.html", {"cupones": cupones})
+
+@require_POST
+def editar_cupon(request):
+    try:
+        cupon = Cupon.objects.get(id=request.POST.get("id"))
+        cupon.codigo = request.POST.get("codigo")
+        cupon.descuento_porcentaje = int(request.POST.get("descuento_porcentaje"))
+        cupon.fecha_inicio = request.POST.get("fecha_inicio")
+        cupon.fecha_vencimiento = request.POST.get("fecha_vencimiento") or None
+        cupon.usos_maximos = int(request.POST.get("usos_maximos"))
+        cupon.usos_actuales = int(request.POST.get("usos_actuales"))
+        cupon.activo = request.POST.get("activo") == "True"
+        cupon.save()
+        return JsonResponse({"success": True, "mensaje": "Cupón actualizado correctamente."})
+    except Cupon.DoesNotExist:
+        return JsonResponse({"success": False, "mensaje": "El cupón no existe."})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
+@require_POST
+def eliminar_cupon(request):
+    try:
+        ids = request.POST.getlist("ids[]")
+        if not ids:
+            return JsonResponse({"success": False, "mensaje": "No se recibió ningún cupón para eliminar."})
+        eliminados = Cupon.objects.filter(id__in=ids).delete()[0]
+        return JsonResponse({"success": True, "mensaje": "Cupones eliminados correctamente.", "cantidad": eliminados})
+    except Exception as e:
+        return JsonResponse({"success": False, "mensaje": str(e)})
+
 
 
 ############################################################################################

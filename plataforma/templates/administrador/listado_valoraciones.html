@@ -3,9 +3,17 @@
 {% block content %}
 <div class="container mt-5">
     <h2 class="mb-4 text-success">Mensajes de Valoraciones</h2>
+
+    <div class="toolbar mb-3">
+        <button id="btnEliminar" class="btn btn-danger" disabled>
+            <i class="bi bi-trash"></i> Eliminar seleccionadas
+        </button>
+    </div>
+
     <table id="tabla-valoraciones" class="table table-dark table-striped table-bordered">
         <thead>
             <tr>
+                <th><input type="checkbox" id="checkTodos"></th>
                 <th>Comisión</th> 
                 <th>Usuario</th>
                 <th>Curso</th>
@@ -21,9 +29,9 @@
         </thead>
         <tbody>
             {% for valoracion in valoraciones %}
-            <tr>
-                <td>{{ valoracion.numero_comision_display }}</td> 
-                
+            <tr data-id="{{ valoracion.valoracion_alumno_id }}">
+                <td><input type="checkbox" class="fila-check"></td>
+                <td>{{ valoracion.comision_id }}</td> 
                 <td>{{ valoracion.nombre_usuario }}</td>
                 <td>{{ valoracion.curso_nombre }}</td>
                 <td>{{ valoracion.nombre_clase }}</td>
@@ -40,19 +48,60 @@
     </table>
 </div>
 
-<script>
-    $(document).ready(function() {
-        $('#tabla-valoraciones').DataTable({
-            "order": [[ 10, "desc" ]],  
-            "language": {
-                "url": "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-            },
-            "columnDefs": [
-                { "orderable": true, "targets": [0, 1, 2, 3, 5, 6, 7, 8, 10] }, 
-                { "orderable": false, "targets": [4, 9] }  
-            ]
-        });
-    });
-</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script>
+function actualizarBotones(){
+    let cantidad=$(".fila-check:checked").length;
+    $("#btnEliminar").prop("disabled",cantidad==0);
+}
+
+$(document).on("change",".fila-check",actualizarBotones);
+$("#checkTodos").change(function(){
+    $(".fila-check").prop("checked",$(this).prop("checked"));
+    actualizarBotones();
+});
+
+$("#btnEliminar").click(function(){
+    let filas=$(".fila-check:checked").closest("tr");
+    let ids=[];
+    filas.each(function(){ ids.push($(this).attr("data-id")); });
+
+    Swal.fire({
+        title:"¿Eliminar valoración(es)?",
+        text:"Esta acción no puede deshacerse.",
+        icon:"warning",
+        showCancelButton:true,
+        confirmButtonColor:"#dc3545",
+        confirmButtonText:"Eliminar",
+        cancelButtonText:"Cancelar"
+    }).then((result)=>{
+        if(result.isConfirmed){
+            $.ajax({
+                url:"{% url 'eliminar_valoracion' %}",
+                method:"POST",
+                headers:{"X-CSRFToken":"{{ csrf_token }}"},
+                traditional:true,
+                data:{ "ids[]": ids },
+                success:function(resp){
+                    if(resp.success){
+                        filas.each(function(){ $(this).remove(); });
+                        Swal.fire({
+                            icon:"success",
+                            title:"Valoración(es) eliminada(s)",
+                            timer:1500,
+                            showConfirmButton:false
+                        });
+                    } else {
+                        Swal.fire({icon:"error",title:"Error",text:resp.mensaje});
+                    }
+                },
+                error:function(){
+                    Swal.fire({icon:"error",title:"Error",text:"No fue posible eliminar la valoración."});
+                }
+            });
+        }
+    });
+});
+</script>
 {% endblock %}

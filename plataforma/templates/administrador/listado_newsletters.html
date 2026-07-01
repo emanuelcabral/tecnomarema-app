@@ -1,0 +1,170 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Listado de Newsletters</h2>
+
+  <div class="toolbar mb-3">
+    <button id="btnEditar" class="btn btn-warning" disabled>
+      <i class="bi bi-pencil-square"></i> Editar
+    </button>
+    <button id="btnEliminar" class="btn btn-danger" disabled>
+      <i class="bi bi-trash"></i> Eliminar
+    </button>
+    <button id="btnGuardar" class="btn btn-success d-none">
+      <i class="bi bi-floppy"></i> Guardar cambios
+    </button>
+    <button id="btnCancelar" class="btn btn-secondary d-none">Cancelar</button>
+  </div>
+
+  <table id="tabla-newsletters" class="table table-dark table-striped table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="checkTodos"></th>
+        <th>ID</th>
+        <th>Edición</th>
+        <th>Título Novedad</th>
+        <th>Extracto</th>
+        <th>Link Novedad</th>
+        <th>Título Promoción</th>
+        <th>Descuento</th>
+        <th>Código Cupón</th>
+        <th>Vencimiento</th>
+        <th>Link Promoción</th>
+        <th>Creado</th>
+        <th>Enviado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for nl in newsletters %}
+      <tr data-id="{{ nl.id }}">
+        <td><input type="checkbox" class="fila-check"></td>
+        <td class="id">{{ nl.id }}</td>
+        <td class="numero_edicion">{{ nl.numero_edicion }}</td>
+        <td class="titulo_novedad">{{ nl.titulo_novedad }}</td>
+        <td class="extracto_novedad">{{ nl.extracto_novedad }}</td>
+        <td class="link_novedad">{{ nl.link_novedad }}</td>
+        <td class="titulo_promocion">{{ nl.titulo_promocion }}</td>
+        <td class="descuento">{{ nl.descuento }}</td>
+        <td class="codigo_cupon">{{ nl.codigo_cupon }}</td>
+        <td class="fecha_vencimiento">{{ nl.fecha_vencimiento }}</td>
+        <td class="link_promocion">{{ nl.link_promocion }}</td>
+        <td>{{ nl.creado_el|date:"d/m/Y H:i" }}</td>
+        <td>{% if nl.enviado_el %}{{ nl.enviado_el|date:"d/m/Y H:i" }}{% else %}Borrador{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let filaEditando=null;
+
+function actualizarBotones(){
+  let cantidad=$(".fila-check:checked").length;
+  $("#btnEliminar").prop("disabled",cantidad==0);
+  $("#btnEditar").prop("disabled",cantidad!=1);
+}
+
+$(document).on("change",".fila-check",actualizarBotones);
+$("#checkTodos").change(function(){
+  $(".fila-check").prop("checked",$(this).prop("checked"));
+  actualizarBotones();
+});
+
+$("#btnEditar").click(function(){
+  let fila=$(".fila-check:checked").closest("tr");
+  filaEditando=fila;
+  fila.addClass("editable");
+
+  fila.find(".numero_edicion").html('<input type="text" class="form-control form-control-sm numero_edicion" value="'+fila.find(".numero_edicion").text().trim()+'">');
+  fila.find(".titulo_novedad").html('<input type="text" class="form-control form-control-sm titulo_novedad" value="'+fila.find(".titulo_novedad").text().trim()+'">');
+  fila.find(".extracto_novedad").html('<textarea class="form-control form-control-sm extracto_novedad">'+fila.find(".extracto_novedad").text().trim()+'</textarea>');
+  fila.find(".link_novedad").html('<input type="url" class="form-control form-control-sm link_novedad" value="'+fila.find(".link_novedad").text().trim()+'">');
+  fila.find(".titulo_promocion").html('<input type="text" class="form-control form-control-sm titulo_promocion" value="'+fila.find(".titulo_promocion").text().trim()+'">');
+  fila.find(".descuento").html('<input type="text" class="form-control form-control-sm descuento" value="'+fila.find(".descuento").text().trim()+'">');
+  fila.find(".codigo_cupon").html('<input type="text" class="form-control form-control-sm codigo_cupon" value="'+fila.find(".codigo_cupon").text().trim()+'">');
+  fila.find(".fecha_vencimiento").html('<input type="text" class="form-control form-control-sm fecha_vencimiento" value="'+fila.find(".fecha_vencimiento").text().trim()+'">');
+  fila.find(".link_promocion").html('<input type="url" class="form-control form-control-sm link_promocion" value="'+fila.find(".link_promocion").text().trim()+'">');
+
+  $("#btnGuardar,#btnCancelar").removeClass("d-none");
+  $("#btnEditar,#btnEliminar").addClass("d-none");
+  $(".fila-check,#checkTodos").prop("disabled",true);
+});
+
+$("#btnCancelar").click(function(){location.reload();});
+
+$("#btnGuardar").click(function(){
+  let fila=filaEditando;
+  let datos={
+    id:fila.attr("data-id"),
+    numero_edicion:fila.find(".numero_edicion input").val(),
+    titulo_novedad:fila.find(".titulo_novedad input").val(),
+    extracto_novedad:fila.find(".extracto_novedad textarea").val(),
+    link_novedad:fila.find(".link_novedad input").val(),
+    titulo_promocion:fila.find(".titulo_promocion input").val(),
+    descuento:fila.find(".descuento input").val(),
+    codigo_cupon:fila.find(".codigo_cupon input").val(),
+    fecha_vencimiento:fila.find(".fecha_vencimiento input").val(),
+    link_promocion:fila.find(".link_promocion input").val()
+  };
+
+  $.ajax({
+    url:"{% url 'editar_newsletter' %}",
+    method:"POST",
+    headers:{"X-CSRFToken":"{{ csrf_token }}"},
+    data:datos,
+    success:function(respuesta){
+      if(respuesta.success){
+        Swal.fire({icon:"success",title:"Newsletter actualizada",timer:1500,showConfirmButton:false})
+          .then(()=>{ location.reload(); });
+      }else{
+        Swal.fire({icon:"error",title:"Error",text:respuesta.mensaje});
+      }
+    },
+    error:function(){
+      Swal.fire({icon:"error",title:"Error",text:"No fue posible actualizar la newsletter."});
+    }
+  });
+});
+
+$("#btnEliminar").click(function(){
+  let filas=$(".fila-check:checked").closest("tr");
+  let ids=[];
+  filas.each(function(){ ids.push($(this).attr("data-id")); });
+
+  Swal.fire({
+    title:"¿Eliminar newsletter(s)?",
+    text:"Esta acción no puede deshacerse.",
+    icon:"warning",
+    showCancelButton:true,
+    confirmButtonColor:"#dc3545",
+    confirmButtonText:"Eliminar",
+    cancelButtonText:"Cancelar"
+  }).then((result)=>{
+    if(result.isConfirmed){
+      $.ajax({
+        url:"{% url 'eliminar_newsletter' %}",
+        method:"POST",
+        headers:{"X-CSRFToken":"{{ csrf_token }}"},
+        traditional:true,
+        data:{ "ids[]": ids },
+        success:function(resp){
+          if(resp.success){
+            filas.each(function(){ $(this).remove(); });
+            Swal.fire({icon:"success",title:"Newsletter(s) eliminada(s)",timer:1500,showConfirmButton:false})
+              .then(()=>{ location.reload(); });
+          } else {
+            Swal.fire({icon:"error",title:"Error",text:resp.mensaje});
+          }
+        },
+        error:function(){
+          Swal.fire({icon:"error",title:"Error",text:"No fue posible eliminar la newsletter."});
+        }
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Listado de Cupones</h2>
+
+  <div class="toolbar mb-3">
+    <button id="btnEditar" class="btn btn-warning" disabled>
+      <i class="bi bi-pencil-square"></i> Editar
+    </button>
+    <button id="btnEliminar" class="btn btn-danger" disabled>
+      <i class="bi bi-trash"></i> Eliminar
+    </button>
+    <button id="btnGuardar" class="btn btn-success d-none">
+      <i class="bi bi-floppy"></i> Guardar cambios
+    </button>
+    <button id="btnCancelar" class="btn btn-secondary d-none">Cancelar</button>
+  </div>
+
+  <table id="tabla-cupones" class="table table-dark table-striped table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="checkTodos"></th>
+        <th>ID</th>
+        <th>Código</th>
+        <th>Descuento (%)</th>
+        <th>Fecha Inicio</th>
+        <th>Fecha Vencimiento</th>
+        <th>Usos Máximos</th>
+        <th>Usos Actuales</th>
+        <th>Activo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cupon in cupones %}
+      <tr data-id="{{ cupon.id }}">
+        <td><input type="checkbox" class="fila-check"></td>
+        <td class="id">{{ cupon.id }}</td>
+        <td class="codigo">{{ cupon.codigo }}</td>
+        <td class="descuento">{{ cupon.descuento_porcentaje }}</td>
+        <td class="fecha_inicio">{{ cupon.fecha_inicio|date:"Y-m-d" }}</td>
+        <td class="fecha_vencimiento">{{ cupon.fecha_vencimiento|date:"Y-m-d" }}</td>
+        <td class="usos_maximos">{{ cupon.usos_maximos }}</td>
+        <td class="usos_actuales">{{ cupon.usos_actuales }}</td>
+        <td class="activo">{{ cupon.activo|yesno:"Sí,No" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let filaEditando=null;
+
+function actualizarBotones(){
+  let cantidad=$(".fila-check:checked").length;
+  $("#btnEliminar").prop("disabled",cantidad==0);
+  $("#btnEditar").prop("disabled",cantidad!=1);
+}
+
+$(document).on("change",".fila-check",actualizarBotones);
+$("#checkTodos").change(function(){
+  $(".fila-check").prop("checked",$(this).prop("checked"));
+  actualizarBotones();
+});
+
+$("#btnEditar").click(function(){
+  let fila=$(".fila-check:checked").closest("tr");
+  filaEditando=fila;
+  fila.addClass("editable");
+
+  fila.find(".codigo").html('<input type="text" class="form-control form-control-sm codigo" value="'+fila.find(".codigo").text().trim()+'">');
+  fila.find(".descuento").html('<input type="number" class="form-control form-control-sm descuento" value="'+fila.find(".descuento").text().trim()+'">');
+  fila.find(".fecha_inicio").html('<input type="date" class="form-control form-control-sm fecha_inicio" value="'+fila.find(".fecha_inicio").text().trim()+'">');
+  fila.find(".fecha_vencimiento").html('<input type="date" class="form-control form-control-sm fecha_vencimiento" value="'+fila.find(".fecha_vencimiento").text().trim()+'">');
+  fila.find(".usos_maximos").html('<input type="number" class="form-control form-control-sm usos_maximos" value="'+fila.find(".usos_maximos").text().trim()+'">');
+  fila.find(".usos_actuales").html('<input type="number" class="form-control form-control-sm usos_actuales" value="'+fila.find(".usos_actuales").text().trim()+'">');
+  fila.find(".activo").html('<select class="form-control form-control-sm activo"><option value="True">Sí</option><option value="False">No</option></select>');
+
+  $("#btnGuardar,#btnCancelar").removeClass("d-none");
+  $("#btnEditar,#btnEliminar").addClass("d-none");
+  $(".fila-check,#checkTodos").prop("disabled",true);
+});
+
+$("#btnCancelar").click(function(){location.reload();});
+
+$("#btnGuardar").click(function(){
+  let fila=filaEditando;
+  let datos={
+    id:fila.attr("data-id"),
+    codigo:fila.find(".codigo input").val(),
+    descuento_porcentaje:fila.find(".descuento input").val(),
+    fecha_inicio:fila.find(".fecha_inicio input").val(),
+    fecha_vencimiento:fila.find(".fecha_vencimiento input").val(),
+    usos_maximos:fila.find(".usos_maximos input").val(),
+    usos_actuales:fila.find(".usos_actuales input").val(),
+    activo:fila.find(".activo select").val()
+  };
+
+  $.ajax({
+    url:"{% url 'editar_cupon' %}",
+    method:"POST",
+    headers:{"X-CSRFToken":"{{ csrf_token }}"},
+    data:datos,
+    success:function(respuesta){
+      if(respuesta.success){
+        Swal.fire({
+          icon:"success",
+          title:"Cupón actualizado",
+          timer:1500,
+          showConfirmButton:false
+        }).then(()=>{ location.reload(); });
+      }else{
+        Swal.fire({icon:"error",title:"Error",text:respuesta.mensaje});
+      }
+    },
+    error:function(){
+      Swal.fire({icon:"error",title:"Error",text:"No fue posible actualizar el cupón."});
+    }
+  });
+});
+
+$("#btnEliminar").click(function(){
+  let filas=$(".fila-check:checked").closest("tr");
+  let ids=[];
+  filas.each(function(){ ids.push($(this).attr("data-id")); });
+
+  Swal.fire({
+    title:"¿Eliminar cupón(es)?",
+    text:"Esta acción no puede deshacerse.",
+    icon:"warning",
+    showCancelButton:true,
+    confirmButtonColor:"#dc3545",
+    confirmButtonText:"Eliminar",
+    cancelButtonText:"Cancelar"
+  }).then((result)=>{
+    if(result.isConfirmed){
+      $.ajax({
+        url:"{% url 'eliminar_cupon' %}",
+        method:"POST",
+        headers:{"X-CSRFToken":"{{ csrf_token }}"},
+        traditional:true,
+        data:{ "ids[]": ids },
+        success:function(resp){
+          if(resp.success){
+            filas.each(function(){ $(this).remove(); });
+            Swal.fire({
+              icon:"success",
+              title:"Cupón(es) eliminado(s)",
+              timer:1500,
+              showConfirmButton:false
+            }).then(()=>{ location.reload(); });
+          } else {
+            Swal.fire({icon:"error",title:"Error",text:resp.mensaje});
+          }
+        },
+        error:function(){
+          Swal.fire({icon:"error",title:"Error",text:"No fue posible eliminar el cupón."});
+        }
+      });
+    }
+  });
+});
+</script>
+{% endblock %}

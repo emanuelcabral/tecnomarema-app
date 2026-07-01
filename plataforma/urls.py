@@ -359,12 +359,21 @@ path("test/", test),
     path("administrador/profesores/editar/", views.editar_profesor, name="editar_profesor"),
     path("administrador/profesores/eliminar/", views.eliminar_profesor, name="eliminar_profesor"),
 
-    # dentro de urlpatterns
     path("administrador/tutores/editar/", views.editar_tutor, name="editar_tutor"),
     path("administrador/tutores/eliminar/", views.eliminar_tutor, name="eliminar_tutor"),
 
     path("administrador/admins/editar/", views.editar_admin, name="editar_admin"),
     path("administrador/admins/eliminar/", views.eliminar_admin, name="eliminar_admin"),
+
+    path("administrador/valoraciones/eliminar/", views.eliminar_valoracion, name="eliminar_valoracion"),
+
+    path("administrador/cupones/", views.listado_cupones, name="listado_cupones"),
+    path("administrador/cupones/editar/", views.editar_cupon, name="editar_cupon"),
+    path("administrador/cupones/eliminar/", views.eliminar_cupon, name="eliminar_cupon"),
+
+    path("administrador/newsletters/", views.listado_newsletters, name="listado_newsletters"),
+    path("administrador/newsletters/editar/", views.editar_newsletter, name="editar_newsletter"),
+    path("administrador/newsletters/eliminar/", views.eliminar_newsletter, name="eliminar_newsletter"),
 
 
 
