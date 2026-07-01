@@ -6840,7 +6840,7 @@ def enviar_newsletter_en_background(request):
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email.strip().lower()],
                 html_message=html_message,
-                fail_silently=True,
+                fail_silently=False,
             )
         except:
             pass
