@@ -6742,9 +6742,11 @@ from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.utils import timezone
 import threading
-from .models import Newsletter
+from .models import Newsletter, Suscriptor, PerfilUsuario
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 
-# Vista principal de armado, edición y envío
 @session_required
 def envio_y_edicion_de_newsletter(request):
     if request.method == "POST":
@@ -6778,22 +6780,15 @@ def envio_y_edicion_de_newsletter(request):
 
         return redirect('envio-newsletter')
 
-    # Renderiza el template exclusivo de armado/envío
     return render(request, 'administrador/envio_y_edicion_de_newsletter.html')
 
 
-# FUNCIÓN QUE SE EJECUTA EN SEGUNDO PLANO
 def enviar_newsletter_en_background(request):
-    from django.core.mail import send_mail
-    from django.template.loader import render_to_string
-    from django.conf import settings
-    from .models import Suscriptor, PerfilUsuario
-
     data = request.session.get('newsletter_data')
     if not data:
         return
 
-    dias = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+    dias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
     dia_semana = dias[timezone.now().weekday()]
 
     context_base = {
@@ -6814,36 +6809,37 @@ def enviar_newsletter_en_background(request):
         'link_facebook': "https://facebook.com/tecnomarema",
     }
 
-    emails_suscriptores = Suscriptor.objects.values_list('email', flat=True)
-    emails_usuarios = PerfilUsuario.objects.exclude(correo__isnull=True).exclude(correo='').values_list('correo', flat=True)
-    todos_emails = set(list(emails_suscriptores) + list(emails_usuarios))
+    # 🔍 Recoger correos de Suscriptor y PerfilUsuario
+    emails_suscriptores = [e.strip().lower() for e in list(Suscriptor.objects.values_list('email', flat=True)) if e]
+    emails_usuarios = [e.strip().lower() for e in list(PerfilUsuario.objects.exclude(correo__isnull=True).exclude(correo='').values_list('correo', flat=True)) if e]
+    todos_emails = set(emails_suscriptores + emails_usuarios)
+
+    # Debug en Railway
+    print(f"Correos a enviar: {len(todos_emails)} → {todos_emails}")
 
     for email in todos_emails:
-        if not email:
-            continue
         try:
-            perfil = PerfilUsuario.objects.get(correo__iexact=email)
-            nombre = perfil.id_estudiante.nombre.split()[0] if perfil.id_estudiante else "amigo/a"
-        except:
-            nombre = "amigo/a"
+            perfil = PerfilUsuario.objects.filter(correo__iexact=email).first()
+            nombre = perfil.id_estudiante.nombre.split()[0] if perfil and perfil.id_estudiante else "amigo/a"
 
-        context = context_base.copy()
-        context['nombre'] = nombre
-        context['link_unsubscribe'] = f"https://tecnomarema.com.ar/unsubscribe/?email={email}"
+            context = context_base.copy()
+            context['nombre'] = nombre
+            context['link_unsubscribe'] = f"https://tecnomarema.com.ar/unsubscribe/?email={email}"
 
-        html_message = render_to_string('registration/newsletter.html', context)
+            html_message = render_to_string('registration/newsletter.html', context)
 
-        try:
             send_mail(
                 subject=f"{dia_semana}: {data['titulo_promocion']} + Novedades Tecno Marema",
                 message="",
                 from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email.strip().lower()],
+                recipient_list=[email],
                 html_message=html_message,
                 fail_silently=False,
             )
-        except:
-            pass
+            print(f"✅ Enviado a {email}")
+        except Exception as e:
+            print(f"❌ Error enviando a {email}: {e}")
+
 
 ################################################################################################
 #-------------------------Edicion y eliminacion de newsletter----------------------------------#
