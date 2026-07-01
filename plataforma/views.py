@@ -6750,7 +6750,7 @@ from django.conf import settings
 @session_required
 def envio_y_edicion_de_newsletter(request):
     if request.method == "POST":
-        data = request.POST
+        data = request.POST.dict()  # 🔥 convertir a dict para pasarlo al hilo
 
         # Crear o actualizar Newsletter en la base
         nl, created = Newsletter.objects.update_or_create(
@@ -6769,23 +6769,20 @@ def envio_y_edicion_de_newsletter(request):
             }
         )
 
-        # Guardamos los datos en sesión para el hilo de envío
-        request.session['newsletter_data'] = data
-
         # Mensaje inmediato al usuario
         messages.success(request, "¡Newsletter enviada! Se está enviando a todos los contactos en segundo plano...")
 
-        # Lanzamos el envío en un hilo separado → el navegador responde YA
-        threading.Thread(target=enviar_newsletter_en_background, args=(request,)).start()
+        # Lanzamos el envío en un hilo separado → pasamos data directo
+        threading.Thread(target=enviar_newsletter_en_background, args=(data,)).start()
 
         return redirect('envio-newsletter')
 
     return render(request, 'administrador/envio_y_edicion_de_newsletter.html')
 
 
-def enviar_newsletter_en_background(request):
-    data = request.session.get('newsletter_data')
+def enviar_newsletter_en_background(data):
     if not data:
+        print("❌ No hay datos de newsletter")
         return
 
     dias = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo']
@@ -6814,7 +6811,6 @@ def enviar_newsletter_en_background(request):
     emails_usuarios = [e.strip().lower() for e in list(PerfilUsuario.objects.exclude(correo__isnull=True).exclude(correo='').values_list('correo', flat=True)) if e]
     todos_emails = set(emails_suscriptores + emails_usuarios)
 
-    # Debug en Railway
     print(f"Correos a enviar: {len(todos_emails)} → {todos_emails}")
 
     for email in todos_emails:
