@@ -42,7 +42,7 @@
         <td class="nombre">{{ user.id_estudiante.nombre }}</td>
         <td class="apellido">{{ user.id_estudiante.apellido }}</td>
         <td class="telefono">{{ user.id_estudiante.telefono }}</td>
-        <td class="fecha_nacimiento">{{ user.id_estudiante.fecha_nacimiento }}</td>
+        <td class="fecha_nacimiento">{{ user.id_estudiante.fecha_nacimiento|date:"Y-m-d" }}</td>
         <td class="genero">{{ user.id_estudiante.genero }}</td>
       </tr>
       {% endfor %}

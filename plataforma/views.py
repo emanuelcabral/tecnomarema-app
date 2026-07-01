@@ -3613,7 +3613,7 @@ def listado_tutores_view(request):
 
 @session_required
 def listado_admins_view(request):
-    admins = PerfilUsuario.objects.filter(is_staff=True)
+    admins = PerfilUsuario.objects.filter(rol='admin')
     return render(request, 'administrador/listado_admins.html', {'usuarios': admins})
 
 @session_required
