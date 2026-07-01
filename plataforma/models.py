@@ -899,8 +899,6 @@ class NotificacionAusenciaEnviada(models.Model):
 #----------------------------------newsletter edicion y envíos----------------------------------------#
 #######################################################################################################
 
-# plataforma/models.py
-
 from django.db import models
 from django.utils import timezone
 from django.conf import settings

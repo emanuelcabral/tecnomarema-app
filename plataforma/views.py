@@ -6739,18 +6739,38 @@ def crear_clases_comision_view(request):
     ################################################################################################
 
 from django.contrib import messages
-from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 from django.utils import timezone
-import threading  # ← ESTO ES LA CLAVE
+import threading
+from .models import Newsletter
 
+# Vista principal de armado, edición y envío
 @session_required
 def envio_y_edicion_de_newsletter(request):
     if request.method == "POST":
-        # Guardamos los datos en sesión para usarlos en el hilo
-        request.session['newsletter_data'] = request.POST
+        data = request.POST
 
-        # Mostramos el mensaje INMEDIATAMENTE
+        # Crear o actualizar Newsletter en la base
+        nl, created = Newsletter.objects.update_or_create(
+            numero_edicion=data.get("numero_edicion"),
+            defaults={
+                "titulo_novedad": data.get("titulo_novedad"),
+                "extracto_novedad": data.get("extracto_novedad"),
+                "link_novedad": data.get("link_novedad"),
+                "titulo_promocion": data.get("titulo_promocion"),
+                "descuento": data.get("descuento"),
+                "codigo_cupon": data.get("codigo_cupon"),
+                "fecha_vencimiento": data.get("fecha_vencimiento"),
+                "link_promocion": data.get("link_promocion"),
+                "enviado_el": timezone.now(),
+                "enviado_por": request.user if request.user.is_authenticated else None,
+            }
+        )
+
+        # Guardamos los datos en sesión para el hilo de envío
+        request.session['newsletter_data'] = data
+
+        # Mensaje inmediato al usuario
         messages.success(request, "¡Newsletter enviada! Se está enviando a todos los contactos en segundo plano...")
 
         # Lanzamos el envío en un hilo separado → el navegador responde YA
@@ -6758,6 +6778,7 @@ def envio_y_edicion_de_newsletter(request):
 
         return redirect('envio-newsletter')
 
+    # Renderiza el template exclusivo de armado/envío
     return render(request, 'administrador/envio_y_edicion_de_newsletter.html')
 
 
