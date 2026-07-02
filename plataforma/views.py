@@ -5042,7 +5042,7 @@ from .models import Mensaje
 
 def mensaje_chat_list(request):
     mensajes = Mensaje.objects.all()
-    return render(request, 'plataforma/administrador/listado_mensajes_chat.html', {'mensajes': mensajes})
+    return render(request, 'administrador/listado_mensajes_chat.html', {'mensajes': mensajes})
 
 def eliminar_mensajes_chat(request):
     if request.method == "POST":
