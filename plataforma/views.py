@@ -6799,11 +6799,11 @@ def enviar_newsletter_en_background(data):
         'codigo_cupon': data['codigo_cupon'],
         'fecha_vencimiento': data['fecha_vencimiento'],
         'link_promocion': data['link_promocion'],
-        'link_discord': "https://discord.gg/tecnomarema",
-        'link_linkedin': "https://linkedin.com/company/tecnomarema",
-        'link_youtube': "https://youtube.com/@tecnomarema",
-        'link_instagram': "https://instagram.com/tecnomarema",
-        'link_facebook': "https://facebook.com/tecnomarema",
+        'link_discord': "https://discord.gg/MCtWGb2k3n",
+        'link_linkedin': "https://www.linkedin.com/company/tecnomarema/",
+        'link_youtube': "https://www.youtube.com/@TecnoMarema",
+        'link_instagram': "https://www.instagram.com/tecno.marema/",
+        'link_facebook': "https://www.facebook.com/tecnomarema.ar/",
     }
 
     # 🔍 Recoger correos de Suscriptor y PerfilUsuario
