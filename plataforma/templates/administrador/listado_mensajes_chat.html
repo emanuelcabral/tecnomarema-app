@@ -1,0 +1,85 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+  <h2 class="mb-4 text-success">Listado de Mensajes Chat</h2>
+  
+  <table id="tabla-mensajes" class="table table-dark table-striped table-bordered">
+    <thead>
+      <tr>
+        <th><input type="checkbox" id="select-all"></th>
+        <th>ID</th>
+        <th>Chat</th>
+        <th>Remitente</th>
+        <th>Texto</th>
+        <th>Archivo</th>
+        <th>Creado</th>
+        <th>Leído</th>
+        <th>Destacado</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mensaje in mensajes %}
+      <tr>
+        <td><input type="checkbox" class="select-row" value="{{ mensaje.id }}"></td>
+        <td>{{ mensaje.id }}</td>
+        <td>{{ mensaje.chat }}</td>
+        <td>{{ mensaje.remitente }}</td>
+        <td>{{ mensaje.texto|truncatechars:50 }}</td>
+        <td>{% if mensaje.archivo %}<a href="{{ mensaje.archivo.url }}">Archivo</a>{% else %}-{% endif %}</td>
+        <td>{{ mensaje.creado|date:"d/m/Y H:i" }}</td>
+        <td>{{ mensaje.leido|yesno:"Sí,No" }}</td>
+        <td>{{ mensaje.destacado|yesno:"Sí,No" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <button id="eliminar-seleccionados" class="btn btn-danger mt-3">Eliminar seleccionados</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  // Seleccionar/deseleccionar todos
+  document.getElementById("select-all").addEventListener("click", function(){
+    document.querySelectorAll(".select-row").forEach(cb => cb.checked = this.checked);
+  });
+
+  // Eliminar seleccionados
+  document.getElementById("eliminar-seleccionados").addEventListener("click", function(){
+    let ids = [];
+    document.querySelectorAll(".select-row:checked").forEach(cb => ids.push(cb.value));
+
+    if(ids.length === 0){
+      Swal.fire("Atención", "No seleccionaste ningún mensaje.", "warning");
+      return;
+    }
+
+    Swal.fire({
+      title: "¿Eliminar mensajes?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar"
+    }).then((result) => {
+      if(result.isConfirmed){
+        fetch("{% url 'eliminar_mensajes_chat' %}", {
+          method: "POST",
+          headers: { "X-CSRFToken": "{{ csrf_token }}" },
+          body: new URLSearchParams(ids.map(id => ["ids[]", id]))
+        })
+        .then(resp => resp.json())
+        .then(data => {
+          if(data.success){
+            Swal.fire("Éxito", data.mensaje, "success").then(() => location.reload());
+          } else {
+            Swal.fire("Error", data.mensaje, "error");
+          }
+        });
+      }
+    });
+  });
+</script>
+
+{% endblock %}

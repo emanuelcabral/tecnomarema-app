@@ -5032,6 +5032,24 @@ def actualizar_lectura(chat, usuario):
     lectura.ultimo_mensaje_leido = ultimo
     lectura.save()
 
+###################################################################################################################
+###-----------------------Listado de mensajes del chat - Eliminacion y edicion----------------------------------###
+###################################################################################################################
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Mensaje
+
+def mensaje_chat_list(request):
+    mensajes = Mensaje.objects.all()
+    return render(request, 'plataforma/administrador/listado_mensajes_chat.html', {'mensajes': mensajes})
+
+def eliminar_mensajes_chat(request):
+    if request.method == "POST":
+        ids = request.POST.getlist("ids[]")
+        Mensaje.objects.filter(id__in=ids).delete()
+        return JsonResponse({"success": True, "mensaje": "Mensajes eliminados correctamente"})
+    return JsonResponse({"success": False, "mensaje": "Método inválido"})
 
 
 ###################################################################################################################

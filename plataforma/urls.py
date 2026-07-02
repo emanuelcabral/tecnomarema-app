@@ -375,7 +375,8 @@ path("test/", test),
     path("administrador/newsletters/editar/", views.editar_newsletter, name="editar_newsletter"),
     path("administrador/newsletters/eliminar/", views.eliminar_newsletter, name="eliminar_newsletter"),
 
-
+    path('mensajes-chat/', views.mensaje_chat_list, name='mensaje_chat_list'),
+    path('mensajes-chat/eliminar/', views.eliminar_mensajes_chat, name='eliminar_mensajes_chat'),
 
 ]
 
