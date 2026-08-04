@@ -1,0 +1,101 @@
+from plataforma.models import Pregunta, Clase
+
+clase = Clase.objects.get(id=21)
+
+preguntas = [
+    {
+        "texto": "¿Qué lenguaje se utiliza para estructurar una página web?",
+        "opcion_a": "CSS",
+        "opcion_b": "JavaScript",
+        "opcion_c": "HTML",
+        "opcion_d": "Python",
+        "respuesta_correcta": "c",
+    },
+    {
+        "texto": "¿Para qué sirve CSS?",
+        "opcion_a": "Dar estilos y diseño a la página web",
+        "opcion_b": "Crear bases de datos",
+        "opcion_c": "Gestionar servidores",
+        "opcion_d": "Compilar código backend",
+        "respuesta_correcta": "a",
+    },
+    {
+        "texto": "¿Qué propiedad permite crear layouts flexibles en CSS?",
+        "opcion_a": "display: grid",
+        "opcion_b": "display: flex",
+        "opcion_c": "position: fixed",
+        "opcion_d": "float: left",
+        "respuesta_correcta": "b",
+    },
+    {
+        "texto": "¿Qué propiedad de CSS se usa para crear layouts en filas y columnas de forma nativa?",
+        "opcion_a": "display: block",
+        "opcion_b": "position: absolute",
+        "opcion_c": "display: grid",
+        "opcion_d": "float: none",
+        "respuesta_correcta": "c",
+    },
+    {
+        "texto": "¿Qué significa web responsive?",
+        "opcion_a": "Que la web se adapta a distintos dispositivos",
+        "opcion_b": "Que solo funciona en PC",
+        "opcion_c": "Que no usa CSS",
+        "opcion_d": "Que no tiene imágenes",
+        "respuesta_correcta": "a",
+    },
+    {
+        "texto": "¿Qué es SASS?",
+        "opcion_a": "Un preprocesador de CSS",
+        "opcion_b": "Un sistema de bases de datos",
+        "opcion_c": "Un framework de JavaScript",
+        "opcion_d": "Un servidor web",
+        "respuesta_correcta": "a",
+    },
+    {
+        "texto": "¿Para qué sirve git push?",
+        "opcion_a": "Subir cambios al repositorio remoto",
+        "opcion_b": "Descargar repositorios",
+        "opcion_c": "Eliminar commits",
+        "opcion_d": "Crear archivos locales",
+        "respuesta_correcta": "a",
+    },
+    {
+        "texto": "¿Qué es SEO?",
+        "opcion_a": "Optimización para motores de búsqueda",
+        "opcion_b": "Diseño visual de páginas web",
+        "opcion_c": "Lenguaje de programación",
+        "opcion_d": "Sistema operativo",
+        "respuesta_correcta": "a",
+    },
+    {
+        "texto": "¿Para qué sirve el atributo alt en imágenes?",
+        "opcion_a": "Texto alternativo para accesibilidad y SEO",
+        "opcion_b": "Cambiar el tamaño de la imagen",
+        "opcion_c": "Ejecutar animaciones",
+        "opcion_d": "Crear enlaces",
+        "respuesta_correcta": "a",
+    },
+    {
+        "texto": "¿Qué es un servidor web?",
+        "opcion_a": "Un navegador de internet",
+        "opcion_b": "Un editor de código",
+        "opcion_c": "Un equipo que entrega contenido web a los usuarios",
+        "opcion_d": "Un sistema de diseño gráfico",
+        "respuesta_correcta": "c",
+    },
+]
+
+Pregunta.objects.bulk_create([
+    Pregunta(
+        clase=clase,
+        texto=p["texto"],
+        opcion_a=p["opcion_a"],
+        opcion_b=p["opcion_b"],
+        opcion_c=p["opcion_c"],
+        opcion_d=p["opcion_d"],
+        respuesta_correcta=p["respuesta_correcta"],
+    )
+    for p in preguntas
+])
+
+print("✅ Quiz final del curso cargado correctamente")

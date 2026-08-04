@@ -52,6 +52,7 @@ ALLOWED_HOSTS = [
     'testserver',
     'tecnomarema-app-eb5q.onrender.com',
     'tecnomarema.up.railway.app',
+    "tecnomarema-app-production.up.railway.app",
     
 ]
 
