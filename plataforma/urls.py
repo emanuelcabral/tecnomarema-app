@@ -33,6 +33,16 @@ from django.views.static import serve
 def test(request):
     return HttpResponse("Django OK")
 
+
+
+from django.contrib.sitemaps.views import sitemap
+from plataforma.sitemaps import StaticViewSitemap
+
+sitemaps = {
+    "static": StaticViewSitemap,
+}
+
+
 urlpatterns = [
     # ---------- PÚBLICAS ----------
     path('', views.inicio, name='inicio'),  # Página de inicio - http://127.0.0.1:8000/
@@ -377,6 +387,8 @@ path("test/", test),
 
     path('mensajes-chat/', views.mensaje_chat_list, name='listado_mensajes_chat'),
     path('mensajes-chat/eliminar/', views.eliminar_mensajes_chat, name='eliminar_mensajes_chat'),
+
+    path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 ]
 
