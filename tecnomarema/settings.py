@@ -82,6 +82,8 @@ INSTALLED_APPS = [
     'cloudinary_storage',
 ]
 
+SITE_ID = 1
+
 # Configuración de Channels (para chats en tiempo real)
 ASGI_APPLICATION = 'tecnomarema.asgi.application'
 CHANNEL_LAYERS = {
