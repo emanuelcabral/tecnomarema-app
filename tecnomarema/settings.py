@@ -43,6 +43,8 @@ DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    'http://201.32.128.85/',
+    '201.32.128.85',
     'tecnomarema-app.onrender.com',
     'tecnomarema.onrender.com',
     'tecnomarema.com.ar',
