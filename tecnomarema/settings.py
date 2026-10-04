@@ -164,7 +164,8 @@ DATABASES = {
         conn_max_age=600,
         conn_health_checks=True,
         # Neon requiere SSL siempre. Si estamos usando Neon, forzamos SSL aunque DEBUG sea True.
-        ssl_require=True if (DATABASE_URL and 'neon.tech' in DATABASE_URL) else (not DEBUG)
+        # ssl_require=True if (DATABASE_URL and 'neon.tech' in DATABASE_URL) else (not DEBUG)
+        ssl_require=False
     )
 }
 
