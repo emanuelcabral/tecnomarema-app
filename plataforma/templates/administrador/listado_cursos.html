@@ -58,7 +58,7 @@
               </span>
               <select class="edit-input form-select" name="estado_curso" style="display: none;" required>
                 <option value="proximo" {% if curso.estado_curso == 'proximo' %}selected{% endif %}>Próximo</option>
-                <option value="en_curso" {% if curso.estado_curso == 'en_curso' %}selected{% endif %}>¡En curso!</option>
+                <option value="Disponible" {% if curso.estado_curso == 'Disponible' %}selected{% endif %}>Disponible</option>
                 <option value="finalizado" {% if curso.estado_curso == 'finalizado' %}selected{% endif %}>Finalizado</option>
               </select>
             </td>
