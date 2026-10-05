@@ -596,11 +596,11 @@
             <li class="nav-item">
               <a class="nav-link" href="#testimonios">Testimonios</a>
             </li>
-            {% comment %} {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %} {% endcomment %}
+            {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'faq' %}">FAQ</a>
                 </li>
-            {% comment %} {% endif %} {% endcomment %}
+            {% endif %}
             <li class="nav-item">
               <a class="nav-link" href="#redes">Redes</a>
             </li>
