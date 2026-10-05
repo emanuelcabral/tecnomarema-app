@@ -51,7 +51,7 @@
               <span class="display-text">
                 <span class="badge 
                   {% if curso.estado_curso == 'proximo' %}bg-warning
-                  {% elif curso.estado_curso == 'en_curso' %}bg-success
+                  {% elif curso.estado_curso == 'Disponible' %}bg-success
                   {% elif curso.estado_curso == 'finalizado' %}bg-secondary{% endif %}">
                   {{ curso.get_estado_curso_display }}
                 </span>
