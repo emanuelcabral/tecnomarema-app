@@ -868,7 +868,7 @@ def saldo(request):
             
             # 2. **CORRECCIÓN CRÍTICA (LÓGICA):** El total abonado debe sumar SÓLO los pagos acreditados.
             # Usamos 'Acreditado' para ser consistentes con la lógica de tu plantilla (badge verde).
-            pagos_acreditados_qs = pagos_qs.filter(estado_pago='Acreditado')
+            pagos_acreditados_qs = pagos_qs.filter(estado_pago__in=['Aprobado', 'Acreditado'])
             
             # 3. Calculamos la sumatoria solo de los acreditados
             abonado = pagos_acreditados_qs.aggregate(total=Sum('monto'))['total'] or 0
