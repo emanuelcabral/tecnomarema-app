@@ -253,7 +253,7 @@
     </div>
     <div class="card-body">
         <p><strong>Fecha de inicio:</strong> {{ inscripcion.comision.fecha_inicio|date:"d/m/Y" }}</p>
-        <p><strong>Precio total:</strong> ${{ inscripcion.curso.precio_final|floatformat:2 }} (con impuestos)</p>
+        <p><strong>Precio total:</strong> ${{ inscripcion.curso.precio_final|floatformat:2 }} (sin impuestos, ni descuentos)</p>
 
         <div class="table-responsive">
             <table class="table table-dark table-bordered mt-3 mb-3">
