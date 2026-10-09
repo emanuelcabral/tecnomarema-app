@@ -1108,5 +1108,16 @@ Sigue adelante con la misma motivación… ¡y nos vemos pronto! 🚀</pre>
 
 <!-- --------------------------------------------------------------------------------------------------------- -->
 
+<!-- Bloqueo del portapapeles solo para este archivo HTML -->
+<script>
+  document.addEventListener('copy', function(e) {
+    e.preventDefault(); // Desactiva la copia en esta página
+  });
+
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault(); // Desactiva el clic derecho en esta página
+  });
+</script>
+
 </body>
 </html>
