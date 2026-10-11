@@ -71,7 +71,7 @@ class Command(BaseCommand):
                 'link_youtube': "https://youtube.com/@tecnomarema",
                 'link_instagram': "https://instagram.com/tecnomarema",
                 'link_facebook': "https://facebook.com/tecnomarema",
-                'link_unsubscribe': f"https://tudominio.com/unsubscribe/?email={email}",
+                'link_unsubscribe': f"https://www.tecnomarema.com.ar/unsubscribe/?email={email}",
             }
 
             html_message = render_to_string('registration/newsletter.html', context)

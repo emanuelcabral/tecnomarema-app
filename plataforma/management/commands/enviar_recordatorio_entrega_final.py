@@ -75,7 +75,7 @@ class Command(BaseCommand):
                     'curso': curso.nombre_curso,
                     'comision': comision.numero_comision,
                     'fecha_limite': (comision.fecha_fin + timedelta(days=15)).strftime('%d/%m/%Y'),
-                    'link_entrega': f"https://127.0.0.1:8000/entrega-proyecto/{comision.id_comision}/",  # Cambiar por tu URL real
+                    'link_entrega': f"https://www.tecnomarema.com.ar/entrega-proyecto/{comision.id_comision}/",  # Cambiar por tu URL real
                 }
 
                 html_message = render_to_string(

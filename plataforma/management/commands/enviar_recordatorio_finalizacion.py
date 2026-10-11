@@ -89,7 +89,7 @@ class Command(BaseCommand):
                     'fecha_ultima_clase': fecha_ultima_clase.strftime('%d/%m/%Y'),
                     'fecha_limite_entrega': fecha_limite_entrega.strftime('%d/%m/%Y'), 
                     'fecha_fin_correcciones': fecha_fin_correcciones.strftime('%d/%m/%Y'),
-                    'link_entrega': 'https://www.tecnomarema.com.ar/home/' 
+                    'link_entrega': 'https://www.tecnomarema.com.ar/' 
                 }
 
                 try:

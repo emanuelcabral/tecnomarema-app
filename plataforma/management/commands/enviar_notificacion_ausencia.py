@@ -60,7 +60,7 @@ class Command(BaseCommand):
                     'estado': estado,
                     'motivo': motivo or "Motivo no especificado",
                     'nueva_fecha': nueva_fecha,
-                    'link_plataforma': 'https://www.tecnomarema.com.ar/calendario/'
+                    'link_plataforma': f'https://www.tecnomarema.com.ar/calendario/{comision.id_comision}/'
                 }
 
                 try:
