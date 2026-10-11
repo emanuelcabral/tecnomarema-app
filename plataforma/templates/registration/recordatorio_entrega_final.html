@@ -3,86 +3,70 @@
 <head>
     <meta charset="utf-8">
     <title>¡Último paso para tu certificado, {{ nombre }}!</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f9f9f9; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
-        .header { background: linear-gradient(135deg, #12f693, #00b894); padding: 35px; text-align: center; color: white; }
-        .content { padding: 40px; color: #333; line-height: 1.8; font-size: 17px; }
-        .footer { background-color: #111; color: #aaa; padding: 25px; text-align: center; font-size: 14px; }
-        .btn { 
-            display: inline-block; 
-            background-color: #12f693; 
-            color: #000; 
-            padding: 16px 36px; 
-            text-decoration: none; 
-            border-radius: 10px; 
-            font-weight: bold; 
-            font-size: 18px; 
-            margin: 30px 0; 
-            box-shadow: 0 4px 20px rgba(18,246,147,0.5);
-        }
-        .highlight { color: #12f693; font-weight: bold; }
-        .warning { background: #fff8f0; border-left: 5px solid #ff9800; padding: 22px; border-radius: 8px; margin: 30px 0; }
-    </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>¡Último paso para tu certificado!</h1>
-        </div>
-
-        <div class="content">
-            <p>¡Hola <strong>{{ nombre }}</strong>!</p>
-
-            <p>¡Qué orgullo haberte tenido en el curso <strong>{{ curso }}</strong> – Comisión {{ comision }}!</p>
-
-            <div class="warning">
-                <p style="margin:0; font-size:18px;">
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff; margin: 0;">
+    <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px #12f693;">
+ 
+        <h1 style="color: #12f693; text-align: center; margin-bottom: 30px; font-size: 28px;">
+            ¡Último paso para tu certificado!
+        </h1>
+ 
+        <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
+ 
+        <div style="line-height: 1.8; font-size: 17px; color: #fff;">
+            <p>¡Hola <strong style="color: #12f693;">{{ nombre }}</strong>!</p>
+ 
+            <p>¡Qué orgullo haberte tenido en el curso <strong style="color: #12f693;">{{ curso }}</strong> – Comisión {{ comision }}!</p>
+ 
+            <div style="background-color: #000; border-left: 5px solid #12f693; padding: 22px; border-radius: 8px; margin: 30px 0; box-shadow: 0 0 5px #12f693;">
+                <p style="margin: 0; font-size: 18px;">
                     Ya pasaron 8 días desde que terminó la cursada.<br>
-                    <strong>Ahora solo falta tu proyecto final para cerrar con todo</strong>
+                    <strong style="color: #12f693;">Ahora solo falta tu proyecto final para cerrar con todo</strong>
                 </p>
             </div>
-
+ 
             <p>Recordá que sin la entrega final:</p>
-            <ul style="line-height:2.1; font-size:17px;">
+            <ul style="line-height: 2.1; font-size: 17px;">
                 <li>No podremos darte nota ni feedback personalizado</li>
                 <li>No se emitirá tu certificado de aprobación</li>
             </ul>
-
+ 
             <p>
-                Para aprobar necesitás <strong>7 o más</strong> en el proyecto. 
+                Para aprobar necesitás <strong style="color: #12f693;">7 o más</strong> en el proyecto.
                 ¡Sabemos que lo tenés!
             </p>
-
-            <p style="text-align: center;">
-                <a href="{{ link_entrega }}" class="btn">
+ 
+            <p style="text-align: center; margin: 40px 0;">
+                <a href="{{ link_entrega }}" style="background-color: #12f693; color: #000; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 0 10px #12f693; display: inline-block;">
                     ENTREGAR PROYECTO FINAL AHORA
                 </a>
             </p>
-
+ 
             <p>
-                Tenés tiempo hasta el <strong>{{ fecha_limite }}</strong> 
-                <em>(10 días después del fin de curso)</em>.<br>
+                Tenés tiempo hasta el <strong style="color: #12f693;">{{ fecha_limite }}</strong>.<br>
                 Después de esa fecha ya no podremos recibir entregas.
             </p>
-
+ 
             <p>
                 ¡Este es tu momento de brillar!<br>
                 Mostrá todo lo que aprendiste y cerrá el curso con broche de oro.
             </p>
-
+ 
             <p>Estamos emocionados por ver tu proyecto,</p>
-
+ 
             <p>Muchos éxitos y un abrazo enorme,<br>
-            <strong>El equipo de Tecno Marema</strong>
+            <strong style="color: #12f693;">El equipo de Tecno Marema</strong>
             <br><br>
             <em>"El certificado no es un punto final… es tu pase al próximo nivel."</em>
             </p>
         </div>
-
-        <div class="footer">
-            <p>© 2025 Tecno Marema • Con cariño y orgullo</p>
-        </div>
+ 
+        <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+ 
+        <p style="font-size: 14px; text-align: center; color: #aaa; margin: 0;">
+            Tecno Marema • Educación Digital
+        </p>
     </div>
 </body>
 </html>
+ 
