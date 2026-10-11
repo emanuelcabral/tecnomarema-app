@@ -89,7 +89,7 @@ class Command(BaseCommand):
                     'nombre_clase': clase.nombre_clase,
                     'curso': curso.nombre_curso,
                     'comision': comision.numero_comision,
-                    'link_calendario': f"http://127.0.0.1:8000/calendario/{comision.id_comision}/",
+                    'link_calendario': f"https://www.tecnomarema.com.ar/calendario/{comision.id_comision}/",
                 }
 
                 html_message = render_to_string(

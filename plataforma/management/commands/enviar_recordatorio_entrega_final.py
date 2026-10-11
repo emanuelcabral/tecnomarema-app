@@ -33,8 +33,7 @@ class Command(BaseCommand):
         )
 
         comisiones_finalizadas = Comision.objects.filter(
-            fecha_fin=fecha_objetivo,
-            estado_comision='finalizado'
+            fecha_fin=fecha_objetivo
         ).select_related('id_curso')
 
         if not comisiones_finalizadas.exists():
