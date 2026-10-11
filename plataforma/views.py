@@ -6627,6 +6627,7 @@ def alta_quiz_view(request):
 from django.shortcuts import render, get_object_or_404
 from .models import ClaseComision, Comision 
 
+@session_required
 def calendario_view(request, comision_id): 
     """
     Recupera todas las clases de una comisión específica.
