@@ -50,12 +50,15 @@ class Command(BaseCommand):
             curso = comision.id_curso
 
             # 1. Inscriptos en esta comisión
-            inscriptos = DatosDeEstudiantes.objects.filter(
-                cursando1=comision
-            ) | DatosDeEstudiantes.objects.filter(cursando2=comision) | \
-              DatosDeEstudiantes.objects.filter(cursando3=comision) | \
-              DatosDeEstudiantes.objects.filter(cursando4=comision) | \
-              DatosDeEstudiantes.objects.filter(cursando5=comision)
+            inscriptos = DatosDeEstudiantes.objects.filter(cursando1=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando2=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando3=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando4=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando5=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando6=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando7=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando8=comision) | \
+            DatosDeEstudiantes.objects.filter(cursando9=comision)
 
             # 2. Solo los que tienen rol 'tutor' en PerfilUsuario
             tutores_con_perfil = PerfilUsuario.objects.filter(
