@@ -1228,6 +1228,14 @@ def editar_perfil(request):
         return redirect('login')
 
     if request.method == 'POST':
+
+        # Validar que el correo no exista en otro usuario
+        nuevo_correo = request.POST.get('correo', '').strip()
+        if nuevo_correo and nuevo_correo.lower() != (usuario.correo or '').lower():
+            if (PerfilUsuario.objects.filter(correo__iexact=nuevo_correo).exclude(id_usuario=usuario_id).exists()
+                    or DatosDeEstudiantes.objects.filter(correo__iexact=nuevo_correo).exclude(pk=estudiante.pk).exists()):
+                return redirect('/perfil/?correo_existe=1')
+
         # Actualizar DatosDeEstudiantes
         estudiante.nombre = request.POST.get('nombre', estudiante.nombre)
         estudiante.apellido = request.POST.get('apellido', estudiante.apellido)

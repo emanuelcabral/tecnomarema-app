@@ -284,6 +284,52 @@
         });
     </script>
     <!-- Antes de </body> -->
+    <!-- Modal cuando intenta reemplazar un correo existente-->
+     <div class="modal fade" id="modalCorreoExiste" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-white" style="background:#111216;border:1px solid #cf30ff;border-radius:1rem;box-shadow:0 0 25px rgba(207,48,255,0.18);">
+
+      <div class="modal-header" style="background:#19151f;border-bottom:1px solid #cf30ff;color:#cf30ff;">
+        <span style="font-size:.8rem;font-weight:800;letter-spacing:1.5px;">
+          <i class="bi bi-shield-exclamation"></i> TECNOMAREMA // VALIDACIÓN
+        </span>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body text-center p-4">
+        <div style="display:flex;align-items:center;justify-content:center;width:65px;height:65px;margin:0 auto 20px;border:1px solid #ff365d;border-radius:50%;background:rgba(255,54,93,.08);color:#ff365d;font-size:2rem;">
+          <i class="bi bi-envelope-exclamation"></i>
+        </div>
+
+        <h5 style="color:#fff;font-weight:800;margin-bottom:14px;">
+          ¡Correo ya registrado!
+        </h5>
+
+        <p style="color:#d5d5dd;">
+          El correo ingresado ya existe en nuestra base de datos.
+        </p>
+
+        <p style="color:#a8a8b5;font-size:.9rem;margin-bottom:0;">
+          Podés mantener el correo actual o ingresar uno diferente para continuar.
+        </p>
+      </div>
+
+      <div class="modal-footer justify-content-center" style="border-top:1px solid #29232f;padding:20px;gap:12px;">
+        <button type="button" data-bs-dismiss="modal" style="background:#12f693;border:1px solid #12f693;color:#080b0a;border-radius:8px;padding:10px 16px;font-weight:800;">
+          Mantener el existente
+        </button>
+
+        <button type="button" data-bs-dismiss="modal" style="background:transparent;border:1px solid #cf30ff;color:#cf30ff;border-radius:8px;padding:10px 16px;font-weight:800;">
+          Ingresar otro
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+    <!-- Modal cuando intenta reemplazar un correo existente -->
+
+
 
 
     <!-- modal confirmacion de eliminacion de cuenta inicia -->
@@ -462,6 +508,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     <!-- --------------------------------------------------------------------------------------------------------- -->
+    <!-- --------------------------------------script para correo existente--------------------------------------- -->
+    <!-- --------------------------------------------------------------------------------------------------------- -->
+     <script>
+document.addEventListener("DOMContentLoaded", () => {
+  if (new URLSearchParams(location.search).get("correo_existe") === "1") {
+    new bootstrap.Modal(document.getElementById("modalCorreoExiste")).show();
+    history.replaceState({}, document.title, location.pathname);
+  }
+});
+</script>
+    <!-- --------------------------------------------------------------------------------------------------------- -->
+
+
 
 <script>
     // Deshabilitar clic derecho (menú contextual)
