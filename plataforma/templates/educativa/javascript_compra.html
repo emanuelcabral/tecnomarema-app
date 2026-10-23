@@ -823,6 +823,54 @@
       </div>
     </div>
 
+
+    <!-- ============================================================
+         ===== NUEVO: SECCIÓN DE PRECIOS (dinámica) =====
+         ============================================================ -->
+    <section class="precio-section">
+      <div class="precio-card">
+
+        <div class="precio-pills">
+          <span class="precio-pill">
+            <i class="bi bi-mortarboard"></i>
+            Nivel: Principiante a Experto
+          </span>
+
+          {% if opcion_duracion_principal %}
+            <span class="precio-pill">
+              <i class="bi bi-calendar3"></i>
+              {{ opcion_duracion_principal.texto }}
+            </span>
+          {% endif %}
+        </div>
+
+        {% if descuento_porcentaje > 0 %}
+          <div class="descuento-badge">{{ descuento_porcentaje }}% OFF</div>
+        {% endif %}
+
+        {% if precio_original > precio_final %}
+          <p class="precio-original">${{ precio_original|formato_ars }} ARS</p>
+        {% endif %}
+
+        <h2 class="precio-cuotas">6 cuotas de ${{ cuota|formato_ars }}</h2>
+        <p class="precio-interes">+ intereses según tu tarjeta</p>
+
+        <p class="precio-final">
+          Precio final: <span>${{ precio_final|formato_ars }} ARS</span>
+        </p>
+
+        <p class="precio-nota">
+          Los intereses dependen de tu tarjeta y serán calculados por tu banco.
+        </p>
+
+        <a href="{% url 'inscripcion' %}" class="btn-comprar-precio">
+          Comprar curso
+        </a>
+
+      </div>
+    </section>
+    <!-- ===== FIN NUEVO: SECCIÓN DE PRECIOS ===== -->
+
 <div class="col-md-12 d-flex">
   <div class="card card-tech p-4 pb-0 w-100 text-center">
     <h5 class="card-title text-uppercase text-success mb-4">El calendario de los próximos cursos</h5>
