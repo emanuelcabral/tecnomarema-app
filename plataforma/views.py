@@ -2897,12 +2897,17 @@ def desarrollo_web_compra(request):
     })
 #-------------------------------------------------------------------------------------------
 def inteligencia_artificial_compra(request):
-    inteligencia_artificial = Curso.objects.filter(nombre_curso__icontains="inteligencia_artificial").first()
+    # Buscar por el nombre real (con espacio), case-insensitive
+    inteligencia_artificial = (
+        Curso.objects
+        .filter(nombre_curso__icontains="inteligencia artificial")
+        .first()
+    )
 
     if inteligencia_artificial:
         comisiones = Comision.objects.filter(
             id_curso=inteligencia_artificial,
-            estado_comision='proximo'
+            estado_comision__in=['proximo', 'próximo']
         ).order_by('fecha_inicio')
     else:
         comisiones = []
@@ -2922,19 +2927,24 @@ def inteligencia_artificial_compra(request):
             precio_original = 0
             precio_final = 0
 
-        if precio_original > 0:
+        if precio_original > 0 and precio_final >= 0:
             descuento_porcentaje = round(((precio_original - precio_final) / precio_original) * 100)
         else:
             descuento_porcentaje = 0
 
         cuota = round(precio_final / 6) if precio_final else 0
 
-        # Si tenés un campo de duración en el modelo, usalo:
-        # duracion = inteligencia_artificial.duracion or 6
+        # Duración desde el modelo (si existe el campo)
+        duracion_raw = getattr(inteligencia_artificial, 'duracion', None)
+        if duracion_raw:
+            # Si viene "6 semanas" u otro texto, extraemos solo el número
+            digitos = ''.join(c for c in str(duracion_raw) if c.isdigit())
+            if digitos:
+                duracion = int(digitos)
 
     return render(request, 'educativa/inteligencia_artificial_compra.html', {
         'comisiones': comisiones,
-        'curso': inteligencia_artificial,           # por si lo necesitás
+        'curso': inteligencia_artificial,
         'precio_original': precio_original,
         'precio_final': precio_final,
         'descuento_porcentaje': descuento_porcentaje,
