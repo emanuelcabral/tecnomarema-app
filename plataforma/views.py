@@ -2926,23 +2926,30 @@ def inteligencia_artificial_compra(request):
 
         cuota = round(precio_final / 6) if precio_final else 0
 
-    # ===== DURACIÓN (según clases del curso) =====
-    # Ajustá este número a la cantidad real de clases del curso de IA
-    cantidad_clases = 6   # ← Clase 1 a Clase 6
+    # ===== DURACIÓN DESDE HORAS (campo: duracion) =====
+    horas_totales = 0
+    horas_por_clase = 2  # fijo: cada clase dura 2 horas
 
-    # Opciones posibles de clases por semana (1, 2 o 3)
+    if inteligencia_artificial and inteligencia_artificial.duracion:
+        try:
+            horas_totales = int(float(str(inteligencia_artificial.duracion).strip()))
+        except (TypeError, ValueError):
+            horas_totales = 0
+
+    cantidad_clases = int(horas_totales / horas_por_clase) if horas_por_clase and horas_totales else 0
+
     opciones_duracion = []
     for clases_por_semana in [1, 2, 3]:
-        semanas = cantidad_clases // clases_por_semana
-        if cantidad_clases % clases_por_semana == 0 and semanas > 0:
+        if cantidad_clases > 0 and cantidad_clases % clases_por_semana == 0:
+            semanas = cantidad_clases // clases_por_semana
             opciones_duracion.append({
                 'clases_por_semana': clases_por_semana,
                 'semanas': semanas,
                 'texto': f"{semanas} semanas ({clases_por_semana} clase{'s' if clases_por_semana > 1 else ''}/semana)"
             })
 
-    # Si no hay opciones exactas, mostramos al menos la de 1 clase/semana
-    if not opciones_duracion:
+    # Fallback si no hay opciones
+    if not opciones_duracion and cantidad_clases > 0:
         opciones_duracion.append({
             'clases_por_semana': 1,
             'semanas': cantidad_clases,
@@ -2957,7 +2964,6 @@ def inteligencia_artificial_compra(request):
         'descuento_porcentaje': descuento_porcentaje,
         'cuota': cuota,
         'opciones_duracion': opciones_duracion,
-        'cantidad_clases': cantidad_clases,
     })
 #-------------------------------------------------------------------------------------------
 def python_compra(request):
