@@ -94,3 +94,16 @@ from django import template
 def replace(value, args):
     old, new = args.split(',')
     return value.replace(old, new)
+
+
+###################################################################################
+# ------- Filtro para formato de precios en la descripcion de los cursos ---------#
+###################################################################################
+
+
+@register.filter
+def formato_ars(valor):
+    try:
+        return f"{int(float(valor)):,}".replace(",", ".")
+    except (ValueError, TypeError):
+        return valor
