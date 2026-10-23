@@ -2897,7 +2897,7 @@ def desarrollo_web_compra(request):
     })
 #-------------------------------------------------------------------------------------------
 def inteligencia_artificial_compra(request):
-    inteligencia_artificial = Curso.objects.filter(nombre_curso__icontains="inteligencia_artificial").first()
+    inteligencia_artificial = Curso.objects.filter(nombre_curso__icontains="inteligencia artificial").first()
 
     if inteligencia_artificial:
         comisiones = Comision.objects.filter(
