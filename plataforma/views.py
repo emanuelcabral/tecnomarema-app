@@ -3022,7 +3022,7 @@ def inteligencia_artificial_compra(request):
     })
 #-------------------------------------------------------------------------------------------
 def python_compra(request):
-    python = Curso.objects.filter(nombre_curso__icontains="python").first()
+    python = Curso.objects.filter(nombre_curso__icontains="Python").first()
 
     if python:
         comisiones = Comision.objects.filter(
@@ -3094,7 +3094,7 @@ def python_compra(request):
 #-------------------------------------------------------------------------------------------
 
 def javascript_compra(request):
-    javascript = Curso.objects.filter(nombre_curso__icontains="javascript").first()
+    javascript = Curso.objects.filter(nombre_curso__icontains="Javascript").first()
 
     if javascript:
         comisiones = Comision.objects.filter(
