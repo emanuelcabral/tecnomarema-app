@@ -2943,7 +2943,7 @@ def inteligencia_artificial_compra(request):
             if cantidad_clases % cps == 0:
                 semanas = cantidad_clases // cps
                 opciones_duracion.append({
-                    'texto': f"{semanas} semanas ({cps} clase{'s' if cps > 1 else ''}/semana)"
+                    'texto': f"{semanas} semanas si es {cps} clase{'s' if cps > 1 else ''} x semana"
                 })
 
     return render(request, 'educativa/inteligencia_artificial_compra.html', {
@@ -2954,7 +2954,7 @@ def inteligencia_artificial_compra(request):
         'descuento_porcentaje': descuento_porcentaje,
         'cuota': cuota,
         'opciones_duracion': opciones_duracion,
-        'duracion': horas,  # por si la necesitás
+        'duracion': horas,
     })
 #-------------------------------------------------------------------------------------------
 def python_compra(request):
