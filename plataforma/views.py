@@ -2907,8 +2907,39 @@ def inteligencia_artificial_compra(request):
     else:
         comisiones = []
 
+    # ===== PRECIOS (calculados desde el curso) =====
+    precio_original = 0
+    precio_final = 0
+    descuento_porcentaje = 0
+    cuota = 0
+    duracion = 6  # valor por defecto (semanas)
+
+    if inteligencia_artificial:
+        try:
+            precio_original = float(inteligencia_artificial.precio_original or 0)
+            precio_final = float(inteligencia_artificial.precio_final or 0)
+        except (TypeError, ValueError):
+            precio_original = 0
+            precio_final = 0
+
+        if precio_original > 0:
+            descuento_porcentaje = round(((precio_original - precio_final) / precio_original) * 100)
+        else:
+            descuento_porcentaje = 0
+
+        cuota = round(precio_final / 6) if precio_final else 0
+
+        # Si tenés un campo de duración en el modelo, usalo:
+        # duracion = inteligencia_artificial.duracion or 6
+
     return render(request, 'educativa/inteligencia_artificial_compra.html', {
-        'comisiones': comisiones
+        'comisiones': comisiones,
+        'curso': inteligencia_artificial,           # por si lo necesitás
+        'precio_original': precio_original,
+        'precio_final': precio_final,
+        'descuento_porcentaje': descuento_porcentaje,
+        'cuota': cuota,
+        'duracion': duracion,
     })
 #-------------------------------------------------------------------------------------------
 def python_compra(request):
