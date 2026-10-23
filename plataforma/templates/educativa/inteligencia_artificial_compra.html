@@ -858,16 +858,16 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
 
         <!-- Precio original tachado -->
         {% if precio_original > precio_final %}
-          <p class="precio-original">${{ precio_original|floatformat:0 }} ARS</p>
+          <p class="precio-original">${{ precio_original|formato_ars }} ARS</p>
         {% endif %}
 
         <!-- Precio principal (cuotas) -->
-        <h2 class="precio-cuotas">6 cuotas de ${{ cuota|floatformat:0 }}</h2>
+        <h2 class="precio-cuotas">6 cuotas de ${{ cuota|formato_ars }}</h2>
         <p class="precio-interes">+ intereses según tu tarjeta</p>
 
         <!-- Precio final -->
         <p class="precio-final">
-          Precio final: <span>${{ precio_final|floatformat:0 }} ARS</span>
+          Precio final: <span>${{ precio_final|formato_ars }} ARS</span>
         </p>
 
         <!-- Nota -->
