@@ -55,6 +55,8 @@ urlpatterns = [
     path('cursos/', views.cursos_view, name='cursos'),  # Listado de cursos - http://127.0.0.1:8000/cursos/
     path('desarrollo_web_compra/', views.desarrollo_web_compra, name='desarrollo_web_compra'),  # Compra de curso - http://127.0.0.1:8000/desarrollo_web_compra/
     path('inteligencia_artificial_compra/', views.inteligencia_artificial_compra, name='inteligencia_artificial_compra'),  # Compra de curso - http://127.0.0.1:8000/inteligencia_artificial_compra/
+    path('python_compra/', views.python_compra, name='python_compra'),
+    path('javascript_compra/', views.javascript_compra, name='javascript_compra'),
     # === NUEVAS URLs para IA Promo ===
     path('inscripcion_ia_promo/', views.inscripcion_ia_promo, name='inscripcion_ia_promo'),
     path('guardar_inscripcion_ia_promo/', views.guardar_inscripcion_ia_promo, name='guardar_inscripcion_ia_promo'),
