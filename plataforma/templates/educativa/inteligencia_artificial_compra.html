@@ -840,20 +840,26 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
       <div class="precio-card">
 
         <!-- Pills -->
-        <!-- Pills -->
         <div class="precio-pills">
           <span class="precio-pill">
             <i class="bi bi-mortarboard"></i>
             Nivel: Principiante a Experto
           </span>
 
-          {% for opcion in opciones_duracion %}
+          {% if opcion_duracion_principal %}
             <span class="precio-pill">
               <i class="bi bi-calendar3"></i>
-              {{ opcion.texto }}
+              {{ opcion_duracion_principal.texto }}
             </span>
-          {% endfor %}
+          {% endif %}
         </div>
+        
+        <!-- {% for opcion in opciones_duracion %}
+          <span class="precio-pill">
+            <i class="bi bi-calendar3"></i>
+            {{ opcion.texto }}
+          </span>
+        {% endfor %} -->
 
         <!-- Badge descuento -->
         {% if descuento_porcentaje > 0 %}
