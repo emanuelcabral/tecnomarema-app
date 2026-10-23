@@ -32,3 +32,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('plataforma.urls')),  # 👈 conecta la app plataforma a la raíz
 ]
+
+# Handlers de error (tienen que estar en el urls.py raíz)
+handler400 = 'plataforma.views.error_400_view'
+handler403 = 'plataforma.views.error_403_view'
+handler404 = 'plataforma.views.error_404_view'
+handler500 = 'plataforma.views.error_500_view'
