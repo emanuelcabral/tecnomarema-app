@@ -918,7 +918,19 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
           <div class="row g-4">
             {% for com in grupo %}
               <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 rounded-4 shadow-lg p-3" style="background-color: #1a1a1a; color: white;">
+                <div class="card h-100 border-0 rounded-4 shadow-lg p-3 card-comision-wrapper" style="background-color: #1a1a1a; color: white;">
+
+                  {# ===== Badge clases semanales ===== #}
+                  {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
+                    {% if d1 and d2 and d3 %}
+                      <span class="badge-clases-semana">3 clases semanales</span>
+                    {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
+                      <span class="badge-clases-semana">2 clases semanales</span>
+                    {% elif d1 or d2 or d3 %}
+                      <span class="badge-clases-semana">1 clase semanal</span>
+                    {% endif %}
+                  {% endwith %}
+
                   <div class="card-body">
                     <h5 class="card-title fw-bold" style="color: #12f693;">{{ com.id_curso.nombre_curso }}</h5>
                     <p class="card-text">
