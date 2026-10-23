@@ -2926,35 +2926,25 @@ def inteligencia_artificial_compra(request):
 
         cuota = round(precio_final / 6) if precio_final else 0
 
-    # ===== DURACIÓN DESDE HORAS (campo: duracion) =====
-    horas_totales = 0
-    horas_por_clase = 2  # fijo: cada clase dura 2 horas
-
+    # ===== DURACIÓN (campo: duracion = horas) =====
+    horas = 0
     if inteligencia_artificial and inteligencia_artificial.duracion:
         try:
-            horas_totales = int(float(str(inteligencia_artificial.duracion).strip()))
-        except (TypeError, ValueError):
-            horas_totales = 0
+            horas = int(str(inteligencia_artificial.duracion).strip())
+        except:
+            horas = 0
 
-    cantidad_clases = int(horas_totales / horas_por_clase) if horas_por_clase and horas_totales else 0
+    horas_por_clase = 2
+    cantidad_clases = horas // horas_por_clase if horas else 0
 
     opciones_duracion = []
-    for clases_por_semana in [1, 2, 3]:
-        if cantidad_clases > 0 and cantidad_clases % clases_por_semana == 0:
-            semanas = cantidad_clases // clases_por_semana
-            opciones_duracion.append({
-                'clases_por_semana': clases_por_semana,
-                'semanas': semanas,
-                'texto': f"{semanas} semanas ({clases_por_semana} clase{'s' if clases_por_semana > 1 else ''}/semana)"
-            })
-
-    # Fallback si no hay opciones
-    if not opciones_duracion and cantidad_clases > 0:
-        opciones_duracion.append({
-            'clases_por_semana': 1,
-            'semanas': cantidad_clases,
-            'texto': f"{cantidad_clases} semanas (1 clase/semana)"
-        })
+    if cantidad_clases > 0:
+        for cps in [1, 2, 3]:
+            if cantidad_clases % cps == 0:
+                semanas = cantidad_clases // cps
+                opciones_duracion.append({
+                    'texto': f"{semanas} semanas ({cps} clase{'s' if cps > 1 else ''}/semana)"
+                })
 
     return render(request, 'educativa/inteligencia_artificial_compra.html', {
         'comisiones': comisiones,
@@ -2964,6 +2954,7 @@ def inteligencia_artificial_compra(request):
         'descuento_porcentaje': descuento_porcentaje,
         'cuota': cuota,
         'opciones_duracion': opciones_duracion,
+        'duracion': horas,  # por si la necesitás
     })
 #-------------------------------------------------------------------------------------------
 def python_compra(request):
