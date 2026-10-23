@@ -2892,8 +2892,63 @@ def desarrollo_web_compra(request):
     else:
         comisiones = []
 
+    # ===== PRECIOS =====
+    precio_original = 0
+    precio_final = 0
+    descuento_porcentaje = 0
+    cuota = 0
+
+    if desarrollo_web:
+        try:
+            precio_original = float(desarrollo_web.precio_original or 0)
+            precio_final = float(desarrollo_web.precio_final or 0)
+        except (TypeError, ValueError):
+            precio_original = 0
+            precio_final = 0
+
+        if precio_original > 0:
+            descuento_porcentaje = round(((precio_original - precio_final) / precio_original) * 100)
+
+        cuota = round(precio_final / 6) if precio_final else 0
+
+    # ===== DURACIÓN (campo: duracion = horas) =====
+    horas = 0
+    if desarrollo_web and desarrollo_web.duracion:
+        try:
+            horas = int(str(desarrollo_web.duracion).strip())
+        except:
+            horas = 0
+
+    horas_por_clase = 2
+    cantidad_clases = horas // horas_por_clase if horas else 0
+
+    opciones_duracion = []
+    if cantidad_clases > 0:
+        for cps in [1, 2, 3]:
+            if cantidad_clases % cps == 0:
+                semanas = cantidad_clases // cps
+                opciones_duracion.append({
+                    'clases_por_semana': cps,
+                    'semanas': semanas,
+                    'texto': f"Duración: {semanas} semanas (si es {cps} clase{'s' if cps > 1 else ''} x semana)"
+                })
+
+    # Por ahora solo 1 clase x semana
+    opcion_duracion_principal = next(
+        (op for op in opciones_duracion if op['clases_por_semana'] == 1),
+        None
+    )
+
     return render(request, 'educativa/desarrollo_web_compra.html', {
-        'comisiones': comisiones
+        'comisiones': comisiones,
+        'curso': desarrollo_web,
+        'precio_original': precio_original,
+        'precio_final': precio_final,
+        'descuento_porcentaje': descuento_porcentaje,
+        'cuota': cuota,
+        'opcion_duracion_principal': opcion_duracion_principal,
+        'opciones_duracion': opciones_duracion,
+        'duracion': horas,
     })
 #-------------------------------------------------------------------------------------------
 def inteligencia_artificial_compra(request):
