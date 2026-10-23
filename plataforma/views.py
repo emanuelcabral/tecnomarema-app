@@ -2897,27 +2897,21 @@ def desarrollo_web_compra(request):
     })
 #-------------------------------------------------------------------------------------------
 def inteligencia_artificial_compra(request):
-    # Buscar por el nombre real (con espacio), case-insensitive
-    inteligencia_artificial = (
-        Curso.objects
-        .filter(nombre_curso__icontains="inteligencia artificial")
-        .first()
-    )
+    inteligencia_artificial = Curso.objects.filter(nombre_curso__icontains="inteligencia_artificial").first()
 
     if inteligencia_artificial:
         comisiones = Comision.objects.filter(
             id_curso=inteligencia_artificial,
-            estado_comision__in=['proximo', 'próximo']
+            estado_comision='proximo'
         ).order_by('fecha_inicio')
     else:
         comisiones = []
 
-    # ===== PRECIOS (calculados desde el curso) =====
+    # ===== PRECIOS =====
     precio_original = 0
     precio_final = 0
     descuento_porcentaje = 0
     cuota = 0
-    duracion = 6  # valor por defecto (semanas)
 
     if inteligencia_artificial:
         try:
@@ -2927,20 +2921,33 @@ def inteligencia_artificial_compra(request):
             precio_original = 0
             precio_final = 0
 
-        if precio_original > 0 and precio_final >= 0:
+        if precio_original > 0:
             descuento_porcentaje = round(((precio_original - precio_final) / precio_original) * 100)
-        else:
-            descuento_porcentaje = 0
 
         cuota = round(precio_final / 6) if precio_final else 0
 
-        # Duración desde el modelo (si existe el campo)
-        duracion_raw = getattr(inteligencia_artificial, 'duracion', None)
-        if duracion_raw:
-            # Si viene "6 semanas" u otro texto, extraemos solo el número
-            digitos = ''.join(c for c in str(duracion_raw) if c.isdigit())
-            if digitos:
-                duracion = int(digitos)
+    # ===== DURACIÓN (según clases del curso) =====
+    # Ajustá este número a la cantidad real de clases del curso de IA
+    cantidad_clases = 6   # ← Clase 1 a Clase 6
+
+    # Opciones posibles de clases por semana (1, 2 o 3)
+    opciones_duracion = []
+    for clases_por_semana in [1, 2, 3]:
+        semanas = cantidad_clases // clases_por_semana
+        if cantidad_clases % clases_por_semana == 0 and semanas > 0:
+            opciones_duracion.append({
+                'clases_por_semana': clases_por_semana,
+                'semanas': semanas,
+                'texto': f"{semanas} semanas ({clases_por_semana} clase{'s' if clases_por_semana > 1 else ''}/semana)"
+            })
+
+    # Si no hay opciones exactas, mostramos al menos la de 1 clase/semana
+    if not opciones_duracion:
+        opciones_duracion.append({
+            'clases_por_semana': 1,
+            'semanas': cantidad_clases,
+            'texto': f"{cantidad_clases} semanas (1 clase/semana)"
+        })
 
     return render(request, 'educativa/inteligencia_artificial_compra.html', {
         'comisiones': comisiones,
@@ -2949,7 +2956,8 @@ def inteligencia_artificial_compra(request):
         'precio_final': precio_final,
         'descuento_porcentaje': descuento_porcentaje,
         'cuota': cuota,
-        'duracion': duracion,
+        'opciones_duracion': opciones_duracion,
+        'cantidad_clases': cantidad_clases,
     })
 #-------------------------------------------------------------------------------------------
 def python_compra(request):
