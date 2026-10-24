@@ -725,10 +725,10 @@
       position: relative;
     }
 
-/* ===== PRÓXIMOS CURSOS (carrusel de tarjetas) ===== */
+/* ===== PRÓXIMOS CURSOS (carrusel de tarjetas · diseño calendario compacto) ===== */
 .pc-section{margin:3rem 0}
 .pc-titulo{
-  display:flex;align-items:center;gap:24px;margin:0 0 2.5rem;
+  display:flex;align-items:center;gap:24px;margin:0 0 2rem;
   font-size:clamp(1.6rem,4.5vw,2.75rem);font-weight:800;text-transform:uppercase;white-space:nowrap;
 }
 .pc-titulo::before,.pc-titulo::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#12f693)}
@@ -737,46 +737,73 @@
 
 .pc-carrusel{position:relative;padding:0 56px}
 .pc-pista{
-  display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
   padding:14px 4px;margin:-14px -4px;
 }
 .pc-pista::-webkit-scrollbar{display:none}
 
+/* 3 columnas en escritorio, 2 en tablet, 1 en celular */
 .pc-tarjeta{
-  position:relative;flex:0 0 calc((100% - 28px) / 2);scroll-snap-align:start;
-  display:flex;flex-direction:column;gap:22px;padding:30px 28px 28px;
+  position:relative;flex:0 0 calc((100% - 40px) / 3);scroll-snap-align:start;
+  container-type:inline-size;
+  display:flex;flex-direction:column;padding:20px;
   border:2px solid transparent;border-radius:26px;color:#fff;
   background:linear-gradient(#0a1020,#0a1020) padding-box,linear-gradient(135deg,#12f693,#cf30ff) border-box;
-  box-shadow:0 0 36px rgba(18,246,147,.10),0 0 36px rgba(207,48,255,.10);
+  box-shadow:0 0 36px rgba(18,246,147,.12),0 0 50px rgba(207,48,255,.10);
 }
-.pc-cabecera{display:flex;align-items:center;gap:14px;padding-right:130px;min-height:64px}
-.pc-logo{flex:none;width:68px;height:68px;object-fit:contain;margin:-4px 0 -4px -6px}
-.pc-nombre{margin:0;font-size:1.5rem;line-height:1.15;font-weight:700;color:#12f693}
-
+.pc-fila-sup{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:12px}
+.pc-cinta{
+  background:linear-gradient(90deg,#12f693,#1fc1ad);color:#06251f;font-weight:800;font-size:.8rem;
+  padding:5px 14px;border-radius:999px;
+}
 .pc-insignia{
-  position:absolute;top:16px;right:16px;display:inline-flex;align-items:center;gap:6px;
-  background:#cf30ff;color:#fff;font-size:.75rem;font-weight:600;white-space:nowrap;
-  padding:6px 12px 6px 9px;border-radius:999px;box-shadow:0 0 18px rgba(207,48,255,.45);
+  display:inline-flex;align-items:center;gap:6px;background:#cf30ff;color:#fff;font-size:.75rem;font-weight:600;
+  white-space:nowrap;padding:5px 12px 5px 9px;border-radius:999px;box-shadow:0 0 18px rgba(207,48,255,.45);
 }
-.pc-insignia .pc-ico{width:18px;height:18px;stroke-width:1.8}
+.pc-insignia .pc-ico{width:16px;height:16px;stroke-width:1.8}
 
-.pc-datos{display:flex;flex-direction:column;gap:14px;margin:0;padding:0;list-style:none}
-.pc-datos li{display:flex;align-items:center;gap:12px;font-size:1rem}
-.pc-ico{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.pc-verde{color:#12f693}.pc-violeta{color:#cf30ff}
-.pc-etiqueta{
-  flex:none;min-width:66px;text-align:center;background:rgba(255,255,255,.08);
-  font-size:.8rem;font-weight:600;padding:5px 12px;border-radius:9px;
+.pc-cabecera{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.pc-logo{flex:none;width:52px;height:52px;object-fit:contain}
+.pc-nombre{margin:0;font-size:1.35rem;line-height:1.15;font-weight:700;color:#12f693}
+
+/* Calendario: inicio → fin */
+.pc-calendario{display:flex;align-items:center;gap:8px}
+.pc-hoja{flex:1;min-width:0;background:#151b33;border-radius:14px;overflow:hidden;border:1.5px solid var(--c)}
+.pc-hoja-ini{--c:#12f693}.pc-hoja-fin{--c:#cf30ff}
+.pc-hoja-tit{background:var(--c);color:#06101a;font-weight:800;font-size:.75rem;padding:3px 0;text-align:center}
+.pc-hoja-fin .pc-hoja-tit{color:#fff}
+.pc-hoja-cuerpo{display:flex;align-items:center;justify-content:center;gap:8px;padding:8px 6px}
+.pc-dia{font-size:2.25rem;font-weight:800;line-height:1;color:var(--c)}
+.pc-mes-anio{display:flex;flex-direction:column;line-height:1.2}
+.pc-mes{font-size:.95rem;font-weight:700;text-transform:capitalize}
+.pc-anio{color:#9aa4b2;font-size:.8rem}
+.pc-union{flex:0 0 22px;height:2px;background:linear-gradient(90deg,#12f693,#cf30ff)}
+@container (max-width:380px){
+  .pc-hoja-cuerpo{flex-direction:column;gap:2px;padding:8px 4px}
+  .pc-mes-anio{align-items:center}
 }
+
+/* Días y horarios */
+.pc-horarios{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 14px;padding:0;list-style:none}
+.pc-horario{
+  flex:1 1 140px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:7px 10px;border-radius:10px;border-left:4px solid var(--c);background:#151b33;
+}
+.pc-h1,.pc-h3{--c:#12f693}.pc-h2{--c:#cf30ff}
+.pc-h-dia{font-size:.95rem;font-weight:700}
+.pc-h-hora{background:var(--c);color:#06251f;font-weight:800;font-size:.8rem;padding:3px 9px;border-radius:8px;white-space:nowrap}
+.pc-h2 .pc-h-hora{color:#fff}
+
+.pc-ico{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 
 .pc-boton{
   margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:10px;
-  background:#12f693;color:#03120b;font-weight:700;font-size:1.15rem;line-height:1;text-decoration:none;
-  padding:16px 30px;border-radius:14px;box-shadow:0 0 22px rgba(18,246,147,.35);
+  background:#12f693;color:#03120b;font-weight:700;font-size:1rem;line-height:1;text-decoration:none;
+  padding:12px 26px;border-radius:12px;box-shadow:0 0 18px rgba(18,246,147,.4);
   transition:transform .15s,box-shadow .15s;
 }
 .pc-boton:hover{color:#03120b;transform:translateY(-2px);box-shadow:0 8px 30px rgba(18,246,147,.5)}
-.pc-boton .pc-ico{width:20px;height:20px;stroke-width:2.5}
+.pc-boton .pc-ico{width:18px;height:18px;stroke-width:2.5}
 .pc-boton:focus-visible,.pc-flecha:focus-visible,.pc-punto:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 .pc-flecha{
@@ -788,19 +815,21 @@
 .pc-prev{left:0}.pc-next{right:0}
 .pc-flecha[disabled]{opacity:.25;cursor:default;box-shadow:none}
 
-.pc-puntos{display:flex;justify-content:center;gap:10px;margin-top:28px;min-height:12px}
+.pc-puntos{display:flex;justify-content:center;gap:10px;margin-top:24px;min-height:12px}
 .pc-punto{width:12px;height:12px;border-radius:999px;border:0;padding:0;cursor:pointer;background:#2b3445;transition:width .2s,background .2s}
 .pc-punto.activo{width:30px;background:#12f693;box-shadow:0 0 12px rgba(18,246,147,.6)}
 .pc-sin-desborde .pc-flecha,.pc-sin-desborde .pc-puntos{visibility:hidden}
 .pc-vacio{text-align:center;color:#9aa4b2}
 
-@media (max-width:860px){
+@media (max-width:1199px){
+  .pc-tarjeta{flex-basis:calc((100% - 20px) / 2)}
+}
+@media (max-width:767px){
   .pc-tarjeta{flex-basis:100%}
   .pc-carrusel{padding:0 4px}
   .pc-flecha{top:auto;bottom:-64px;transform:none}
   .pc-prev{left:calc(50% - 130px)}.pc-next{left:auto;right:calc(50% - 130px)}
   .pc-puntos{margin-top:36px}
-  .pc-cabecera{padding-right:0;margin-top:34px}
 }
 @media (prefers-reduced-motion:reduce){.pc-boton,.pc-punto{transition:none}}
   </style>
@@ -1024,40 +1053,58 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
 
     <div class="pc-pista" id="pcPista" tabindex="0" aria-label="Próximos cursos">
       {% for com in comisiones %}
-      <article class="pc-tarjeta">
+      <article class="pc-tarjeta" data-inicio="{{ com.fecha_inicio|date:'Y-m-d' }}" data-fin="{{ com.fecha_fin|date:'Y-m-d' }}">
 
-        {# Insignia: clases semanales #}
-        {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
-          {% if d1 and d2 and d3 %}
-            <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>3 clases semanales</span>
-          {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
-            <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>2 clases semanales</span>
-          {% elif d1 or d2 or d3 %}
-            <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>1 clase semanal</span>
-          {% endif %}
-        {% endwith %}
+        <div class="pc-fila-sup">
+          {# Cinta "Curso" + duración (la duración la completa el script del final) #}
+          <span class="pc-cinta">CURSO<span class="pc-dur"></span></span>
+
+          {# Insignia: clases semanales #}
+          {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
+            {% if d1 and d2 and d3 %}
+              <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>3 clases semanales</span>
+            {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
+              <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>2 clases semanales</span>
+            {% elif d1 or d2 or d3 %}
+              <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>1 clase semanal</span>
+            {% endif %}
+          {% endwith %}
+        </div>
 
         <div class="pc-cabecera">
           <img class="pc-logo" src="{% static 'img/logo-marema.png' %}" alt="Tecno Marema">
           <h3 class="pc-nombre">{{ com.id_curso.nombre_curso }}</h3>
         </div>
 
-        <ul class="pc-datos">
-          <li><svg class="pc-ico pc-verde" aria-hidden="true"><use href="#pc-i-cal"/></svg>
-              <span class="pc-etiqueta">Inicio</span><span>{{ com.fecha_inicio|date:"d \d\e F Y" }}</span></li>
-          <li><svg class="pc-ico pc-violeta" aria-hidden="true"><use href="#pc-i-bandera"/></svg>
-              <span class="pc-etiqueta">Fin</span><span>{{ com.fecha_fin|date:"d \d\e F Y" }}</span></li>
+        {# Calendario: Comienza → Termina #}
+        <div class="pc-calendario">
+          <div class="pc-hoja pc-hoja-ini">
+            <div class="pc-hoja-tit">Comienza</div>
+            <div class="pc-hoja-cuerpo">
+              <span class="pc-dia">{{ com.fecha_inicio|date:"d" }}</span>
+              <span class="pc-mes-anio"><b class="pc-mes">{{ com.fecha_inicio|date:"F" }}</b><span class="pc-anio">{{ com.fecha_inicio|date:"Y" }}</span></span>
+            </div>
+          </div>
+          <div class="pc-union" aria-hidden="true"></div>
+          <div class="pc-hoja pc-hoja-fin">
+            <div class="pc-hoja-tit">Termina</div>
+            <div class="pc-hoja-cuerpo">
+              <span class="pc-dia">{{ com.fecha_fin|date:"d" }}</span>
+              <span class="pc-mes-anio"><b class="pc-mes">{{ com.fecha_fin|date:"F" }}</b><span class="pc-anio">{{ com.fecha_fin|date:"Y" }}</span></span>
+            </div>
+          </div>
+        </div>
+
+        {# Días y horarios de cursada #}
+        <ul class="pc-horarios">
           {% if com.dia1 %}
-          <li><svg class="pc-ico pc-verde" aria-hidden="true"><use href="#pc-i-reloj"/></svg>
-              <span class="pc-etiqueta">Día 1</span><span>{{ com.dia1|capfirst }} de {{ com.horario1 }}</span></li>
+          <li class="pc-horario pc-h1"><span class="pc-h-dia">{{ com.dia1|capfirst }}</span><span class="pc-h-hora">{{ com.horario1 }}</span></li>
           {% endif %}
           {% if com.dia2 %}
-          <li><svg class="pc-ico pc-violeta" aria-hidden="true"><use href="#pc-i-reloj"/></svg>
-              <span class="pc-etiqueta">Día 2</span><span>{{ com.dia2|capfirst }} de {{ com.horario2 }}</span></li>
+          <li class="pc-horario pc-h2"><span class="pc-h-dia">{{ com.dia2|capfirst }}</span><span class="pc-h-hora">{{ com.horario2 }}</span></li>
           {% endif %}
           {% if com.dia3 %}
-          <li><svg class="pc-ico pc-verde" aria-hidden="true"><use href="#pc-i-reloj"/></svg>
-              <span class="pc-etiqueta">Día 3</span><span>{{ com.dia3|capfirst }} de {{ com.horario3 }}</span></li>
+          <li class="pc-horario pc-h3"><span class="pc-h-dia">{{ com.dia3|capfirst }}</span><span class="pc-h-hora">{{ com.horario3 }}</span></li>
           {% endif %}
         </ul>
 
@@ -1396,6 +1443,20 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
   construir();
 })();
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+/* Duración del curso: "1 mes", "6 semanas", "13 meses"… calculada con las fechas de cada tarjeta */
+(function () {
+  document.querySelectorAll('.pc-tarjeta[data-inicio]').forEach(function (t) {
+    var a = new Date(t.dataset.inicio + 'T00:00:00'), b = new Date(t.dataset.fin + 'T00:00:00');
+    var dias = Math.round((b - a) / 86400000), txt = '';
+    if (!(dias > 0)) return;
+    if (dias < 28) { var s = Math.max(1, Math.round(dias / 7)); txt = s + (s === 1 ? ' semana' : ' semanas'); }
+    else if (dias <= 45) { txt = '1 mes'; }
+    else { txt = Math.round(dias / 30.4) + ' meses'; }
+    t.querySelector('.pc-dur').textContent = ' · ' + txt;
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
