@@ -725,6 +725,84 @@
       position: relative;
     }
 
+/* ===== PRÓXIMOS CURSOS (carrusel de tarjetas) ===== */
+.pc-section{margin:3rem 0}
+.pc-titulo{
+  display:flex;align-items:center;gap:24px;margin:0 0 2.5rem;
+  font-size:clamp(1.6rem,4.5vw,2.75rem);font-weight:800;text-transform:uppercase;white-space:nowrap;
+}
+.pc-titulo::before,.pc-titulo::after{content:"";flex:1;height:2px;border-radius:2px;background:linear-gradient(90deg,transparent,#12f693)}
+.pc-titulo::after{background:linear-gradient(90deg,#12f693,transparent)}
+.pc-titulo span{color:#12f693}
+
+.pc-carrusel{position:relative;padding:0 56px}
+.pc-pista{
+  display:flex;gap:28px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;
+  padding:14px 4px;margin:-14px -4px;
+}
+.pc-pista::-webkit-scrollbar{display:none}
+
+.pc-tarjeta{
+  position:relative;flex:0 0 calc((100% - 28px) / 2);scroll-snap-align:start;
+  display:flex;flex-direction:column;gap:22px;padding:30px 28px 28px;
+  border:2px solid transparent;border-radius:26px;color:#fff;
+  background:linear-gradient(#0a1020,#0a1020) padding-box,linear-gradient(135deg,#12f693,#cf30ff) border-box;
+  box-shadow:0 0 36px rgba(18,246,147,.10),0 0 36px rgba(207,48,255,.10);
+}
+.pc-cabecera{display:flex;align-items:center;gap:14px;padding-right:130px;min-height:64px}
+.pc-logo{flex:none;width:68px;height:68px;object-fit:contain;margin:-4px 0 -4px -6px}
+.pc-nombre{margin:0;font-size:1.5rem;line-height:1.15;font-weight:700;color:#12f693}
+
+.pc-insignia{
+  position:absolute;top:16px;right:16px;display:inline-flex;align-items:center;gap:6px;
+  background:#cf30ff;color:#fff;font-size:.75rem;font-weight:600;white-space:nowrap;
+  padding:6px 12px 6px 9px;border-radius:999px;box-shadow:0 0 18px rgba(207,48,255,.45);
+}
+.pc-insignia .pc-ico{width:18px;height:18px;stroke-width:1.8}
+
+.pc-datos{display:flex;flex-direction:column;gap:14px;margin:0;padding:0;list-style:none}
+.pc-datos li{display:flex;align-items:center;gap:12px;font-size:1rem}
+.pc-ico{width:24px;height:24px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pc-verde{color:#12f693}.pc-violeta{color:#cf30ff}
+.pc-etiqueta{
+  flex:none;min-width:66px;text-align:center;background:rgba(255,255,255,.08);
+  font-size:.8rem;font-weight:600;padding:5px 12px;border-radius:9px;
+}
+
+.pc-boton{
+  margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:10px;
+  background:#12f693;color:#03120b;font-weight:700;font-size:1.15rem;line-height:1;text-decoration:none;
+  padding:16px 30px;border-radius:14px;box-shadow:0 0 22px rgba(18,246,147,.35);
+  transition:transform .15s,box-shadow .15s;
+}
+.pc-boton:hover{color:#03120b;transform:translateY(-2px);box-shadow:0 8px 30px rgba(18,246,147,.5)}
+.pc-boton .pc-ico{width:20px;height:20px;stroke-width:2.5}
+.pc-boton:focus-visible,.pc-flecha:focus-visible,.pc-punto:focus-visible{outline:3px solid #fff;outline-offset:3px}
+
+.pc-flecha{
+  position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:50%;
+  border:2px solid #12f693;background:rgba(4,7,15,.85);color:#12f693;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(18,246,147,.3);
+}
+.pc-flecha .pc-ico{width:20px;height:20px;stroke-width:2.5}
+.pc-prev{left:0}.pc-next{right:0}
+.pc-flecha[disabled]{opacity:.25;cursor:default;box-shadow:none}
+
+.pc-puntos{display:flex;justify-content:center;gap:10px;margin-top:28px;min-height:12px}
+.pc-punto{width:12px;height:12px;border-radius:999px;border:0;padding:0;cursor:pointer;background:#2b3445;transition:width .2s,background .2s}
+.pc-punto.activo{width:30px;background:#12f693;box-shadow:0 0 12px rgba(18,246,147,.6)}
+.pc-sin-desborde .pc-flecha,.pc-sin-desborde .pc-puntos{visibility:hidden}
+.pc-vacio{text-align:center;color:#9aa4b2}
+
+@media (max-width:860px){
+  .pc-tarjeta{flex-basis:100%}
+  .pc-carrusel{padding:0 4px}
+  .pc-flecha{top:auto;bottom:-64px;transform:none}
+  .pc-prev{left:calc(50% - 130px)}.pc-next{left:auto;right:calc(50% - 130px)}
+  .pc-puntos{margin-top:36px}
+  .pc-cabecera{padding-right:0;margin-top:34px}
+}
+@media (prefers-reduced-motion:reduce){.pc-boton,.pc-punto{transition:none}}
   </style>
 </head>
 <body>
@@ -918,89 +996,85 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
   </div>
 </div>
 
-<!-- Bloque: Próximos Cursos (Carousel con 3 por slide) -->
-<section class="container my-5 p-5">
-  <h2 class="text-uppercase fw-bold mb-4 text-center" style="color: #cf30ff;">Próximos Cursos</h2>
-  <div id="cursosCarousel" class="carousel slide" data-bs-ride="carousel">
+<!-- Íconos (se definen una sola vez) -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="pc-i-profe" viewBox="0 0 24 24">
+    <rect x="11" y="3" width="11" height="10" rx="1.2"/><path d="M14 6.5h5M14 9.5h3"/>
+    <circle cx="5" cy="5.6" r="2"/><path d="M5 8.2v5.3M5 13.5l-2.2 6.3M5 13.5l2.2 6.3M5 10.2l3.3-.9M8.3 9.3l3.2-1.8"/>
+  </symbol>
+  <symbol id="pc-i-cal" viewBox="0 0 24 24">
+    <rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17h.01M12 17h.01"/>
+  </symbol>
+  <symbol id="pc-i-bandera" viewBox="0 0 24 24">
+    <path d="M5 21V4M5 4h14v10H5M10 4v10M15 4v10M5 9h14"/>
+  </symbol>
+  <symbol id="pc-i-reloj" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></symbol>
+  <symbol id="pc-i-flecha" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+  <symbol id="pc-i-izq" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+  <symbol id="pc-i-der" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+</svg>
 
-    <!-- Indicadores circulares dinámicos -->
-    <div class="carousel-indicators" style="bottom: -50px;">
-      {% for _ in comisiones|agrupar_por:3 %}
-        <button type="button" data-bs-target="#cursosCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ forloop.counter }}" style="background-color: #12f693; border-radius: 50%; width: 12px; height: 12px;"></button>
-      {% endfor %}
-    </div>
+<section class="pc-section" id="proximos-cursos" aria-labelledby="pc-titulo">
+  <h2 class="pc-titulo" id="pc-titulo"><span>Próximos</span> Cursos</h2>
 
-    <div class="carousel-inner">
-      {% for grupo in comisiones|agrupar_por:3 %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-          <div class="row g-4">
-            {% for com in grupo %}
-              <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 rounded-4 shadow-lg p-3 card-comision-wrapper" style="background-color: #1a1a1a; color: white;">
+  <div class="pc-carrusel" id="pcCarrusel">
+    <button class="pc-flecha pc-prev" id="pcPrev" type="button" aria-label="Curso anterior">
+      <svg class="pc-ico" aria-hidden="true"><use href="#pc-i-izq"/></svg>
+    </button>
 
-                  {# ===== Badge clases semanales ===== #}
-                  {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
-                    {% if d1 and d2 and d3 %}
-                      <span class="badge-clases-semana">3 clases semanales</span>
-                    {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
-                      <span class="badge-clases-semana">2 clases semanales</span>
-                    {% elif d1 or d2 or d3 %}
-                      <span class="badge-clases-semana">1 clase semanal</span>
-                    {% endif %}
-                  {% endwith %}
+    <div class="pc-pista" id="pcPista" tabindex="0" aria-label="Próximos cursos">
+      {% for com in comisiones %}
+      <article class="pc-tarjeta">
 
-                  <div class="card-body">
-                    <h5 class="card-title fw-bold" style="color: #12f693;">{{ com.id_curso.nombre_curso }}</h5>
-                    <p class="card-text">
-                      <span class="badge bg-dark text-white me-2">Inicio</span> {{ com.fecha_inicio|date:"d \d\e F Y" }}<br>
-                      <span class="badge bg-dark text-white me-2">Fin</span> {{ com.fecha_fin|date:"d \d\e F Y" }}<br>
+        {# Insignia: clases semanales #}
+        {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
+          {% if d1 and d2 and d3 %}
+            <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>3 clases semanales</span>
+          {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
+            <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>2 clases semanales</span>
+          {% elif d1 or d2 or d3 %}
+            <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true"><use href="#pc-i-profe"/></svg>1 clase semanal</span>
+          {% endif %}
+        {% endwith %}
 
-                      {% if com.dia1 %}
-                        <span class="badge bg-dark text-white me-2">Día1</span> {{ com.dia1|capfirst }} de {{ com.horario1 }}<br>
-                      {% endif %}
-                      {% if com.dia2 %}
-                        <span class="badge bg-dark text-white me-2">Día2</span> {{ com.dia2|capfirst }} de {{ com.horario2 }}<br>
-                      {% endif %}
-                      {% if com.dia3 %}
-                        <span class="badge bg-dark text-white me-2">Día3</span> {{ com.dia3|capfirst }} de {{ com.horario3 }}<br>
-                      {% endif %}
-                    </p>
-
-                    <a href="{% url 'inscripcion' %}" class="btn fw-bold mt-2" style="background-color: #12f693; color: black;">Inscribirse</a>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
+        <div class="pc-cabecera">
+          <img class="pc-logo" src="{% static 'img/logo-marema.png' %}" alt="Tecno Marema">
+          <h3 class="pc-nombre">{{ com.id_curso.nombre_curso }}</h3>
         </div>
+
+        <ul class="pc-datos">
+          <li><svg class="pc-ico pc-verde" aria-hidden="true"><use href="#pc-i-cal"/></svg>
+              <span class="pc-etiqueta">Inicio</span><span>{{ com.fecha_inicio|date:"d \d\e F Y" }}</span></li>
+          <li><svg class="pc-ico pc-violeta" aria-hidden="true"><use href="#pc-i-bandera"/></svg>
+              <span class="pc-etiqueta">Fin</span><span>{{ com.fecha_fin|date:"d \d\e F Y" }}</span></li>
+          {% if com.dia1 %}
+          <li><svg class="pc-ico pc-verde" aria-hidden="true"><use href="#pc-i-reloj"/></svg>
+              <span class="pc-etiqueta">Día 1</span><span>{{ com.dia1|capfirst }} de {{ com.horario1 }}</span></li>
+          {% endif %}
+          {% if com.dia2 %}
+          <li><svg class="pc-ico pc-violeta" aria-hidden="true"><use href="#pc-i-reloj"/></svg>
+              <span class="pc-etiqueta">Día 2</span><span>{{ com.dia2|capfirst }} de {{ com.horario2 }}</span></li>
+          {% endif %}
+          {% if com.dia3 %}
+          <li><svg class="pc-ico pc-verde" aria-hidden="true"><use href="#pc-i-reloj"/></svg>
+              <span class="pc-etiqueta">Día 3</span><span>{{ com.dia3|capfirst }} de {{ com.horario3 }}</span></li>
+          {% endif %}
+        </ul>
+
+        <a href="{% url 'inscripcion' %}" class="pc-boton">Inscribirse
+          <svg class="pc-ico" aria-hidden="true"><use href="#pc-i-flecha"/></svg>
+        </a>
+      </article>
+      {% empty %}
+      <p class="pc-vacio w-100">Pronto publicaremos nuevas fechas.</p>
       {% endfor %}
     </div>
 
-    <!-- Flechas laterales personalizadas -->
-<!-- Flecha izquierda -->
-<button class="carousel-control-prev d-flex align-items-center justify-content-center 
-              top-50 start-0 translate-middle-y ms-0 ms-md-0 bg-success rounded" 
-        type="button" 
-        data-bs-target="#cursosCarousel" 
-        data-bs-slide="prev" style="width: auto;">
-  <span class="carousel-control-prev-icon" aria-hidden="true"
-        style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);">
-  </span>
-  <span class="visually-hidden">Anterior</span>
-</button>
+    <button class="pc-flecha pc-next" id="pcNext" type="button" aria-label="Curso siguiente">
+      <svg class="pc-ico" aria-hidden="true"><use href="#pc-i-der"/></svg>
+    </button>
 
-<!-- Flecha derecha -->
-<button class="carousel-control-next d-flex align-items-center justify-content-center 
-              top-50 end-0 translate-middle-y me-0 me-md-0 bg-success rounded" 
-        type="button" 
-        data-bs-target="#cursosCarousel" 
-        data-bs-slide="next" style="width: auto;">
-  <span class="carousel-control-next-icon" aria-hidden="true"
-        style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);">
-  </span>
-  <span class="visually-hidden">Siguiente</span>
-</button>
-
+    <div class="pc-puntos" id="pcPuntos"></div>
   </div>
 </section>
 
@@ -1282,6 +1356,46 @@ En este curso aprenderás a dominar la Inteligencia Artificial Generativa para l
     });
   </script>
   <!-- scrpt subir fin -->
+<script>
+(function () {
+  const car = document.getElementById('pcCarrusel');
+  const pista = document.getElementById('pcPista');
+  const prev = document.getElementById('pcPrev');
+  const next = document.getElementById('pcNext');
+  const puntos = document.getElementById('pcPuntos');
+  if (!car || !pista.querySelector('.pc-tarjeta')) { if (car) car.classList.add('pc-sin-desborde'); return; }
+
+  const paso = () => pista.querySelector('.pc-tarjeta').offsetWidth + parseFloat(getComputedStyle(pista).columnGap || 28);
+
+  function construir() {
+    const max = pista.scrollWidth - pista.clientWidth;
+    const hay = max > 4;
+    car.classList.toggle('pc-sin-desborde', !hay);
+    const total = hay ? Math.round(max / paso()) + 1 : 1;
+    puntos.innerHTML = '';
+    for (let i = 0; i < total; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'pc-punto';
+      b.setAttribute('aria-label', 'Ir al curso ' + (i + 1));
+      b.addEventListener('click', () => pista.scrollTo({ left: i * paso(), behavior: 'smooth' }));
+      puntos.appendChild(b);
+    }
+    actualizar();
+  }
+  function actualizar() {
+    const i = Math.round(pista.scrollLeft / paso());
+    [...puntos.children].forEach((p, k) => p.classList.toggle('activo', k === i));
+    prev.disabled = pista.scrollLeft <= 4;
+    next.disabled = pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 4;
+  }
+  prev.addEventListener('click', () => pista.scrollBy({ left: -paso(), behavior: 'smooth' }));
+  next.addEventListener('click', () => pista.scrollBy({ left: paso(), behavior: 'smooth' }));
+  pista.addEventListener('scroll', actualizar, { passive: true });
+  window.addEventListener('resize', construir);
+  construir();
+})();
+</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
