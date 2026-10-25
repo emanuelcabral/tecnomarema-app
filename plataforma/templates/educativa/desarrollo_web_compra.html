@@ -13,26 +13,27 @@
 
   <!-- Primary Meta Tags -->
   <title>Curso de Desarrollo Web</title>
-
   <meta name="title" content="Curso de Desarrollo Web" />
-  <meta name="description"
-    content="Aprendé a crear sitios web modernos con HTML, CSS, Bootstrap, Git, GitHub y más. Curso práctico desde cero." />
+  <meta name="keywords" content="comprar curso desarrollo web, inscribirse carrera programación, pago seguro tecno marema, curso desarrollo web certificado, estudiar programación online argentina, precio curso desarrollo web, inscripción directa programación, comprar capacitación it, certificación profesional desarrollo web, acceso inmediato curso web, oferta curso html y css, formación técnica digital, matrícula desarrollo web tecno marema, comprar curso programador junior, estudiar en tecno marema">
+
+  <meta name="description" content="Domina el arte de crear sitios modernos y funcionales con nuestro curso de Diseño Web en Tecno Marema. Aprende desde los fundamentos de HTML5 y CSS3 hasta la implementación de diseños responsivos y experiencias de usuario (UX/UI) de alto impacto. Este programa está diseñado para que construyas tu propio portafolio profesional, aprendas a maquetar proyectos reales y entiendas cómo llevar una idea desde el boceto hasta la publicación en la nube. ¡Convierte tu creatividad en una carrera digital y empieza a diseñar el internet del futuro hoy mismo!" />
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://www.tecnomarema.com.ar/desarrollo_web_compra/" />
   <meta property="og:title" content="Curso de Desarrollo Web" />
-  <meta property="og:description"
-    content="Aprendé a crear sitios web modernos con HTML, CSS, Bootstrap, Git, GitHub y más. Curso práctico desde cero." />
-  <meta property="og:image"
-    content="https://github.com/emanuelcabral/tecnomarema-app/blob/main/plataforma/static/img/tecnomarema.png" />
+  <meta property="og:description" content="Domina el arte de crear sitios modernos y funcionales con nuestro curso de Diseño Web en Tecno Marema. Aprende desde los fundamentos de HTML5 y CSS3 hasta la implementación de diseños responsivos y experiencias de usuario (UX/UI) de alto impacto. Este programa está diseñado para que construyas tu propio portafolio profesional, aprendas a maquetar proyectos reales y entiendas cómo llevar una idea desde el boceto hasta la publicación en la nube. ¡Convierte tu creatividad en una carrera digital y empieza a diseñar el internet del futuro hoy mismo!" />
+  <meta property="og:image" content="https://github.com/emanuelcabral/tecnomarema-app/blob/main/plataforma/static/img/tecnomarema.png" />
 
   <!-- X (Twitter) -->
   <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://www.tecnomarema.com.ar/desarrollo_web_compra/" />
   <meta property="twitter:title" content="Curso de Desarrollo Web" />
-  <meta property="twitter:description"
-    content="Aprendé a crear sitios web modernos con HTML, CSS, Bootstrap, Git, GitHub y más. Curso práctico desde cero." />
-  <meta property="twitter:image"
-    content="https://github.com/emanuelcabral/tecnomarema-app/blob/main/plataforma/static/img/tecnomarema.png" />
+  <meta property="twitter:description" content="Domina el arte de crear sitios modernos y funcionales con nuestro curso de Diseño Web en Tecno Marema. Aprende desde los fundamentos de HTML5 y CSS3 hasta la implementación de diseños responsivos y experiencias de usuario (UX/UI) de alto impacto. Este programa está diseñado para que construyas tu propio portafolio profesional, aprendas a maquetar proyectos reales y entiendas cómo llevar una idea desde el boceto hasta la publicación en la nube. ¡Convierte tu creatividad en una carrera digital y empieza a diseñar el internet del futuro hoy mismo!" />
+  <meta property="twitter:image" content="https://github.com/emanuelcabral/tecnomarema-app/blob/main/plataforma/static/img/tecnomarema.png" />
+
+  <!-- Meta Tags Generated with https://metatags.io -->
+
 
   <style>
     body {
@@ -134,10 +135,6 @@
       margin-right: 10px;
     }
 
-    .tec-item i {
-      font-size: 2.4rem;
-      color: #12f693;
-    }
 
     .btn {
       font-size: 1.2rem;
@@ -1053,8 +1050,15 @@
           <div class="card text-center text-white border-0 shadow-lg p-4 rounded-4">
             <h3 class="text-success mb-3">¿Qué aprenderás?</h3>
             <p class="fs-5">
-              Aprendé a crear sitios web modernos con HTML, CSS, Bootstrap, Git, GitHub y más.
-              Curso práctico desde cero.
+              Aprenderás cómo funciona internet y cómo se construyen los sitios web desde cero. Conocerás en profundidad
+              HTML y CSS, las bases para crear interfaces visuales atractivas. Explorarás herramientas como SASS y
+              Bootstrap para acelerar tu desarrollo con estilos modernos. Dominarás Git y GitHub para trabajar en equipo
+              y llevar el control de versiones de tus proyectos. Aprenderás a maquetar interfaces reales con
+              flexibilidad y orden. Descubrirás el diseño responsive para que tus sitios se vean bien en cualquier
+              dispositivo.
+              <br>
+              <br>
+              <span class="badge badge-marema me-2 text-wrap">💥 ¡Probá la primera clase GRATIS y decidí después!</span>
             </p>
           </div>
         </div>
@@ -1064,8 +1068,11 @@
     <!-- call to action -->
     <div class="text-center my-5 border p-4"
       style="backdrop-filter: blur(5px); background-color: rgba(31, 31, 31, 0.2); border-radius: 15px;">
-      <h2 class="text-white mb-4">🚀 ¡Sumate al curso!</h2>
+      <h2 class="text-white mb-4">🚀 ¡Sumate al curso! La primera clase es GRATIS</h2>
       <div class="d-flex justify-content-center gap-3">
+        <a target="_blank" href="{% url 'formulario_inscripcion' %}" class="btn btn-outline-success btn-lg px-4">
+          🙋‍♂️ Inscribirme 1° clase
+        </a>
         <a href="{% url 'inscripcion' %}" class="btn btn-success btn-lg px-4">
           💳 Comprar curso
         </a>
@@ -1080,11 +1087,20 @@
           <div class="card card-tech h-100 p-4">
             <h5 class="card-title text-uppercase text-success mb-4 ">Información del Proximo curso</h5>
             <p class="card-text mb-3">
+              <span class="badge badge-marema me-2 bi bi-hourglass-split text-wrap"> Duración por clase</span> 2 horas
+              por clase
+            </p>
+            <p class="card-text mb-3">
               <span class="badge badge-marema me-2 bi bi-calendar-range text-wrap"> Duración por curso</span>
               {{ duracion }} Hs.
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-bar-chart-fill text-wrap"> Nivel del curso</span> Desde cero
+              <span class="badge badge-marema me-2 bi bi-journal-text text-wrap"> Compromiso de Practica</span> 4-6
+              horas semanales
+            </p>
+            <p class="card-text mb-3">
+              <span class="badge badge-marema me-2 bi bi-bar-chart-fill text-wrap"> Nivel del curso</span> Principiante
+              a Experto
             </p>
           </div>
         </div>
@@ -1094,24 +1110,28 @@
           <div class="card card-tech p-4 w-100 text-center">
             <h5 class="card-title text-uppercase text-success mb-4">Tecnologías</h5>
             <div class="d-flex justify-content-around flex-wrap gap-4">
-              <div class="tec-item d-flex flex-column align-items-center">
-                <i class="bi bi-filetype-html mb-2"></i>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/html5.svg' %}" alt="HTML" class="icono-tec mb-2">
                 <span>HTML</span>
               </div>
-              <div class="tec-item d-flex flex-column align-items-center">
-                <i class="bi bi-filetype-css mb-2"></i>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/css3.svg' %}" alt="CSS" class="icono-tec mb-2">
                 <span>CSS</span>
               </div>
-              <div class="tec-item d-flex flex-column align-items-center">
-                <i class="bi bi-bootstrap mb-2"></i>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/sass.svg' %}" alt="SASS" class="icono-tec mb-2">
+                <span>SASS</span>
+              </div>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/bootstrap.svg' %}" alt="Bootstrap" class="icono-tec mb-2">
                 <span>Bootstrap</span>
               </div>
-              <div class="tec-item d-flex flex-column align-items-center">
-                <i class="bi bi-git mb-2"></i>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/git.svg' %}" alt="Git" class="icono-tec mb-2">
                 <span>Git</span>
               </div>
-              <div class="tec-item d-flex flex-column align-items-center">
-                <i class="bi bi-github mb-2"></i>
+              <div class="d-flex flex-column align-items-center">
+                <img src="{% static 'img/icons/github.svg' %}" alt="GitHub" class="icono-tec mb-2">
                 <span>GitHub</span>
               </div>
             </div>
@@ -1128,7 +1148,7 @@
         <div class="precio-pills">
           <span class="precio-pill">
             <i class="bi bi-mortarboard"></i>
-            Nivel: Desde cero
+            Nivel: Principiante a Experto
           </span>
 
           {% if opcion_duracion_principal %}
@@ -1310,15 +1330,69 @@
 
     <!-- LISTADO DE CLASES (se completa desde el contexto: lista "clases" con el título de cada una) -->
     <div id="lista-clases">
-      {% for clase in clases %}
       <div class="clase-item">
-        <div class="clase-titulo">Clase {{ forloop.counter }} - {{ clase }}</div>
+        <div class="clase-titulo">Clase 0 - Presentación del Curso</div>
       </div>
-      {% empty %}
       <div class="clase-item">
-        <div class="clase-titulo">Pronto publicaremos el temario.</div>
+        <div class="clase-titulo">Clase 1 - Conociendo a HTML</div>
       </div>
-      {% endfor %}
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 2 - Introducción a HTML</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 3 - Presentando a CSS</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 4 - Primeros pasos con CSS</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 5 - Modelo de cajas</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 6 - Flexbox</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 7 - Introducción a Grids</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 8 - Sitios Responsivos (media + grid + flex)</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 9 - Pseudoclases y Pseudoelementos + BEM</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 10 - Animaciones 1</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 11 - Animaciones 2</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 12 - Frameworks, librerías y Bootstrap</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 13 - Maquetando con Bootstrap</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 14 - Git</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 15 - GitHub</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 16 - SASS</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 17 - SASS parte 2</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 18 - SEO</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 19 - Servidores</div>
+      </div>
+      <div class="clase-item">
+        <div class="clase-titulo">Clase 20 - Final del curso</div>
+      </div>
     </div>
 
     <div class="col-md-12 d-flex mt-4">
@@ -1334,7 +1408,7 @@
           <!-- Imagen del certificado con modal -->
           <div class="col-lg-6">
             <a href="#" data-bs-toggle="modal" data-bs-target="#certModal">
-              <img src="{% static 'img/certificado-desarrollo-web.png' %}" alt="Certificado del curso"
+              <img src="{% static 'img/certificado.jpg' %}" alt="Certificado del curso"
                 class="img-fluid rounded-3 shadow" style="border: 0px solid #12f693; cursor: pointer;">
             </a>
           </div>
@@ -1371,7 +1445,7 @@
               aria-label="Cerrar"></button>
           </div>
           <div class="modal-body text-center">
-            <img src="{% static 'img/certificado-desarrollo-web.png' %}" alt="Certificado del curso"
+            <img src="{% static 'img/certificado.jpg' %}" alt="Certificado del curso"
               class="img-fluid rounded shadow" style="max-height: 80vh; border: 2px solid #12f693;">
           </div>
         </div>
@@ -1384,6 +1458,22 @@
       <div class="accordion accordion-flush" id="faqAccordion"
         style="--bs-accordion-btn-color: #12f693; --bs-accordion-active-bg: #121212; --bs-accordion-bg: #1e1e1e; --bs-accordion-color: white;">
 
+        <!-- Clase gratuita -->
+        <div class="accordion-item border-success">
+          <h2 class="accordion-header" id="faq1-heading">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1"
+              aria-expanded="false" aria-controls="faq1">
+              🎁 ¿La primera clase es gratuita?
+            </button>
+          </h2>
+          <div id="faq1" class="accordion-collapse collapse" aria-labelledby="faq1-heading"
+            data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              ¡Sí! Te podés sumar a la primera clase sin compromiso y conocer la dinámica del curso de forma gratuita.
+            </div>
+          </div>
+        </div>
+
         <!-- Conocimientos previos -->
         <div class="accordion-item border-success">
           <h2 class="accordion-header" id="faq2-heading">
@@ -1395,8 +1485,8 @@
           <div id="faq2" class="accordion-collapse collapse" aria-labelledby="faq2-heading"
             data-bs-parent="#faqAccordion">
             <div class="accordion-body">
-              No es necesario. El curso comienza desde cero y vas avanzando paso a paso hasta dominar distintas
-              herramientas.
+              No es necesario. El curso comienza desde cero y vas avanzando paso a paso hasta dominar herramientas como
+              HTML, CSS, Bootstrap y GitHub.
             </div>
           </div>
         </div>
@@ -1430,6 +1520,7 @@
             data-bs-parent="#faqAccordion">
             <div class="accordion-body">
               Para completar el curso correctamente debés participar de al menos el <strong>70%</strong> de las clases.
+              Como el curso tiene 20 clases, eso equivale a <strong>14 clases mínimas</strong> asistidas.
             </div>
           </div>
         </div>
@@ -1448,8 +1539,7 @@
               Aceptamos pagos mediante:
               <ul class="mt-2">
                 <li>📲 Transferencia bancaria</li>
-                <li>💵 Mercado Pago (tarjeta, QR, débito o crédito)</li>
-                <li>🌐 PayPal (para estudiantes internacionales)</li>
+                <li>💵 Mercado Pago (tarjeta, débito o crédito)</li>
               </ul>
               Si necesitás otro medio de pago, escribinos y lo resolvemos juntos.
             </div>
