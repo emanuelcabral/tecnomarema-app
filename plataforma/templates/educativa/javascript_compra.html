@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   {% load static %}
   {% load util_filtros %}
@@ -9,6 +10,7 @@
   <link rel="icon" href="{% static 'img/logo/logo-marema96.png' %}" type="image/png" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+
   <title>Javascript</title>
   <style>
     body {
@@ -27,6 +29,7 @@
       gap: 12px;
       margin-top: 30px;
     }
+
     .clase-item {
       background-color: #111;
       color: #fff;
@@ -35,44 +38,40 @@
       border-radius: 8px;
       transition: background-color 0.3s ease;
     }
+
     .clase-item:hover {
       background-color: #1a1a1a;
     }
+
     .clase-titulo {
       font-weight: bold;
     }
-    .curso-img {
-      width: 100%;
-      max-width: 600px;
-      border-radius: 1rem;
-      margin-bottom: 20px;
-    }
+
     .badge-general {
       background-color: #12f693;
       color: #000;
       font-size: 0.8rem;
       margin-left: 10px;
     }
+
     /* Imágenes */
     .curso-img {
       width: 100%;
+      max-width: 600px;
       max-height: 400px;
       object-fit: cover;
       border-radius: 12px;
+      margin-bottom: 20px;
     }
-    /* Badges */
-    /* p.badge-marema{
-      display: inline-block !important;
-      word-wrap: break-word !important; 
-      overflow-wrap: break-word !important;
-    } */
 
+    /* Badges */
     .badge-marema,
     .badge-horario {
       background-color: #12f693;
       color: #000;
       font-weight: 600;
     }
+
     .badge-comision {
       background-color: #cf30ff;
       color: #fff;
@@ -80,25 +79,31 @@
       padding: 5px 10px;
       border-radius: 20px;
     }
+
     .badge-fecha {
       background-color: #444;
       color: #fff;
       margin-left: 5px;
     }
+
     .badge-horario {
       margin-left: 5px;
     }
+
     /* Cards */
-    .card, .card-tech {
+    .card,
+    .card-tech {
       background-color: #111;
       color: #fff;
       border: none;
       border-radius: 1rem;
       height: 100%;
     }
+
     .card-body {
       padding: 20px;
     }
+
     /* Tecnologías */
     .icono-tec {
       width: 40px;
@@ -106,54 +111,64 @@
       object-fit: contain;
       margin-right: 10px;
     }
+
+
     .btn {
       font-size: 1.2rem;
       border-radius: 8px;
       padding: 0.75rem 2rem;
       transition: all 0.3s ease;
     }
+
     .btn-success {
       background-color: #12f693;
       border: none;
       color: black;
     }
+
     .btn-success:hover {
       background-color: #0ecb78;
       transform: scale(1.05);
     }
+
     .btn-outline-success {
       border: 2px solid #12f693;
       color: #12f693;
       background: transparent;
     }
+
     .btn-outline-success:hover {
       background-color: #12f693;
       color: black;
       transform: scale(1.05);
     }
+
     .accordion-button:not(.collapsed) {
       color: #12f693;
       background-color: #1e1e1e;
       box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.125);
     }
+
     .accordion-button::after {
       filter: hue-rotate(290deg);
-      /* para cambiar el ícono a tono magenta */
     }
+
     .accordion-item {
       border-left: 4px solid #12f693;
       background-color: #1e1e1e;
       color: white;
     }
+
     .accordion-button {
       background-color: #121212;
       color: white;
     }
+
     .accordion-button:hover {
       background-color: #1a1a1a;
     }
-    /* navbar inicio */
-    /* NAVBAR BASE */
+
+    /* ===== NAVBAR ===== */
     .navbar {
       background-color: #111;
       position: relative;
@@ -161,7 +176,8 @@
       border-bottom: 3px solid transparent;
       font-size: 1.2rem;
     }
-    /* EFECTO NEÓN CYBERPUNK */
+
+    /* Efecto neón */
     .navbar::after {
       content: "";
       position: absolute;
@@ -170,9 +186,10 @@
       height: 3px;
       width: 100%;
       background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
-      animation: neonGlow 4s linear infinite;
       background-size: 200% auto;
+      animation: neonGlow 4s linear infinite;
     }
+
     @keyframes neonGlow {
       0% {
         background-position: 0%
@@ -182,224 +199,43 @@
         background-position: 100%
       }
     }
-    /* LOGO */
+
     .navbar-brand {
       display: flex;
       align-items: center;
       font-weight: bold;
       font-size: 1.3rem;
     }
+
     .navbar-brand span.white {
       color: #fff;
     }
+
     .navbar-brand span.green {
       color: #12f693;
     }
+
     .navbar-brand img {
       height: 30px;
       margin-left: 10px;
     }
-    /* eliminar borde outline del menu hamburguesa */
-    .navbar-toggler:focus, .navbar-toggler:active, .navbar-toggler.collapsed:focus {
+
+    .navbar-toggler:focus,
+    .navbar-toggler:active,
+    .navbar-toggler.collapsed:focus {
       outline: none;
       box-shadow: none;
     }
-    /* BOTÓN LOGIN */
-    .btn-login {
-      margin-left: 10px;
-      background-color: #12f693;
-      color: #000;
-      font-weight: bold;
-      border: none;
-      transition: 0.3s;
-      font-size: 1.3rem;
-    }
-    .btn-login:hover {
-      background-color: #0cd680;
-      color: #000;
-    }
-    /* BOTÓN INSCRIPCIÓN */
-    .btn-inscripcion {
-      margin-left: 10px;
-      background-color: #cf30ff;
-      color: #fff;
-      font-weight: bold;
-      border: none;
-      transition: 0.3s;
-      font-size: 1.3rem;
-    }
-    .btn-inscripcion:hover {
-      background-color: #a120cc;
-      color: #fff;
-    }
-    /* BOTÓN HAMBURGUESA */
-    .navbar-toggler {
-      border-color: #12f693;
-    }
-    .navbar-toggler-icon {
-      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-    }
-    /* navbar fin */
-    /* footer inicia */
-    /* linea animada inicia */
-    .borde-animado {
-      width: 100%;
-      height: 4px;
-      /* grosor del borde */
-      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
-      background-size: 600% 100%;
-      animation: animarBorde 4s linear infinite;
-    }
-    @keyframes animarBorde {
-      0% {
-        background-position: 0% 0;
-      }
 
-      100% {
-        background-position: 600% 0;
-      }
-    }
-    /* linea animada fin */
-    .text-magenta {
-      color: #cf30ff;
-    }
-    .newsletter-input::placeholder {
-      color: #ccc;
-      opacity: 1;
-    }
-    .newsletter-input:focus {
-      border-color: #12f693;
-      box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.99);
-      background-color: #111;
-      color: #fff;
-    }
-    .btn-suscribirme {
-      background-color: #cf30ff;
-      color: white;
-      transition: background-color 0.3s ease;
-      border: none;
-    }
-    .btn-suscribirme:hover {
-      background-color: #12f693;
-      color: black;
-    }
-    footer a {
-      color: white;
-      text-decoration: none;
-      transition: color 0.3s ease;
-    }
-    footer a:hover {
-      color: #cf30ff;
-    }
-    .footer-icon {
-      transition: color 0.3s ease;
-    }
-    .footer-icon:hover {
-      color: #cf30ff;
-    }
-    .bi-linkedin:hover {
-      color: #0e76a8;
-    }
-    .bi-facebook:hover {
-      color: #1877f2;
-    }
-    .bi-youtube:hover {
-      color: #ff0000;
-    }
-    .bi-instagram:hover {
-      color: #e1306c;
-    }
-    .bi-discord:hover {
-      color: #7289da;
-    }
-    footer {
-      border-top: 1px solid #444;
-    }
-    /* footer fin */
-    /* subir inicia */
-    .subir {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #12f693;
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      box-shadow: 0 4px 8px rgba(18, 246, 147, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.3s ease;
-      text-decoration: none;
-      color: black;
-      /* color del ícono */
-      z-index: 9999;
-    }
-    .subir:hover {
-      background-color: #0ebf6f;
-      transform: scale(1.1);
-      color: black;
-      /* si quieres que cambie el color del ícono también, cámbialo aquí */
-    }
-    /* subir fin */
-    /* navbar inicio */
-    /* NAVBAR BASE */
-    .navbar {
-      background-color: #111;
-      position: relative;
-      z-index: 10;
-      border-bottom: 3px solid transparent;
-      font-size: 1.2rem;
-    }
-    /* EFECTO NEÓN CYBERPUNK */
-    .navbar::after {
-      content: "";
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      height: 3px;
-      width: 100%;
-      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
-      animation: neonGlow 4s linear infinite;
-    }
-    @keyframes neonGlow {
-      0% {
-        background-position: 0%
-      }
-      100% {
-        background-position: 100%
-      }
-    }
-    .navbar::after {
-      background-size: 200% auto;
-    }
-    /* LOGO */
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      font-size: 1.3rem;
-    }
-    .navbar-brand span.white {
-      color: #fff;
-    }
-    .navbar-brand span.green {
-      color: #12f693;
-    }
-    .navbar-brand img {
-      height: 30px;
-      margin-left: 10px;
-    }
-    /* LINKS */
     .navbar-nav .nav-link {
       color: #fff !important;
       transition: 0.3s;
     }
+
     .navbar-nav .nav-link:hover {
       color: #12f693 !important;
     }
-    /* BOTÓN LOGIN */
+
     .btn-login {
       margin-left: 10px;
       background-color: #12f693;
@@ -409,11 +245,12 @@
       transition: 0.3s;
       font-size: 1.3rem;
     }
+
     .btn-login:hover {
       background-color: #0cd680;
       color: #000;
     }
-    /* BOTÓN INSCRIPCIÓN */
+
     .btn-inscripcion {
       margin-left: 10px;
       background-color: #cf30ff;
@@ -423,94 +260,110 @@
       transition: 0.3s;
       font-size: 1.3rem;
     }
+
     .btn-inscripcion:hover {
       background-color: #a120cc;
       color: #fff;
     }
-    /* BOTÓN HAMBURGUESA */
+
     .navbar-toggler {
       border-color: #12f693;
     }
+
     .navbar-toggler-icon {
       background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='%2312f693' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
     }
-    /* navbar fin */
-    /* footer inicia */
-    /* linea animada inicia */
+
+    /* ===== FOOTER ===== */
     .borde-animado {
       width: 100%;
       height: 4px;
-      /* grosor del borde */
       background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
       background-size: 600% 100%;
       animation: animarBorde 4s linear infinite;
     }
+
     @keyframes animarBorde {
       0% {
         background-position: 0% 0;
       }
+
       100% {
         background-position: 600% 0;
       }
     }
-    /* linea animada fin */
+
     .text-magenta {
       color: #cf30ff;
     }
+
     .newsletter-input::placeholder {
       color: #ccc;
       opacity: 1;
     }
+
     .newsletter-input:focus {
       border-color: #12f693;
       box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.99);
       background-color: #111;
       color: #fff;
     }
+
     .btn-suscribirme {
       background-color: #cf30ff;
       color: white;
       transition: background-color 0.3s ease;
       border: none;
     }
+
     .btn-suscribirme:hover {
       background-color: #12f693;
       color: black;
     }
+
     footer a {
       color: white;
       text-decoration: none;
       transition: color 0.3s ease;
     }
+
     footer a:hover {
       color: #cf30ff;
     }
+
     .footer-icon {
       transition: color 0.3s ease;
     }
+
     .footer-icon:hover {
       color: #cf30ff;
     }
+
     .bi-linkedin:hover {
       color: #0e76a8;
     }
+
     .bi-facebook:hover {
       color: #1877f2;
     }
+
     .bi-youtube:hover {
       color: #ff0000;
     }
+
     .bi-instagram:hover {
       color: #e1306c;
     }
+
     .bi-discord:hover {
       color: #7289da;
     }
+
     footer {
       border-top: 1px solid #444;
     }
-    /* footer fin */
-    /* subir inicia */
+
+    /* ===== BOTÓN SUBIR ===== */
     .subir {
       position: fixed;
       bottom: 20px;
@@ -527,20 +380,16 @@
       transition: background-color 0.3s ease, transform 0.3s ease;
       text-decoration: none;
       color: black;
-      /* color del ícono */
       z-index: 9999;
     }
+
     .subir:hover {
       background-color: #0ebf6f;
       transform: scale(1.1);
       color: black;
-      /* si quieres que cambie el color del ícono también, cámbialo aquí */
     }
-    /* subir fin */
 
-    /* ============================================================
-       ===== NUEVO: ESTILOS SECCIÓN PRECIOS (agregado 2025) =====
-       ============================================================ */
+    /* ===== SECCIÓN PRECIOS ===== */
     .precio-section {
       width: 100%;
       margin: 2.5rem 0;
@@ -651,17 +500,19 @@
       box-shadow: 0 8px 20px rgba(18, 246, 147, 0.25);
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .precio-card {
         padding: 2rem 1.25rem;
       }
+
       .precio-cuotas {
         font-size: 2rem;
       }
+
       .precio-final {
         font-size: 1.05rem;
       }
+
       .precio-pill {
         font-size: 0.8rem;
         padding: 0.35rem 0.9rem;
@@ -672,14 +523,14 @@
       .precio-cuotas {
         font-size: 1.7rem;
       }
+
       .precio-pills {
         flex-direction: column;
         align-items: center;
       }
     }
-    /* ===== FIN NUEVO: ESTILOS SECCIÓN PRECIOS ===== */
 
-        /* ===== Badge clases semanales en cards del carousel ===== */
+    /* ===== Badge clases semanales en cards del carousel ===== */
     .badge-clases-semana {
       position: absolute;
       top: 12px;
@@ -698,10 +549,432 @@
       position: relative;
     }
 
+    /* ===== PRÓXIMOS CURSOS (carrusel de tarjetas · diseño calendario compacto) ===== */
+    .pc-section {
+      margin: 3rem 0
+    }
+
+    .pc-titulo {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin: 0 0 2rem;
+      font-size: clamp(1.6rem, 4.5vw, 2.75rem);
+      font-weight: 800;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .pc-titulo::before,
+    .pc-titulo::after {
+      content: "";
+      flex: 1;
+      height: 2px;
+      border-radius: 2px;
+      background: linear-gradient(90deg, transparent, #12f693)
+    }
+
+    .pc-titulo::after {
+      background: linear-gradient(90deg, #12f693, transparent)
+    }
+
+    .pc-titulo span {
+      color: #12f693
+    }
+
+    .pc-carrusel {
+      position: relative;
+      padding: 0 56px
+    }
+
+    .pc-pista {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      padding: 14px 4px;
+      margin: -14px -4px;
+    }
+
+    .pc-pista::-webkit-scrollbar {
+      display: none
+    }
+
+    .pc-tarjeta {
+      position: relative;
+      flex: 0 0 calc((100% - 40px) / 3);
+      scroll-snap-align: start;
+      container-type: inline-size;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      border: 2px solid transparent;
+      border-radius: 26px;
+      color: #fff;
+      background: linear-gradient(#0a1020, #0a1020) padding-box, linear-gradient(135deg, #12f693, #cf30ff) border-box;
+      box-shadow: 0 0 36px rgba(18, 246, 147, .12), 0 0 50px rgba(207, 48, 255, .10);
+    }
+
+    .pc-fila-sup {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px
+    }
+
+    .pc-cinta {
+      background: linear-gradient(90deg, #12f693, #1fc1ad);
+      color: #06251f;
+      font-weight: 800;
+      font-size: .8rem;
+      padding: 5px 14px;
+      border-radius: 999px;
+    }
+
+    .pc-insignia {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #cf30ff;
+      color: #fff;
+      font-size: .75rem;
+      font-weight: 600;
+      white-space: nowrap;
+      padding: 5px 12px 5px 9px;
+      border-radius: 999px;
+    }
+
+    .pc-insignia .pc-ico {
+      width: 16px;
+      height: 16px;
+      stroke-width: 1.8
+    }
+
+    .pc-cabecera {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px
+    }
+
+    .pc-logo {
+      flex: none;
+      width: 52px;
+      height: 52px;
+      object-fit: contain
+    }
+
+    .pc-nombre {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.15;
+      font-weight: 700;
+      color: #12f693
+    }
+
+    .pc-calendario {
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .pc-hoja {
+      flex: 1;
+      min-width: 0;
+      background: #151b33;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1.5px solid var(--c)
+    }
+
+    .pc-hoja-ini {
+      --c: #12f693
+    }
+
+    .pc-hoja-fin {
+      --c: #cf30ff
+    }
+
+    .pc-hoja-tit {
+      background: var(--c);
+      color: #06101a;
+      font-weight: 800;
+      font-size: .75rem;
+      padding: 3px 0;
+      text-align: center
+    }
+
+    .pc-hoja-fin .pc-hoja-tit {
+      color: #fff
+    }
+
+    .pc-hoja-cuerpo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 8px 6px
+    }
+
+    .pc-dia {
+      font-size: 2.25rem;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--c)
+    }
+
+    .pc-mes-anio {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2
+    }
+
+    .pc-mes {
+      font-size: .95rem;
+      font-weight: 700;
+      text-transform: capitalize
+    }
+
+    .pc-anio {
+      color: #9aa4b2;
+      font-size: .8rem
+    }
+
+    .pc-union {
+      flex: 0 0 22px;
+      height: 2px;
+      background: linear-gradient(90deg, #12f693, #cf30ff)
+    }
+
+    @container (max-width:380px) {
+      .pc-hoja-cuerpo {
+        flex-direction: column;
+        gap: 2px;
+        padding: 8px 4px
+      }
+
+      .pc-mes-anio {
+        align-items: center
+      }
+    }
+
+    .pc-horarios {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 14px;
+      padding: 0;
+      list-style: none
+    }
+
+    .pc-horario {
+      flex: 1 1 140px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 10px;
+      border-left: 4px solid var(--c);
+      background: #151b33;
+    }
+
+    .pc-h1,
+    .pc-h3 {
+      --c: #12f693
+    }
+
+    .pc-h2 {
+      --c: #cf30ff
+    }
+
+    .pc-h-dia {
+      font-size: .95rem;
+      font-weight: 700
+    }
+
+    .pc-h-hora {
+      background: var(--c);
+      color: #06251f;
+      font-weight: 800;
+      font-size: .8rem;
+      padding: 3px 9px;
+      border-radius: 8px;
+      white-space: nowrap
+    }
+
+    .pc-h2 .pc-h-hora {
+      color: #fff
+    }
+
+    .pc-ico {
+      width: 24px;
+      height: 24px;
+      flex: none;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round
+    }
+
+    .pc-boton {
+      margin-top: auto;
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #12f693;
+      color: #03120b;
+      font-weight: 700;
+      font-size: 1rem;
+      line-height: 1;
+      text-decoration: none;
+      padding: 12px 26px;
+      border-radius: 12px;
+      box-shadow: 0 0 18px rgba(18, 246, 147, .4);
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .pc-boton:hover {
+      color: #03120b;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(18, 246, 147, .5)
+    }
+
+    .pc-boton .pc-ico {
+      width: 18px;
+      height: 18px;
+      stroke-width: 2.5
+    }
+
+    .pc-boton:focus-visible,
+    .pc-flecha:focus-visible,
+    .pc-punto:focus-visible {
+      outline: 3px solid #fff;
+      outline-offset: 3px
+    }
+
+    .pc-flecha {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid #12f693;
+      background: rgba(4, 7, 15, .85);
+      color: #12f693;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px rgba(18, 246, 147, .3);
+    }
+
+    .pc-flecha .pc-ico {
+      width: 20px;
+      height: 20px;
+      stroke-width: 2.5
+    }
+
+    .pc-prev {
+      left: 0
+    }
+
+    .pc-next {
+      right: 0
+    }
+
+    .pc-flecha[disabled] {
+      opacity: .25;
+      cursor: default;
+      box-shadow: none
+    }
+
+    .pc-puntos {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 24px;
+      min-height: 12px
+    }
+
+    .pc-punto {
+      width: 12px;
+      height: 12px;
+      border-radius: 999px;
+      border: 0;
+      padding: 0;
+      cursor: pointer;
+      background: #2b3445;
+      transition: width .2s, background .2s
+    }
+
+    .pc-punto.activo {
+      width: 30px;
+      background: #12f693;
+      box-shadow: 0 0 12px rgba(18, 246, 147, .6)
+    }
+
+    .pc-sin-desborde .pc-flecha,
+    .pc-sin-desborde .pc-puntos {
+      visibility: hidden
+    }
+
+    .pc-vacio {
+      text-align: center;
+      color: #9aa4b2
+    }
+
+    @media (max-width:1199px) {
+      .pc-tarjeta {
+        flex-basis: calc((100% - 20px) / 2)
+      }
+    }
+
+    @media (max-width:767px) {
+      .pc-tarjeta {
+        flex-basis: 100%
+      }
+
+      .pc-carrusel {
+        padding: 0 4px
+      }
+
+      .pc-flecha {
+        top: auto;
+        bottom: -64px;
+        transform: none
+      }
+
+      .pc-prev {
+        left: calc(50% - 130px)
+      }
+
+      .pc-next {
+        left: auto;
+        right: calc(50% - 130px)
+      }
+
+      .pc-puntos {
+        margin-top: 36px
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+
+      .pc-boton,
+      .pc-punto {
+        transition: none
+      }
+    }
   </style>
 </head>
+
 <body>
-  <!-- Navbar -->
   <!-- NAVBAR -->
   <nav class="navbar navbar-expand-xl navbar-dark px-3">
     <div class="container-fluid">
@@ -713,8 +986,6 @@
       <!-- HAMBURGUESA -->
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido"
         style="border: none !important;">
-        <!-- <span class="navbar-toggler-icon"></span> -->
-        <!-- <i class="bi bi-three-dots" style="color: #12f693 !important;"></i> -->
         <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
       </button>
 
@@ -733,7 +1004,8 @@
                 class="bi bi-pencil me-1"></i>Inscripción</a>
           </li>
           <li class="nav-item">
-            <a href="{% url 'login' %}" class="btn btn-login btn-sm p-1 px-2"><i class="bi bi-person-badge"></i>Login</a>
+            <a href="{% url 'login' %}" class="btn btn-login btn-sm p-1 px-2"><i
+                class="bi bi-person-badge"></i>Login</a>
           </li>
         </ul>
       </div>
@@ -742,14 +1014,11 @@
 
   <div class="container mt-5">
     <h2 class="text-white mb-4">Curso de JavaScript <span class="badge-comision">Proximamente</span></h2>
-    <!-- <img src="{% static 'img/desarrollo.jpg' %}" alt="Desarrollo Web" class="curso-img mb-4">
-      <p>Aprendé a crear sitios web modernos con HTML, CSS, Bootstrap, Git, GitHub y más. Curso práctico desde cero.</p> -->
 
     <section class="container my-5">
       <div class="row align-items-center">
         <!-- Imagen a la izquierda -->
         <div class="col-lg-6 mb-4 mb-md-0">
-          <!-- <img src="static/img/devweb.png" alt="Curso de Desarrollo Web" class="img-fluid rounded shadow"> -->
           <img src="{% static 'img/Javascript.jpg' %}" alt="Javascript" class="curso-img mb-4">
         </div>
 
@@ -758,7 +1027,7 @@
           <div class="card text-center text-white border-0 shadow-lg p-4 rounded-4">
             <h3 class="text-success mb-3">¿Qué aprenderás?</h3>
             <p class="fs-5">
-                Aprenderás qué es JavaScript y cómo se usa para dar vida a los sitios web. Conocerás los conceptos fundamentales como variables, tipos de datos, operadores, condicionales y bucles. Descubrirás cómo usar funciones para organizar tu código y cómo responder a eventos para crear interacciones con el usuario. Aprenderás a manipular el DOM para cambiar el contenido de la página desde JavaScript. También entenderás la importancia de la lógica de programación y cómo resolver problemas paso a paso. Todo esto te dará una base sólida para seguir avanzando en el mundo del desarrollo web.
+              Aprenderás qué es JavaScript y cómo se usa para dar vida a los sitios web. Conocerás los conceptos fundamentales como variables, tipos de datos, operadores, condicionales y bucles. Descubrirás cómo usar funciones para organizar tu código y cómo responder a eventos para crear interacciones con el usuario. Aprenderás a manipular el DOM para cambiar el contenido de la página desde JavaScript. También entenderás la importancia de la lógica de programación y cómo resolver problemas paso a paso. Todo esto te dará una base sólida para seguir avanzando en el mundo del desarrollo web.
               <br>
               <br>
               <span class="badge badge-marema me-2 text-wrap">💥 ¡Probá la primera clase GRATIS y decidí después!</span>
@@ -767,14 +1036,12 @@
         </div>
       </div>
     </section>
-    <!-- call to action inicia-->
+
+    <!-- call to action -->
     <div class="text-center my-5 border p-4"
       style="backdrop-filter: blur(5px); background-color: rgba(31, 31, 31, 0.2); border-radius: 15px;">
       <h2 class="text-white mb-4">🚀 ¡Sumate al curso! La primera clase es GRATIS</h2>
       <div class="d-flex justify-content-center gap-3">
-        <!-- <a target="_blank" href="https://tally.so/r/w4GKMd" class="btn btn-outline-success btn-lg px-4">
-          🙋‍♂️ Inscribirme 1° clase
-        </a> -->
         <a target="_blank" href="{% url 'formulario_inscripcion' %}" class="btn btn-outline-success btn-lg px-4">
           🙋‍♂️ Inscribirme 1° clase
         </a>
@@ -783,8 +1050,8 @@
         </a>
       </div>
     </div>
+    <!-- call to action fin -->
 
-    <!-- call to action fin-->
     <div class="container my-5">
       <div class="row g-4">
         <!-- Card Info del curso -->
@@ -792,17 +1059,20 @@
           <div class="card card-tech h-100 p-4">
             <h5 class="card-title text-uppercase text-success mb-4 ">Información del Proximo curso</h5>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-hourglass-split text-wrap"> Duración por clase</span> 2 horas por clase
+              <span class="badge badge-marema me-2 bi bi-hourglass-split text-wrap"> Duración por clase</span> 2 horas
+              por clase
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-calendar-range text-wrap"> Duración por curso</span> {{ duracion }} Hs.
+              <span class="badge badge-marema me-2 bi bi-calendar-range text-wrap"> Duración por curso</span>
+              {{ duracion }} Hs.
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-journal-text text-wrap"> Compromiso de Practica</span> 4-6 horas
-              semanales
+              <span class="badge badge-marema me-2 bi bi-journal-text text-wrap"> Compromiso de Practica</span> 4-6
+              horas semanales
             </p>
             <p class="card-text mb-3">
-              <span class="badge badge-marema me-2 bi bi-bar-chart-fill text-wrap"> Nivel del curso</span> Principiante a Experto
+              <span class="badge badge-marema me-2 bi bi-bar-chart-fill text-wrap"> Nivel del curso</span> Principiante
+              a Experto
             </p>
           </div>
         </div>
@@ -810,7 +1080,6 @@
         <!-- Card Tecnologías -->
         <div class="col-md-6 d-flex">
           <div class="card card-tech p-4 w-100 text-center">
-            <!-- <h4 class="mb-4">Tecnologías que vamos a usar</h4> -->
             <h5 class="card-title text-uppercase text-success mb-4">Tecnologías</h5>
             <div class="d-flex justify-content-around flex-wrap gap-4">
               <div class="d-flex flex-column align-items-center">
@@ -823,13 +1092,11 @@
       </div>
     </div>
 
-
-    <!-- ============================================================
-         ===== NUEVO: SECCIÓN DE PRECIOS (dinámica) =====
-         ============================================================ -->
+    <!-- ===== SECCIÓN DE PRECIOS (dinámica desde el curso) ===== -->
     <section class="precio-section">
       <div class="precio-card">
 
+        <!-- Pills -->
         <div class="precio-pills">
           <span class="precio-pill">
             <i class="bi bi-mortarboard"></i>
@@ -837,140 +1104,183 @@
           </span>
 
           {% if opcion_duracion_principal %}
-            <span class="precio-pill">
-              <i class="bi bi-calendar3"></i>
-              {{ opcion_duracion_principal.texto }}
-            </span>
+          <span class="precio-pill">
+            <i class="bi bi-calendar3"></i>
+            {{ opcion_duracion_principal.texto }}
+          </span>
           {% endif %}
         </div>
 
+        <!-- Badge descuento -->
         {% if descuento_porcentaje > 0 %}
-          <div class="descuento-badge">{{ descuento_porcentaje }}% OFF</div>
+        <div class="descuento-badge">{{ descuento_porcentaje }}% OFF</div>
         {% endif %}
 
+        <!-- Precio original tachado -->
         {% if precio_original > precio_final %}
-          <p class="precio-original">${{ precio_original|formato_ars }} ARS</p>
+        <p class="precio-original">${{ precio_original|formato_ars }} ARS</p>
         {% endif %}
 
+        <!-- Precio principal (cuotas) -->
         <h2 class="precio-cuotas">6 cuotas de ${{ cuota|formato_ars }}</h2>
         <p class="precio-interes">+ intereses según tu tarjeta</p>
 
+        <!-- Precio final -->
         <p class="precio-final">
           Precio final: <span>${{ precio_final|formato_ars }} ARS</span>
         </p>
 
+        <!-- Nota -->
         <p class="precio-nota">
           Los intereses dependen de tu tarjeta y serán calculados por tu banco.
         </p>
 
+        <!-- Botón -->
         <a href="{% url 'inscripcion' %}" class="btn-comprar-precio">
           Comprar curso
         </a>
 
       </div>
     </section>
-    <!-- ===== FIN NUEVO: SECCIÓN DE PRECIOS ===== -->
-
-<div class="col-md-12 d-flex">
-  <div class="card card-tech p-4 pb-0 w-100 text-center">
-    <h5 class="card-title text-uppercase text-success mb-4">El calendario de los próximos cursos</h5>
-  </div>
-</div>
-
-<!-- Bloque: Próximos Cursos (Carousel con 3 por slide) -->
-<section class="container my-5 p-5">
-  <h2 class="text-uppercase fw-bold mb-4 text-center" style="color: #cf30ff;">Próximos Cursos</h2>
-  <div id="cursosCarousel" class="carousel slide" data-bs-ride="carousel">
-
-    <!-- Indicadores circulares dinámicos -->
-    <div class="carousel-indicators" style="bottom: -50px;">
-      {% for _ in comisiones|agrupar_por:3 %}
-        <button type="button" data-bs-target="#cursosCarousel" data-bs-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}" aria-current="true" aria-label="Slide {{ forloop.counter }}" style="background-color: #12f693; border-radius: 50%; width: 12px; height: 12px;"></button>
-      {% endfor %}
-    </div>
-
-    <div class="carousel-inner">
-      {% for grupo in comisiones|agrupar_por:3 %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-          <div class="row g-4">
-                        {% for com in grupo %}
-              <div class="col-md-6 col-lg-4">
-                <div class="card h-100 border-0 rounded-4 shadow-lg p-3 card-comision-wrapper" style="background-color: #1a1a1a; color: white;">
-
-                  {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
-                    {% if d1 and d2 and d3 %}
-                      <span class="badge-clases-semana">3 clases semanales</span>
-                    {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
-                      <span class="badge-clases-semana">2 clases semanales</span>
-                    {% elif d1 or d2 or d3 %}
-                      <span class="badge-clases-semana">1 clase semanal</span>
-                    {% endif %}
-                  {% endwith %}
-
-                  <div class="card-body">
-                    <h5 class="card-title fw-bold" style="color: #12f693;">{{ com.id_curso.nombre_curso }}</h5>
-                    <p class="card-text">
-                      <span class="badge bg-dark text-white me-2">Inicio</span> {{ com.fecha_inicio|date:"d \d\e F Y" }}<br>
-                      <span class="badge bg-dark text-white me-2">Fin</span> {{ com.fecha_fin|date:"d \d\e F Y" }}<br>
-
-                      {% if com.dia1 %}
-                        <span class="badge bg-dark text-white me-2">Día1</span> {{ com.dia1|capfirst }} de {{ com.horario1 }}<br>
-                      {% endif %}
-                      {% if com.dia2 %}
-                        <span class="badge bg-dark text-white me-2">Día2</span> {{ com.dia2|capfirst }} de {{ com.horario2 }}<br>
-                      {% endif %}
-                      {% if com.dia3 %}
-                        <span class="badge bg-dark text-white me-2">Día3</span> {{ com.dia3|capfirst }} de {{ com.horario3 }}<br>
-                      {% endif %}
-                    </p>
-
-                    <a href="{% url 'inscripcion' %}" class="btn fw-bold mt-2" style="background-color: #12f693; color: black;">Inscribirse</a>
-                  </div>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% endfor %}
-    </div>
-
-    <!-- Flechas laterales personalizadas -->
-<!-- Flecha izquierda -->
-<button class="carousel-control-prev d-flex align-items-center justify-content-center 
-              top-50 start-0 translate-middle-y ms-0 ms-md-0 bg-success rounded" 
-        type="button" 
-        data-bs-target="#cursosCarousel" 
-        data-bs-slide="prev" style="width: auto;">
-  <span class="carousel-control-prev-icon" aria-hidden="true"
-        style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);">
-  </span>
-  <span class="visually-hidden">Anterior</span>
-</button>
-
-<!-- Flecha derecha -->
-<button class="carousel-control-next d-flex align-items-center justify-content-center 
-              top-50 end-0 translate-middle-y me-0 me-md-0 bg-success rounded" 
-        type="button" 
-        data-bs-target="#cursosCarousel" 
-        data-bs-slide="next" style="width: auto;">
-  <span class="carousel-control-next-icon" aria-hidden="true"
-        style="filter: brightness(0) saturate(100%) invert(59%) sepia(69%) saturate(590%) hue-rotate(92deg) brightness(97%) contrast(97%);">
-  </span>
-  <span class="visually-hidden">Siguiente</span>
-</button>
-
-  </div>
-</section>
-
+    <!-- ===== FIN SECCIÓN DE PRECIOS ===== -->
 
     <div class="col-md-12 d-flex">
       <div class="card card-tech p-4 pb-0 w-100 text-center">
-        <!-- <h4 class="mb-4">Tecnologías que vamos a usar</h4> -->
+        <h5 class="card-title text-uppercase text-success mb-4">El calendario de los próximos cursos</h5>
+      </div>
+    </div>
+
+    <!-- Íconos (se definen una sola vez) -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <symbol id="pc-i-profe" viewBox="0 0 24 24">
+        <rect x="11" y="3" width="11" height="10" rx="1.2" />
+        <path d="M14 6.5h5M14 9.5h3" />
+        <circle cx="5" cy="5.6" r="2" />
+        <path d="M5 8.2v5.3M5 13.5l-2.2 6.3M5 13.5l2.2 6.3M5 10.2l3.3-.9M8.3 9.3l3.2-1.8" />
+      </symbol>
+      <symbol id="pc-i-cal" viewBox="0 0 24 24">
+        <rect x="3" y="4.5" width="18" height="16" rx="3" />
+        <path d="M3 9.5h18M8 2.5v4M16 2.5v4M8 13.5h.01M12 13.5h.01M16 13.5h.01M8 17h.01M12 17h.01" />
+      </symbol>
+      <symbol id="pc-i-bandera" viewBox="0 0 24 24">
+        <path d="M5 21V4M5 4h14v10H5M10 4v10M15 4v10M5 9h14" />
+      </symbol>
+      <symbol id="pc-i-reloj" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 7v5l3.2 2" />
+      </symbol>
+      <symbol id="pc-i-flecha" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </symbol>
+      <symbol id="pc-i-izq" viewBox="0 0 24 24">
+        <path d="M15 5l-7 7 7 7" />
+      </symbol>
+      <symbol id="pc-i-der" viewBox="0 0 24 24">
+        <path d="M9 5l7 7-7 7" />
+      </symbol>
+    </svg>
+
+    <section class="pc-section" id="proximos-cursos" aria-labelledby="pc-titulo">
+      <h2 class="pc-titulo" id="pc-titulo"><span>Próximos</span> Cursos</h2>
+
+      <div class="pc-carrusel" id="pcCarrusel">
+        <button class="pc-flecha pc-prev" id="pcPrev" type="button" aria-label="Curso anterior">
+          <svg class="pc-ico" aria-hidden="true">
+            <use href="#pc-i-izq" /></svg>
+        </button>
+
+        <div class="pc-pista" id="pcPista" tabindex="0" aria-label="Próximos cursos">
+          {% for com in comisiones %}
+          <article class="pc-tarjeta" data-inicio="{{ com.fecha_inicio|date:'Y-m-d' }}"
+            data-fin="{{ com.fecha_fin|date:'Y-m-d' }}">
+
+            <div class="pc-fila-sup">
+              {# Cinta "Curso" + duración (la completa el script del final) #}
+              <span class="pc-cinta">CURSO<span class="pc-dur"></span></span>
+
+              {# Insignia: clases semanales #}
+              {% with d1=com.dia1 d2=com.dia2 d3=com.dia3 %}
+              {% if d1 and d2 and d3 %}
+              <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true">
+                  <use href="#pc-i-profe" /></svg>3 clases semanales</span>
+              {% elif d1 and d2 or d1 and d3 or d2 and d3 %}
+              <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true">
+                  <use href="#pc-i-profe" /></svg>2 clases semanales</span>
+              {% elif d1 or d2 or d3 %}
+              <span class="pc-insignia"><svg class="pc-ico" aria-hidden="true">
+                  <use href="#pc-i-profe" /></svg>1 clase semanal</span>
+              {% endif %}
+              {% endwith %}
+            </div>
+
+            <div class="pc-cabecera">
+              📌
+              <h3 class="pc-nombre">{{ com.id_curso.nombre_curso }}</h3>
+            </div>
+
+            {# Calendario: Comienza → Termina #}
+            <div class="pc-calendario">
+              <div class="pc-hoja pc-hoja-ini">
+                <div class="pc-hoja-tit">Comienza</div>
+                <div class="pc-hoja-cuerpo">
+                  <span class="pc-dia">{{ com.fecha_inicio|date:"d" }}</span>
+                  <span class="pc-mes-anio"><b class="pc-mes">{{ com.fecha_inicio|date:"F" }}</b><span
+                      class="pc-anio">{{ com.fecha_inicio|date:"Y" }}</span></span>
+                </div>
+              </div>
+              <div class="pc-union" aria-hidden="true"></div>
+              <div class="pc-hoja pc-hoja-fin">
+                <div class="pc-hoja-tit">Termina</div>
+                <div class="pc-hoja-cuerpo">
+                  <span class="pc-dia">{{ com.fecha_fin|date:"d" }}</span>
+                  <span class="pc-mes-anio"><b class="pc-mes">{{ com.fecha_fin|date:"F" }}</b><span
+                      class="pc-anio">{{ com.fecha_fin|date:"Y" }}</span></span>
+                </div>
+              </div>
+            </div>
+
+            {# Días y horarios de cursada #}
+            <ul class="pc-horarios">
+              {% if com.dia1 %}
+              <li class="pc-horario pc-h1"><span class="pc-h-dia">{{ com.dia1|capfirst }}</span><span
+                  class="pc-h-hora">{{ com.horario1 }}</span></li>
+              {% endif %}
+              {% if com.dia2 %}
+              <li class="pc-horario pc-h2"><span class="pc-h-dia">{{ com.dia2|capfirst }}</span><span
+                  class="pc-h-hora">{{ com.horario2 }}</span></li>
+              {% endif %}
+              {% if com.dia3 %}
+              <li class="pc-horario pc-h3"><span class="pc-h-dia">{{ com.dia3|capfirst }}</span><span
+                  class="pc-h-hora">{{ com.horario3 }}</span></li>
+              {% endif %}
+            </ul>
+
+            <a href="{% url 'inscripcion' %}" class="pc-boton">Inscribirse
+              <svg class="pc-ico" aria-hidden="true">
+                <use href="#pc-i-flecha" /></svg>
+            </a>
+          </article>
+          {% empty %}
+          <p class="pc-vacio w-100">Pronto publicaremos nuevas fechas.</p>
+          {% endfor %}
+        </div>
+
+        <button class="pc-flecha pc-next" id="pcNext" type="button" aria-label="Curso siguiente">
+          <svg class="pc-ico" aria-hidden="true">
+            <use href="#pc-i-der" /></svg>
+        </button>
+
+        <div class="pc-puntos" id="pcPuntos"></div>
+      </div>
+    </section>
+
+    <div class="col-md-12 d-flex">
+      <div class="card card-tech p-4 pb-0 w-100 text-center">
         <h5 class="card-title text-uppercase text-success mb-4">Las clases del curso</h5>
       </div>
     </div>
 
-    <!-- LISTADO DE CLASES -->
+    <!-- LISTADO DE CLASES (se completa desde el contexto: lista "clases" con el título de cada una) -->
     <div id="lista-clases">
       <div class="clase-item">
         <div class="clase-titulo">Clase 0 - Presentación del Curso</div>
@@ -1039,7 +1349,6 @@
 
     <div class="col-md-12 d-flex mt-4">
       <div class="card card-tech p-4 pb-0 w-100 text-center">
-        <!-- <h4 class="mb-4">Tecnologías que vamos a usar</h4> -->
         <h5 class="card-title text-uppercase text-success mb-4">Obtén tu certificado de Aprobación</h5>
       </div>
     </div>
@@ -1088,8 +1397,8 @@
               aria-label="Cerrar"></button>
           </div>
           <div class="modal-body text-center">
-            <img src="{% static 'img/certificado.jpg' %}" alt="Certificado del curso" class="img-fluid rounded shadow"
-              style="max-height: 80vh; border: 2px solid #12f693;">
+            <img src="{% static 'img/certificado.jpg' %}" alt="Certificado del curso"
+              class="img-fluid rounded shadow" style="max-height: 80vh; border: 2px solid #12f693;">
           </div>
         </div>
       </div>
@@ -1220,11 +1529,16 @@
         <div class="col-lg-3 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
           <div class="d-flex justify-content-start gap-3">
-            <a href="https://www.linkedin.com/company/tecnomarema/" target="_blank" class="fs-4 footer-icon" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-            <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" class="fs-4 footer-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-            <a href="https://www.youtube.com/@TecnoMarema" target="_blank" class="fs-4 footer-icon" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-            <a href="https://www.instagram.com/tecno.marema/" target="_blank" class="fs-4 footer-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-            <a href="https://discord.gg/MCtWGb2k3n" target="_blank" class="fs-4 footer-icon" aria-label="Discord"><i class="bi bi-discord"></i></a>
+            <a href="https://www.linkedin.com/company/tecnomarema/" target="_blank" class="fs-4 footer-icon"
+              aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" class="fs-4 footer-icon"
+              aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://www.youtube.com/@TecnoMarema" target="_blank" class="fs-4 footer-icon"
+              aria-label="YouTube"><i class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/tecno.marema/" target="_blank" class="fs-4 footer-icon"
+              aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+            <a href="https://discord.gg/MCtWGb2k3n" target="_blank" class="fs-4 footer-icon" aria-label="Discord"><i
+                class="bi bi-discord"></i></a>
           </div>
         </div>
 
@@ -1233,7 +1547,8 @@
           <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
           <p class="mb-1">
             <i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i>
-            <a id="contacto" href="mailto:tecnomarema.ar@gmail.com" style="word-wrap: break-word;">tecnomarema.ar@gmail.com</a>
+            <a id="contacto" href="mailto:tecnomarema.ar@gmail.com"
+              style="word-wrap: break-word;">tecnomarema.ar@gmail.com</a>
           </p>
         </div>
 
@@ -1269,13 +1584,11 @@
     </div>
   </footer>
 
-  <!-- btn subir inicia -->
+  <!-- btn subir -->
   <a href="#" class="subir" aria-label="Subir al inicio" id="btnSubir">
     <i class="bi bi-chevron-up"></i>
   </a>
-  <!-- btn subir fin -->
 
-  <!-- scrpt subir inicia -->
   <script>
     document.getElementById('btnSubir').addEventListener('click', function (event) {
       event.preventDefault();
@@ -1285,7 +1598,85 @@
       });
     });
   </script>
-  <!-- scrpt subir fin -->
+
+  <script>
+    (function () {
+      const car = document.getElementById('pcCarrusel');
+      const pista = document.getElementById('pcPista');
+      const prev = document.getElementById('pcPrev');
+      const next = document.getElementById('pcNext');
+      const puntos = document.getElementById('pcPuntos');
+      if (!car || !pista.querySelector('.pc-tarjeta')) {
+        if (car) car.classList.add('pc-sin-desborde');
+        return;
+      }
+
+      const paso = () => pista.querySelector('.pc-tarjeta').offsetWidth + parseFloat(getComputedStyle(pista)
+        .columnGap || 28);
+
+      function construir() {
+        const max = pista.scrollWidth - pista.clientWidth;
+        const hay = max > 4;
+        car.classList.toggle('pc-sin-desborde', !hay);
+        const total = hay ? Math.round(max / paso()) + 1 : 1;
+        puntos.innerHTML = '';
+        for (let i = 0; i < total; i++) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'pc-punto';
+          b.setAttribute('aria-label', 'Ir al curso ' + (i + 1));
+          b.addEventListener('click', () => pista.scrollTo({
+            left: i * paso(),
+            behavior: 'smooth'
+          }));
+          puntos.appendChild(b);
+        }
+        actualizar();
+      }
+
+      function actualizar() {
+        const i = Math.round(pista.scrollLeft / paso());
+        [...puntos.children].forEach((p, k) => p.classList.toggle('activo', k === i));
+        prev.disabled = pista.scrollLeft <= 4;
+        next.disabled = pista.scrollLeft + pista.clientWidth >= pista.scrollWidth - 4;
+      }
+      prev.addEventListener('click', () => pista.scrollBy({
+        left: -paso(),
+        behavior: 'smooth'
+      }));
+      next.addEventListener('click', () => pista.scrollBy({
+        left: paso(),
+        behavior: 'smooth'
+      }));
+      pista.addEventListener('scroll', actualizar, {
+        passive: true
+      });
+      window.addEventListener('resize', construir);
+      construir();
+    })();
+  </script>
+  <script>
+    /* Duración del curso: "1 mes", "6 semanas", "13 meses"… calculada con las fechas de cada tarjeta */
+    (function () {
+      document.querySelectorAll('.pc-tarjeta[data-inicio]').forEach(function (t) {
+        var a = new Date(t.dataset.inicio + 'T00:00:00'),
+          b = new Date(t.dataset.fin + 'T00:00:00');
+        var dias = Math.round((b - a) / 86400000),
+          txt = '';
+        if (!(dias > 0)) return;
+        if (dias < 28) {
+          var s = Math.max(1, Math.round(dias / 7));
+          txt = s + (s === 1 ? ' semana' : ' semanas');
+        } else if (dias <= 45) {
+          txt = '1 mes';
+        } else {
+          txt = Math.round(dias / 30.4) + ' meses';
+        }
+        t.querySelector('.pc-dur').textContent = ' · ' + txt;
+      });
+    })();
+  </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
