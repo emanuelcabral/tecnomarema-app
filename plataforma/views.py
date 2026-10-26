@@ -7047,7 +7047,7 @@ def enviar_newsletter_en_background(data):
         'codigo_cupon': data['codigo_cupon'],
         'fecha_vencimiento': data['fecha_vencimiento'],
         'link_promocion': data['link_promocion'],
-        'link_discord': "https://discord.gg/MCtWGb2k3n",
+        'link_discord': "https://discord.gg/REAvwzqD7",
         'link_linkedin': "https://www.linkedin.com/company/tecnomarema/",
         'link_youtube': "https://www.youtube.com/@TecnoMarema",
         'link_instagram': "https://www.instagram.com/tecno.marema/",
