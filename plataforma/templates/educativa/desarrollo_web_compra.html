@@ -34,6 +34,11 @@
 
   <!-- Meta Tags Generated with https://metatags.io -->
 
+  <!-- link para la fuente del titulo principal - inicia -->
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@800&display=swap" rel="stylesheet">
+  <!-- link para la fuente del titulo principal - fin -->
 
   <style>
     body {
@@ -45,6 +50,76 @@
       color: #fff;
       font-family: 'Segoe UI', sans-serif;
     }
+   /*estilos para el titulo - inicia  */
+   .course-title { position: relative; padding-bottom: 16px; }
+
+.course-kicker {
+  font: 800 .8rem 'Nunito', sans-serif;
+  letter-spacing: .25em;
+  text-transform: uppercase;
+  color: #00F7FF;
+}
+
+.course-title h1 {
+  font: 400 clamp(2.6rem, 6vw, 4.5rem)/1 'Bebas Neue', sans-serif;
+  letter-spacing: .04em;
+  color: #fff;
+  margin: .2em 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .3em;
+}
+
+.course-title .grad {
+  background: linear-gradient(90deg, #12F693, #CF30FF);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 14px rgba(207, 48, 255, .45));
+}
+
+/* línea de acento */
+.course-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 120px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #12F693, #CF30FF);
+  box-shadow: 0 0 12px #12F693;
+}
+
+/* etiqueta Disponible */
+.badge-disp {
+  display: inline-flex;
+  align-items: center;
+  gap: .45em;
+  font: 800 .9rem 'Nunito', sans-serif;
+  letter-spacing: .03em;
+  color: #12F693;
+  border: 1.5px solid #12F693;
+  background: rgba(18, 246, 147, .1);
+  padding: .3em .8em;
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgba(18, 246, 147, .35);
+}
+
+.badge-disp i {
+  width: .55em;
+  height: .55em;
+  border-radius: 50%;
+  background: #12F693;
+  animation: pulse 1.6s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .35; transform: scale(.7); }
+}
+   /*estilos para el titulo - fin  */
 
     #lista-clases {
       display: grid;
@@ -1036,7 +1111,13 @@
   </nav>
 
   <div class="container mt-5">
-    <h2 class="text-white mb-4">Curso de Desarrollo Web <span class="badge-comision">Proximamente</span></h2>
+    <div class="course-title">
+      <span class="course-kicker">Curso en vivo</span>
+      <h1>
+        Curso de <span class="grad">Desarrollo Web</span>
+        <span class="badge-disp"><i></i>Disponible</span>
+      </h1>
+    </div>
 
     <section class="container my-5">
       <div class="row align-items-center">
