@@ -1361,6 +1361,11 @@
       <div class="collapse navbar-collapse" id="navbarContenido">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
           <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
+            {% comment %} {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %} {% endcomment %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a>
+                </li>
+            {% comment %} {% endif %} {% endcomment %}
           <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}#cursos">Cursos</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}#info">Info</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}#testimonios">Testimonios</a></li>
