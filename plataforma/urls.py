@@ -392,6 +392,9 @@ path("test/", test),
     
     path("tutoriales/", views.tutoriales, name="tutoriales"),
 
+    path('administrador/generador_links/', views.generador_links_view, name='generador_links'),
+    path('api/generar_links_masivo/', views.api_generar_links_masivo, name='api_generar_links_masivo'),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 

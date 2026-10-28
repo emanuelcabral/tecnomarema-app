@@ -1,0 +1,110 @@
+{% extends 'educativa/base.html' %} <!-- Ajustá según tu template base de admin -->
+{% block content %}
+<div class="container mt-4">
+    <h2>🔗 Generador de Links de Jitsi Meet</h2>
+    <p class="text-muted">Seleccioná una comisión para autogenerar los enlaces de todas sus clases bajo el patrón establecido.</p>
+
+    <div class="card p-4 shadow-sm mb-4">
+        <div class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label for="selectComision" class="form-label font-weight-bold">Seleccionar Comisión:</label>
+                <select id="selectComision" class="form-select form-control">
+                    <option value="">-- Elija una comisión --</option>
+                    {% for com in comisiones %}
+                        <option value="{{ com.id_comision }}">Comisión {{ com.numero_comision }} - {{ com.id_curso.nombre_curso }} (Inicio: {{ com.fecha_inicio }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <div class="form-check mt-4">
+                    <input class="form-check-input" type="checkbox" id="checkSobrescribir">
+                    <label class="form-check-label" for="checkSobrescribir">
+                        Sobrescribir links existentes
+                    </label>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <button id="btnGenerar" class="btn btn-primary w-100" onclick="generarLinks()">⚡ Generar Links</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor donde se cargarán las clases de la comisión seleccionada -->
+    <div id="resultadoComision" class="card p-4 shadow-sm">
+        <h5 class="text-secondary">Clases de la comisión</h5>
+        <div class="table-responsive">
+            <table class="table table-striped mt-2">
+                <thead>
+                    <tr>
+                        <th>Nº Clase</th>
+                        <th>Nombre de la Clase</th>
+                        <th>Fecha</th>
+                        <th>Link Jitsi Meet Actual</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaClasesBody">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">Selecciona una comisión para ver sus clases.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script básico para manejar la interacción de la vista
+    document.getElementById('selectComision').addEventListener('change', function() {
+        const comisionId = this.value;
+        if(!comisionId) return;
+        
+        // Opcional: Podés hacer un fetch acá para poblar la tabla dinámicamente con las clases ya existentes de esa comisión
+        fetch(`/ajax/obtener_clases_de_comision/?comision_id=${comisionId}`)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById('tablaClasesBody');
+                tbody.innerHTML = '';
+                if(data.clases && data.clases.length > 0) {
+                    // Podés mapear y mostrar las clases aquí
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" class="text-center">No hay clases cargadas para esta comisión.</td></tr>`;
+                }
+            });
+    });
+
+    function generarLinks() {
+        const comisionId = document.getElementById('selectComision').value;
+        const sobrescribir = document.getElementById('checkSobrescribir').checked;
+
+        if(!comisionId) {
+            alert('Por favor, seleccioná una comisión.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('comision_id', comisionId);
+        formData.append('sobrescribir', sobrescribir);
+        // Si usas CSRF token en tus formularios POST de Django:
+        // formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        fetch("{% url 'api_generar_links_masivo' %}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                alert(data.mensaje);
+                location.reload(); // Recarga para ver los cambios reflejados
+            } else {
+                alert('Error: ' + data.mensaje);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}

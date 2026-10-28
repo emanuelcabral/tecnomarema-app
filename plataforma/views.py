@@ -7397,3 +7397,65 @@ def tutoriales(request):
         'nombre_usuario': nombre_usuario_sesion,
         'usuario': usuario
     })
+
+
+#----------------------------------------------------------------------#
+#-----------------Generacion de links de las clases--------------------#
+#----------------------------------------------------------------------#
+
+import string
+from django.utils.crypto import get_random_string
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from plataforma.models import Comision, ClaseComision, Curso
+from plataforma.decorators import session_required
+
+def generar_link_jitsi(curso_nombre, numero_clase):
+    # Limpiamos el nombre para sacar el prefijo (ej: "JavaScript" -> "JS")
+    limpio = "".join([c for c in curso_nombre if c.isalnum()]).upper()
+    prefijo_curso = limpio[:2] if len(limpio) >= 2 else "CURSO"
+    num_clase_str = str(numero_clase).zfill(2)
+    codigo_random = get_random_string(length=6, allowed_chars=string.ascii_uppercase + string.digits)
+    return f"https://meet.jit.si/clase{num_clase_str}{prefijo_curso}-{codigo_random}"
+
+@session_required
+def generador_links_view(request):
+    comisiones = Comision.objects.select_related('id_curso').all().order_by('-fecha_inicio')
+    cursos = Curso.objects.all()
+    
+    contexto = {
+        'comisiones': comisiones,
+        'cursos': cursos,
+        'nombre_usuario': request.session.get('usuario_logueado'),
+    }
+    return render(request, 'administrador/generador_links.html', contexto)
+
+@session_required
+@require_POST
+def api_generar_links_masivo(request):
+    comision_id = request.POST.get('comision_id')
+    sobrescribir = request.POST.get('sobrescribir') == 'true'
+    
+    if not comision_id:
+        return JsonResponse({'success': False, 'mensaje': 'Debe seleccionar una comisión.'}, status=400)
+        
+    try:
+        comision = Comision.objects.select_related('id_curso').get(id_comision=comision_id)
+        clases_comision = ClaseComision.objects.filter(comision=comision).select_related('clase')
+        
+        generados_count = 0
+        for cc in clases_comision:
+            if not cc.link or sobrescribir:
+                cc.link = generar_link_jitsi(comision.id_curso.nombre_curso, cc.clase.numero_clase)
+                cc.save(update_fields=['link'])
+                generados_count += 1
+                
+        return JsonResponse({
+            'success': True, 
+            'mensaje': f'Se generaron/actualizaron {generados_count} links correctamente para la comisión {comision.numero_comision}.'
+        })
+    except Comision.DoesNotExist:
+        return JsonResponse({'success': False, 'mensaje': 'La comisión no existe.'}, status=404)
+    except Exception as e:
+        return JsonResponse({'success': False, 'mensaje': str(e)}, status=500)
