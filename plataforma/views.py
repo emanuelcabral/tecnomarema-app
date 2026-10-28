@@ -7358,6 +7358,6 @@ def guardar_certificado(request):
 #-----------------Tutoriales de la web--------------------#
 #---------------------------------------------------------#
 
-@session_required
+# @session_required
 def tutoriales(request):
     return render(request, "educativa/tutoriales.html")

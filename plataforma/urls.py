@@ -389,10 +389,11 @@ path("test/", test),
 
     path('mensajes-chat/', views.mensaje_chat_list, name='listado_mensajes_chat'),
     path('mensajes-chat/eliminar/', views.eliminar_mensajes_chat, name='eliminar_mensajes_chat'),
+    
+    path("tutoriales/", views.tutoriales, name="tutoriales"),
 
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
-    path("tutoriales/", views.tutoriales, name="tutoriales"),
 
 ]
 
