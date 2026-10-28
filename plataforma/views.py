@@ -915,22 +915,42 @@ def saldo(request):
 # def contacto(request):
 #     return render(request, 'educativa/contacto.html')
 
+from .models import PerfilUsuario
+
 @session_required
 def faq(request):
+    nombre_usuario_sesion = request.session.get('usuario_logueado')
+    usuario = None
+    if nombre_usuario_sesion:
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
+
     return render(request, 'educativa/faq.html', {
-        'nombre_usuario': request.session.get('usuario_logueado')
+        'nombre_usuario': nombre_usuario_sesion,
+        'usuario': usuario
     })
 
 @session_required
 def redes(request):
+    nombre_usuario_sesion = request.session.get('usuario_logueado')
+    usuario = None
+    if nombre_usuario_sesion:
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
+
     return render(request, 'educativa/redes.html', {
-        'nombre_usuario': request.session.get('usuario_logueado')
+        'nombre_usuario': nombre_usuario_sesion,
+        'usuario': usuario
     })
 
 @session_required
 def contacto(request):
+    nombre_usuario_sesion = request.session.get('usuario_logueado')
+    usuario = None
+    if nombre_usuario_sesion:
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
+
     return render(request, 'educativa/contacto.html', {
-        'nombre_usuario': request.session.get('usuario_logueado')
+        'nombre_usuario': nombre_usuario_sesion,
+        'usuario': usuario
     })
 
 @session_required
