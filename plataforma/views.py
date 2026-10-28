@@ -853,6 +853,12 @@ def saldo(request):
     estudiante = get_object_or_404(DatosDeEstudiantes, id_estudiante=usuario_id)
     nombre_usuario = getattr(estudiante, 'nombre', 'Estudiante') # Obtenemos el nombre del estudiante
 
+    # Obtenemos el PerfilUsuario vinculado para evitar errores en el contexto
+    try:
+        usuario = PerfilUsuario.objects.get(id_usuario=usuario_id)
+    except PerfilUsuario.DoesNotExist:
+        usuario = None
+
     cursos_inscriptos = []
 
     for i in range(1, 10):
@@ -884,6 +890,7 @@ def saldo(request):
             })
 
     context = {
+        'usuario': usuario,
         'cursos_inscriptos': cursos_inscriptos,
         'nombre_usuario': nombre_usuario, # Pasamos el nombre correcto
     }
