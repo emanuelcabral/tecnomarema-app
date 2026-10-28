@@ -7483,3 +7483,97 @@ def api_generar_links_masivo(request):
         return JsonResponse({'success': False, 'mensaje': 'La comisión no existe.'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'mensaje': str(e)}, status=500)
+
+####################################################################################
+#-----------------------------Asignacion docente-----------------------------------#
+####################################################################################
+
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Comision, PerfilUsuario, DatosDeEstudiantes
+
+def asignacion_docente_view(request):
+    comisiones = Comision.objects.select_related('id_curso').all()
+    
+    # Obtenemos perfiles que son profesores o tutores
+    profesores = PerfilUsuario.objects.filter(rol='profesor', is_active=True)
+    tutores = PerfilUsuario.objects.filter(rol='tutor', is_active=True)
+
+    # Mapeamos las comisiones con sus profesores y tutores actuales según los campos cursandoX
+    comisiones_data = []
+    for com in comisiones:
+        # Buscar profesor asignado a esta comisión (revisando si alguna de sus columnas cursando tiene este id)
+        profe_asignado = None
+        for p in profesores:
+            if p.id_estudiante:  # Si tiene vinculado DatosDeEstudiantes
+                est = p.id_estudiante
+                comisiones_est = [est.cursando1_id, est.cursando2_id, est.cursando3_id, est.cursando4_id, est.cursando5_id, est.cursando6_id, est.cursando7_id, est.cursando8_id, est.cursando9_id]
+                if com.id_comision in [str(c.id_comision) for c in comisiones_est if c]:
+                    profe_asignado = p
+                    break
+
+        # Buscar tutores asignados (puede haber hasta 4 o más)
+        tutores_asignados = []
+        for t in tutores:
+            if t.id_estudiante:
+                est = t.id_estudiante
+                comisiones_est = [est.cursando1_id, est.cursando2_id, est.cursando3_id, est.cursando4_id, est.cursando5_id, est.cursando6_id, est.cursando7_id, est.cursando8_id, est.cursando9_id]
+                if com.id_comision in [str(c.id_comision) for c in comisiones_est if c]:
+                    tutores_asignados.append(t)
+
+        comisiones_data.append({
+            'comision': com,
+            'profesor': profe_asignado,
+            'tutores': tutores_asignados[:4] # Limitamos máximo a 4 tutores para la vista
+        })
+
+    contexto = {
+        'comisiones_data': comisiones_data,
+        'profesores': profesores,
+        'tutores': tutores,
+    }
+    return render(request, 'administrador/asignacion_docente.html', contexto)
+
+def guardar_asignacion_docente(request):
+    if request.method == 'POST':
+        comision_id = request.POST.get('id_comision')
+        profesor_id = request.POST.get('profesor') or None
+        
+        # Recogemos los tutores enviados (hasta 4)
+        nuevos_tutores_ids = [
+            request.POST.get('tutor1'),
+            request.POST.get('tutor2'),
+            request.POST.get('tutor3'),
+            request.POST.get('tutor4')
+        ]
+        nuevos_tutores_ids = [t for t in nuevos_tutores_ids if t] # Filtrar vacíos
+
+        try:
+            comision = Comision.objects.get(id_comision=comision_id)
+
+            # 1. Gestionar Profesor: Asignar la comisión al slot libre del profesor seleccionado
+            if profesor_id:
+                profe = PerfilUsuario.objects.get(id_usuario=profesor_id, rol='profesor')
+                if profe.id_estudiante:
+                    est = profe.id_estudiante
+                    # Asignar al primer slot libre (cursando1 a cursando9) si no la tiene ya
+                    slots = ['cursando1', 'cursando2', 'cursando3', 'cursando4', 'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9']
+                    ya_asignada = False
+                    slot_libre = None
+                    for s in slots:
+                        val = getattr(est, s)
+                        if val and str(val.id_comision) == str(comision_id):
+                            ya_asignada = True
+                            break
+                        if not val and not slot_libre:
+                            slot_libre = s
+                    
+                    if not ya_asignada and slot_libre:
+                        setattr(est, slot_libre, comision)
+                        est.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Asignación guardada correctamente'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

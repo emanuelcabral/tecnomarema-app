@@ -395,6 +395,9 @@ path("test/", test),
     path('administrador/generador_links/', views.generador_links_view, name='generador_links'),
     path('api/generar_links_masivo/', views.api_generar_links_masivo, name='api_generar_links_masivo'),
 
+    path('administrador/asignacion_docente/', views.asignacion_docente_view, name='asignacion_docente'),
+    path('administrador/guardar_asignacion_docente/', views.guardar_asignacion_docente, name='guardar_asignacion_docente'),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 

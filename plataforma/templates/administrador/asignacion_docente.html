@@ -1,0 +1,185 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+.card-panel{ background:#1f1f1f; border-radius:12px; padding:25px; box-shadow:0 0 15px rgba(0,0,0,.25); }
+.table-dark{ --bs-table-bg:#232323; }
+.toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px; }
+.editable{ background:#2d2d2d !important; }
+select{ background:#2b2b2b; color:white; border:1px solid #555; border-radius:5px; padding:5px; width:100%; }
+select option{ background:#2b2b2b; }
+#tabla-asignacion td{ vertical-align:middle; }
+.tutor-badge { background: #333; border: 1px solid #555; padding: 2px 6px; border-radius: 4px; font-size: 0.85rem; display: inline-block; margin: 2px; }
+</style>
+
+<div class="container-fluid mt-4">
+<div class="card-panel">
+<h2 class="text-success mb-4"><i class="bi bi-people-fill"></i> Asignación Docente</h2>
+
+<div class="toolbar">
+<div class="left">
+<button id="btnEditar" class="btn btn-warning" disabled><i class="bi bi-pencil-square"></i> Asignar / Modificar</button>
+</div>
+<div class="right">
+<button id="btnGuardar" class="btn btn-success d-none"><i class="bi bi-floppy"></i> Guardar cambios</button>
+<button id="btnCancelar" class="btn btn-secondary d-none">Cancelar</button>
+</div>
+</div>
+
+<table id="tabla-asignacion" class="table table-dark table-striped table-hover align-middle">
+<thead>
+<tr>
+<th width="40"><input type="checkbox" id="checkTodos"></th>
+<th>ID</th>
+<th>Comisión</th>
+<th>Curso</th>
+<th>Profesor</th>
+<th>Tutores (Máx. 4)</th>
+<th>Inicio</th>
+<th>Fin</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+{% for item in comisiones_data %}
+<tr data-id="{{ item.comision.id_comision }}">
+<td><input type="checkbox" class="fila-check"></td>
+<td class="id">{{ item.comision.id_comision }}</td>
+<td class="numero_comision">{{ item.comision.numero_comision }}</td>
+<td>{{ item.comision.id_curso.nombre_curso }}</td>
+
+<!-- Profesor -->
+<td class="col-profesor" data-profe-id="{% if item.profesor %}{{ item.profesor.id_usuario }}{% endif %}">
+    {% if item.profesor %}
+        <span class="badge bg-primary"><i class="bi bi-person-badge"></i> {{ item.profesor.nombre_usuario }}</span>
+    {% else %}
+        <span class="text-danger">Sin asignar</span>
+    {% endif %}
+</td>
+
+<!-- Tutores -->
+<td class="col-tutores">
+    <div class="lista-tutores-visual">
+        {% for tutor in item.tutores %}
+            <span class="tutor-badge" data-tutor-id="{{ tutor.id_usuario }}">{{ tutor.nombre_usuario }}</span>
+        {% empty %}
+            <span class="text-muted">Ninguno</span>
+        {% endfor %}
+    </div>
+</td>
+
+<td>{{ item.comision.fecha_inicio|date:"d/m/Y" }}</td>
+<td>{{ item.comision.fecha_fin|date:"d/m/Y" }}</td>
+<td>{{ item.comision.estado_comision }}</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+<script>
+const listaProfesores = [
+    {% for p in profesores %}
+    { id: "{{ p.id_usuario }}", nombre: "{{ p.nombre_usuario }}" },
+    {% endfor %}
+];
+const listaTutores = [
+    {% for t in tutores %}
+    { id: "{{ t.id_usuario }}", nombre: "{{ t.nombre_usuario }}" },
+    {% endfor %}
+];
+
+let tabla;
+let filaEditando = null;
+
+$(document).ready(function(){
+    tabla = $("#tabla-asignacion").DataTable({
+        order:[[1,"asc"]],
+        language:{ url:"//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
+        columnDefs:[{ orderable:false, targets:0 }]
+    });
+    actualizarBoton();
+});
+
+$(document).on("change", ".fila-check", function(){ actualizarBoton(); });
+$("#checkTodos").change(function(){
+    $(".fila-check").prop("checked", $(this).prop("checked"));
+    actualizarBoton();
+});
+
+function actualizarBoton(){
+    let cantidad = $(".fila-check:checked").length;
+    $("#btnEditar").prop("disabled", cantidad != 1);
+}
+
+$("#btnEditar").click(function(){
+    let fila = $(".fila-check:checked").closest("tr");
+    filaEditando = fila;
+    fila.addClass("editable");
+
+    // Select Profesor
+    let currentProfeId = fila.find(".col-profesor").attr("data-profe-id");
+    let selectProfeHtml = '<select class="form-select form-select-sm select-profe"><option value="">-- Sin Profesor --</option>';
+    listaProfesores.forEach(p => {
+        selectProfeHtml += `<option value="${p.id}" ${p.id == currentProfeId ? 'selected' : ''}>${p.nombre}</option>`;
+    });
+    selectProfeHtml += '</select>';
+    fila.find(".col-profesor").html(selectProfeHtml);
+
+    // Selects Tutores (1 al 4)
+    let currentTutors = [];
+    fila.find(".tutor-badge").each(function(){
+        currentTutors.push($(this).attr("data-tutor-id"));
+    });
+
+    let tutoresHtml = '<div class="d-flex flex-column gap-1">';
+    for(let i=0; i<4; i++){
+        let selVal = currentTutors[i] || "";
+        tutoresHtml += `<select class="form-select form-select-sm select-tutor-${i+1}">
+            <option value="">-- Tutor ${i+1} (Opcional) --</option>`;
+        listaTutores.forEach(t => {
+            tutoresHtml += `<option value="${t.id}" ${t.id == selVal ? 'selected' : ''}>${t.nombre}</option>`;
+        });
+        tutoresHtml += `</select>`;
+    }
+    tutoresHtml += '</div>';
+    fila.find(".col-tutores").html(tutoresHtml);
+
+    $("#btnGuardar, #btnCancelar").removeClass("d-none");
+    $("#btnEditar").addClass("d-none");
+    $(".fila-check, #checkTodos").prop("disabled", true);
+});
+
+$("#btnCancelar").click(function(){ location.reload(); });
+
+$("#btnGuardar").click(function(){
+    let fila = filaEditando;
+    let datos = {
+        id_comision: fila.attr("data-id"),
+        profesor: fila.find(".select-profe").val(),
+        tutor1: fila.find(".select-tutor-1").val(),
+        tutor2: fila.find(".select-tutor-2").val(),
+        tutor3: fila.find(".select-tutor-3").val(),
+        tutor4: fila.find(".select-tutor-4").val()
+    };
+
+    $.ajax({
+        url:"{% url 'guardar_asignacion_docente' %}",
+        method:"POST",
+        headers:{ "X-CSRFToken":"{{ csrf_token }}" },
+        data: datos,
+        success:function(respuesta){
+            location.reload();
+        },
+        error:function(){
+            Swal.fire({ icon:"error", title:"Error", text:"No fue posible guardar las asignaciones." });
+        }
+    });
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endblock %}
