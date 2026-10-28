@@ -7555,21 +7555,22 @@ def guardar_asignacion_docente(request):
         try:
             comision = Comision.objects.get(id_comision=comision_id)
             com_id_str = str(comision_id)
-            slots = ['cursando1', 'cursando2', 'cursando3', 'cursando4', 'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9']
+            slots_obj = ['cursando1', 'cursando2', 'cursando3', 'cursando4', 'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9']
+            slots_id = ['cursando1_id', 'cursando2_id', 'cursando3_id', 'cursando4_id', 'cursando5_id', 'cursando6_id', 'cursando7_id', 'cursando8_id', 'cursando9_id']
 
             # ==========================================
             # A. GESTIÓN DEL PROFESOR
             # ==========================================
-            # 1. Limpiar esta comisión de cualquier otro profesor que la tuviera asignada por error/cambio
+            # 1. Limpiar esta comisión de cualquier otro profesor que la tuviera asignada
             todos_profesores = PerfilUsuario.objects.filter(rol='profesor').select_related('id_estudiante')
             for p in todos_profesores:
                 if p.id_estudiante and (not nuevo_profe_id or str(p.id_usuario) != str(nuevo_profe_id)):
                     est = p.id_estudiante
                     modificado = False
-                    for s in slots:
-                        val = getattr(s + '_id', None) or getattr(est, s)
-                        if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
-                            setattr(est, s, None)
+                    for s_id in slots_id:
+                        val = getattr(est, s_id)
+                        if val and str(val) == com_id_str:
+                            setattr(est, s_id, None)
                             modificado = True
                     if modificado:
                         est.save()
@@ -7581,13 +7582,15 @@ def guardar_asignacion_docente(request):
                     est = profe.id_estudiante
                     ya_la_tiene = False
                     slot_libre = None
-                    for s in slots:
-                        val = getattr(est, s)
-                        if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
+                    for s_id in slots_id:
+                        val = getattr(est, s_id)
+                        if val and str(val) == com_id_str:
                             ya_la_tiene = True
                             break
-                        if not val and not slot_libre:
+                    for s in slots_obj:
+                        if not getattr(est, s) and not slot_libre:
                             slot_libre = s
+                            break
                     
                     if not ya_la_tiene and slot_libre:
                         setattr(est, slot_libre, comision)
@@ -7604,10 +7607,10 @@ def guardar_asignacion_docente(request):
                     if t_id_str not in nuevos_tutores_ids:
                         est = t.id_estudiante
                         modificado = False
-                        for s in slots:
-                            val = getattr(est, s)
-                            if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
-                                setattr(est, s, None)
+                        for s_id in slots_id:
+                            val = getattr(est, s_id)
+                            if val and str(val) == com_id_str:
+                                setattr(est, s_id, None)
                                 modificado = True
                         if modificado:
                             est.save()
@@ -7619,13 +7622,15 @@ def guardar_asignacion_docente(request):
                     est = tutor.id_estudiante
                     ya_la_tiene = False
                     slot_libre = None
-                    for s in slots:
-                        val = getattr(est, s)
-                        if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
+                    for s_id in slots_id:
+                        val = getattr(est, s_id)
+                        if val and str(val) == com_id_str:
                             ya_la_tiene = True
                             break
-                        if not val and not slot_libre:
+                    for s in slots_obj:
+                        if not getattr(est, s) and not slot_libre:
                             slot_libre = s
+                            break
                     
                     if not ya_la_tiene and slot_libre:
                         setattr(est, slot_libre, comision)
