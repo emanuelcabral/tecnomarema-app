@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   {% load static %}
   <meta charset="UTF-8" />
@@ -10,84 +11,464 @@
   <title>Antes de empezar | TecnoMarema</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;800&display=swap"
+    rel="stylesheet">
   <style>
-    :root { --verde:#12f693; --magenta:#cf30ff; --cyan:#00f7ff; --card:#111; --card2:#1a1a1a; }
-    body { background-color:#000; background-image:url("{% static 'img/fondo1.svg' %}"); background-size:cover; background-position:center; background-repeat:no-repeat; background-attachment:fixed; color:#fff; font-family:'Nunito','Segoe UI',sans-serif; }
-    :focus-visible { outline:3px solid var(--cyan); outline-offset:2px; }
+    :root {
+      --verde: #12f693;
+      --magenta: #cf30ff;
+      --cyan: #00f7ff;
+      --card: #111;
+      --card2: #1a1a1a;
+    }
 
-    /* Navbar (igual que tus cursos) */
-    .navbar { background-color:#111; position:relative; z-index:10; border-bottom:3px solid transparent; font-size:1.2rem; }
-    .navbar::after { content:""; position:absolute; bottom:0; left:0; height:3px; width:100%; background:linear-gradient(90deg,#12f693,#cf30ff,#12f693); background-size:200% auto; animation:neonGlow 4s linear infinite; }
-    @keyframes neonGlow { 0%{background-position:0%} 100%{background-position:100%} }
-    .navbar-brand { display:flex; align-items:center; font-weight:bold; font-size:1.3rem; }
-    .navbar-brand .white { color:#fff; } .navbar-brand .green { color:var(--verde); }
-    .navbar-brand img { height:30px; margin-left:10px; }
-    .navbar-nav .nav-link { color:#fff !important; transition:.3s; }
-    .navbar-nav .nav-link:hover, .navbar-nav .nav-link.active { color:var(--verde) !important; }
-    .btn-login {margin-left: 10px;background-color: #12f693;color: #000;font-weight: bold;border: none;transition: 0.3s;font-size: 1.3rem;}
-    .btn-login:hover { background-color:#0cd680; color:#000; }
-    .btn-inscripcion { margin-left:10px; background-color:var(--magenta); color:#fff; font-weight:bold; border:none; font-size:1.3rem; }
-    .btn-inscripcion:hover { background-color:#a120cc; color:#fff; }
+    body {
+      background-color: #000;
+      background-image: url("{% static 'img/fondo1.svg' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: #fff;
+      font-family: 'Nunito', 'Segoe UI', sans-serif;
+    }
 
-    /* Título (mismo tratamiento que el del curso) */
-    .page-title { position:relative; padding-bottom:16px; margin:44px 0 28px; }
-    .kicker { font:800 .8rem 'Nunito',sans-serif; letter-spacing:.25em; text-transform:uppercase; color:var(--cyan); }
-    .page-title h1 { font:400 clamp(2.6rem,6vw,4.5rem)/1 'Bebas Neue',sans-serif; letter-spacing:.04em; margin:.2em 0 0; display:flex; flex-wrap:wrap; align-items:center; gap:.3em; }
-    .grad { background:linear-gradient(90deg,#12F693,#CF30FF); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 14px rgba(207,48,255,.45)); }
-    .page-title::after { content:""; position:absolute; left:0; bottom:0; width:120px; height:4px; border-radius:999px; background:linear-gradient(90deg,#12F693,#CF30FF); box-shadow:0 0 12px #12F693; }
-    .badge-disp { display:inline-flex; align-items:center; gap:.45em; font:800 .9rem 'Nunito',sans-serif; color:var(--verde); border:1.5px solid var(--verde); background:rgba(18,246,147,.1); padding:.3em .8em; border-radius:999px; box-shadow:0 0 10px rgba(18,246,147,.35); }
-    .badge-disp i { width:.55em; height:.55em; border-radius:50%; background:var(--verde); animation:pulse 1.6s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.35;transform:scale(.7)} }
-    .lead-tm { color:#d8d8d8; max-width:60ch; margin:0 0 28px; font-size:1.1rem; }
+    :focus-visible {
+      outline: 3px solid var(--cyan);
+      outline-offset: 2px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #111;
+      position: relative;
+      z-index: 10;
+      border-bottom: 3px solid transparent;
+      font-size: 1.2rem;
+    }
+
+    .navbar::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      background-size: 200% auto;
+      animation: neonGlow 4s linear infinite;
+    }
+
+    @keyframes neonGlow {
+      0% {
+        background-position: 0%
+      }
+      100% {
+        background-position: 100%
+      }
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 1.3rem;
+    }
+
+    .navbar-brand .white {
+      color: #fff;
+    }
+
+    .navbar-brand .green {
+      color: var(--verde);
+    }
+
+    .navbar-brand img {
+      height: 30px;
+      margin-left: 10px;
+    }
+
+    .navbar-nav .nav-link {
+      color: #fff !important;
+      transition: .3s;
+    }
+
+    .navbar-nav .nav-link:hover,
+    .navbar-nav .nav-link.active {
+      color: var(--verde) !important;
+    }
+
+    /* Botón de Cerrar Sesión ajustado */
+    .btn-login {
+      margin-left: 0.5rem;
+      background-color: var(--verde);
+      color: #000;
+      font-weight: bold;
+      border: none;
+      transition: 0.3s;
+      font-size: 1.05rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 6px;
+    }
+
+    .btn-login:hover {
+      background-color: #0cd680;
+      color: #000;
+    }
+
+    .btn-inscripcion {
+      margin-left: 10px;
+      background-color: var(--magenta);
+      color: #fff;
+      font-weight: bold;
+      border: none;
+      font-size: 1.3rem;
+    }
+
+    .btn-inscripcion:hover {
+      background-color: #a120cc;
+      color: #fff;
+    }
+
+    /* Título */
+    .page-title {
+      position: relative;
+      padding-bottom: 16px;
+      margin: 44px 0 28px;
+    }
+
+    .kicker {
+      font: 800 .8rem 'Nunito', sans-serif;
+      letter-spacing: .25em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+
+    .page-title h1 {
+      font: 400 clamp(2.6rem, 6vw, 4.5rem)/1 'Bebas Neue', sans-serif;
+      letter-spacing: .04em;
+      margin: .2em 0 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .3em;
+    }
+
+    .grad {
+      background: linear-gradient(90deg, #12F693, #CF30FF);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      filter: drop-shadow(0 0 14px rgba(207, 48, 255, .45));
+    }
+
+    .page-title::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 120px;
+      height: 4px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #12F693, #CF30FF);
+      box-shadow: 0 0 12px #12F693;
+    }
+
+    .badge-disp {
+      display: inline-flex;
+      align-items: center;
+      gap: .45em;
+      font: 800 .9rem 'Nunito', sans-serif;
+      color: var(--verde);
+      border: 1.5px solid var(--verde);
+      background: rgba(18, 246, 147, .1);
+      padding: .3em .8em;
+      border-radius: 999px;
+      box-shadow: 0 0 10px rgba(18, 246, 147, .35);
+    }
+
+    .badge-disp i {
+      width: .55em;
+      height: .55em;
+      border-radius: 50%;
+      background: var(--verde);
+      animation: pulse 1.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+        transform: scale(1)
+      }
+      50% {
+        opacity: .35;
+        transform: scale(.7)
+      }
+    }
+
+    .lead-tm {
+      color: #d8d8d8;
+      max-width: 60ch;
+      margin: 0 0 28px;
+      font-size: 1.1rem;
+    }
 
     /* Reproductor */
-    .tm-card { background:var(--card); border-radius:1rem; }
-    .player-card { border:1px solid rgba(18,246,147,.3); box-shadow:0 0 24px rgba(18,246,147,.08); padding:12px; }
-    .player { aspect-ratio:16/9; border-radius:.75rem; overflow:hidden; background:#000; }
-    .player iframe { width:100%; height:100%; border:0; display:block; }
-    .now { padding:18px 8px 8px; }
-    .now h2 { font:400 2.2rem/1.1 'Bebas Neue',sans-serif; letter-spacing:.04em; color:var(--verde); margin:0 0 4px; }
-    .now p { color:#ccc; margin:0 0 16px; }
-    .btn { font-size:1.05rem; font-weight:800; border-radius:8px; padding:.6rem 1.5rem; transition:all .3s ease; }
-    .btn-success { background-color:var(--verde); border:none; color:#000; }
-    .btn-success:hover { background-color:#0ecb78; color:#000; transform:scale(1.05); }
-    .btn-outline-success { border:2px solid var(--verde); color:var(--verde); background:transparent; }
-    .btn-outline-success:hover { background-color:var(--verde); color:#000; transform:scale(1.05); }
-    .btn:disabled { opacity:.35; transform:none; }
+    .tm-card {
+      background: var(--card);
+      border-radius: 1rem;
+    }
+
+    .player-card {
+      border: 1px solid rgba(18, 246, 147, .3);
+      box-shadow: 0 0 24px rgba(18, 246, 147, .08);
+      padding: 12px;
+    }
+
+    .player {
+      aspect-ratio: 16/9;
+      border-radius: .75rem;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .player iframe {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+    }
+
+    .now {
+      padding: 18px 8px 8px;
+    }
+
+    .now h2 {
+      font: 400 2.2rem/1.1 'Bebas Neue', sans-serif;
+      letter-spacing: .04em;
+      color: var(--verde);
+      margin: 0 0 4px;
+    }
+
+    .now p {
+      color: #ccc;
+      margin: 0 0 16px;
+    }
+
+    .btn {
+      font-size: 1.05rem;
+      font-weight: 800;
+      border-radius: 8px;
+      padding: .6rem 1.5rem;
+      transition: all .3s ease;
+    }
+
+    .btn-success {
+      background-color: var(--verde);
+      border: none;
+      color: #000;
+    }
+
+    .btn-success:hover {
+      background-color: #0ecb78;
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    .btn-outline-success {
+      border: 2px solid var(--verde);
+      color: var(--verde);
+      background: transparent;
+    }
+
+    .btn-outline-success:hover {
+      background-color: var(--verde);
+      color: #000;
+      transform: scale(1.05);
+    }
+
+    .btn:disabled {
+      opacity: .35;
+      transform: none;
+    }
 
     /* Progreso */
-    .prog { margin-bottom:16px; }
-    .prog b { font:400 1.6rem 'Bebas Neue',sans-serif; letter-spacing:.04em; color:var(--cyan); }
-    .bar { height:8px; background:#222; border-radius:999px; overflow:hidden; }
-    .bar i { display:block; height:100%; width:0; border-radius:999px; background:linear-gradient(90deg,#12f693,#cf30ff); box-shadow:0 0 10px rgba(18,246,147,.6); transition:width .4s; }
+    .prog {
+      margin-bottom: 16px;
+    }
+
+    .prog b {
+      font: 400 1.6rem 'Bebas Neue', sans-serif;
+      letter-spacing: .04em;
+      color: var(--cyan);
+    }
+
+    .bar {
+      height: 8px;
+      background: #222;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar i {
+      display: block;
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #12f693, #cf30ff);
+      box-shadow: 0 0 10px rgba(18, 246, 147, .6);
+      transition: width .4s;
+    }
 
     /* Lista */
-    .list-card { padding:18px 14px; max-height:760px; overflow:auto; }
-    .grupo h3 { font:400 1.5rem 'Bebas Neue',sans-serif; letter-spacing:.05em; color:#fff; margin:6px 6px 8px; }
-    .grupo + .grupo { margin-top:18px; }
-    .item { display:grid; grid-template-columns:96px 1fr 22px; gap:12px; align-items:center; width:100%; text-align:left; background:var(--card2); color:#fff; border:0; border-left:5px solid var(--verde); border-radius:8px; padding:10px 12px; margin-bottom:10px; cursor:pointer; font:inherit; transition:background-color .3s ease; }
-    .item:hover { background:#222; }
-    .item[aria-current="true"] { border-left-color:var(--magenta); background:#241030; box-shadow:0 0 14px rgba(207,48,255,.3); }
-    .thumb { position:relative; aspect-ratio:16/9; border-radius:6px; overflow:hidden; background:#000; }
-    .thumb img { width:100%; height:100%; object-fit:cover; display:block; }
-    .thumb span { position:absolute; left:5px; top:5px; background:var(--verde); color:#000; font:400 1.05rem/1 'Bebas Neue',sans-serif; padding:3px 7px; border-radius:5px; }
-    .item strong { font-weight:800; line-height:1.25; }
-    .chk { color:#444; font-size:1.2rem; line-height:1; }
-    .item.visto .chk { color:var(--verde); }
+    .list-card {
+      padding: 18px 14px;
+      max-height: 760px;
+      overflow: auto;
+    }
 
-    .ayuda { margin:28px 0 56px; padding:22px 26px; border-left:5px solid var(--cyan); }
-    .ayuda h3 { font:400 1.8rem 'Bebas Neue',sans-serif; letter-spacing:.04em; color:var(--cyan); margin:0 0 6px; }
-    .ayuda a { color:var(--verde); }
+    .grupo h3 {
+      font: 400 1.5rem 'Bebas Neue', sans-serif;
+      letter-spacing: .05em;
+      color: #fff;
+      margin: 6px 6px 8px;
+    }
+
+    .grupo+.grupo {
+      margin-top: 18px;
+    }
+
+    .item {
+      display: grid;
+      grid-template-columns: 96px 1fr 22px;
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      text-align: left;
+      background: var(--card2);
+      color: #fff;
+      border: 0;
+      border-left: 5px solid var(--verde);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      font: inherit;
+      transition: background-color .3s ease;
+    }
+
+    .item:hover {
+      background: #222;
+    }
+
+    .item[aria-current="true"] {
+      border-left-color: var(--magenta);
+      background: #241030;
+      box-shadow: 0 0 14px rgba(207, 48, 255, .3);
+    }
+
+    .thumb {
+      position: relative;
+      aspect-ratio: 16/9;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumb span {
+      position: absolute;
+      left: 5px;
+      top: 5px;
+      background: var(--verde);
+      color: #000;
+      font: 400 1.05rem/1 'Bebas Neue', sans-serif;
+      padding: 3px 7px;
+      border-radius: 5px;
+    }
+
+    .item strong {
+      font-weight: 800;
+      line-height: 1.25;
+    }
+
+    .chk {
+      color: #444;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .item.visto .chk {
+      color: var(--verde);
+    }
+
+    .ayuda {
+      margin: 28px 0 56px;
+      padding: 22px 26px;
+      border-left: 5px solid var(--cyan);
+    }
+
+    .ayuda h3 {
+      font: 400 1.8rem 'Bebas Neue', sans-serif;
+      letter-spacing: .04em;
+      color: var(--cyan);
+      margin: 0 0 6px;
+    }
+
+    .ayuda a {
+      color: var(--verde);
+    }
 
     /* Footer */
-    .borde-animado { width:100%; height:4px; background:linear-gradient(90deg,#12f693,#cf30ff,#12f693); background-size:600% 100%; animation:animarBorde 4s linear infinite; }
-    @keyframes animarBorde { 0%{background-position:0% 0} 100%{background-position:600% 0} }
-    .text-magenta { color:var(--magenta); }
-    footer { border-top:1px solid #444; }
-    footer a { color:#fff; text-decoration:none; transition:color .3s ease; }
-    footer a:hover { color:var(--magenta); }
-    @media (prefers-reduced-motion:reduce) { *,*::before,*::after { animation:none !important; transition:none !important; } }
+    .borde-animado {
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+      background-size: 600% 100%;
+      animation: animarBorde 4s linear infinite;
+    }
+
+    @keyframes animarBorde {
+      0% {
+        background-position: 0% 0
+      }
+      100% {
+        background-position: 600% 0
+      }
+    }
+
+    .text-magenta {
+      color: var(--magenta);
+    }
+
+    footer {
+      border-top: 1px solid #444;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      transition: color .3s ease;
+    }
+
+    footer a:hover {
+      color: var(--magenta);
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
   </style>
 </head>
 
@@ -111,9 +492,9 @@
       <!-- MENÚ -->
       <div class="collapse navbar-collapse" id="navbarContenido">
         <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
-            {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno'  %}
-              <li class="nav-item"><a class="nav-link" href="{% url 'tutoriales' %}">Tutoriales</a></li>
-            {% endif %}
+          {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'tutoriales' %}">Tutoriales</a></li>
+          {% endif %}
           <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
@@ -123,8 +504,7 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
-          <li class="nav-item">
-            <!-- <a href="{% url 'logout' %}" class="btn btn-login btn-sm"><i class="bi bi-person-badge"></i>Cerrar sesión</a> -->
+          <li class="nav-item ms-lg-2">
             <form action="{% url 'logout' %}" method="post" class="d-inline">
               {% csrf_token %}
               <button type="submit" class="btn btn-login btn-sm">
@@ -143,12 +523,15 @@
       <div class="kicker">Tu primer paso en la plataforma</div>
       <h1>Antes de <span class="grad">empezar</span> <span class="badge-disp"><i></i>10 videos</span></h1>
     </header>
-    <p class="lead-tm">Videos cortos para que conozcas la plataforma y no te pierdas nada del curso. Seguí el orden o andá directo a lo que necesitás.</p>
+    <p class="lead-tm">Videos cortos para que conozcas la plataforma y no te pierdas nada del curso. Seguí el orden o
+      andá directo a lo que necesitás.</p>
 
     <div class="row g-4">
       <div class="col-lg-8">
         <div class="tm-card player-card">
-          <div class="player"><iframe id="frame" title="Video tutorial" allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
+          <div class="player"><iframe id="frame" title="Video tutorial"
+              allow="accelerometer; encrypted-media; picture-in-picture; fullscreen" allowfullscreen
+              referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
           <div class="now">
             <h2 id="titulo"></h2>
             <p id="desc"></p>
@@ -171,7 +554,9 @@
 
     <section class="tm-card ayuda">
       <h3>¿Seguís con dudas?</h3>
-      <p class="mb-0">Escribinos a <a href="mailto:tecnomarema.ar@gmail.com">tecnomarema.ar@gmail.com</a> o sumate a la <a href="https://discord.gg/REAvwzqD7" target="_blank" rel="noopener">comunidad en Discord</a> y te ayudamos.</p>
+      <p class="mb-0">Escribinos a <a href="mailto:tecnomarema.ar@gmail.com">tecnomarema.ar@gmail.com</a> o sumate a la
+        <a href="https://discord.gg/REAvwzqD7" target="_blank" rel="noopener">comunidad en Discord</a> y te ayudamos.
+      </p>
     </section>
   </main>
 
@@ -191,16 +576,22 @@
         <div class="col-lg-4 mb-4" id="redes">
           <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
           <div class="d-flex gap-3 fs-4">
-            <a href="https://www.linkedin.com/company/tecnomarema/" target="_blank" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-            <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
-            <a href="https://www.youtube.com/@TecnoMarema" target="_blank" aria-label="YouTube"><i class="bi bi-youtube"></i></a>
-            <a href="https://www.instagram.com/tecno.marema/" target="_blank" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
-            <a href="https://discord.gg/REAvwzqD7" target="_blank" aria-label="Discord"><i class="bi bi-discord"></i></a>
+            <a href="https://www.linkedin.com/company/tecnomarema/" target="_blank" aria-label="LinkedIn"><i
+                class="bi bi-linkedin"></i></a>
+            <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" aria-label="Facebook"><i
+                class="bi bi-facebook"></i></a>
+            <a href="https://www.youtube.com/@TecnoMarema" target="_blank" aria-label="YouTube"><i
+                class="bi bi-youtube"></i></a>
+            <a href="https://www.instagram.com/tecno.marema/" target="_blank" aria-label="Instagram"><i
+                class="bi bi-instagram"></i></a>
+            <a href="https://discord.gg/REAvwzqD7" target="_blank" aria-label="Discord"><i
+                class="bi bi-discord"></i></a>
           </div>
         </div>
         <div class="col-lg-4 mb-4">
           <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
-          <p class="mb-1"><i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i><a id="contacto" href="mailto:tecnomarema.ar@gmail.com">tecnomarema.ar@gmail.com</a></p>
+          <p class="mb-1"><i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i><a id="contacto"
+              href="mailto:tecnomarema.ar@gmail.com">tecnomarema.ar@gmail.com</a></p>
         </div>
       </div>
       <hr class="border-secondary" />
@@ -213,26 +604,76 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    const GRUPOS = [
-      {n: "Para cursar", ids: [0, 1, 2]},
-      {n: "Durante el curso", ids: [3, 4, 5, 6]},
-      {n: "Para cerrar el curso", ids: [7, 8, 9]}
+    const GRUPOS = [{
+        n: "Para cursar",
+        ids: [0, 1, 2]
+      },
+      {
+        n: "Durante el curso",
+        ids: [3, 4, 5, 6]
+      },
+      {
+        n: "Para cerrar el curso",
+        ids: [7, 8, 9]
+      }
     ];
-    const V = [
-      {id: "CkuUc7gS3D8", t: "El calendario", d: "Dónde ver las fechas y los horarios de tus clases."},
-      {id: "x7HJ_u1Ryq0", t: "El ingreso a la clase", d: "Cómo entrar a la clase en vivo."},
-      {id: "86l3QlA5Guk", t: "Cómo marcar el presente", d: "Tu asistencia cuenta: necesitás participar de al menos el 70% de las clases."},
-      {id: "7aLC9qEvbo8", t: "Las clases grabadas", d: "Volvé a ver cualquier clase cuando quieras."},
-      {id: "H7_4w0rlZ3Y", t: "El chat", d: "Cómo usar el chat del curso."},
-      {id: "1byYVMg1CfU", t: "Los participantes del curso", d: "Quiénes cursan con vos."},
-      {id: "cAI0SZSNK2w", t: "Los quizzies", d: "Cómo resolver los quizzies."},
-      {id: "fZAyPuYSXrU", t: "Las valoraciones", d: "Cómo dejar tu valoración."},
-      {id: "ahZHr2c0jEA", t: "La entrega final", d: "Cómo entregar tu proyecto final."},
-      {id: "9w0WPE7R6m8", t: "El certificado", d: "Qué necesitás para recibir tu certificado y dónde lo encontrás."}
+    const V = [{
+        id: "CkuUc7gS3D8",
+        t: "El calendario",
+        d: "Dónde ver las fechas y los horarios de tus clases."
+      },
+      {
+        id: "x7HJ_u1Ryq0",
+        t: "El ingreso a la clase",
+        d: "Cómo entrar a la clase en vivo."
+      },
+      {
+        id: "86l3QlA5Guk",
+        t: "Cómo marcar el presente",
+        d: "Tu asistencia cuenta: necesitás participar de al menos el 70% de las clases."
+      },
+      {
+        id: "7aLC9qEvbo8",
+        t: "Las clases grabadas",
+        d: "Volvé a ver cualquier clase cuando quieras."
+      },
+      {
+        id: "H7_4w0rlZ3Y",
+        t: "El chat",
+        d: "Cómo usar el chat del curso."
+      },
+      {
+        id: "1byYVMg1CfU",
+        t: "Los participantes del curso",
+        d: "Quiénes cursan con vos."
+      },
+      {
+        id: "cAI0SZSNK2w",
+        t: "Los quizzies",
+        d: "Cómo resolver los quizzies."
+      },
+      {
+        id: "fZAyPuYSXrU",
+        t: "Las valoraciones",
+        d: "Cómo dejar tu valoración."
+      },
+      {
+        id: "ahZHr2c0jEA",
+        t: "La entrega final",
+        d: "Cómo entregar tu proyecto final."
+      },
+      {
+        id: "9w0WPE7R6m8",
+        t: "El certificado",
+        d: "Qué necesitás para recibir tu certificado y dónde lo encontrás."
+      }
     ];
     const KEY = "tm_antes_de_empezar";
-    let vistos = new Set(), cur = 0;
-    try { vistos = new Set(JSON.parse(localStorage.getItem(KEY) || "[]")); } catch (e) {}
+    let vistos = new Set(),
+      cur = 0;
+    try {
+      vistos = new Set(JSON.parse(localStorage.getItem(KEY) || "[]"));
+    } catch (e) {}
     const $ = id => document.getElementById(id);
     const lista = $("lista");
 
@@ -244,7 +685,9 @@
         const b = document.createElement("button");
         b.className = "item";
         b.dataset.i = i;
-        b.innerHTML = '<div class="thumb"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/' + V[i].id + '/mqdefault.jpg"><span>' + (i + 1) + '</span></div><strong>' + V[i].t + '</strong><i class="bi bi-check-circle-fill chk" aria-hidden="true"></i>';
+        b.innerHTML = '<div class="thumb"><img loading="lazy" alt="" src="https://i.ytimg.com/vi/' + V[i].id +
+          '/mqdefault.jpg"><span>' + (i + 1) + '</span></div><strong>' + V[i].t +
+          '</strong><i class="bi bi-check-circle-fill chk" aria-hidden="true"></i>';
         b.onclick = () => ir(i, true);
         box.appendChild(b);
       });
@@ -261,7 +704,9 @@
       $("next").disabled = i === V.length - 1;
       if (reproducir) {
         vistos.add(v.id);
-        try { localStorage.setItem(KEY, JSON.stringify([...vistos])); } catch (e) {}
+        try {
+          localStorage.setItem(KEY, JSON.stringify([...vistos]));
+        } catch (e) {}
       }
       pintar();
     }
@@ -282,4 +727,5 @@
     ir(0, false);
   </script>
 </body>
+
 </html>
