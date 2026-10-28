@@ -7385,6 +7385,15 @@ def guardar_certificado(request):
 #-----------------Tutoriales de la web--------------------#
 #---------------------------------------------------------#
 
-# @session_required
+@session_required
 def tutoriales(request):
-    return render(request, "educativa/tutoriales.html")
+    nombre_usuario_sesion = request.session.get('usuario_logueado')
+    usuario = None
+    
+    if nombre_usuario_sesion:
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
+
+    return render(request, "educativa/tutoriales.html", {
+        'nombre_usuario': nombre_usuario_sesion,
+        'usuario': usuario
+    })
