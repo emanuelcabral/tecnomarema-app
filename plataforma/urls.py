@@ -392,6 +392,8 @@ path("test/", test),
 
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
+    path("antes-de-empezar/", views.tutoriales, name="antes_de_empezar"),
+
 ]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
