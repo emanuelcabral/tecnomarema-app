@@ -24,7 +24,7 @@
 
     body {
       background-color: #000;
-      background-image: url("{% static 'img/fondo2negro.svg' %}");
+      background-image: url("{% static 'img/fondo1.svg' %}");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -571,46 +571,14 @@
   </main>
 
   <div class="borde-animado"></div>
-  <footer class="bg-black text-white py-5">
+    <!-- footer incia -->
+    <footer style="background-color: #111; color: #888; text-align: center; font-size: 0.9rem; padding: 1.2rem 0; position: relative; border-top: 3px solid transparent;">
+    <div style="position: absolute; top: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(90deg, #12f693, #cf30ff, #12f693); background-size: 200% auto; animation: neonGlow 4s linear infinite;"></div>
     <div class="container">
-      <div class="row">
-        <div class="col-lg-4 mb-4">
-          <h5 class="text-uppercase fw-bold text-magenta">Mapa del Sitio</h5>
-          <ul class="list-unstyled">
-            <li><a href="{% url 'inicio' %}">Inicio</a></li>
-            <li><a href="{% url 'mis_cursos' %}">Mis cursos</a></li>
-            <li><a href="{% url 'tutoriales' %}">Antes de empezar</a></li>
-            <li><a href="{% url 'faq' %}">FAQ</a></li>
-          </ul>
-        </div>
-        <div class="col-lg-4 mb-4" id="redes">
-          <h5 class="text-uppercase fw-bold text-magenta">Redes Sociales</h5>
-          <div class="d-flex gap-3 fs-4">
-            <a href="https://www.linkedin.com/company/tecnomarema/" target="_blank" aria-label="LinkedIn"><i
-                class="bi bi-linkedin"></i></a>
-            <a href="https://www.facebook.com/tecnomarema.ar/" target="_blank" aria-label="Facebook"><i
-                class="bi bi-facebook"></i></a>
-            <a href="https://www.youtube.com/@TecnoMarema" target="_blank" aria-label="YouTube"><i
-                class="bi bi-youtube"></i></a>
-            <a href="https://www.instagram.com/tecno.marema/" target="_blank" aria-label="Instagram"><i
-                class="bi bi-instagram"></i></a>
-            <a href="https://discord.gg/REAvwzqD7" target="_blank" aria-label="Discord"><i
-                class="bi bi-discord"></i></a>
-          </div>
-        </div>
-        <div class="col-lg-4 mb-4">
-          <h5 class="text-uppercase fw-bold text-magenta">Contacto</h5>
-          <p class="mb-1"><i class="bi bi-envelope-fill me-2" style="color:#12f693;"></i><a id="contacto"
-              href="mailto:tecnomarema.ar@gmail.com">tecnomarema.ar@gmail.com</a></p>
-        </div>
-      </div>
-      <hr class="border-secondary" />
-      <div class="d-flex flex-column flex-md-row justify-content-between small text-secondary">
-        <div>© 2025 Tecno Marema. Todos los derechos reservados.</div>
-        <div><a href="{% url 'terminos_y_condiciones' %}">Términos y Condiciones</a></div>
-      </div>
+        <small>© {% now "Y" %} Tecnomarema · Todos los derechos reservados</small>
     </div>
-  </footer>
+    </footer>
+    <!-- footer fin -->
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
