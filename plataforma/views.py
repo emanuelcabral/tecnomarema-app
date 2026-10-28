@@ -7651,29 +7651,32 @@ import re
 from django.shortcuts import render
 from django.http import JsonResponse
 
-def obtener_tareas_cron():
+def obtener_tareas_cron_real():
     try:
+        # Ejecuta el comando crontab -l para listar las tareas reales del servidor
         resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
-        lineas = resultado.stdout.splitlines()
+        lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
     except Exception:
         lineas = []
     
     tareas = []
-    idx_activo = 0
+    idx = 0
     for linea in lineas:
         linea_limpia = linea.strip()
+        # Ignorar líneas vacías o comentarios
         if not linea_limpia or linea_limpia.startswith('#'):
             continue
         
+        # Desglosar formato crontab: minuto hora dom mon dow comando
         partes = linea_limpia.split(maxsplit=5)
         if len(partes) >= 6:
             minuto, hora, dom, mon, dow, comando = partes
             
-            # Extraer el nombre del comando de gestión de Django
+            # Extraer el nombre del comando de gestión de Django (ej: enviar_recordatorios_clases)
             match_cmd = re.search(r'manage\.py\s+([a-zA-Z0-9_]+)', comando)
             nombre_comando = match_cmd.group(1) if match_cmd else comando
 
-            # Interpretar frecuencia de forma amigable
+            # Interpretar frecuencia legible
             frecuencia = "Personalizada"
             if dom == '*' and mon == '*' and dow == '*':
                 frecuencia = f"Diaria (a las {hora.zfill(2)}:{minuto.zfill(2)})"
@@ -7683,7 +7686,7 @@ def obtener_tareas_cron():
                 frecuencia = f"Mensual (Día {dom} a las {hora.zfill(2)}:{minuto.zfill(2)})"
 
             tareas.append({
-                'id': idx_activo,
+                'id': idx,
                 'minuto': minuto,
                 'hora': hora,
                 'dom': dom,
@@ -7694,11 +7697,11 @@ def obtener_tareas_cron():
                 'frecuencia': frecuencia,
                 'linea_original': linea_limpia
             })
-            idx_activo += 1
+            idx += 1
     return tareas
 
 def gestor_automatizaciones_view(request):
-    tareas = obtener_tareas_cron()
+    tareas = obtener_tareas_cron_real()
     contexto = {
         'tareas': tareas
     }
@@ -7706,15 +7709,15 @@ def gestor_automatizaciones_view(request):
 
 def guardar_automatizacion(request):
     if request.method == 'POST':
-        tarea_id = request.POST.get('id') # Si está vacío, se crea una nueva
+        tarea_id = request.POST.get('id')
         minuto = request.POST.get('minuto', '*')
         hora = request.POST.get('hora', '*')
         dom = request.POST.get('dom', '*')
         mon = request.POST.get('mon', '*')
         dow = request.POST.get('dow', '*')
-        nombre_comando = request.POST.get('comando') # Ej: enviar_recordatorios_clases
+        nombre_comando = request.POST.get('comando')
 
-        # Estructura estándar del contenedor Docker en tu VPS
+        # Estructura exacta de Docker que usas en tu servidor
         comando_completo = f"docker exec -w /app $(docker ps -q -f name=tecnomarema-app.1) /opt/venv/bin/python manage.py {nombre_comando} >> /root/cron_{nombre_comando}.log 2>&1"
         nueva_linea = f"{minuto} {hora} {dom} {mon} {dow} {comando_completo}"
 
@@ -7723,7 +7726,7 @@ def guardar_automatizacion(request):
             lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
 
             if tarea_id != '' and tarea_id is not None:
-                # Modificar tarea existente por su índice activo
+                # Modificar tarea existente manteniendo comentarios y otras líneas intactas
                 activas_idx = 0
                 nuevas_lineas = []
                 for linea in lineas:
@@ -7737,7 +7740,7 @@ def guardar_automatizacion(request):
                         activas_idx += 1
                 lineas = nuevas_lineas
             else:
-                # Añadir nueva tarea al final
+                # Agregar nueva tarea al final
                 lineas.append(nueva_linea)
 
             contenido_nuevo = "\n".join(lineas) + "\n"
@@ -7746,7 +7749,7 @@ def guardar_automatizacion(request):
             if proceso.returncode != 0:
                 return JsonResponse({'status': 'error', 'message': proceso.stderr}, status=400)
 
-            return JsonResponse({'status': 'success', 'message': 'Automatización guardada correctamente'})
+            return JsonResponse({'status': 'success', 'message': 'Automatización guardada en el servidor correctamente'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
@@ -7771,7 +7774,7 @@ def eliminar_automatizacion(request):
 
             contenido_nuevo = "\n".join(nuevas_lineas) + "\n"
             subprocess.run(['crontab', '-'], input=contenido_nuevo, text=True, capture_output=True)
-            return JsonResponse({'status': 'success', 'message': 'Automatización eliminada'})
+            return JsonResponse({'status': 'success', 'message': 'Automatización eliminada del servidor'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
             
