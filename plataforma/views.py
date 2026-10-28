@@ -7432,6 +7432,30 @@ def generador_links_view(request):
     return render(request, 'administrador/generador_links.html', contexto)
 
 @session_required
+def obtener_clases_de_comision(request):
+    comision_id = request.GET.get('comision_id')
+
+    try:
+        comision = Comision.objects.get(id_comision=comision_id)
+        # Obtenemos las clases asociadas mediante ClaseComision para evitar errores con campos faltantes
+        clases_comision = ClaseComision.objects.filter(comision=comision).select_related('clase').order_by('clase__numero_clase')
+        
+        data = []
+        for cc in clases_comision:
+            data.append({
+                'numero_clase': cc.clase.numero_clase,
+                'nombre_clase': cc.clase.nombre_clase,
+                'fecha': cc.fecha.strftime('%d/%m/%Y') if cc.fecha else 'Sin fecha',
+                'link': cc.link if cc.link else 'Sin link generado'
+            })
+            
+        return JsonResponse({'clases': data})
+    except Comision.DoesNotExist:
+        return JsonResponse({'clases': []})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+@session_required
 @require_POST
 def api_generar_links_masivo(request):
     comision_id = request.POST.get('comision_id')
