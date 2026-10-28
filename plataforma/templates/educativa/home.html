@@ -579,6 +579,9 @@
             <li class="nav-item">
               <a class="nav-link" href="#inicio">Inicio</a>
             </li>
+            {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno'  %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'tutoriales' %}">Tutoriales</a></li>
+            {% endif %}
             {% comment %} {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %} {% endcomment %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a>
