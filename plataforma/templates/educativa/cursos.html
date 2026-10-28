@@ -337,6 +337,10 @@
       <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
         <li class="nav-item"><a class="nav-link" href="{% url 'inicio' %}">Inicio</a></li>
 
+          {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno'  %}
+            <li class="nav-item"><a class="nav-link" href="{% url 'tutoriales' %}">Tutoriales</a></li>
+          {% endif %}
+
         {% if request.session.usuario_logueado %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a>

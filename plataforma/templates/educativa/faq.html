@@ -242,6 +242,8 @@
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
                 {% if request.session.usuario_logueado %}
                     <!-- Usuario logueado -->
+                    
+                    <li class="nav-item"><a class="nav-link" href="{% url 'tutoriales' %}">Tutoriales</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
