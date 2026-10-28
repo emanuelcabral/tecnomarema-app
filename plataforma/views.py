@@ -7490,7 +7490,7 @@ def api_generar_links_masivo(request):
 
 from django.shortcuts import render
 from django.http import JsonResponse
-from .models import Comision, PerfilUsuario, DatosDeEstudiantes
+from .models import Comision, PerfilUsuario
 
 def asignacion_docente_view(request):
     comisiones = Comision.objects.select_related('id_curso').all()
@@ -7499,32 +7499,35 @@ def asignacion_docente_view(request):
     profesores = PerfilUsuario.objects.filter(rol='profesor', is_active=True)
     tutores = PerfilUsuario.objects.filter(rol='tutor', is_active=True)
 
-    # Mapeamos las comisiones con sus profesores y tutores actuales según los campos cursandoX
     comisiones_data = []
+    slots_nombres = ['cursando1_id', 'cursando2_id', 'cursando3_id', 'cursando4_id', 'cursando5_id', 'cursando6_id', 'cursando7_id', 'cursando8_id', 'cursando9_id']
+
     for com in comisiones:
-        # Buscar profesor asignado a esta comisión (revisando si alguna de sus columnas cursando tiene este id)
+        com_id_str = str(com.id_comision)
+        
+        # 1. Buscar profesor asignado (revisando sus campos cursandoX_id)
         profe_asignado = None
         for p in profesores:
-            if p.id_estudiante:  # Si tiene vinculado DatosDeEstudiantes
+            if p.id_estudiante:
                 est = p.id_estudiante
-                comisiones_est = [est.cursando1_id, est.cursando2_id, est.cursando3_id, est.cursando4_id, est.cursando5_id, est.cursando6_id, est.cursando7_id, est.cursando8_id, est.cursando9_id]
-                if com.id_comision in [str(c.id_comision) for c in comisiones_est if c]:
+                comisiones_profe = [str(getattr(est, slot)) for slot in slots_nombres if getattr(est, slot)]
+                if com_id_str in comisiones_profe:
                     profe_asignado = p
                     break
 
-        # Buscar tutores asignados (puede haber hasta 4 o más)
+        # 2. Buscar tutores asignados (revisando sus campos cursandoX_id, máximo 4)
         tutores_asignados = []
         for t in tutores:
             if t.id_estudiante:
                 est = t.id_estudiante
-                comisiones_est = [est.cursando1_id, est.cursando2_id, est.cursando3_id, est.cursando4_id, est.cursando5_id, est.cursando6_id, est.cursando7_id, est.cursando8_id, est.cursando9_id]
-                if com.id_comision in [str(c.id_comision) for c in comisiones_est if c]:
+                comisiones_tutor = [str(getattr(est, slot)) for slot in slots_nombres if getattr(est, slot)]
+                if com_id_str in comisiones_tutor:
                     tutores_asignados.append(t)
 
         comisiones_data.append({
             'comision': com,
             'profesor': profe_asignado,
-            'tutores': tutores_asignados[:4] # Limitamos máximo a 4 tutores para la vista
+            'tutores': tutores_asignados[:4] # Limitado a máximo 4 tutores visuales
         })
 
     contexto = {
@@ -7534,12 +7537,13 @@ def asignacion_docente_view(request):
     }
     return render(request, 'administrador/asignacion_docente.html', contexto)
 
+
 def guardar_asignacion_docente(request):
     if request.method == 'POST':
         comision_id = request.POST.get('id_comision')
-        profesor_id = request.POST.get('profesor') or None
+        nuevo_profe_id = request.POST.get('profesor') or None
         
-        # Recogemos los tutores enviados (hasta 4)
+        # Recogemos los IDs de los tutores seleccionados (hasta 4)
         nuevos_tutores_ids = [
             request.POST.get('tutor1'),
             request.POST.get('tutor2'),
@@ -7550,29 +7554,84 @@ def guardar_asignacion_docente(request):
 
         try:
             comision = Comision.objects.get(id_comision=comision_id)
+            com_id_str = str(comision_id)
+            slots = ['cursando1', 'cursando2', 'cursando3', 'cursando4', 'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9']
 
-            # 1. Gestionar Profesor: Asignar la comisión al slot libre del profesor seleccionado
-            if profesor_id:
-                profe = PerfilUsuario.objects.get(id_usuario=profesor_id, rol='profesor')
+            # ==========================================
+            # A. GESTIÓN DEL PROFESOR
+            # ==========================================
+            # 1. Limpiar esta comisión de cualquier otro profesor que la tuviera asignada por error/cambio
+            todos_profesores = PerfilUsuario.objects.filter(rol='profesor').select_related('id_estudiante')
+            for p in todos_profesores:
+                if p.id_estudiante and (not nuevo_profe_id or str(p.id_usuario) != str(nuevo_profe_id)):
+                    est = p.id_estudiante
+                    modificado = False
+                    for s in slots:
+                        val = getattr(s + '_id', None) or getattr(est, s)
+                        if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
+                            setattr(est, s, None)
+                            modificado = True
+                    if modificado:
+                        est.save()
+
+            # 2. Asignar la comisión al nuevo profesor elegido (en su primer slot libre)
+            if nuevo_profe_id:
+                profe = PerfilUsuario.objects.get(id_usuario=nuevo_profe_id, rol='profesor')
                 if profe.id_estudiante:
                     est = profe.id_estudiante
-                    # Asignar al primer slot libre (cursando1 a cursando9) si no la tiene ya
-                    slots = ['cursando1', 'cursando2', 'cursando3', 'cursando4', 'cursando5', 'cursando6', 'cursando7', 'cursando8', 'cursando9']
-                    ya_asignada = False
+                    ya_la_tiene = False
                     slot_libre = None
                     for s in slots:
                         val = getattr(est, s)
-                        if val and str(val.id_comision) == str(comision_id):
-                            ya_asignada = True
+                        if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
+                            ya_la_tiene = True
                             break
                         if not val and not slot_libre:
                             slot_libre = s
                     
-                    if not ya_asignada and slot_libre:
+                    if not ya_la_tiene and slot_libre:
                         setattr(est, slot_libre, comision)
                         est.save()
 
-            return JsonResponse({'status': 'success', 'message': 'Asignación guardada correctamente'})
+            # ==========================================
+            # B. GESTIÓN DE LOS TUTORES (Hasta 4)
+            # ==========================================
+            # 1. Limpiar esta comisión de los tutores que ya no están en la lista seleccionada
+            todos_tutores = PerfilUsuario.objects.filter(rol='tutor').select_related('id_estudiante')
+            for t in todos_tutores:
+                if t.id_estudiante:
+                    t_id_str = str(t.id_usuario)
+                    if t_id_str not in nuevos_tutores_ids:
+                        est = t.id_estudiante
+                        modificado = False
+                        for s in slots:
+                            val = getattr(est, s)
+                            if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
+                                setattr(est, s, None)
+                                modificado = True
+                        if modificado:
+                            est.save()
+
+            # 2. Asignar la comisión a los nuevos tutores seleccionados
+            for t_id in nuevos_tutores_ids:
+                tutor = PerfilUsuario.objects.get(id_usuario=t_id, rol='tutor')
+                if tutor.id_estudiante:
+                    est = tutor.id_estudiante
+                    ya_la_tiene = False
+                    slot_libre = None
+                    for s in slots:
+                        val = getattr(est, s)
+                        if val and str(val.id_comision if hasattr(val, 'id_comision') else val) == com_id_str:
+                            ya_la_tiene = True
+                            break
+                        if not val and not slot_libre:
+                            slot_libre = s
+                    
+                    if not ya_la_tiene and slot_libre:
+                        setattr(est, slot_libre, comision)
+                        est.save()
+
+            return JsonResponse({'status': 'success', 'message': 'Asignaciones guardadas correctamente'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
             
