@@ -7641,3 +7641,138 @@ def guardar_asignacion_docente(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
             
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+##################################################################################################
+#----------------------------------Las views para crontabs---------------------------------------#
+##################################################################################################
+
+import subprocess
+import re
+from django.shortcuts import render
+from django.http import JsonResponse
+
+def obtener_tareas_cron():
+    try:
+        resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
+        lineas = resultado.stdout.splitlines()
+    except Exception:
+        lineas = []
+    
+    tareas = []
+    idx_activo = 0
+    for linea in lineas:
+        linea_limpia = linea.strip()
+        if not linea_limpia or linea_limpia.startswith('#'):
+            continue
+        
+        partes = linea_limpia.split(maxsplit=5)
+        if len(partes) >= 6:
+            minuto, hora, dom, mon, dow, comando = partes
+            
+            # Extraer el nombre del comando de gestión de Django
+            match_cmd = re.search(r'manage\.py\s+([a-zA-Z0-9_]+)', comando)
+            nombre_comando = match_cmd.group(1) if match_cmd else comando
+
+            # Interpretar frecuencia de forma amigable
+            frecuencia = "Personalizada"
+            if dom == '*' and mon == '*' and dow == '*':
+                frecuencia = f"Diaria (a las {hora.zfill(2)}:{minuto.zfill(2)})"
+            elif dow != '*' and dom == '*' and mon == '*':
+                frecuencia = f"Semanal (Día {dow})"
+            elif dom != '*' and mon == '*' and dow == '*':
+                frecuencia = f"Mensual (Día {dom} a las {hora.zfill(2)}:{minuto.zfill(2)})"
+
+            tareas.append({
+                'id': idx_activo,
+                'minuto': minuto,
+                'hora': hora,
+                'dom': dom,
+                'mon': mon,
+                'dow': dow,
+                'comando': nombre_comando,
+                'comando_completo': comando,
+                'frecuencia': frecuencia,
+                'linea_original': linea_limpia
+            })
+            idx_activo += 1
+    return tareas
+
+def gestor_automatizaciones_view(request):
+    tareas = obtener_tareas_cron()
+    contexto = {
+        'tareas': tareas
+    }
+    return render(request, 'administrador/gestor_automatizaciones.html', contexto)
+
+def guardar_automatizacion(request):
+    if request.method == 'POST':
+        tarea_id = request.POST.get('id') # Si está vacío, se crea una nueva
+        minuto = request.POST.get('minuto', '*')
+        hora = request.POST.get('hora', '*')
+        dom = request.POST.get('dom', '*')
+        mon = request.POST.get('mon', '*')
+        dow = request.POST.get('dow', '*')
+        nombre_comando = request.POST.get('comando') # Ej: enviar_recordatorios_clases
+
+        # Estructura estándar del contenedor Docker en tu VPS
+        comando_completo = f"docker exec -w /app $(docker ps -q -f name=tecnomarema-app.1) /opt/venv/bin/python manage.py {nombre_comando} >> /root/cron_{nombre_comando}.log 2>&1"
+        nueva_linea = f"{minuto} {hora} {dom} {mon} {dow} {comando_completo}"
+
+        try:
+            resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
+            lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
+
+            if tarea_id != '' and tarea_id is not None:
+                # Modificar tarea existente por su índice activo
+                activas_idx = 0
+                nuevas_lineas = []
+                for linea in lineas:
+                    if not linea.strip() or linea.strip().startswith('#'):
+                        nuevas_lineas.append(linea)
+                    else:
+                        if str(activas_idx) == str(tarea_id):
+                            nuevas_lineas.append(nueva_linea)
+                        else:
+                            nuevas_lineas.append(linea)
+                        activas_idx += 1
+                lineas = nuevas_lineas
+            else:
+                # Añadir nueva tarea al final
+                lineas.append(nueva_linea)
+
+            contenido_nuevo = "\n".join(lineas) + "\n"
+            proceso = subprocess.run(['crontab', '-'], input=contenido_nuevo, text=True, capture_output=True)
+            
+            if proceso.returncode != 0:
+                return JsonResponse({'status': 'error', 'message': proceso.stderr}, status=400)
+
+            return JsonResponse({'status': 'success', 'message': 'Automatización guardada correctamente'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+def eliminar_automatizacion(request):
+    if request.method == 'POST':
+        tarea_id = request.POST.get('id')
+        try:
+            resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
+            lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
+
+            activas_idx = 0
+            nuevas_lineas = []
+            for linea in lineas:
+                if not linea.strip() or linea.strip().startswith('#'):
+                    nuevas_lineas.append(linea)
+                else:
+                    if str(activas_idx) != str(tarea_id):
+                        nuevas_lineas.append(linea)
+                    activas_idx += 1
+
+            contenido_nuevo = "\n".join(nuevas_lineas) + "\n"
+            subprocess.run(['crontab', '-'], input=contenido_nuevo, text=True, capture_output=True)
+            return JsonResponse({'status': 'success', 'message': 'Automatización eliminada'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)

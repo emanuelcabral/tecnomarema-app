@@ -1,0 +1,184 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+.card-panel{ background:#1f1f1f; border-radius:12px; padding:25px; box-shadow:0 0 15px rgba(0,0,0,.25); }
+.table-dark{ --bs-table-bg:#232323; }
+.toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px; }
+input, select{ background:#2b2b2b !important; color:white !important; border:1px solid #555 !important; }
+select option{ background:#2b2b2b; }
+</style>
+
+<div class="container-fluid mt-4">
+<div class="card-panel">
+<h2 class="text-success mb-4"><i class="bi bi-clock-history"></i> Gestor de Automatizaciones (Cron Server)</h2>
+
+<div class="toolbar">
+<div class="left">
+<button id="btnNueva" class="btn btn-success"><i class="bi bi-plus-circle"></i> Nueva Automatización</button>
+</div>
+</div>
+
+<table id="tabla-cron" class="table table-dark table-striped table-hover align-middle">
+<thead>
+<tr>
+<th>ID</th>
+<th>Comando Django</th>
+<th>Frecuencia / Horario</th>
+<th>Minuto</th>
+<th>Hora</th>
+<th>Día Semana</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+{% for tarea in tareas %}
+<tr data-id="{{ tarea.id }}" data-minuto="{{ tarea.minuto }}" data-hora="{{ tarea.hora }}" data-dow="{{ tarea.dow }}" data-comando="{{ tarea.comando }}">
+<td>{{ tarea.id }}</td>
+<td><code>{{ tarea.comando }}</code></td>
+<td><span class="badge bg-primary">{{ tarea.frecuencia }}</span></td>
+<td>{{ tarea.minuto }}</td>
+<td>{{ tarea.hora }}</td>
+<td>{{ tarea.dow }}</td>
+<td>
+    <button class="btn btn-sm btn-warning btn-editar"><i class="bi bi-pencil"></i> Editar</button>
+    <button class="btn btn-sm btn-danger btn-eliminar"><i class="bi bi-trash"></i> Eliminar</button>
+</td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Modal para Crear / Editar -->
+<div class="modal fade" id="modalCron" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content bg-dark text-white border-secondary">
+<div class="modal-header">
+<h5 class="modal-title" id="modalTitulo">Configurar Tarea Programada</h5>
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<input type="hidden" id="cronId">
+<div class="mb-3">
+    <label class="form-label">Comando de Gestión (manage.py)</label>
+    <input type="text" id="cronComando" class="form-control" placeholder="ej: enviar_recordatorios_clases">
+    <small class="text-muted">Nombre exacto del comando personalizado de tu proyecto.</small>
+</div>
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Minuto (0-59 o *)</label>
+        <input type="text" id="cronMinuto" class="form-control" value="30">
+    </div>
+    <div class="col-md-6 mb-3">
+        <label class="form-label">Hora (0-23 o *)</label>
+        <input type="text" id="cronHora" class="form-control" value="8">
+    </div>
+</div>
+<div class="mb-3">
+    <label class="form-label">Día de la Semana (0-6 o *)</label>
+    <input type="text" id="cronDow" class="form-control" value="*">
+    <small class="text-muted">0=Domingo, 1=Lunes ... o '*' para todos los días.</small>
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+<button type="button" class="btn btn-success" id="btnGuardarCron">Guardar Cambios</button>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+let modal;
+$(document).ready(function(){
+    modal = new bootstrap.Modal(document.getElementById('modalCron'));
+});
+
+$("#btnNueva").click(function(){
+    $("#cronId").val("");
+    $("#cronComando").val("");
+    $("#cronMinuto").val("0");
+    $("#cronHora").val("8");
+    $("#cronDow").val("*");
+    $("#modalTitulo").text("Nueva Automatización");
+    modal.show();
+});
+
+$(document).on("click", ".btn-editar", function(){
+    let tr = $(this).closest("tr");
+    $("#cronId").val(tr.attr("data-id"));
+    $("#cronComando").val(tr.attr("data-comando"));
+    $("#cronMinuto").val(tr.attr("data-minuto"));
+    $("#cronHora").val(tr.attr("data-hora"));
+    $("#cronDow").val(tr.attr("data-dow"));
+    $("#modalTitulo").text("Editar Automatización");
+    modal.show();
+});
+
+$("#btnGuardarCron").click(function(){
+    let datos = {
+        id: $("#cronId").val(),
+        comando: $("#cronComando").val(),
+        minuto: $("#cronMinuto").val(),
+        hora: $("#cronHora").val(),
+        dow: $("#cronDow").val(),
+        dom: "*",
+        mon: "*"
+    };
+
+    $.ajax({
+        url: "{% url 'guardar_automatizacion' %}",
+        method: "POST",
+        headers: { "X-CSRFToken": "{{ csrf_token }}" },
+        data: datos,
+        success: function(resp){
+            modal.hide();
+            Swal.fire({ icon: "success", title: "¡Guardado!", timer: 1500, showConfirmButton: false })
+                .then(() => location.reload());
+        },
+        error: function(err){
+            Swal.fire({ icon: "error", title: "Error", text: err.responseJSON.message || "No se pudo actualizar." });
+        }
+    });
+});
+
+$(document).on("click", ".btn-eliminar", function(){
+    let tr = $(this).closest("tr");
+    let id = tr.attr("data-id");
+
+    Swal.fire({
+        title: "¿Eliminar automatización?",
+        text: "Se borrará permanentemente del cron del servidor.",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#dc3545",
+        confirmButtonText: "Sí, eliminar"
+    }).then((result) => {
+        if(result.isConfirmed){
+            $.ajax({
+                url: "{% url 'eliminar_automatizacion' %}",
+                method: "POST",
+                headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                data: { id: id },
+                success: function(){
+                    Swal.fire({ icon: "success", title: "Eliminado", timer: 1200, showConfirmButton: false })
+                        .then(() => location.reload());
+                },
+                error: function(){
+                    Swal.fire({ icon: "error", title: "Error", text: "No se pudo eliminar." });
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -398,6 +398,10 @@ path("test/", test),
     path('administrador/asignacion_docente/', views.asignacion_docente_view, name='asignacion_docente'),
     path('administrador/guardar_asignacion_docente/', views.guardar_asignacion_docente, name='guardar_asignacion_docente'),
 
+    path('administrador/automatizaciones/', views.gestor_automatizaciones_view, name='gestor_automatizaciones'),
+    path('administrador/automatizaciones/guardar/', views.guardar_automatizacion, name='guardar_automatizacion'),
+    path('administrador/automatizaciones/eliminar/', views.eliminar_automatizacion, name='eliminar_automatizacion'),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 
