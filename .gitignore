@@ -2,3 +2,7 @@
 
 # .gitignore
 .env
+.env
+media/
+__pycache__/
+*.sqlite3
