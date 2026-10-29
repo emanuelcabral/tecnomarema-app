@@ -7679,7 +7679,6 @@ def obtener_tareas_cron_real():
             if not linea_limpia or linea_limpia.startswith('#'):
                 continue
             
-            # Usamos split(None, 5) para manejar correctamente los comandos largos con espacios
             partes = linea_limpia.split(None, 5)
             if len(partes) >= 6:
                 minuto, hora, dom, mon, dow, comando = partes
@@ -7713,7 +7712,10 @@ def obtener_tareas_cron_real():
     return tareas
 
 def gestor_automatizaciones_view(request):
-    tareas = obtener_tareas_cron_real()
+    try:
+        tareas = obtener_tareas_cron_real()
+    except Exception:
+        tareas = []
     contexto = {'tareas': tareas}
     return render(request, 'administrador/gestor_automatizaciones.html', contexto)
 
@@ -7725,7 +7727,6 @@ def guardar_automatizacion(request):
         dow = request.POST.get('dow', '*')
         nombre_comando = request.POST.get('comando')
 
-        # Estructura de Docker adaptada y en una sola línea continua
         comando_completo = f"docker exec -w /app $(docker ps -q -f name=tecnomarema-app.1) /opt/venv/bin/python manage.py {nombre_comando} >> /root/cron_{nombre_comando}.log 2>&1"
         nueva_linea = f"{minuto} {hora} * * {dow} {comando_completo}"
 
