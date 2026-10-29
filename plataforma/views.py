@@ -7708,15 +7708,11 @@ def obtener_tareas_cron_real():
         print("=== ERROR CRON SSH DETALLADO ===")
         traceback.print_exc()
         print(f"Error: {e}")
-        raise e  # Lanzamos el error para que Django muestre el Debug real si DEBUG=True
         
     return tareas
 
 def gestor_automatizaciones_view(request):
-    try:
-        tareas = obtener_tareas_cron_real()
-    except Exception as e:
-        tareas = []
+    tareas = obtener_tareas_cron_real()
     contexto = {'tareas': tareas}
     return render(request, 'administrador/gestor_automatizaciones.html', contexto)
 
