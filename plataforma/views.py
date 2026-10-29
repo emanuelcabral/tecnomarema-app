@@ -7658,7 +7658,7 @@ def conectar_ssh():
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(
         hostname=settings.VPS_HOST, 
-        port=int(settings.VPS_PORT),  # Puerto 5941 como entero
+        port=int(settings.VPS_PORT), 
         username=settings.VPS_USER, 
         password=settings.VPS_PASS,
         timeout=10
@@ -7708,11 +7708,15 @@ def obtener_tareas_cron_real():
         print("=== ERROR CRON SSH DETALLADO ===")
         traceback.print_exc()
         print(f"Error: {e}")
+        raise e  # Lanzamos el error para que Django muestre el Debug real si DEBUG=True
         
     return tareas
 
 def gestor_automatizaciones_view(request):
-    tareas = obtener_tareas_cron_real()
+    try:
+        tareas = obtener_tareas_cron_real()
+    except Exception as e:
+        tareas = []
     contexto = {'tareas': tareas}
     return render(request, 'administrador/gestor_automatizaciones.html', contexto)
 
