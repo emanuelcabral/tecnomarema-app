@@ -7647,6 +7647,7 @@ def guardar_asignacion_docente(request):
 ##################################################################################################
 
 import re
+import traceback
 import paramiko
 from django.conf import settings
 from django.shortcuts import render
@@ -7657,9 +7658,10 @@ def conectar_ssh():
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(
         hostname=settings.VPS_HOST, 
-        port=int(settings.VPS_PORT),  # Forzado a entero (5941)
+        port=int(settings.VPS_PORT),  # Puerto 5941 como entero
         username=settings.VPS_USER, 
-        password=settings.VPS_PASS
+        password=settings.VPS_PASS,
+        timeout=10
     )
     return ssh
 
@@ -7681,7 +7683,6 @@ def obtener_tareas_cron_real():
             if len(partes) >= 6:
                 minuto, hora, dom, mon, dow, comando = partes
                 
-                # Extraer el comando real de Django
                 match_cmd = re.search(r'manage\.py\s+([a-zA-Z0-9_]+)', comando)
                 nombre_comando = match_cmd.group(1) if match_cmd else comando
 
@@ -7704,7 +7705,9 @@ def obtener_tareas_cron_real():
                 })
                 idx += 1
     except Exception as e:
-        print(f"Error de conexión SSH: {e}")
+        print("=== ERROR CRON SSH DETALLADO ===")
+        traceback.print_exc()
+        print(f"Error: {e}")
         
     return tareas
 
@@ -7721,7 +7724,6 @@ def guardar_automatizacion(request):
         dow = request.POST.get('dow', '*')
         nombre_comando = request.POST.get('comando')
 
-        # Estructura exacta de Docker de tus tareas reales
         comando_completo = f"docker exec -w /app $(docker ps -q -f name=tecnomarema-app.1) /opt/venv/bin/python manage.py {nombre_comando} >> /root/cron_{nombre_comando}.log 2>&1"
         nueva_linea = f"{minuto} {hora} * * {dow} {comando_completo}"
 
