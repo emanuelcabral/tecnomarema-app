@@ -7656,8 +7656,8 @@ def conectar_ssh():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     ssh.connect(
-        settings.VPS_HOST, 
-        port=settings.VPS_PORT, 
+        hostname=settings.VPS_HOST, 
+        port=int(settings.VPS_PORT),  # Forzado a entero (5941)
         username=settings.VPS_USER, 
         password=settings.VPS_PASS
     )
@@ -7748,9 +7748,7 @@ def guardar_automatizacion(request):
 
             contenido_nuevo = "\n".join(lineas) + "\n"
             
-            sftp = ssh.open_sftp()
-            stdin, stdout, stderr = ssh.exec_command(f"cat << 'EOF' > /tmp/temp_cron\n{contenido_nuevo}EOF\ncrontab /tmp/temp_cron")
-            stdout.channel.recv_exit_status()
+            ssh.exec_command(f"cat << 'EOF' > /tmp/temp_cron\n{contenido_nuevo}EOF\ncrontab /tmp/temp_cron")
             ssh.close()
 
             return JsonResponse({'status': 'success', 'message': 'Sincronizado correctamente'})
