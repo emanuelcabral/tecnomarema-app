@@ -7646,65 +7646,71 @@ def guardar_asignacion_docente(request):
 #----------------------------------Las views para crontabs---------------------------------------#
 ##################################################################################################
 
-import subprocess
 import re
+import paramiko
+from django.conf import settings
 from django.shortcuts import render
 from django.http import JsonResponse
 
+def conectar_ssh():
+    ssh = paramiko.SSHClient()
+    ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh.connect(
+        settings.VPS_HOST, 
+        port=settings.VPS_PORT, 
+        username=settings.VPS_USER, 
+        password=settings.VPS_PASS
+    )
+    return ssh
+
 def obtener_tareas_cron_real():
-    try:
-        # Ejecuta el comando crontab -l para listar las tareas reales del servidor
-        resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
-        lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
-    except Exception:
-        lineas = []
-    
     tareas = []
-    idx = 0
-    for linea in lineas:
-        linea_limpia = linea.strip()
-        # Ignorar líneas vacías o comentarios
-        if not linea_limpia or linea_limpia.startswith('#'):
-            continue
+    try:
+        ssh = conectar_ssh()
+        stdin, stdout, stderr = ssh.exec_command('crontab -l')
+        lineas = stdout.read().decode('utf-8').splitlines()
+        ssh.close()
         
-        # Desglosar formato crontab: minuto hora dom mon dow comando
-        partes = linea_limpia.split(maxsplit=5)
-        if len(partes) >= 6:
-            minuto, hora, dom, mon, dow, comando = partes
+        idx = 0
+        for linea in lineas:
+            linea_limpia = linea.strip()
+            if not linea_limpia or linea_limpia.startswith('#'):
+                continue
             
-            # Extraer el nombre del comando de gestión de Django (ej: enviar_recordatorios_clases)
-            match_cmd = re.search(r'manage\.py\s+([a-zA-Z0-9_]+)', comando)
-            nombre_comando = match_cmd.group(1) if match_cmd else comando
+            partes = linea_limpia.split(maxsplit=5)
+            if len(partes) >= 6:
+                minuto, hora, dom, mon, dow, comando = partes
+                
+                # Extraer el comando real de Django
+                match_cmd = re.search(r'manage\.py\s+([a-zA-Z0-9_]+)', comando)
+                nombre_comando = match_cmd.group(1) if match_cmd else comando
 
-            # Interpretar frecuencia legible
-            frecuencia = "Personalizada"
-            if dom == '*' and mon == '*' and dow == '*':
-                frecuencia = f"Diaria (a las {hora.zfill(2)}:{minuto.zfill(2)})"
-            elif dow != '*' and dom == '*' and mon == '*':
-                frecuencia = f"Semanal (Día {dow})"
-            elif dom != '*' and mon == '*' and dow == '*':
-                frecuencia = f"Mensual (Día {dom} a las {hora.zfill(2)}:{minuto.zfill(2)})"
+                frecuencia = "Personalizada"
+                if dom == '*' and mon == '*' and dow == '*':
+                    frecuencia = f"Diaria (a las {hora.zfill(2)}:{minuto.zfill(2)})"
+                elif dow != '*':
+                    frecuencia = f"Semanal (Día {dow} a las {hora.zfill(2)}:{minuto.zfill(2)})"
 
-            tareas.append({
-                'id': idx,
-                'minuto': minuto,
-                'hora': hora,
-                'dom': dom,
-                'mon': mon,
-                'dow': dow,
-                'comando': nombre_comando,
-                'comando_completo': comando,
-                'frecuencia': frecuencia,
-                'linea_original': linea_limpia
-            })
-            idx += 1
+                tareas.append({
+                    'id': idx,
+                    'minuto': minuto,
+                    'hora': hora,
+                    'dom': dom,
+                    'mon': mon,
+                    'dow': dow,
+                    'comando': nombre_comando,
+                    'comando_completo': comando,
+                    'frecuencia': frecuencia
+                })
+                idx += 1
+    except Exception as e:
+        print(f"Error de conexión SSH: {e}")
+        
     return tareas
 
 def gestor_automatizaciones_view(request):
     tareas = obtener_tareas_cron_real()
-    contexto = {
-        'tareas': tareas
-    }
+    contexto = {'tareas': tareas}
     return render(request, 'administrador/gestor_automatizaciones.html', contexto)
 
 def guardar_automatizacion(request):
@@ -7712,21 +7718,19 @@ def guardar_automatizacion(request):
         tarea_id = request.POST.get('id')
         minuto = request.POST.get('minuto', '*')
         hora = request.POST.get('hora', '*')
-        dom = request.POST.get('dom', '*')
-        mon = request.POST.get('mon', '*')
         dow = request.POST.get('dow', '*')
         nombre_comando = request.POST.get('comando')
 
-        # Estructura exacta de Docker que usas en tu servidor
+        # Estructura exacta de Docker de tus tareas reales
         comando_completo = f"docker exec -w /app $(docker ps -q -f name=tecnomarema-app.1) /opt/venv/bin/python manage.py {nombre_comando} >> /root/cron_{nombre_comando}.log 2>&1"
-        nueva_linea = f"{minuto} {hora} {dom} {mon} {dow} {comando_completo}"
+        nueva_linea = f"{minuto} {hora} * * {dow} {comando_completo}"
 
         try:
-            resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
-            lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
+            ssh = conectar_ssh()
+            stdin, stdout, stderr = ssh.exec_command('crontab -l')
+            lineas = stdout.read().decode('utf-8').splitlines() if stdout.channel.recv_exit_status() == 0 else []
 
             if tarea_id != '' and tarea_id is not None:
-                # Modificar tarea existente manteniendo comentarios y otras líneas intactas
                 activas_idx = 0
                 nuevas_lineas = []
                 for linea in lineas:
@@ -7740,16 +7744,16 @@ def guardar_automatizacion(request):
                         activas_idx += 1
                 lineas = nuevas_lineas
             else:
-                # Agregar nueva tarea al final
                 lineas.append(nueva_linea)
 
             contenido_nuevo = "\n".join(lineas) + "\n"
-            proceso = subprocess.run(['crontab', '-'], input=contenido_nuevo, text=True, capture_output=True)
             
-            if proceso.returncode != 0:
-                return JsonResponse({'status': 'error', 'message': proceso.stderr}, status=400)
+            sftp = ssh.open_sftp()
+            stdin, stdout, stderr = ssh.exec_command(f"cat << 'EOF' > /tmp/temp_cron\n{contenido_nuevo}EOF\ncrontab /tmp/temp_cron")
+            stdout.channel.recv_exit_status()
+            ssh.close()
 
-            return JsonResponse({'status': 'success', 'message': 'Automatización guardada en el servidor correctamente'})
+            return JsonResponse({'status': 'success', 'message': 'Sincronizado correctamente'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
@@ -7759,8 +7763,9 @@ def eliminar_automatizacion(request):
     if request.method == 'POST':
         tarea_id = request.POST.get('id')
         try:
-            resultado = subprocess.run(['crontab', '-l'], capture_output=True, text=True)
-            lineas = resultado.stdout.splitlines() if resultado.returncode == 0 else []
+            ssh = conectar_ssh()
+            stdin, stdout, stderr = ssh.exec_command('crontab -l')
+            lineas = stdout.read().decode('utf-8').splitlines() if stdout.channel.recv_exit_status() == 0 else []
 
             activas_idx = 0
             nuevas_lineas = []
@@ -7773,8 +7778,10 @@ def eliminar_automatizacion(request):
                     activas_idx += 1
 
             contenido_nuevo = "\n".join(nuevas_lineas) + "\n"
-            subprocess.run(['crontab', '-'], input=contenido_nuevo, text=True, capture_output=True)
-            return JsonResponse({'status': 'success', 'message': 'Automatización eliminada del servidor'})
+            ssh.exec_command(f"cat << 'EOF' > /tmp/temp_cron\n{contenido_nuevo}EOF\ncrontab /tmp/temp_cron")
+            ssh.close()
+            
+            return JsonResponse({'status': 'success', 'message': 'Eliminado correctamente'})
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
             
