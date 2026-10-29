@@ -312,3 +312,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ==========================================================
 print(f"DEBUG: {DEBUG}")
 print(f"Mercado Pago MODE: {MERCADOPAGO_MODE}")
+
+# ==========================================================
+# server don web
+# ==========================================================
+
+VPS_HOST = '201.32.128.85'
+VPS_PORT = 5941
+VPS_USER = 'root'
+VPS_PASS = 'Tecno.marema9560'
