@@ -7714,7 +7714,8 @@ def obtener_tareas_cron_real():
 def gestor_automatizaciones_view(request):
     try:
         tareas = obtener_tareas_cron_real()
-    except Exception:
+    except Exception as e:
+        print(f"Error en vista gestor_automatizaciones: {e}")
         tareas = []
     contexto = {'tareas': tareas}
     return render(request, 'administrador/gestor_automatizaciones.html', contexto)
