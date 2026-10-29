@@ -7679,7 +7679,8 @@ def obtener_tareas_cron_real():
             if not linea_limpia or linea_limpia.startswith('#'):
                 continue
             
-            partes = linea_limpia.split(maxsplit=5)
+            # Usamos split(None, 5) para manejar correctamente los comandos largos con espacios
+            partes = linea_limpia.split(None, 5)
             if len(partes) >= 6:
                 minuto, hora, dom, mon, dow, comando = partes
                 
@@ -7724,6 +7725,7 @@ def guardar_automatizacion(request):
         dow = request.POST.get('dow', '*')
         nombre_comando = request.POST.get('comando')
 
+        # Estructura de Docker adaptada y en una sola línea continua
         comando_completo = f"docker exec -w /app $(docker ps -q -f name=tecnomarema-app.1) /opt/venv/bin/python manage.py {nombre_comando} >> /root/cron_{nombre_comando}.log 2>&1"
         nueva_linea = f"{minuto} {hora} * * {dow} {comando_completo}"
 
