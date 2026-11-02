@@ -5,7 +5,6 @@
 {% block content %}
 <div class="container">
     <h2 class="text-center mb-4">Estadísticas - Inscriptos Clases Gratuitas </h2>
-    <p class="text-danger">*Asignar Seleccionados a una comision no funciona, pero es mejor que no este activo ya que lo mejor es que cada alumno si quiere continuar lo haga desde cero abonando el curso</p>
     <div class="row">
         <div class="col-md-6 border p-3"><canvas id="chartDias"></canvas></div>
         <div class="col-md-6 border p-3"><canvas id="chartHorarios"></canvas></div>
@@ -72,6 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <div class="container-fluid mt-5">
   <h2 class="mb-4 text-success">Todos los Inscriptos a Clases Gratuitas</h2>
+
+  <p class="text-danger">*Asignar Seleccionados a una comision no funciona, pero es mejor que no este activo ya que lo mejor es que cada alumno si quiere continuar lo haga desde cero abonando el curso</p>
   
   <!-- ✅ Controles para Selección Múltiple -->
   <div class="row mb-3 g-2 align-items-center">
