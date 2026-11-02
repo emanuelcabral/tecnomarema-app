@@ -73,8 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
   <h2 class="mb-4 text-success">Todos los Inscriptos a Clases Gratuitas</h2>
   
   <!-- ✅ Controles para Selección Múltiple -->
-  <div class="row mb-3 g-2 align-items-center">
-    <div class="col-auto">
+  <div class="row mb-3 align-items-center">
+    <div class="col-md-3">
       <button type="button" class="btn btn-warning" id="selectAllBtn">
         <i class="fas fa-check-square"></i> Seleccionar Todos
       </button>
@@ -92,20 +92,15 @@ document.addEventListener('DOMContentLoaded', () => {
         {% endfor %}
       </select>
     </div>
-    <div class="col-auto">
+    <div class="col-md-3">
       <button type="button" class="btn btn-success" id="asignarMultiplesBtn" disabled>
         <i class="fas fa-save"></i> Asignar Seleccionados a Comisión
       </button>
     </div>
-    <div class="col-auto">
+    <!-- ✅ NUEVO: Botón para Enviar Correos Clase 1 -->
+    <div class="col-md-3">
       <button type="button" class="btn btn-primary" id="enviarClase1Btn" disabled>
         <i class="fas fa-envelope"></i> Enviar Correos Clase 1
-      </button>
-    </div>
-    <!-- 🗑️ NUEVO: Eliminar seleccionados -->
-    <div class="col-auto">
-      <button type="button" class="btn btn-secondary" id="eliminarMultiplesBtn" disabled>
-        <i class="fas fa-trash"></i> Eliminar Seleccionados
       </button>
     </div>
   </div>
@@ -145,8 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </thead>
         <tbody>
           {% for i in inscripciones %}
-          <tr id="fila-{% if i.curso == "Desarrollo Web" %}web{% else %}ia{% endif %}-{{ i.id }}">
-            <td><input type="checkbox" name="seleccionados" value="{{ i.id }}" data-tipo="{% if i.curso == "Desarrollo Web" %}web{% else %}ia{% endif %}" class="row-checkbox"></td>
+          <tr>
+            <td><input type="checkbox" name="seleccionados" value="{{ i.id }}" class="row-checkbox"></td>
             <td>{{ i.id }}</td>
             <td>
               {% if i.curso == "Desarrollo Web" %}
@@ -192,8 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </select>
                   </li>
                   <li><hr class="dropdown-divider"></li>
-                  <li><a class="dropdown-item text-success" href="#" onclick="confirmarAsignacionIndividual({{ i.id }})">Asignar Individual</a></li>
-                  <li><a class="dropdown-item text-danger" href="#" onclick="eliminarIndividual({{ i.id }}, '{% if i.curso == "Desarrollo Web" %}web{% else %}ia{% endif %}', event)"><i class="fas fa-trash"></i> Eliminar</a></li>
+                  <li><a class="dropdown-item text-danger" href="#" onclick="confirmarAsignacionIndividual({{ i.id }})">Asignar Individual</a></li>
                 </ul>
               </div>
             </td>
@@ -210,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 $(document).ready(function() {
   // Inicializar DataTable
-  const table = $('#tabla-inscripciones').DataTable({
+  $('#tabla-inscripciones').DataTable({
     scrollX: true,
     order: [[18, "desc"]],  // ahora la fecha es la columna 18 (ajustada por nueva columna)
     language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" },
@@ -225,21 +219,15 @@ $(document).ready(function() {
   let comisionGlobalSelect = $('#comisionGlobalSelect');
   let asignarMultiplesBtn = $('#asignarMultiplesBtn');
   let enviarClase1Btn = $('#enviarClase1Btn');
-  let eliminarMultiplesBtn = $('#eliminarMultiplesBtn');
-
-  // Usa la API de DataTables para incluir filas de TODAS las páginas (no solo la visible)
-  function allBoxes()     { return table.$('.row-checkbox'); }
-  function checkedBoxes() { return table.$('.row-checkbox:checked'); }
-  function checkedItems() { return checkedBoxes().map(function() { return { id: this.value, tipo: $(this).data('tipo') }; }).get(); }
-  function checkedIds()   { return checkedBoxes().map(function() { return this.value; }).get(); }
+  let rowCheckboxes = $('.row-checkbox');
 
   selectAllHeader.on('change', function() {
-    allBoxes().prop('checked', this.checked);
+    rowCheckboxes.prop('checked', this.checked);
     toggleAsignarBtn();
   });
 
-  $('#tabla-inscripciones').on('change', '.row-checkbox', function() {
-    selectAllHeader.prop('checked', allBoxes().length > 0 && allBoxes().length === checkedBoxes().length);
+  rowCheckboxes.on('change', function() {
+    selectAllHeader.prop('checked', rowCheckboxes.length === rowCheckboxes.filter(':checked').length);
     toggleAsignarBtn();
   });
 
@@ -257,7 +245,7 @@ $(document).ready(function() {
   });
 
   function toggleAsignarBtn() {
-    let seleccionados = checkedBoxes().length > 0;
+    let seleccionados = rowCheckboxes.filter(':checked').length > 0;
     let comisionSeleccionada = comisionGlobalSelect.val();
     asignarMultiplesBtn.prop('disabled', !(seleccionados && comisionSeleccionada));
     asignarMultiplesBtn.toggleClass('btn-success', seleccionados && comisionSeleccionada).toggleClass('btn-secondary', !(seleccionados && comisionSeleccionada));
@@ -265,17 +253,13 @@ $(document).ready(function() {
     // ✅ Habilitar botón de correos si hay seleccionados (no necesita comisión)
     enviarClase1Btn.prop('disabled', !seleccionados);
     enviarClase1Btn.toggleClass('btn-primary', seleccionados).toggleClass('btn-secondary', !seleccionados);
-
-    // 🗑️ Habilitar botón de eliminar si hay seleccionados
-    eliminarMultiplesBtn.prop('disabled', !seleccionados);
-    eliminarMultiplesBtn.toggleClass('btn-danger', seleccionados).toggleClass('btn-secondary', !seleccionados);
   }
 
   // ✅ Asignación Múltiple
   asignarMultiplesBtn.on('click', function() {
     if (confirm('¿Confirmas asignar los seleccionados a la comisión elegida? Esto creará sus perfiles como pagos "gratuitos".')) {
       let seleccionados = [];
-      seleccionados = checkedIds();
+      rowCheckboxes.filter(':checked').each(function() { seleccionados.push($(this).val()); });
       if (seleccionados.length > 0) {
         // Serializar formulario para POST
         let formData = new FormData($('#asignacionForm')[0]);
@@ -303,7 +287,7 @@ $(document).ready(function() {
 enviarClase1Btn.on('click', function() {
   if (confirm('¿Confirmas enviar el correo de la primera clase a los seleccionados?')) {
     let seleccionados = [];
-    seleccionados = checkedIds();
+    rowCheckboxes.filter(':checked').each(function() { seleccionados.push($(this).val()); });
     if (seleccionados.length > 0) {
       let formData = new FormData();
       formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val());
@@ -318,7 +302,7 @@ enviarClase1Btn.on('click', function() {
         contentType: false,
         success: function(response) {
           showAlert('success', 'Correos enviados: ' + response.exito_count + ' procesados.');
-          checkedBoxes().prop('checked', false).first().trigger('change'); selectAllHeader.prop('checked', false); toggleAsignarBtn();  // Desmarca después
+          rowCheckboxes.filter(':checked').prop('checked', false).trigger('change');  // Desmarca después
         },
         error: function(xhr) {
           let errorMsg = 'Error al enviar correos.';
@@ -359,56 +343,6 @@ enviarClase1Btn.on('click', function() {
         }
       });
     }
-  };
-
-  // 🗑️ Quitar filas de la tabla sin recargar (el id de fila incluye el tipo: web/ia)
-  function quitarFilas(items) {
-    items.forEach(function(it) { table.row('#fila-' + it.tipo + '-' + it.id).remove(); });
-    table.draw(false);
-    selectAllHeader.prop('checked', false);
-    toggleAsignarBtn();
-  }
-
-  function enviarEliminacion(items, onOk) {
-    let formData = new FormData();
-    formData.append('csrfmiddlewaretoken', $('[name=csrfmiddlewaretoken]').val());
-    formData.append('items', JSON.stringify(items));   // [{id, tipo}] -> tipo = 'web' | 'ia'
-
-    $.ajax({
-      url: "{% url 'eliminar_inscriptos_gratis' %}",
-      type: 'POST',
-      data: formData,
-      processData: false,
-      contentType: false,
-      success: function(response) {
-        quitarFilas(items);
-        onOk(response);
-      },
-      error: function(xhr) {
-        let msg = 'Error al eliminar.';
-        if (xhr.responseJSON && xhr.responseJSON.error) msg += ' Detalle: ' + xhr.responseJSON.error;
-        showAlert('danger', msg);
-      }
-    });
-  }
-
-  // 🗑️ Eliminar seleccionados (múltiple)
-  eliminarMultiplesBtn.on('click', function() {
-    let items = checkedItems();
-    if (items.length === 0) return;
-    if (!confirm('¿Eliminar definitivamente ' + items.length + ' inscripto(s)? Esta acción no se puede deshacer.')) return;
-    enviarEliminacion(items, function(r) {
-      showAlert('success', 'Eliminados: ' + r.exito_count + ' inscripto(s).');
-    });
-  });
-
-  // 🗑️ Eliminar individual (desde el dropdown de la fila)
-  window.eliminarIndividual = function(inscripcionId, tipo, e) {
-    if (e) e.preventDefault();
-    if (!confirm('¿Eliminar definitivamente este inscripto? Esta acción no se puede deshacer.')) return;
-    enviarEliminacion([{ id: String(inscripcionId), tipo: tipo }], function() {
-      showAlert('success', 'Inscripto eliminado.');
-    });
   };
 
   // ✅ Función para Mostrar Alertas
