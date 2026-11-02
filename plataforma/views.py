@@ -6714,6 +6714,36 @@ def enviar_correos_clase1(request):
         print(f"❌ Error general: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
+
+###########################################################################################################
+#-----------------------------------eliminar inscripto gratis---------------------------------------------#
+###########################################################################################################
+
+@session_required
+@require_POST
+def eliminar_inscriptos_gratis(request):
+    try:
+        items = json.loads(request.POST.get('items', '[]'))
+        web_ids = [int(i['id']) for i in items if i.get('tipo') == 'web']
+        ia_ids = [int(i['id']) for i in items if i.get('tipo') == 'ia']
+    except (ValueError, TypeError, KeyError, AttributeError):
+        return JsonResponse({'error': 'Formato inválido'}, status=400)
+
+    if not web_ids and not ia_ids:
+        return JsonResponse({'error': 'No hay inscriptos para eliminar'}, status=400)
+
+    try:
+        with transaction.atomic():
+            web_qs = InscripcionClaseGratis.objects.filter(id__in=web_ids)
+            ia_qs = InscripcionIAPromo.objects.filter(id__in=ia_ids)
+            total = web_qs.count() + ia_qs.count()
+            web_qs.delete()
+            ia_qs.delete()
+        return JsonResponse({'exito_count': total})
+    except Exception as e:
+        logger.error(f"Error en eliminar_inscriptos_gratis: {e}")
+        return JsonResponse({'error': str(e)}, status=500)
+
 #---------------------------------------------------------------------------------------------------------#
 #-------------------------------------------quiz admin----------------------------------------------------#
 #---------------------------------------------------------------------------------------------------------#

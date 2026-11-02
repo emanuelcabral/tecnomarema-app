@@ -402,6 +402,8 @@ path("test/", test),
     path('administrador/automatizaciones/guardar/', views.guardar_automatizacion, name='guardar_automatizacion'),
     path('administrador/automatizaciones/eliminar/', views.eliminar_automatizacion, name='eliminar_automatizacion'),
 
+    path('eliminar-inscriptos-gratis/', views.eliminar_inscriptos_gratis, name='eliminar_inscriptos_gratis'),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 
