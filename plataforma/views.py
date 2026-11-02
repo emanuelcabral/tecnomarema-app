@@ -6415,114 +6415,135 @@ def asignar_pago_gratis(request):
         comision = Comision.objects.get(id_comision=comision_id)
         curso = comision.id_curso
 
-        with transaction.atomic():  # Transacción para consistencia
-            for inscr_id in seleccionados:
-                # Buscar inscripto (prioridad: IA Promo, luego Clase Gratis)
+        for item in seleccionados:
+            # Acepta "12" (formato actual) o {"id": "12", "tipo": "web"|"ia"} (evita choque de IDs entre tablas)
+            if isinstance(item, dict):
+                inscr_id, tipo = item.get('id'), item.get('tipo')
+            else:
+                inscr_id, tipo = item, None
+
+            # Buscar inscripto
+            inscripcion = None
+            if tipo == 'web':
+                inscripcion = InscripcionClaseGratis.objects.filter(id=inscr_id).first()
+            elif tipo == 'ia':
+                inscripcion = InscripcionIAPromo.objects.filter(id=inscr_id).first()
+            else:  # sin tipo: prioridad IA Promo, luego Clase Gratis
                 inscripcion = InscripcionIAPromo.objects.filter(id=inscr_id).first()
                 if not inscripcion:
                     inscripcion = InscripcionClaseGratis.objects.filter(id=inscr_id).first()
-                if not inscripcion:
-                    errores.append(f"Inscripción {inscr_id} no encontrada")
-                    continue
+            if not inscripcion:
+                errores.append(f"Inscripción {inscr_id} no encontrada")
+                continue
 
-                dni = inscripcion.dni or f"GRATIS_{inscripcion.id}"  # Fallback si no hay DNI
-                email = inscripcion.email.lower()
+            dni = inscripcion.dni or f"GRATIS_{inscripcion.id}"  # Fallback si no hay DNI
+            email = inscripcion.email.lower().strip()
 
-                # ✅ Validaciones (evitar duplicados)
-                if DatosDeEstudiantes.objects.filter(Q(dni=dni) | Q(correo=email)).exists():
-                    errores.append(f"Duplicado para {inscripcion.nombre}: DNI/Email ya existe")
-                    continue
-                if PerfilUsuario.objects.filter(Q(nombre_usuario=dni) | Q(correo=email)).exists():
-                    errores.append(f"Duplicado usuario para {inscripcion.nombre}")
-                    continue
+            # ✅ Validaciones (evitar duplicados)
+            if DatosDeEstudiantes.objects.filter(Q(dni=dni) | Q(correo=email)).exists():
+                errores.append(f"Duplicado para {inscripcion.nombre}: DNI/Email ya existe")
+                continue
+            if PerfilUsuario.objects.filter(Q(nombre_usuario=dni) | Q(correo=email)).exists():
+                errores.append(f"Duplicado usuario para {inscripcion.nombre}")
+                continue
 
-                # ✅ Crear DatosDeEstudiantes (mapeo de campos)
-                ultimo_est = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
-                nuevo_id_est = str(int(ultimo_est.id_estudiante) + 1 if ultimo_est else 1).zfill(6)
+            password_temporal = 'pass1234'  # Contraseña temporal
 
-                estudiante = DatosDeEstudiantes.objects.create(
-                    id_estudiante=nuevo_id_est,
-                    nombre=inscripcion.nombre,
-                    apellido=inscripcion.apellido,
-                    dni=dni,
-                    correo=email,
-                    fecha_nacimiento=getattr(inscripcion, 'fecha_nacimiento', None),
-                    pais=getattr(inscripcion, 'pais', 'Argentina'),
-                    provincia=getattr(inscripcion, 'provincia', ''),
-                    telefono=getattr(inscripcion, 'telefono', ''),
-                    genero=getattr(inscripcion, 'genero', ''),
-                    # Asignar a primer campo disponible (cursando1, etc.)
-                )
-                # Asignar comisión
-                for i in range(1, 10):
-                    campo = f'cursando{i}'
-                    if getattr(estudiante, campo) is None:
-                        setattr(estudiante, campo, comision)
-                        break
-                estudiante.save()
+            # ✅ Crear registros en DB: una transacción por inscripto (si uno falla, los demás siguen)
+            try:
+                with transaction.atomic():
+                    # DatosDeEstudiantes
+                    ultimo_est = DatosDeEstudiantes.objects.order_by('-id_estudiante').first()
+                    nuevo_id_est = str(int(ultimo_est.id_estudiante) + 1 if ultimo_est else 1).zfill(6)
 
-                # ✅ Crear PerfilUsuario
-                ultimo_user = PerfilUsuario.objects.order_by('-id_usuario').first()
-                nuevo_id_user = str(int(ultimo_user.id_usuario) + 1 if ultimo_user else 1).zfill(6)
+                    estudiante = DatosDeEstudiantes.objects.create(
+                        id_estudiante=nuevo_id_est,
+                        nombre=inscripcion.nombre,
+                        apellido=inscripcion.apellido,
+                        dni=dni,
+                        correo=email,
+                        fecha_nacimiento=getattr(inscripcion, 'fecha_nacimiento', None),
+                        pais=getattr(inscripcion, 'pais', 'Argentina'),
+                        provincia=getattr(inscripcion, 'provincia', ''),
+                        telefono=getattr(inscripcion, 'telefono', ''),
+                        genero=getattr(inscripcion, 'genero', ''),
+                    )
+                    # Asignar comisión en el primer campo cursandoN libre
+                    for i in range(1, 10):
+                        campo = f'cursando{i}'
+                        if getattr(estudiante, campo) is None:
+                            setattr(estudiante, campo, comision)
+                            break
+                    estudiante.save()
 
-                usuario = PerfilUsuario.objects.create(
-                    id_usuario=nuevo_id_user,
-                    id_estudiante=estudiante,
-                    nombre_usuario=dni,  # Usar DNI como username
-                    correo=email,
-                    rol='alumno',
-                    is_active=True
-                )
-                password_temporal = 'pass1234'  # Contraseña temporal
-                usuario.set_password(password_temporal)
-                usuario.save()
+                    # PerfilUsuario
+                    ultimo_user = PerfilUsuario.objects.order_by('-id_usuario').first()
+                    nuevo_id_user = str(int(ultimo_user.id_usuario) + 1 if ultimo_user else 1).zfill(6)
 
-                # ✅ Crear RegistroPago (como "gratuito")
-                pago = RegistroPago.objects.create(
-                    estudiante=estudiante,
-                    comision=comision,
-                    plataforma='web_gratis',
-                    medio_pago='inscripcion_gratuita',
-                    estado_pago='Aprobado',  # Directo a aprobado
-                    monto=0.00,
-                    fecha_pago=timezone.now(),
-                    id_transaccion=f'GRATIS_{inscripcion.id}',
-                    observaciones=f'Inscripción gratuita desde clase promo. Curso: {curso.nombre_curso}. Comisión: {comision.numero_comision}.'
-                )
+                    usuario = PerfilUsuario.objects.create(
+                        id_usuario=nuevo_id_user,
+                        id_estudiante=estudiante,
+                        nombre_usuario=dni,  # DNI como username
+                        correo=email,
+                        rol='alumno',
+                        is_active=True
+                    )
+                    usuario.set_password(password_temporal)
+                    usuario.save()
 
-                # ✅ Generar URL de reset de contraseña para el email de bienvenida
+                    # RegistroPago (como "gratuito")
+                    RegistroPago.objects.create(
+                        estudiante=estudiante,
+                        comision=comision,
+                        plataforma='web_gratis',
+                        medio_pago='inscripcion_gratuita',
+                        estado_pago='Aprobado',
+                        monto=0.00,
+                        fecha_pago=timezone.now(),
+                        id_transaccion=f'GRATIS_{inscripcion.id}',
+                        observaciones=f'Inscripción gratuita desde clase promo. Curso: {curso.nombre_curso}. Comisión: {comision.numero_comision}.'
+                    )
+            except Exception as e:
+                logger.error(f"Error creando alumno {inscripcion.nombre} ({email}): {e}")
+                errores.append(f"No se pudo crear a {inscripcion.nombre} {inscripcion.apellido}: {e}")
+                continue
+
+            # ✅ Alumno ya guardado: contamos el éxito aunque falle algún mail
+            exito_count += 1
+
+            # ✅ Emails (fuera de la transacción: si fallan, NO deshacen lo creado)
+            try:
                 uid = urlsafe_base64_encode(force_bytes(usuario.pk))
                 token = default_token_generator.make_token(usuario)
                 reset_url = request.build_absolute_uri(reverse('password_reset_confirm', kwargs={'uidb64': uid, 'token': token}))
 
-                # ✅ EMAIL DE BIENVENIDA AL USUARIO (usando bienvenida_paga.html adaptada para gratis)
                 context_usuario = {
                     'nombre': inscripcion.nombre,
                     'curso': curso.nombre_curso,
                     'comision': comision.numero_comision,
-                    'usuario': dni,  # DNI como username
+                    'usuario': dni,
                     'password': password_temporal,
-                    'reset_url': reset_url,  # URL para cambiar contraseña
+                    'reset_url': reset_url,
                 }
-
                 html_message_usuario = render_to_string('registration/bienvenida_paga.html', context_usuario)
-                plain_message_usuario = strip_tags(html_message_usuario)
-
                 send_mail(
                     subject=f"¡Bienvenido/a a Tecno Marema! - Acceso a tu curso GRATIS {curso.nombre_curso}",
-                    message=plain_message_usuario,
+                    message=strip_tags(html_message_usuario),
                     from_email=None,  # Usa DEFAULT_FROM_EMAIL de settings
                     recipient_list=[email],
                     html_message=html_message_usuario,
                     fail_silently=False,
                 )
+            except Exception as e:
+                logger.error(f"Mail de bienvenida falló para {email}: {e}")
+                errores.append(f"{inscripcion.nombre}: guardado OK, pero falló el mail de bienvenida ({e})")
 
-                # ✅ EMAIL A LA INSTITUCIÓN (notificación de nuevo registro usando registro_pago.html)
+            try:
                 context_institucion = {
                     'nombre': inscripcion.nombre,
                     'apellido': inscripcion.apellido,
                     'email': email,
-                    'documento': dni,  # DNI como documento
+                    'documento': dni,
                     'curso': curso.nombre_curso,
                     'comision': comision.numero_comision,
                     'pais': getattr(inscripcion, 'pais', 'Argentina'),
@@ -6531,23 +6552,21 @@ def asignar_pago_gratis(request):
                     'medio_pago': 'inscripcion_gratuita',
                     'fecha': timezone.now(),
                 }
-
                 html_message_institucion = render_to_string('registration/registro_pago.html', context_institucion)
-                plain_message_institucion = strip_tags(html_message_institucion)
-
                 send_mail(
                     subject=f"📥 Nuevo alumno inscripto GRATIS – {inscripcion.nombre} {inscripcion.apellido}",
-                    message=plain_message_institucion,
+                    message=strip_tags(html_message_institucion),
                     from_email=None,
-                    recipient_list=['tecnomarema.ar@gmail.com'],  # Email de la institución
+                    recipient_list=['tecnomarema.ar@gmail.com'],
                     html_message=html_message_institucion,
                     fail_silently=False,
                 )
-
-                exito_count += 1
+            except Exception as e:
+                logger.error(f"Mail a la institución falló ({inscripcion.nombre}): {e}")
+                errores.append(f"{inscripcion.nombre}: guardado OK, pero falló el mail a la institución ({e})")
 
         if exito_count > 0:
-            messages.success(request, f'{exito_count} inscriptos convertidos a pagos gratuitos exitosamente. Emails enviados (bienvenida al usuario y notificación a la institución).')
+            messages.success(request, f'{exito_count} inscriptos convertidos a pagos gratuitos exitosamente.')
         if errores:
             messages.warning(request, 'Errores: ' + '; '.join(errores))
 
