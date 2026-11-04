@@ -1020,7 +1020,6 @@ class Cupon(models.Model):
 
 from django.db import models
 
-
 class HonorarioCurso(models.Model):
     """Valor hora de profesor y de tutor para cada curso (una fila por curso)."""
     curso = models.OneToOneField('Curso', on_delete=models.CASCADE, related_name='honorario')
