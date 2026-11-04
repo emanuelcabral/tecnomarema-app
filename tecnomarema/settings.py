@@ -174,10 +174,8 @@ WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 # ==========================================================
 DATABASE_URL = os.getenv('DATABASE_URL', '')
 
-# Si estamos en la PC de desarrollo (Windows) y trae el nombre del contenedor, forzamos localhost
+# Forzamos el reemplazo de forma agresiva si estamos ejecutando localmente en Windows
 if 'tecnomarema_tecnomarema-app-db' in DATABASE_URL:
-    # Verificamos si estamos ejecutando localmente (por ejemplo, si no hay entorno de Docker activo)
-    # Reemplazamos directamente el host del contenedor por localhost
     DATABASE_URL = DATABASE_URL.replace('tecnomarema_tecnomarema-app-db', 'localhost')
 
 DATABASES = {
