@@ -404,6 +404,9 @@ path("test/", test),
 
     path('eliminar-inscriptos-gratis/', views.eliminar_inscriptos_gratis, name='eliminar_inscriptos_gratis'),
 
+    path('administrador/honorarios/', views.honorarios_view, name='honorarios'),
+    path('administrador/guardar_honorarios/', views.guardar_honorarios, name='guardar_honorarios'),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 

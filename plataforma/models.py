@@ -1014,5 +1014,19 @@ class Cupon(models.Model):
             return self.descuento_porcentaje
         return 0
     
-
 ##################################################################################################
+#----------------------------------------Honorarios----------------------------------------------#
+##################################################################################################
+
+from django.db import models
+
+
+class HonorarioCurso(models.Model):
+    """Valor hora de profesor y de tutor para cada curso (una fila por curso)."""
+    curso = models.OneToOneField('Curso', on_delete=models.CASCADE, related_name='honorario')
+    valor_hora_profesor = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    valor_hora_tutor = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    actualizado = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.curso} | profe {self.valor_hora_profesor} | tutor {self.valor_hora_tutor}"

@@ -7839,3 +7839,55 @@ def eliminar_automatizacion(request):
             return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
             
     return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
+#####################################################################################################
+#-----------------------------------Honorarios docentes y tutores-----------------------------------#
+#####################################################################################################
+
+# Agregar al final de plataforma/views.py
+import json
+from decimal import Decimal, InvalidOperation
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.http import require_POST
+from .models import Curso, HonorarioCurso
+
+
+def honorarios_view(request):
+    existentes = {h.curso_id: h for h in HonorarioCurso.objects.all()}
+    filas = [
+        {'curso': c, 'honorario': existentes.get(c.pk)}
+        for c in Curso.objects.all().order_by('nombre_curso')
+    ]
+    return render(request, 'administrador/honorarios.html', {'filas': filas})
+
+
+def _a_decimal(valor):
+    if valor in (None, ''):
+        return None
+    d = Decimal(str(valor).replace(',', '.'))
+    if d < 0:
+        raise InvalidOperation
+    return d
+
+
+@require_POST
+def guardar_honorarios(request):
+    try:
+        items = json.loads(request.body)['items']
+        with transaction.atomic():
+            for it in items:
+                HonorarioCurso.objects.update_or_create(
+                    curso_id=it['id_curso'],
+                    defaults={
+                        'valor_hora_profesor': _a_decimal(it.get('profesor')),
+                        'valor_hora_tutor': _a_decimal(it.get('tutor')),
+                    },
+                )
+        return JsonResponse({'status': 'success'})
+    except (InvalidOperation, ValueError, KeyError, TypeError):
+        return JsonResponse({'status': 'error', 'message': 'Hay valores inválidos. Usá solo números positivos.'}, status=400)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
