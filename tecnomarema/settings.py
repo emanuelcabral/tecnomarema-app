@@ -156,18 +156,36 @@ WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 #         'PORT': os.getenv('DB_PORT', '5432'),
 #     }
 
+# DATABASE_URL = os.getenv('DATABASE_URL', None)
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=DATABASE_URL,
+#         conn_max_age=600,
+#         conn_health_checks=True,
+#         # Neon requiere SSL siempre. Si estamos usando Neon, forzamos SSL aunque DEBUG sea True.
+#         # ssl_require=True if (DATABASE_URL and 'neon.tech' in DATABASE_URL) else (not DEBUG)
+#         ssl_require=False
+#     )
+# }
+
 DATABASE_URL = os.getenv('DATABASE_URL', None)
+
+# Si estamos corriendo localmente en la PC, cambiamos el nombre interno por localhost automáticamente
+if DATABASE_URL and 'tecnomarema_tecnomarema-app-db' in DATABASE_URL:
+    # Verificamos si NO estamos dentro de Docker (es decir, estás ejecutando manage.py en tu Windows)
+    # O simplemente forzamos el reemplazo si tu entorno local de Windows tira el error:
+    DATABASE_URL = DATABASE_URL.replace('tecnomarema_tecnomarema-app-db', 'localhost')
 
 DATABASES = {
     'default': dj_database_url.config(
         default=DATABASE_URL,
         conn_max_age=600,
         conn_health_checks=True,
-        # Neon requiere SSL siempre. Si estamos usando Neon, forzamos SSL aunque DEBUG sea True.
-        # ssl_require=True if (DATABASE_URL and 'neon.tech' in DATABASE_URL) else (not DEBUG)
         ssl_require=False
     )
 }
+
 
 # Fallback local si no hay DATABASE_URL
 if 'default' not in DATABASES or not DATABASES['default']:
