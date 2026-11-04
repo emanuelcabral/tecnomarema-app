@@ -169,12 +169,15 @@ WSGI_APPLICATION = 'tecnomarema.wsgi.application'
 #     )
 # }
 
-DATABASE_URL = os.getenv('DATABASE_URL', None)
+# ==========================================================
+# Base de datos - Soporte inteligente Local / Servidor
+# ==========================================================
+DATABASE_URL = os.getenv('DATABASE_URL', '')
 
-# Si estamos corriendo localmente en la PC, cambiamos el nombre interno por localhost automáticamente
-if DATABASE_URL and 'tecnomarema_tecnomarema-app-db' in DATABASE_URL:
-    # Verificamos si NO estamos dentro de Docker (es decir, estás ejecutando manage.py en tu Windows)
-    # O simplemente forzamos el reemplazo si tu entorno local de Windows tira el error:
+# Si estamos en la PC de desarrollo (Windows) y trae el nombre del contenedor, forzamos localhost
+if 'tecnomarema_tecnomarema-app-db' in DATABASE_URL:
+    # Verificamos si estamos ejecutando localmente (por ejemplo, si no hay entorno de Docker activo)
+    # Reemplazamos directamente el host del contenedor por localhost
     DATABASE_URL = DATABASE_URL.replace('tecnomarema_tecnomarema-app-db', 'localhost')
 
 DATABASES = {
