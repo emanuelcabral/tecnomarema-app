@@ -1,8 +1,10 @@
-# Created by venv; see https://docs.python.org/3/library/venv.html
-
 # .gitignore
+venv/
+env/
 .env
-.env
-media/
 __pycache__/
+*.pyc
+*.pyo
 *.sqlite3
+staticfiles/
+media/
