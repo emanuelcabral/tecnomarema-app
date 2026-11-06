@@ -14,7 +14,9 @@ import cloudinary.uploader
 import cloudinary.api
 
 # Cargar variables de entorno desde .env
-load_dotenv()
+# load_dotenv()
+# Cargar variables de entorno desde .env
+load_dotenv(override=True, encoding='utf-8')
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
@@ -274,7 +276,7 @@ BREVO_API_KEY = os.getenv('BREVO_API_KEY')
 DEFAULT_FROM_EMAIL = 'tecnomarema.ar@gmail.com'  # Usa el verificado en Brevo
 
 if BREVO_API_KEY:
-    print("EMAIL CONFIG USADA: Brevo API (HTTP) - 300/día free")
+    print("EMAIL CONFIG USADA: Brevo API (HTTP) - 300/dia free")
 else:
     print("⚠️ FALTA BREVO_API_KEY EN RENDER")
 
