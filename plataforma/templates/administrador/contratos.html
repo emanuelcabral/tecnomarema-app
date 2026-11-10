@@ -40,13 +40,13 @@
         {% if q %}<a class="btn btn-secondary" href="?por_pagina={{ por_pagina }}">Limpiar</a>{% endif %}
     </div>
     <div class="d-flex align-items-center gap-2">
-        <label for="por_pagina" class="text-muted mb-0">Mostrar</label>
+        <label for="por_pagina" class="text-primary mb-0">Mostrar</label>
         <select name="por_pagina" id="por_pagina" class="input-dark" onchange="this.form.submit()">
             <option value="20" {% if por_pagina == 20 %}selected{% endif %}>20</option>
             <option value="50" {% if por_pagina == 50 %}selected{% endif %}>50</option>
             <option value="100" {% if por_pagina == 100 %}selected{% endif %}>100</option>
         </select>
-        <span class="text-muted">por página</span>
+        <span class="text-primary">por página</span>
     </div>
 </form>
 
@@ -71,7 +71,7 @@
 <td>{{ f.comision.numero_comision }}</td>
 <td>{{ f.comision.fecha_inicio|date:"d/m/Y" }}</td>
 <td>{{ f.comision.fecha_fin|date:"d/m/Y" }}</td>
-<td><div>{{ f.dias|default:"-" }}</div><small class="text-muted">{{ f.horario }}</small></td>
+<td><div>{{ f.dias|default:"-" }}</div><small class="text-primary">{{ f.horario }}</small></td>
 <td class="text-center"><span class="badge bg-primary">{{ f.alumnos }}</span></td>
 <td style="min-width:230px">
     {% if f.profesor %}{% include "administrador/_contrato_persona.html" with p=f.profesor comision_id=f.comision.pk %}
@@ -79,18 +79,18 @@
 </td>
 <td style="min-width:230px">
     {% for t in f.tutores %}{% include "administrador/_contrato_persona.html" with p=t comision_id=f.comision.pk %}
-    {% empty %}<span class="text-muted">Ninguno</span>{% endfor %}
+    {% empty %}<span class="text-primary">Ninguno</span>{% endfor %}
 </td>
 </tr>
 {% empty %}
-<tr><td colspan="8" class="text-center text-muted py-4">No hay comisiones para mostrar.</td></tr>
+<tr><td colspan="8" class="text-center text-primary py-4">No hay comisiones para mostrar.</td></tr>
 {% endfor %}
 </tbody>
 </table>
 </div>
 
 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
-    <small class="text-muted">
+    <small class="text-primary">
         {% if pagina.paginator.count %}Mostrando {{ pagina.start_index }}–{{ pagina.end_index }} de {{ pagina.paginator.count }} comisiones{% endif %}
     </small>
     {% if pagina.paginator.num_pages > 1 %}
@@ -232,7 +232,7 @@ $(document).on("click", ".btn-resp", function(){
             '<p><b>' + esc(r.nombre) + '</b> · ' + esc(r.rol) + '</p>' +
             '<p>Respuesta: <b>' + esc(r.estado) + '</b>' + (r.respondido_en ? ' <small>(' + esc(r.respondido_en) + ')</small>' : '') + '</p>' +
             (r.comentario ? '<p>Comentario:<br>' + esc(r.comentario) + '</p>' : '') +
-            (r.archivo ? '<p><a href="' + r.archivo + '"><i class="bi bi-paperclip"></i> ' + esc(r.archivo_nombre) + '</a></p>' : '<p class="text-muted">Sin documentación adjunta.</p>') +
+            (r.archivo ? '<p><a href="' + r.archivo + '"><i class="bi bi-paperclip"></i> ' + esc(r.archivo_nombre) + '</a></p>' : '<p class="text-primary">Sin documentación adjunta.</p>') +
             '</div>';
         Swal.fire({ title:"Respuesta recibida", html: html, confirmButtonText:"Cerrar" });
     });
