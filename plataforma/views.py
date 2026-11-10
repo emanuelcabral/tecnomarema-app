@@ -8074,29 +8074,128 @@ def _ct_servir(rol, datos, formato, inline=False):
     return resp
 
 
-def _ct_mensaje(nombre, numero, curso, rol_label, link):
-    lineas = [
+# def _ct_mensaje(nombre, numero, curso, rol_label, link):
+#     lineas = [
+#         f'¡Hola, {nombre}! 👋🏼',
+#         'Esperamos que estés teniendo un excelente día. 🌟',
+#         f'Te escribimos porque tenemos una excelente noticia: nos encantaría proponerte que te sumes al equipo '
+#         f'de la comisión {numero} del Curso {curso} en el rol de {rol_label}. 🎯',
+#         'Conocemos tu trayectoria y estamos convencidos de que tu aporte será clave para potenciar este proyecto '
+#         'y llevarlo al siguiente nivel. ¡Nos entusiasma mucho la idea de trabajar juntos! 🙌🏼🔥',
+#         'Si la propuesta te suena bien y quieres sumarte al desafío, solo debes seguir estos sencillos pasos:',
+#         '',
+#         '1. 📄 Completa el archivo adjunto con tus datos.',
+#         '2. 📩 Envíalo a través de este enlace: ',
+#         '',
+#         'Quedamos superatentos a cualquier duda o consulta que tengas. 💬',
+#         '¡Te enviamos un gran saludo! 🤝',
+#         'El equipo de Tecnomarema',
+#     ]
+#     texto = '\n'.join(l + link if l.endswith('enlace: ') else l for l in lineas)
+#     html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#222">' + '<br>'.join(
+#         escape(l) + (f'<a href="{escape(link)}">{escape(link)}</a>' if l.endswith('enlace: ') else '')
+#         for l in lineas) + '</div>'
+#     return texto, html
+
+
+def _ct_mensaje(nombre, numero, curso, rol_label, link, inicio=''):
+    verde = '#12f693'
+    e = escape
+
+    # Versión texto plano (para clientes de correo que no muestran HTML)
+    texto = '\n'.join([
         f'¡Hola, {nombre}! 👋🏼',
         'Esperamos que estés teniendo un excelente día. 🌟',
         f'Te escribimos porque tenemos una excelente noticia: nos encantaría proponerte que te sumes al equipo '
         f'de la comisión {numero} del Curso {curso} en el rol de {rol_label}. 🎯',
+        (f'Fecha de inicio: {inicio}' if inicio else ''),
         'Conocemos tu trayectoria y estamos convencidos de que tu aporte será clave para potenciar este proyecto '
         'y llevarlo al siguiente nivel. ¡Nos entusiasma mucho la idea de trabajar juntos! 🙌🏼🔥',
         'Si la propuesta te suena bien y quieres sumarte al desafío, solo debes seguir estos sencillos pasos:',
         '',
         '1. 📄 Completa el archivo adjunto con tus datos.',
-        '2. 📩 Envíalo a través de este enlace: ',
+        f'2. 📩 Envíalo a través de este enlace: {link}',
         '',
         'Quedamos superatentos a cualquier duda o consulta que tengas. 💬',
         '¡Te enviamos un gran saludo! 🤝',
         'El equipo de Tecnomarema',
-    ]
-    texto = '\n'.join(l + link if l.endswith('enlace: ') else l for l in lineas)
-    html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#222">' + '<br>'.join(
-        escape(l) + (f'<a href="{escape(link)}">{escape(link)}</a>' if l.endswith('enlace: ') else '')
-        for l in lineas) + '</div>'
-    return texto, html
+    ])
 
+    fecha_html = (
+        f'<h2 style="color: #fff; text-align: center; margin: 30px 0; font-size: 24px; background-color: #000; '
+        f'padding: 10px; border-radius: 4px; box-shadow: 0 0 5px {verde};">🗓️ Fecha de Inicio: {e(inicio)}</h2>'
+        if inicio else ''
+    )
+
+    html = f'''<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>🤝 Propuesta para sumarte al equipo de Tecno Marema</title>
+</head>
+<body style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #000; padding: 40px; color: #fff;">
+  <div style="background-color: #111; border-radius: 12px; padding: 30px; max-width: 600px; margin: auto; box-shadow: 0 0 15px {verde}; color: #fff;">
+
+    <h1 style="color: {verde}; text-align: center; margin-bottom: 30px; font-size: 28px;">
+      🤝 ¡Tenemos una propuesta para vos!
+    </h1>
+
+    <p style="font-size: 18px; text-align: center;">
+      ¡Hola, <strong style="color:{verde};">{e(nombre)}</strong>! 👋🏼
+    </p>
+    <p style="font-size: 16px; text-align: center;">
+      Esperamos que estés teniendo un excelente día. 🌟
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 20px 0;">
+
+    <p style="font-size: 18px; text-align: center; font-weight: bold;">
+      Te escribimos porque tenemos una excelente noticia: nos encantaría proponerte que te sumes al equipo de la comisión
+      <strong style="color:{verde};">{e(numero)}</strong> del Curso
+      <strong style="color:{verde};">{e(curso)}</strong> en el rol de
+      <strong style="color:{verde};">{e(rol_label)}</strong>. 🎯
+    </p>
+
+    {fecha_html}
+
+    <p style="font-size: 16px; text-align: center;">
+      Conocemos tu trayectoria y estamos convencidos de que tu aporte será clave para potenciar este proyecto y llevarlo al siguiente nivel. ¡Nos entusiasma mucho la idea de trabajar juntos! 🙌🏼🔥
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <h3 style="color: {verde}; text-align: center; margin-bottom: 20px;">
+      ¿Qué debo hacer ahora?
+    </h3>
+
+    <p style="font-size: 16px; text-align: center;">
+      Si la propuesta te suena bien y quieres sumarte al desafío, solo debes seguir estos sencillos pasos:
+    </p>
+
+    <ul style="font-size: 16px; list-style: none; padding-left: 0;">
+      <li style="margin-bottom: 10px;">1. 📄 Completa el archivo adjunto con tus datos.</li>
+      <li>2. 📩 Envíalo a través del botón de abajo.</li>
+    </ul>
+
+    <p style="text-align: center; margin: 40px 0 20px 0;">
+      <a href="{e(link)}"
+         style="background-color: {verde}; color: #000; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 18px; box-shadow: 0 0 10px {verde}; display: inline-block;">
+        Responder la propuesta
+      </a>
+    </p>
+    <p style="font-size: 12px; text-align: center; color: #888; word-break: break-all;">
+      Si el botón no funciona, copiá este enlace en tu navegador:<br>{e(link)}
+    </p>
+
+    <hr style="border: none; border-top: 1px solid #333; margin: 30px 0;">
+
+    <p style="font-size: 14px; text-align: center;">Quedamos superatentos a cualquier duda o consulta que tengas. 💬</p>
+    <p style="font-size: 14px; text-align: center;">¡Te enviamos un gran saludo! 🤝</p>
+    <p style="font-size: 14px; text-align: center;"><em>El equipo de <strong style="color: {verde};">Tecnomarema</strong></em></p>
+  </div>
+</body>
+</html>'''
+    return texto, html
 
 @session_required
 def contratos_view(request):
@@ -8210,7 +8309,8 @@ def contrato_enviar(request):
             adjunto = contratos_docs.obtener_archivo(ct.rol, ct.datos, 'docx', _ct_cache_dir())
 
         d = ct.datos
-        texto, html = _ct_mensaje(d['nombre'], d['comision'], d['curso'], _CT_ROL[ct.rol], link)
+        # texto, html = _ct_mensaje(d['nombre'], d['comision'], d['curso'], _CT_ROL[ct.rol], link)
+        texto, html = _ct_mensaje(d['nombre'], d['comision'], d['curso'], _CT_ROL[ct.rol], link, d['inicio'])
         msg = EmailMultiAlternatives(
             subject=f'Propuesta para sumarte a la comisión {d["comision"]} - {d["curso"]}',
             body=texto, from_email=settings.DEFAULT_FROM_EMAIL, to=[correo],
