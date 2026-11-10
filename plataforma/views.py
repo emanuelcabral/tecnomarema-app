@@ -7891,3 +7891,404 @@ def guardar_honorarios(request):
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
 
+#####################################################################################################
+#------------------------------------contratos docentes---------------------------------------------#
+#####################################################################################################
+
+import logging
+import os
+from collections import Counter
+from decimal import Decimal
+from pathlib import Path
+
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.http import FileResponse, Http404, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.html import escape
+from django.utils.text import slugify
+from django.views.decorators.clickjacking import xframe_options_sameorigin
+from django.views.decorators.http import require_POST
+
+from . import contratos_docs
+from .models import Comision, PerfilUsuario, Clase, HonorarioCurso, ContratoDocente
+
+_ct_log = logging.getLogger(__name__)
+
+_CT_SLOTS = [f'cursando{i}' for i in range(1, 10)]
+_CT_ROL = {'profesor': 'Profesor/a', 'tutor': 'Tutor/a'}
+_CT_MIME = {
+    'pdf': 'application/pdf',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+}
+_CT_EXT_RESPUESTA = ('.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png')
+_CT_MAX_MB = 10
+
+
+def _ct_fmt_ars(valor):
+    s = f"{Decimal(valor):,.2f}"
+    return "$ " + s.replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def _ct_hora(h):
+    return h.strftime('%H:%M') if hasattr(h, 'strftime') else str(h or '')
+
+
+def _ct_unir(items):
+    items = list(dict.fromkeys(i for i in items if i))
+    if len(items) <= 1:
+        return ''.join(items)
+    return ', '.join(items[:-1]) + ' y ' + items[-1]
+
+
+def _ct_dias_horario(com):
+    pares = [(d, _ct_hora(h)) for d, h in
+             ((com.dia1, com.horario1), (com.dia2, com.horario2), (com.dia3, com.horario3)) if d]
+    dias = _ct_unir([d for d, _ in pares])
+    horas = list(dict.fromkeys(h for _, h in pares if h))
+    if len(horas) <= 1:
+        horario = f'{horas[0]} hs' if horas else ''
+    else:
+        horario = ', '.join(f'{d} {h} hs' for d, h in pares if h)
+    return dias, horario
+
+
+def _ct_nombre_persona(perfil):
+    est = perfil.id_estudiante
+    if est:
+        nombre = f'{est.nombre or ""} {est.apellido or ""}'.strip()
+        if nombre:
+            return nombre
+    return perfil.nombre_usuario
+
+
+def _ct_correo(perfil):
+    est = perfil.id_estudiante
+    return perfil.correo or (est.correo if est else '') or ''
+
+
+def _ct_esta_asignado(perfil, comision):
+    est = perfil.id_estudiante
+    return bool(est) and any(str(getattr(est, f'{s}_id') or '') == str(comision.pk) for s in _CT_SLOTS)
+
+
+def _ct_asignados():
+    mapa = {}
+    for rol in ('profesor', 'tutor'):
+        for p in PerfilUsuario.objects.filter(rol=rol, is_active=True).select_related('id_estudiante'):
+            est = p.id_estudiante
+            if not est:
+                continue
+            for s in _CT_SLOTS:
+                cid = getattr(est, f'{s}_id')
+                if not cid:
+                    continue
+                e = mapa.setdefault(str(cid), {'profesor': None, 'tutores': []})
+                if rol == 'profesor':
+                    e['profesor'] = e['profesor'] or p
+                else:
+                    e['tutores'].append(p)
+    return mapa
+
+
+def _ct_contar_alumnos(ids):
+    cont = Counter()
+    for s in _CT_SLOTS:
+        qs = PerfilUsuario.objects.filter(rol='alumno', **{f'id_estudiante__{s}__in': ids})
+        for cid in qs.values_list(f'id_estudiante__{s}', flat=True):
+            cont[str(cid)] += 1
+    return cont
+
+
+def _ct_datos(comision, perfil, rol):
+    curso = comision.id_curso
+    hon = HonorarioCurso.objects.filter(curso=curso).first()
+    valor = getattr(hon, 'valor_hora_profesor' if rol == 'profesor' else 'valor_hora_tutor', None) if hon else None
+    if valor is None:
+        raise ValueError(f'Falta cargar el valor hora de {_CT_ROL[rol]} para "{curso.nombre_curso}" en Honorarios.')
+    clases = Clase.objects.filter(curso=curso).count()
+    if not clases:
+        raise ValueError(f'El curso "{curso.nombre_curso}" no tiene clases cargadas.')
+
+    horas = Decimal(str(getattr(settings, 'CONTRATOS_HORAS_POR_CLASE', 2)))
+    est = perfil.id_estudiante
+    dias, horario = _ct_dias_horario(comision)
+    return {
+        'nombre': _ct_nombre_persona(perfil),
+        'dni': str((est.dni if est else '') or ''),
+        'curso': curso.nombre_curso,
+        'comision': str(comision.numero_comision),
+        'dias': dias,
+        'horario': horario,
+        'inicio': comision.fecha_inicio.strftime('%d/%m/%Y') if comision.fecha_inicio else '',
+        'fin': comision.fecha_fin.strftime('%d/%m/%Y') if comision.fecha_fin else '',
+        'clases': str(clases),
+        'monto_hora': _ct_fmt_ars(valor),
+        'monto_total': _ct_fmt_ars(Decimal(valor) * horas * clases),
+    }
+
+
+def _ct_resolver(id_comision, id_usuario):
+    comision = get_object_or_404(Comision.objects.select_related('id_curso'), pk=id_comision)
+    perfil = get_object_or_404(PerfilUsuario.objects.select_related('id_estudiante'), pk=id_usuario)
+    if perfil.rol not in _CT_ROL or not _ct_esta_asignado(perfil, comision):
+        raise Http404('La persona no está asignada a esa comisión.')
+    return comision, perfil, perfil.rol
+
+
+def _ct_cache_dir():
+    return Path(settings.MEDIA_ROOT) / 'contratos_cache'
+
+
+def _ct_error(texto, status):
+    html = ('<body style="margin:0;display:flex;align-items:center;justify-content:center;height:100vh;'
+            'background:#1a1a1a;color:#ddd;font-family:Arial,sans-serif;text-align:center;padding:24px">'
+            f'<p style="max-width:480px;line-height:1.5">{escape(texto)}</p></body>')
+    return HttpResponse(html, status=status)
+
+
+def _ct_nombre_archivo(rol, datos, formato):
+    return (f"Propuesta-{rol}-{slugify(datos.get('curso', ''))}-comision-"
+            f"{slugify(str(datos.get('comision', '')))}-{slugify(datos.get('nombre', ''))}.{formato}")
+
+
+def _ct_servir(rol, datos, formato, inline=False):
+    if formato not in _CT_MIME:
+        raise Http404
+    try:
+        contenido = contratos_docs.obtener_archivo(rol, datos, formato, _ct_cache_dir())
+    except contratos_docs.PdfNoDisponible:
+        return _ct_error('La conversión a PDF no está disponible en el servidor (falta LibreOffice). '
+                         'Descargá la versión Word.', 501)
+    except Exception:
+        _ct_log.exception('Error generando contrato')
+        return _ct_error('No se pudo generar el archivo. Probá de nuevo en unos segundos.', 500)
+
+    resp = HttpResponse(contenido, content_type=_CT_MIME[formato])
+    resp['Content-Disposition'] = (f'{"inline" if inline else "attachment"}; '
+                                   f'filename="{_ct_nombre_archivo(rol, datos, formato)}"')
+    return resp
+
+
+def _ct_mensaje(nombre, numero, curso, rol_label, link):
+    lineas = [
+        f'¡Hola, {nombre}! 👋🏼',
+        'Esperamos que estés teniendo un excelente día. 🌟',
+        f'Te escribimos porque tenemos una excelente noticia: nos encantaría proponerte que te sumes al equipo '
+        f'de la comisión {numero} del Curso {curso} en el rol de {rol_label}. 🎯',
+        'Conocemos tu trayectoria y estamos convencidos de que tu aporte será clave para potenciar este proyecto '
+        'y llevarlo al siguiente nivel. ¡Nos entusiasma mucho la idea de trabajar juntos! 🙌🏼🔥',
+        'Si la propuesta te suena bien y quieres sumarte al desafío, solo debes seguir estos sencillos pasos:',
+        '',
+        '1. 📄 Completa el archivo adjunto con tus datos.',
+        '2. 📩 Envíalo a través de este enlace: ',
+        '',
+        'Quedamos superatentos a cualquier duda o consulta que tengas. 💬',
+        '¡Te enviamos un gran saludo! 🤝',
+        'El equipo de Tecnomarema',
+    ]
+    texto = '\n'.join(l + link if l.endswith('enlace: ') else l for l in lineas)
+    html = '<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#222">' + '<br>'.join(
+        escape(l) + (f'<a href="{escape(link)}">{escape(link)}</a>' if l.endswith('enlace: ') else '')
+        for l in lineas) + '</div>'
+    return texto, html
+
+
+@session_required
+def contratos_view(request):
+    q = request.GET.get('q', '').strip()
+    try:
+        por_pagina = int(request.GET.get('por_pagina', 20))
+    except ValueError:
+        por_pagina = 20
+    if por_pagina not in (20, 50, 100):
+        por_pagina = 20
+
+    qs = Comision.objects.select_related('id_curso').order_by('-fecha_inicio', '-pk')
+    if q:
+        qs = qs.filter(Q(id_curso__nombre_curso__icontains=q) | Q(numero_comision__icontains=q))
+
+    paginador = Paginator(qs, por_pagina)
+    pagina = paginador.get_page(request.GET.get('page'))
+    comisiones = list(pagina.object_list)
+
+    asignados = _ct_asignados()
+    alumnos = _ct_contar_alumnos([c.pk for c in comisiones])
+    contratos = {
+        (str(c.comision_id), str(c.usuario_id), c.rol): c
+        for c in ContratoDocente.objects.filter(comision__in=comisiones)
+    }
+
+    def persona(perfil, rol, com):
+        if not perfil:
+            return None
+        return {
+            'id': perfil.pk, 'rol': rol, 'nombre': _ct_nombre_persona(perfil), 'correo': _ct_correo(perfil),
+            'contrato': contratos.get((str(com.pk), str(perfil.pk), rol)),
+        }
+
+    filas = []
+    for c in comisiones:
+        a = asignados.get(str(c.pk), {'profesor': None, 'tutores': []})
+        dias, horario = _ct_dias_horario(c)
+        filas.append({
+            'comision': c, 'dias': dias, 'horario': horario,
+            'alumnos': alumnos.get(str(c.pk), 0),
+            'profesor': persona(a['profesor'], 'profesor', c),
+            'tutores': [persona(t, 'tutor', c) for t in a['tutores'][:4]],
+        })
+
+    return render(request, 'administrador/contratos.html', {
+        'filas': filas, 'pagina': pagina, 'q': q, 'por_pagina': por_pagina,
+        'rango': paginador.get_elided_page_range(pagina.number, on_each_side=2, on_ends=1),
+        'ELLIPSIS': paginador.ELLIPSIS,
+        'pdf_ok': contratos_docs.pdf_disponible(),
+    })
+
+
+@session_required
+@xframe_options_sameorigin
+def contrato_vista_previa(request, id_comision, id_usuario):
+    comision, perfil, rol = _ct_resolver(id_comision, id_usuario)
+    ct = ContratoDocente.objects.filter(comision=comision, usuario=perfil, rol=rol).first()
+    try:
+        datos = ct.datos if ct else _ct_datos(comision, perfil, rol)
+    except ValueError as e:
+        return _ct_error(str(e), 422)
+    return _ct_servir(rol, datos, 'pdf', inline=True)
+
+
+@session_required
+@require_POST
+def contrato_confirmar(request):
+    comision, perfil, rol = _ct_resolver(request.POST.get('id_comision'), request.POST.get('id_usuario'))
+    try:
+        datos = _ct_datos(comision, perfil, rol)
+    except ValueError as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+    ct, creado = ContratoDocente.objects.get_or_create(
+        comision=comision, usuario=perfil, rol=rol, defaults={'datos': datos})
+    if not creado:
+        if ct.estado in ('aceptado', 'rechazado'):
+            return JsonResponse({'status': 'error',
+                                 'message': 'Esta persona ya respondió la propuesta; no se puede regenerar.'}, status=400)
+        ct.datos = datos
+        ct.save(update_fields=['datos'])
+    return JsonResponse({'status': 'success', 'id': ct.pk, 'estado': ct.estado})
+
+
+@session_required
+def contrato_descargar(request, id_contrato, formato):
+    ct = get_object_or_404(ContratoDocente, pk=id_contrato)
+    return _ct_servir(ct.rol, ct.datos, formato)
+
+
+@session_required
+@require_POST
+def contrato_enviar(request):
+    ct = get_object_or_404(
+        ContratoDocente.objects.select_related('usuario__id_estudiante', 'comision__id_curso'),
+        pk=request.POST.get('id_contrato'))
+    correo = _ct_correo(ct.usuario)
+    if not correo:
+        return JsonResponse({'status': 'error', 'message': 'La persona no tiene correo cargado.'}, status=400)
+
+    base = getattr(settings, 'SITE_URL', 'https://www.tecnomarema.com.ar').rstrip('/')
+    link = base + reverse('propuesta_docente', args=[ct.token])
+
+    try:
+        formato = 'pdf'
+        try:
+            adjunto = contratos_docs.obtener_archivo(ct.rol, ct.datos, 'pdf', _ct_cache_dir())
+        except contratos_docs.PdfNoDisponible:
+            formato = 'docx'
+            adjunto = contratos_docs.obtener_archivo(ct.rol, ct.datos, 'docx', _ct_cache_dir())
+
+        d = ct.datos
+        texto, html = _ct_mensaje(d['nombre'], d['comision'], d['curso'], _CT_ROL[ct.rol], link)
+        msg = EmailMultiAlternatives(
+            subject=f'Propuesta para sumarte a la comisión {d["comision"]} - {d["curso"]}',
+            body=texto, from_email=settings.DEFAULT_FROM_EMAIL, to=[correo],
+            reply_to=[settings.CONTRATOS_REPLY_TO] if getattr(settings, 'CONTRATOS_REPLY_TO', '') else None,
+        )
+        msg.attach_alternative(html, 'text/html')
+        msg.attach(_ct_nombre_archivo(ct.rol, d, formato), adjunto, _CT_MIME[formato])
+        msg.send()
+    except Exception as e:
+        _ct_log.exception('Error enviando contrato')
+        return JsonResponse({'status': 'error', 'message': f'No se pudo enviar el correo: {e}'}, status=500)
+
+    if ct.estado == 'generado':
+        ct.estado = 'enviado'
+    ct.enviado_en = timezone.now()
+    ct.save(update_fields=['estado', 'enviado_en'])
+    return JsonResponse({'status': 'success', 'correo': correo, 'estado': ct.estado})
+
+
+@session_required
+def contrato_respuesta(request, id_contrato):
+    ct = get_object_or_404(ContratoDocente, pk=id_contrato)
+    return JsonResponse({
+        'nombre': ct.datos.get('nombre', ''),
+        'rol': _CT_ROL.get(ct.rol, ct.rol),
+        'estado': ct.get_estado_display(),
+        'respondido_en': timezone.localtime(ct.respondido_en).strftime('%d/%m/%Y %H:%M') if ct.respondido_en else '',
+        'comentario': ct.comentario,
+        'archivo': reverse('contrato_respuesta_archivo', args=[ct.pk]) if ct.archivo_respuesta else '',
+        'archivo_nombre': os.path.basename(ct.archivo_respuesta.name) if ct.archivo_respuesta else '',
+    })
+
+
+@session_required
+def contrato_respuesta_archivo(request, id_contrato):
+    ct = get_object_or_404(ContratoDocente, pk=id_contrato)
+    if not ct.archivo_respuesta:
+        raise Http404
+    return FileResponse(ct.archivo_respuesta.open('rb'), as_attachment=True,
+                        filename=os.path.basename(ct.archivo_respuesta.name))
+
+
+def propuesta_docente(request, token):
+    ct = get_object_or_404(ContratoDocente, token=token)
+    error = ''
+
+    if request.method == 'POST':
+        respuesta = request.POST.get('respuesta')
+        archivo = request.FILES.get('archivo')
+        if respuesta not in ('si', 'no'):
+            error = 'Elegí una opción para continuar.'
+        elif respuesta == 'si' and not archivo and not ct.archivo_respuesta:
+            error = 'Para aceptar la propuesta adjuntá el archivo completado.'
+        elif respuesta == 'si' and archivo:
+            ext = os.path.splitext(archivo.name)[1].lower()
+            if ext not in _CT_EXT_RESPUESTA:
+                error = 'Formato no permitido. Subí un PDF, Word o imagen (JPG/PNG).'
+            elif archivo.size > _CT_MAX_MB * 1024 * 1024:
+                error = f'El archivo supera los {_CT_MAX_MB} MB.'
+
+        if not error:
+            if respuesta == 'si' and archivo:
+                nombre = f'{ct.pk}-{slugify(os.path.splitext(archivo.name)[0])[:40]}{os.path.splitext(archivo.name)[1].lower()}'
+                ct.archivo_respuesta.save(nombre, archivo, save=False)
+            ct.estado = 'aceptado' if respuesta == 'si' else 'rechazado'
+            ct.comentario = request.POST.get('comentario', '').strip()[:1000]
+            ct.respondido_en = timezone.now()
+            ct.save()
+            return redirect(f'{request.path}?ok=1')
+
+    d = ct.datos
+    return render(request, 'educativa/propuesta_docente.html', {
+        'ct': ct, 'd': d, 'rol_label': _CT_ROL.get(ct.rol, ct.rol), 'error': error,
+        'ok': request.GET.get('ok') == '1', 'max_mb': _CT_MAX_MB,
+        'pdf_ok': contratos_docs.pdf_disponible(),
+    })
+
+
+def propuesta_docente_descargar(request, token, formato):
+    ct = get_object_or_404(ContratoDocente, token=token)
+    return _ct_servir(ct.rol, ct.datos, formato)

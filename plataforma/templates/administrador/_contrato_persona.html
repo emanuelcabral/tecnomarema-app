@@ -1,0 +1,22 @@
+{% if p %}
+<div class="persona" data-comision="{{ comision_id }}" data-usuario="{{ p.id }}" data-rol="{{ p.rol }}"
+     data-nombre="{{ p.nombre }}" data-correo="{{ p.correo }}" data-contrato="{{ p.contrato.pk }}" data-estado="{{ p.contrato.estado }}">
+    <div class="persona-nombre"><i class="bi bi-person-badge"></i> {{ p.nombre }}</div>
+    <div class="persona-acciones">
+        {% if not p.contrato %}<span class="badge bg-dark border border-secondary">Sin contrato</span>
+        {% elif p.contrato.estado == 'aceptado' %}<span class="badge bg-success">Aceptó</span>
+        {% elif p.contrato.estado == 'rechazado' %}<span class="badge bg-danger">Rechazó</span>
+        {% elif p.contrato.estado == 'enviado' %}<span class="badge bg-info text-dark">Enviado</span>
+        {% else %}<span class="badge bg-secondary">Generado</span>{% endif %}
+
+        <button type="button" class="btn btn-sm btn-outline-info btn-contrato" title="Vista previa / generar contrato"><i class="bi bi-eye"></i></button>
+        {% if p.contrato %}
+        <a class="btn btn-sm btn-outline-light" href="{% url 'contrato_descargar' p.contrato.pk 'pdf' %}" title="Descargar PDF"><i class="bi bi-file-earmark-pdf"></i></a>
+        <a class="btn btn-sm btn-outline-light" href="{% url 'contrato_descargar' p.contrato.pk 'docx' %}" title="Descargar Word"><i class="bi bi-file-earmark-word"></i></a>
+        {% endif %}
+        {% if p.contrato.estado == 'aceptado' or p.contrato.estado == 'rechazado' %}
+        <button type="button" class="btn btn-sm btn-outline-warning btn-resp" data-id="{{ p.contrato.pk }}" title="Ver respuesta"><i class="bi bi-chat-left-text"></i></button>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

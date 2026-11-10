@@ -1029,3 +1029,38 @@ class HonorarioCurso(models.Model):
 
     def __str__(self):
         return f"{self.curso} | profe {self.valor_hora_profesor} | tutor {self.valor_hora_tutor}"
+
+##################################################################################################
+#----------------------------------------Contrato Docente----------------------------------------#
+##################################################################################################
+
+import uuid
+from django.conf import settings
+from django.db import models
+
+
+class ContratoDocente(models.Model):
+    ESTADOS = [
+        ('generado', 'Generado'),
+        ('enviado', 'Enviado'),
+        ('aceptado', 'Aceptó'),
+        ('rechazado', 'Rechazó'),
+    ]
+
+    comision = models.ForeignKey('Comision', on_delete=models.CASCADE, related_name='contratos')
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='contratos')
+    rol = models.CharField(max_length=20)
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='generado')
+    datos = models.JSONField(default=dict)
+    creado_en = models.DateTimeField(auto_now_add=True)
+    enviado_en = models.DateTimeField(null=True, blank=True)
+    respondido_en = models.DateTimeField(null=True, blank=True)
+    comentario = models.TextField(blank=True)
+    archivo_respuesta = models.FileField(upload_to='contratos_respuestas/%Y/%m/', null=True, blank=True)
+
+    class Meta:
+        unique_together = ('comision', 'usuario', 'rol')
+
+    def __str__(self):
+        return f"{self.rol} {self.usuario_id} - comisión {self.comision_id} ({self.estado})"

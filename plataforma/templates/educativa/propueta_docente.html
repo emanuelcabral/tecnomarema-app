@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Propuesta docente · Tecno Marema</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+*{ box-sizing:border-box; }
+body{ margin:0; min-height:100vh; background:#0b0620; color:#f2f2f7; font-family:Georgia,'Times New Roman',serif; display:flex; justify-content:center; padding:28px 14px; }
+.wrap{ width:100%; max-width:720px; }
+.card{ background:#12082e; border:2px solid #7c3aed; border-radius:16px; padding:30px 28px; box-shadow:0 0 30px rgba(124,58,237,.25); }
+.logo{ width:64px; height:64px; margin:0 auto 14px; background:#1abc9c; color:#fff; font:700 24px Arial,sans-serif; display:flex; align-items:center; justify-content:center; border-radius:14px; }
+h1{ color:#2ee6c1; text-align:center; font-size:1.7rem; margin:.2rem 0; }
+.sub{ color:#c84bff; text-align:center; margin:0 0 22px; font-size:1.05rem; }
+.resumen{ background:#1a1040; border-radius:12px; padding:16px 20px; margin:18px 0; }
+.resumen div{ display:flex; justify-content:space-between; gap:12px; padding:6px 0; border-bottom:1px dashed #3a2a6a; font-family:Arial,sans-serif; font-size:.95rem; }
+.resumen div:last-child{ border-bottom:0; }
+.resumen span:first-child{ color:#9fa3c7; }
+.resumen span:last-child{ color:#2ee6c1; text-align:right; font-weight:600; }
+.descargas{ display:flex; gap:10px; flex-wrap:wrap; margin:6px 0 4px; }
+a.btn, button.btn{ display:inline-block; border:0; cursor:pointer; padding:10px 18px; border-radius:10px; font:600 .95rem Arial,sans-serif; text-decoration:none; }
+.btn-claro{ background:#241a52; color:#2ee6c1; border:1px solid #3d2f7a; }
+.btn-main{ background:#1abc9c; color:#06231d; width:100%; font-size:1.05rem; padding:13px; }
+.opciones{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.opcion input{ position:absolute; opacity:0; }
+.opcion label{ display:block; text-align:center; padding:14px 10px; border-radius:12px; border:2px solid #3d2f7a; cursor:pointer; font:600 1rem Arial,sans-serif; background:#1a1040; }
+.opcion input:checked + label.si{ border-color:#1abc9c; background:#0f3b36; color:#2ee6c1; }
+.opcion input:checked + label.no{ border-color:#e5484d; background:#3b1519; color:#ff9aa0; }
+textarea, input[type=file]{ width:100%; background:#1a1040; color:#f2f2f7; border:1px solid #3d2f7a; border-radius:10px; padding:10px; font:1rem Arial,sans-serif; }
+label.campo{ display:block; margin:14px 0 6px; font:600 .95rem Arial,sans-serif; color:#c9cbe8; }
+small{ color:#9fa3c7; font-family:Arial,sans-serif; }
+.aviso{ border-radius:10px; padding:12px 16px; margin:14px 0; font-family:Arial,sans-serif; }
+.ok{ background:#0f3b36; border:1px solid #1abc9c; color:#2ee6c1; }
+.err{ background:#3b1519; border:1px solid #e5484d; color:#ff9aa0; }
+.info{ background:#1a1040; border:1px solid #3d2f7a; color:#c9cbe8; }
+.pie{ text-align:center; color:#7f83a8; font:.85rem Arial,sans-serif; margin-top:18px; }
+#bloqueArchivo{ display:none; }
+@media (max-width:520px){ .opciones{ grid-template-columns:1fr; } .card{ padding:22px 16px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="card">
+  <div class="logo">TM</div>
+  <h1>Propuesta {% if ct.rol == 'tutor' %}de Tutoría{% else %}Docente{% endif %}</h1>
+  <p class="sub">Tecno Marema · Educación Digital</p>
+
+  <p>Hola, <b>{{ d.nombre }}</b>. Te invitamos a sumarte como <b>{{ rol_label }}</b> del curso <b>{{ d.curso }}</b>.</p>
+
+  <div class="resumen">
+    <div><span>Comisión</span><span>{{ d.comision }}</span></div>
+    <div><span>Días</span><span>{{ d.dias }}</span></div>
+    <div><span>Horario</span><span>{{ d.horario }}</span></div>
+    <div><span>Inicio</span><span>{{ d.inicio }}</span></div>
+    <div><span>Finalización</span><span>{{ d.fin }}</span></div>
+    <div><span>Cantidad de clases</span><span>{{ d.clases }}</span></div>
+    <div><span>Honorario por hora</span><span>{{ d.monto_hora }}</span></div>
+    <div><span>Honorarios totales</span><span>{{ d.monto_total }}</span></div>
+  </div>
+
+  <div class="descargas">
+    {% if pdf_ok %}<a class="btn btn-claro" href="{% url 'propuesta_docente_descargar' ct.token 'pdf' %}">Descargar PDF</a>{% endif %}
+    <a class="btn btn-claro" href="{% url 'propuesta_docente_descargar' ct.token 'docx' %}">Descargar Word</a>
+  </div>
+
+  {% if ok %}
+    <div class="aviso ok">¡Gracias! Registramos tu respuesta. Si cambiás de opinión, podés volver a enviar este formulario.</div>
+  {% elif ct.estado == 'aceptado' %}
+    <div class="aviso info">Ya registramos que <b>aceptaste</b> la propuesta. Si necesitás cambiar tu respuesta o el archivo, podés volver a enviarlo.</div>
+  {% elif ct.estado == 'rechazado' %}
+    <div class="aviso info">Ya registramos que <b>no aceptaste</b> la propuesta. Si cambiaste de opinión, podés responder de nuevo.</div>
+  {% endif %}
+
+  {% if error %}<div class="aviso err">{{ error }}</div>{% endif %}
+
+  <form method="post" enctype="multipart/form-data" id="formRespuesta">
+    {% csrf_token %}
+    <label class="campo">¿Aceptás la propuesta?</label>
+    <div class="opciones">
+      <div class="opcion"><input type="radio" name="respuesta" id="rSi" value="si" {% if ct.estado == 'aceptado' %}checked{% endif %}><label class="si" for="rSi">Sí, acepto</label></div>
+      <div class="opcion"><input type="radio" name="respuesta" id="rNo" value="no" {% if ct.estado == 'rechazado' %}checked{% endif %}><label class="no" for="rNo">No por ahora</label></div>
+    </div>
+
+    <div id="bloqueArchivo">
+      <label class="campo" for="archivo">Archivo completado con tus datos</label>
+      <input type="file" name="archivo" id="archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+      <small>PDF, Word o imagen. Máximo {{ max_mb }} MB.{% if ct.archivo_respuesta %} Ya cargaste un archivo; si subís otro lo reemplaza.{% endif %}</small>
+    </div>
+
+    <label class="campo" for="comentario">Comentario (opcional)</label>
+    <textarea name="comentario" id="comentario" rows="3" maxlength="1000" placeholder="¿Querés contarnos algo?">{{ ct.comentario }}</textarea>
+
+    <div style="margin-top:18px"><button type="submit" class="btn btn-main">Enviar respuesta</button></div>
+  </form>
+  <p class="pie">¿Dudas? Escribinos a talento@tecnomarema.com</p>
+</div>
+</div>
+<script>
+const bloque = document.getElementById('bloqueArchivo');
+function actualizar(){ bloque.style.display = document.getElementById('rSi').checked ? 'block' : 'none'; }
+document.querySelectorAll('input[name=respuesta]').forEach(function(r){ r.addEventListener('change', actualizar); });
+actualizar();
+</script>
+</body>
+</html>

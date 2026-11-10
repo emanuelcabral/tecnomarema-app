@@ -1,0 +1,2 @@
+[phases.setup]
+aptPkgs = ["...", "libreoffice-writer", "fonts-crosextra-caladea", "fonts-crosextra-carlito"]

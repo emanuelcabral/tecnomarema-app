@@ -407,6 +407,19 @@ path("test/", test),
     path('administrador/honorarios/', views.honorarios_view, name='honorarios'),
     path('administrador/guardar_honorarios/', views.guardar_honorarios, name='guardar_honorarios'),
 
+
+    path('administrador/contratos/', views.contratos_view, name='contratos'),
+    path('administrador/contratos/vista-previa/<str:id_comision>/<str:id_usuario>/', views.contrato_vista_previa, name='contrato_vista_previa'),
+    path('administrador/contratos/confirmar/', views.contrato_confirmar, name='contrato_confirmar'),
+    path('administrador/contratos/enviar/', views.contrato_enviar, name='contrato_enviar'),
+    path('administrador/contratos/<int:id_contrato>/descargar/<str:formato>/', views.contrato_descargar, name='contrato_descargar'),
+    path('administrador/contratos/respuesta/<int:id_contrato>/', views.contrato_respuesta, name='contrato_respuesta'),
+    path('administrador/contratos/respuesta/<int:id_contrato>/archivo/', views.contrato_respuesta_archivo, name='contrato_respuesta_archivo'),
+
+    path('propuesta-docente/<uuid:token>/', views.propuesta_docente, name='propuesta_docente'),
+    path('propuesta-docente/<uuid:token>/descargar/<str:formato>/', views.propuesta_docente_descargar, name='propuesta_docente_descargar'),
+
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 

@@ -1,0 +1,241 @@
+{% extends "administrador/base.html" %}
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+.card-panel{ background:#1f1f1f; border-radius:12px; padding:25px; box-shadow:0 0 15px rgba(0,0,0,.25); }
+.table-dark{ --bs-table-bg:#232323; }
+.toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:15px; }
+#tabla-contratos td{ vertical-align:middle; }
+.input-dark{ background:#2b2b2b; color:white; border:1px solid #555; border-radius:5px; padding:6px 10px; }
+.persona{ padding:6px 0; }
+.persona + .persona{ border-top:1px dashed #444; }
+.persona-nombre{ font-size:.92rem; margin-bottom:4px; }
+.persona-acciones{ display:flex; align-items:center; gap:5px; flex-wrap:wrap; }
+.pag-dark .page-link{ background:#2b2b2b; color:#ddd; border-color:#444; }
+.pag-dark .page-item.active .page-link{ background:#198754; border-color:#198754; color:#fff; }
+.pag-dark .page-item.disabled .page-link{ background:#232323; color:#777; }
+.cm-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.72); display:none; align-items:center; justify-content:center; z-index:2000; padding:16px; }
+.cm-overlay.show{ display:flex; }
+.cm-box{ background:#1f1f1f; border-radius:12px; width:min(980px,100%); max-height:96vh; display:flex; flex-direction:column; box-shadow:0 0 25px rgba(0,0,0,.6); }
+.cm-head{ display:flex; justify-content:space-between; align-items:center; padding:14px 20px; border-bottom:1px solid #333; }
+.cm-body{ padding:14px 20px; }
+.cm-body iframe{ width:100%; height:62vh; border:0; background:#111; border-radius:8px; }
+.cm-foot{ display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-end; padding:14px 20px; border-top:1px solid #333; }
+</style>
+
+<div class="container-fluid mt-4">
+<div class="card-panel">
+<h2 class="text-success mb-4"><i class="bi bi-file-earmark-text"></i> Contratos</h2>
+
+{% if not pdf_ok %}
+<div class="alert alert-warning py-2">El servidor no tiene LibreOffice instalado: la vista previa y el PDF no están disponibles, solo la descarga en Word.</div>
+{% endif %}
+
+<form method="get" class="toolbar">
+    <div class="d-flex gap-2 flex-wrap">
+        <input type="text" name="q" value="{{ q }}" class="input-dark" placeholder="Buscar curso o comisión..." style="min-width:260px">
+        <button class="btn btn-success" type="submit"><i class="bi bi-search"></i> Buscar</button>
+        {% if q %}<a class="btn btn-secondary" href="?por_pagina={{ por_pagina }}">Limpiar</a>{% endif %}
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <label for="por_pagina" class="text-muted mb-0">Mostrar</label>
+        <select name="por_pagina" id="por_pagina" class="input-dark" onchange="this.form.submit()">
+            <option value="20" {% if por_pagina == 20 %}selected{% endif %}>20</option>
+            <option value="50" {% if por_pagina == 50 %}selected{% endif %}>50</option>
+            <option value="100" {% if por_pagina == 100 %}selected{% endif %}>100</option>
+        </select>
+        <span class="text-muted">por página</span>
+    </div>
+</form>
+
+<div class="table-responsive">
+<table id="tabla-contratos" class="table table-dark table-striped table-hover align-middle">
+<thead>
+<tr>
+<th>Curso</th>
+<th>Comisión</th>
+<th>Inicio</th>
+<th>Fin</th>
+<th>Horarios</th>
+<th class="text-center">Alumnos</th>
+<th>Profesor</th>
+<th>Tutores</th>
+</tr>
+</thead>
+<tbody>
+{% for f in filas %}
+<tr>
+<td>{{ f.comision.id_curso.nombre_curso }}</td>
+<td>{{ f.comision.numero_comision }}</td>
+<td>{{ f.comision.fecha_inicio|date:"d/m/Y" }}</td>
+<td>{{ f.comision.fecha_fin|date:"d/m/Y" }}</td>
+<td><div>{{ f.dias|default:"-" }}</div><small class="text-muted">{{ f.horario }}</small></td>
+<td class="text-center"><span class="badge bg-primary">{{ f.alumnos }}</span></td>
+<td style="min-width:230px">
+    {% if f.profesor %}{% include "administrador/_contrato_persona.html" with p=f.profesor comision_id=f.comision.pk %}
+    {% else %}<span class="text-danger">Sin asignar</span>{% endif %}
+</td>
+<td style="min-width:230px">
+    {% for t in f.tutores %}{% include "administrador/_contrato_persona.html" with p=t comision_id=f.comision.pk %}
+    {% empty %}<span class="text-muted">Ninguno</span>{% endfor %}
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="8" class="text-center text-muted py-4">No hay comisiones para mostrar.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mt-3">
+    <small class="text-muted">
+        {% if pagina.paginator.count %}Mostrando {{ pagina.start_index }}–{{ pagina.end_index }} de {{ pagina.paginator.count }} comisiones{% endif %}
+    </small>
+    {% if pagina.paginator.num_pages > 1 %}
+    <nav><ul class="pagination pagination-sm mb-0 pag-dark">
+        <li class="page-item {% if not pagina.has_previous %}disabled{% endif %}">
+            <a class="page-link" href="{% if pagina.has_previous %}?q={{ q|urlencode }}&por_pagina={{ por_pagina }}&page={{ pagina.previous_page_number }}{% else %}#{% endif %}">&laquo;</a>
+        </li>
+        {% for n in rango %}
+            {% if n == ELLIPSIS %}<li class="page-item disabled"><span class="page-link">…</span></li>
+            {% else %}<li class="page-item {% if n == pagina.number %}active{% endif %}"><a class="page-link" href="?q={{ q|urlencode }}&por_pagina={{ por_pagina }}&page={{ n }}">{{ n }}</a></li>{% endif %}
+        {% endfor %}
+        <li class="page-item {% if not pagina.has_next %}disabled{% endif %}">
+            <a class="page-link" href="{% if pagina.has_next %}?q={{ q|urlencode }}&por_pagina={{ por_pagina }}&page={{ pagina.next_page_number }}{% else %}#{% endif %}">&raquo;</a>
+        </li>
+    </ul></nav>
+    {% endif %}
+</div>
+</div>
+</div>
+
+<div id="cmOverlay" class="cm-overlay">
+  <div class="cm-box">
+    <div class="cm-head">
+      <h5 class="mb-0 text-success" id="cmTitulo">Contrato</h5>
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="cmCerrarX"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="cm-body"><iframe id="cmFrame" title="Vista previa del contrato"></iframe></div>
+    <div class="cm-foot">
+      <button type="button" class="btn btn-success" id="cmConfirmar"><i class="bi bi-check2-circle"></i> Confirmar contrato</button>
+      <a class="btn btn-outline-light d-none" id="cmPdf" href="#"><i class="bi bi-file-earmark-pdf"></i> PDF</a>
+      <a class="btn btn-outline-light d-none" id="cmDocx" href="#"><i class="bi bi-file-earmark-word"></i> Word</a>
+      <button type="button" class="btn btn-info d-none" id="cmEnviar"><i class="bi bi-envelope-paper"></i> Enviar por correo</button>
+      <button type="button" class="btn btn-secondary" id="cmCerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+const CSRF = "{{ csrf_token }}";
+const URL_PREVIA = "{% url 'contrato_vista_previa' 'COM' 'USR' %}";
+const URL_CONFIRMAR = "{% url 'contrato_confirmar' %}";
+const URL_ENVIAR = "{% url 'contrato_enviar' %}";
+const URL_DESCARGAR = "{% url 'contrato_descargar' 0 'pdf' %}";
+const URL_RESPUESTA = "{% url 'contrato_respuesta' 0 %}";
+
+let ctx = null;
+let hayCambios = false;
+
+function esc(t){ return $("<div>").text(t || "").html(); }
+
+function pintarModal(){
+    const confirmado = !!ctx.contrato;
+    const respondido = ctx.estado === "aceptado" || ctx.estado === "rechazado";
+
+    $("#cmTitulo").text("Propuesta · " + ctx.nombre + " (" + (ctx.rol === "tutor" ? "Tutor/a" : "Profesor/a") + ")");
+    $("#cmConfirmar")
+        .toggleClass("d-none", respondido)
+        .html(confirmado ? '<i class="bi bi-arrow-repeat"></i> Regenerar con datos actuales' : '<i class="bi bi-check2-circle"></i> Confirmar contrato');
+
+    $("#cmPdf, #cmDocx, #cmEnviar").toggleClass("d-none", !confirmado);
+    if(confirmado){
+        $("#cmPdf").attr("href", URL_DESCARGAR.replace("/0/", "/" + ctx.contrato + "/"));
+        $("#cmDocx").attr("href", URL_DESCARGAR.replace("/0/", "/" + ctx.contrato + "/").replace("/pdf/", "/docx/"));
+        $("#cmEnviar").toggleClass("d-none", respondido)
+            .html('<i class="bi bi-envelope-paper"></i> ' + (ctx.estado === "enviado" ? "Reenviar por correo" : "Enviar por correo"));
+    }
+}
+
+function cargarPrevia(){
+    $("#cmFrame").attr("src", URL_PREVIA.replace("COM", ctx.comision).replace("USR", ctx.usuario) + "?t=" + Date.now());
+}
+
+function cerrarModal(){
+    $("#cmOverlay").removeClass("show");
+    $("#cmFrame").attr("src", "about:blank");
+    if(hayCambios){ location.reload(); }
+}
+
+$(document).on("click", ".btn-contrato", function(){
+    const p = $(this).closest(".persona");
+    ctx = {
+        comision: p.data("comision"), usuario: String(p.attr("data-usuario")), rol: p.attr("data-rol"),
+        nombre: p.attr("data-nombre"), correo: p.attr("data-correo"),
+        contrato: p.attr("data-contrato") || "", estado: p.attr("data-estado") || ""
+    };
+    pintarModal();
+    cargarPrevia();
+    $("#cmOverlay").addClass("show");
+});
+
+$("#cmCerrar, #cmCerrarX").click(cerrarModal);
+
+$("#cmConfirmar").click(function(){
+    $.ajax({
+        url: URL_CONFIRMAR, method: "POST", headers: { "X-CSRFToken": CSRF },
+        data: { id_comision: ctx.comision, id_usuario: ctx.usuario },
+        success: function(res){
+            ctx.contrato = String(res.id); ctx.estado = res.estado; hayCambios = true;
+            pintarModal(); cargarPrevia();
+            Swal.fire({ icon:"success", title:"Contrato confirmado", timer:1400, showConfirmButton:false });
+        },
+        error: function(xhr){
+            Swal.fire({ icon:"error", title:"No se pudo confirmar", text:(xhr.responseJSON && xhr.responseJSON.message) || "Error inesperado." });
+        }
+    });
+});
+
+$("#cmEnviar").click(function(){
+    if(!ctx.correo){
+        Swal.fire({ icon:"warning", title:"Sin correo", text:"Esta persona no tiene un correo cargado." });
+        return;
+    }
+    Swal.fire({
+        title: "¿Enviar la propuesta?",
+        html: "Se enviará a <b>" + esc(ctx.correo) + "</b> con el contrato adjunto y el enlace para responder.",
+        icon: "question", showCancelButton: true, confirmButtonText: "Enviar", cancelButtonText: "Cancelar"
+    }).then(function(r){
+        if(!r.isConfirmed) return;
+        Swal.fire({ title:"Enviando...", allowOutsideClick:false, didOpen:function(){ Swal.showLoading(); } });
+        $.ajax({
+            url: URL_ENVIAR, method: "POST", headers: { "X-CSRFToken": CSRF },
+            data: { id_contrato: ctx.contrato },
+            success: function(res){
+                ctx.estado = res.estado; hayCambios = true; pintarModal();
+                Swal.fire({ icon:"success", title:"Enviado", text:"Propuesta enviada a " + res.correo });
+            },
+            error: function(xhr){
+                Swal.fire({ icon:"error", title:"Error al enviar", text:(xhr.responseJSON && xhr.responseJSON.message) || "Error inesperado." });
+            }
+        });
+    });
+});
+
+$(document).on("click", ".btn-resp", function(){
+    const url = URL_RESPUESTA.replace("/0/", "/" + $(this).data("id") + "/");
+    $.getJSON(url, function(r){
+        let html = '<div style="text-align:left">' +
+            '<p><b>' + esc(r.nombre) + '</b> · ' + esc(r.rol) + '</p>' +
+            '<p>Respuesta: <b>' + esc(r.estado) + '</b>' + (r.respondido_en ? ' <small>(' + esc(r.respondido_en) + ')</small>' : '') + '</p>' +
+            (r.comentario ? '<p>Comentario:<br>' + esc(r.comentario) + '</p>' : '') +
+            (r.archivo ? '<p><a href="' + r.archivo + '"><i class="bi bi-paperclip"></i> ' + esc(r.archivo_nombre) + '</a></p>' : '<p class="text-muted">Sin documentación adjunta.</p>') +
+            '</div>';
+        Swal.fire({ title:"Respuesta recibida", html: html, confirmButtonText:"Cerrar" });
+    });
+});
+</script>
+{% endblock %}
