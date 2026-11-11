@@ -1484,6 +1484,7 @@ def guardar_datos_inscripcion(request):
                 pais=data.get("pais"),
                 provincia=data.get("provincia"),
                 telefono=data.get("telefono"),
+                genero=data.get("genero"),  # <--- ¡Faltaba agregar esto aquí 11/11!
             )
 
         # Buscar comisión
