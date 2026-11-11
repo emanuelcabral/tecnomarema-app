@@ -102,13 +102,14 @@ $(".btn-cmd").click(function(){
         $("#consolaCmd").text("Ejecutando...");
         $.ajax({
             url: "{% url 'limpieza_comando' %}", method: "POST",
-            headers: { "X-CSRFToken": CSRF }, data: { cmd: cmd },
+            headers: { "X-CSRFToken": CSRF }, data: { cmd: cmd }, dataType: "json",
             success: function(r){
+                if(!r || r.salida === undefined){ $("#consolaCmd").text("Respuesta inesperada del servidor: " + ((r && r.message) || "revisá permisos/URL de limpieza_comando.")); return; }
                 $("#consolaCmd").text("$ " + r.comando + "\n\n" + r.salida);
                 if(cmd !== "imagenes"){ cargarEspacio(); }
             },
             error: function(xhr){
-                const m = (xhr.responseJSON && xhr.responseJSON.message) || "Error inesperado.";
+                const m = (xhr.responseJSON && xhr.responseJSON.message) || ("Error " + xhr.status + " (el servidor no devolvió JSON: probablemente redirige al login o la URL no es la correcta).");
                 $("#consolaCmd").text("Error: " + m);
             },
             complete: function(){ $(".btn-cmd").prop("disabled", false); }

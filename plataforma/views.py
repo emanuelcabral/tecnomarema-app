@@ -8465,10 +8465,9 @@ def limpieza_estado(request):
 ##########################################################################################
 #-----------------------------limpieza del servidor 2------------------------------------#
 ##########################################################################################
-# ---- Agregar a tu views.py ----
+
 import subprocess
 
-from django.contrib.admin.views.decorators import staff_member_required
 from django.core.cache import cache
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -8483,7 +8482,9 @@ COMANDOS_PERMITIDOS = {
 }
 
 
-@staff_member_required
+# IMPORTANTE: poné acá EL MISMO decorador de permisos que usan tus vistas
+# limpieza_iniciar / limpieza_estado (el de tu panel /administrador/).
+# @tu_decorador_de_admin
 @require_POST
 def limpieza_comando(request):
     clave = request.POST.get("cmd", "")
