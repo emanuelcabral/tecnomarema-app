@@ -424,6 +424,8 @@ path("test/", test),
     path('administrador/limpieza-servidor/iniciar/', views.limpieza_iniciar, name='limpieza_iniciar'),
     path('administrador/limpieza-servidor/estado/', views.limpieza_estado, name='limpieza_estado'),
 
+    path("limpieza/comando/", views.limpieza_comando, name="limpieza_comando"),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 

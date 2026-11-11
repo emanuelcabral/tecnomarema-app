@@ -8461,3 +8461,53 @@ def limpieza_estado(request):
                              'log': texto.replace('__FIN__', '').strip()})
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+##########################################################################################
+#-----------------------------limpieza del servidor 2------------------------------------#
+##########################################################################################
+# ---- Agregar a tu views.py ----
+import subprocess
+
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.cache import cache
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+# Lista fija: el navegador solo manda la clave, nunca el comando.
+# (comando, timeout en segundos)
+COMANDOS_PERMITIDOS = {
+    "disco":    (["df", "-h", "/"], 30),
+    "imagenes": (["docker", "image", "ls"], 60),
+    # -f es obligatorio: sin terminal, "prune" queda esperando un "y/N" y se cuelga.
+    "prune":    (["docker", "system", "prune", "-a", "-f"], 900),
+}
+
+
+@staff_member_required
+@require_POST
+def limpieza_comando(request):
+    clave = request.POST.get("cmd", "")
+    if clave not in COMANDOS_PERMITIDOS:
+        return JsonResponse({"ok": False, "message": "Comando no permitido."}, status=400)
+
+    comando, timeout = COMANDOS_PERMITIDOS[clave]
+
+    # Evita lanzar dos prune a la vez
+    if clave == "prune" and not cache.add("lock_docker_prune", 1, timeout):
+        return JsonResponse({"ok": False, "message": "Ya hay un prune en ejecución."}, status=409)
+
+    try:
+        res = subprocess.run(comando, capture_output=True, text=True, timeout=timeout)
+        salida = (res.stdout or "") + (res.stderr or "")
+        return JsonResponse({
+            "ok": res.returncode == 0,
+            "comando": " ".join(comando),
+            "salida": salida.strip() or "(sin salida)",
+        })
+    except subprocess.TimeoutExpired:
+        return JsonResponse({"ok": False, "message": "El comando tardó demasiado."}, status=504)
+    except FileNotFoundError:
+        return JsonResponse({"ok": False, "message": "Comando no encontrado en el servidor."}, status=500)
+    finally:
+        if clave == "prune":
+            cache.delete("lock_docker_prune")
