@@ -73,7 +73,13 @@ def docx_a_pdf(docx_bytes):
 def obtener_archivo(rol, datos, formato, cache_dir):
     cache_dir = Path(cache_dir)
     cache_dir.mkdir(parents=True, exist_ok=True)
-    clave = hashlib.sha1(json.dumps([rol, datos], sort_keys=True, ensure_ascii=False).encode()).hexdigest()
+
+    # La clave incluye el contenido del Word: si cambiás la plantilla, se regenera solo.
+    plantilla = (PLANTILLAS_DIR / PLANTILLAS[rol]).read_bytes()
+    clave = hashlib.sha1(
+        plantilla + json.dumps([rol, datos], sort_keys=True, ensure_ascii=False).encode()
+    ).hexdigest()
+
     destino = cache_dir / f'{clave}.{formato}'
     if destino.exists():
         return destino.read_bytes()
