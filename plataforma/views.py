@@ -8392,3 +8392,71 @@ def propuesta_docente(request, token):
 def propuesta_docente_descargar(request, token, formato):
     ct = get_object_or_404(ContratoDocente, token=token)
     return _ct_servir(ct.rol, ct.datos, formato)
+
+#######################################################################################
+#--------------------------------limpieza del servidor--------------------------------#
+#######################################################################################
+
+# ===== Limpieza del servidor =====
+_LIMPIEZA_LOG = '/tmp/limpieza.log'
+_LIMPIEZA_CMD = (
+    "df -h /; echo; "
+    "docker builder prune -af; echo; "
+    "docker image prune -af; echo; "
+    "journalctl --vacuum-size=200M; echo; "
+    "echo '=== Espacio después ==='; df -h /; "
+    "echo '__FIN__'"
+)
+
+
+def _ssh_run(comando):
+    ssh = conectar_ssh()
+    try:
+        _, stdout, _ = ssh.exec_command(comando, timeout=20)
+        return stdout.read().decode('utf-8', 'replace')
+    finally:
+        ssh.close()
+
+
+@session_required
+def limpieza_servidor_view(request):
+    return render(request, 'administrador/limpieza_servidor.html')
+
+
+@session_required
+def limpieza_espacio(request):
+    try:
+        t = _ssh_run("df -h / | tail -1").split()
+        return JsonResponse({'status': 'success', 'total': t[-5], 'usado': t[-4],
+                             'libre': t[-3], 'porcentaje': int(t[-2].rstrip('%'))})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@session_required
+@require_POST
+def limpieza_iniciar(request):
+    try:
+        if _ssh_run("pgrep -f '[d]ocker (builder|image) prune' || true").strip():
+            return JsonResponse({'status': 'error', 'message': 'Ya hay una limpieza en curso.'}, status=409)
+        ssh = conectar_ssh()
+        try:
+            ssh.exec_command(f"rm -f {_LIMPIEZA_LOG}")[1].channel.recv_exit_status()
+            _, out, _ = ssh.exec_command(
+                f'setsid nohup sh -c "{_LIMPIEZA_CMD}" > {_LIMPIEZA_LOG} 2>&1 < /dev/null &')
+            out.channel.recv_exit_status()
+        finally:
+            ssh.close()
+        return JsonResponse({'status': 'success'})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+
+
+@session_required
+def limpieza_estado(request):
+    try:
+        texto = _ssh_run(f"cat {_LIMPIEZA_LOG} 2>/dev/null")
+        return JsonResponse({'status': 'success', 'terminado': '__FIN__' in texto,
+                             'log': texto.replace('__FIN__', '').strip()})
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)

@@ -419,6 +419,10 @@ path("test/", test),
     path('propuesta-docente/<uuid:token>/', views.propuesta_docente, name='propuesta_docente'),
     path('propuesta-docente/<uuid:token>/descargar/<str:formato>/', views.propuesta_docente_descargar, name='propuesta_docente_descargar'),
 
+    path('administrador/limpieza-servidor/', views.limpieza_servidor_view, name='limpieza_servidor'),
+    path('administrador/limpieza-servidor/espacio/', views.limpieza_espacio, name='limpieza_espacio'),
+    path('administrador/limpieza-servidor/iniciar/', views.limpieza_iniciar, name='limpieza_iniciar'),
+    path('administrador/limpieza-servidor/estado/', views.limpieza_estado, name='limpieza_estado'),
 
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
