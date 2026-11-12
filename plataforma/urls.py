@@ -452,6 +452,7 @@ handler400 = 'plataforma.views.error_400_view'
 handler403 = 'plataforma.views.error_403_view'
 handler404 = 'plataforma.views.error_404_view'
 handler500 = 'plataforma.views.error_500_view'
+handler502 = 'plataforma.views.error_502_view'
 
 
 

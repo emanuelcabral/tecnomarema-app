@@ -5492,6 +5492,8 @@ def error_404_view(request, exception):
 def error_500_view(request):
     return render(request, 'errors/500.html', status=500)
 
+def error_502_view(request):
+    return render(request, 'errors/502.html', status=502)
 
 #################################################################################################################
 ####----------------------------------Alta de alumnos de clase 1----------------------------------------------###
