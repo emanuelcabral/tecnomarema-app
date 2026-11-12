@@ -8468,49 +8468,41 @@ def limpieza_estado(request):
 #-----------------------------limpieza del servidor 2------------------------------------#
 ##########################################################################################
 
-import subprocess
-
-from django.core.cache import cache
-from django.http import JsonResponse
-from django.views.decorators.http import require_POST
-
-# Lista fija: el navegador solo manda la clave, nunca el comando.
-# (comando, timeout en segundos)
-COMANDOS_PERMITIDOS = {
-    "disco":    (["df", "-h", "/"], 30),
-    "imagenes": (["docker", "image", "ls"], 60),
-    # -f es obligatorio: sin terminal, "prune" queda esperando un "y/N" y se cuelga.
-    "prune":    (["docker", "system", "prune", "-a", "-f"], 900),
-}
+_CMD_PRUNE = (
+    "df -h /; echo; "
+    "docker system prune -af; echo; "
+    "echo '=== Espacio después ==='; df -h /; "
+    "echo '__FIN__'"
+)
 
 
-# IMPORTANTE: poné acá EL MISMO decorador de permisos que usan tus vistas
-# limpieza_iniciar / limpieza_estado (el de tu panel /administrador/).
-# @tu_decorador_de_admin
+@session_required
 @require_POST
 def limpieza_comando(request):
     clave = request.POST.get("cmd", "")
-    if clave not in COMANDOS_PERMITIDOS:
-        return JsonResponse({"ok": False, "message": "Comando no permitido."}, status=400)
-
-    comando, timeout = COMANDOS_PERMITIDOS[clave]
-
-    # Evita lanzar dos prune a la vez
-    if clave == "prune" and not cache.add("lock_docker_prune", 1, timeout):
-        return JsonResponse({"ok": False, "message": "Ya hay un prune en ejecución."}, status=409)
-
     try:
-        res = subprocess.run(comando, capture_output=True, text=True, timeout=timeout)
-        salida = (res.stdout or "") + (res.stderr or "")
-        return JsonResponse({
-            "ok": res.returncode == 0,
-            "comando": " ".join(comando),
-            "salida": salida.strip() or "(sin salida)",
-        })
-    except subprocess.TimeoutExpired:
-        return JsonResponse({"ok": False, "message": "El comando tardó demasiado."}, status=504)
-    except FileNotFoundError:
-        return JsonResponse({"ok": False, "message": "Comando no encontrado en el servidor."}, status=500)
-    finally:
+        if clave == "disco":
+            return JsonResponse({"ok": True, "comando": "df -h /",
+                                 "salida": _ssh_run("df -h / 2>&1").strip()})
+
+        if clave == "imagenes":
+            return JsonResponse({"ok": True, "comando": "docker image ls",
+                                 "salida": _ssh_run("docker image ls 2>&1").strip() or "(sin salida)"})
+
         if clave == "prune":
-            cache.delete("lock_docker_prune")
+            if _ssh_run("pgrep -f '[d]ocker (builder|image|system) prune' || true").strip():
+                return JsonResponse({"ok": False, "message": "Ya hay una limpieza en curso."}, status=409)
+            ssh = conectar_ssh()
+            try:
+                ssh.exec_command(f"rm -f {_LIMPIEZA_LOG}")[1].channel.recv_exit_status()
+                _, out, _ = ssh.exec_command(
+                    f'setsid nohup sh -c "{_CMD_PRUNE}" > {_LIMPIEZA_LOG} 2>&1 < /dev/null &')
+                out.channel.recv_exit_status()
+            finally:
+                ssh.close()
+            return JsonResponse({"ok": True, "background": True, "comando": "docker system prune -af",
+                                 "salida": "Iniciado. El progreso aparece en la consola de abajo."})
+
+        return JsonResponse({"ok": False, "message": "Comando no permitido."}, status=400)
+    except Exception as e:
+        return JsonResponse({"ok": False, "message": str(e)}, status=500)
