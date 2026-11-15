@@ -8505,4 +8505,4 @@ def limpieza_comando(request):
 
         return JsonResponse({"ok": False, "message": "Comando no permitido."}, status=400)
     except Exception as e:
-        return JsonResponse({"ok": False, "message": str(e)}, status=500)
+        return JsonResponse({"ok": False, "message": str(e)}, status=500) 
