@@ -1,2 +1,5 @@
 [phases.setup]
-aptPkgs = ["...", "libreoffice-writer", "fonts-crosextra-caladea", "fonts-crosextra-carlito"]
+aptPkgs = ["...", "libreoffice-writer", "fonts-crosextra-caladea", "fonts-crosextra-carlito", "nginx"]
+
+[start]
+cmd = "python manage.py migrate --noinput && gunicorn tecnomarema.wsgi:application --bind 127.0.0.1:8001 --workers 3 --timeout 120 --daemon && exec nginx -c /app/nginx.conf -g 'daemon off;'"

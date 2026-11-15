@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="refresh" content="30" />
+    <title>Error 502 – Bad Gateway</title>
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a0b2e 0%, #2d1b4e 50%, #0f3d2e 100%) fixed;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .error-container {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .error-code {
+            font-size: 96px;
+            font-weight: 900;
+            color: #cf30ff;
+            margin-bottom: 10px;
+        }
+
+        .error-title {
+            font-size: 25px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .error-description {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 18px;
+            line-height: 1.6;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #12f693;
+        }
+
+        .info-message {
+            background: #f3fff9;
+            border-left: 4px solid #12f693;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            font-size: 14px;
+            color: #444;
+            line-height: 1.6;
+        }
+
+        .info-message strong {
+            color: #159b65;
+        }
+
+        .error-footer {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 22px;
+        }
+
+        a.button-home {
+            display: inline-block;
+            background: #12f693;
+            color: #333;
+            padding: 12px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+
+        a.button-home:hover {
+            background: #0fd889;
+        }
+
+        @media (max-width: 576px) {
+            .error-container {
+                padding: 30px 22px;
+            }
+
+            .error-code {
+                font-size: 75px;
+            }
+
+            .error-title {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="error-container">
+
+        <div class="error-icon">&#128268;</div>
+
+        <div class="error-code">502</div>
+
+        <div class="error-title">
+            ¡Estamos solucionando un inconveniente!
+        </div>
+
+        <div class="error-description">
+            Lamentamos informarte que estamos experimentando un
+            inconveniente técnico en los servidores que alojan nuestra
+            plataforma, lo que está afectando temporalmente el acceso
+            a Tecnomarema.
+        </div>
+
+        <div class="error-description">
+            El equipo técnico de nuestro proveedor de hosting ya se
+            encuentra trabajando para resolverlo lo antes posible.
+        </div>
+
+        <div class="info-message">
+            <strong>&#128274; ¡Tu cuenta y tus datos no son el problema!</strong>
+            <br><br>
+            Esta situación está relacionada con la infraestructura
+            externa de nuestro servidor. Una vez restablecido el
+            servicio, podrás volver a ingresar y continuar utilizando
+            Tecnomarema con total normalidad, como siempre.
+        </div>
+
+        <div class="error-footer">
+            Lamentamos sinceramente las molestias que esto pueda
+            ocasionarte. Te pedimos un poco de paciencia y agradecemos
+            mucho tu comprensión y confianza.
+            <br><br>
+            <strong>¡Esperamos estar nuevamente en línea muy pronto!</strong>
+            &#128640;
+            <br><br>
+            <small>Esta página se actualiza sola cada 30 segundos.</small>
+        </div>
+
+        <a href="/" class="button-home">
+            Intentar nuevamente
+        </a>
+
+    </div>
+
+</body>
+</html>
