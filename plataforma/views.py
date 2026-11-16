@@ -7484,7 +7484,7 @@ def generador_links_view(request):
     return render(request, 'administrador/generador_links.html', contexto)
 
 @session_required
-def obtener_clases_de_comision(request):
+def obtener_clases_de_comision_links(request):
     comision_id = request.GET.get('comision_id')
 
     try:
