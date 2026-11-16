@@ -356,6 +356,7 @@ path("guardar-certificado/", views.guardar_certificado,   name="guardar_certific
 
 path("test/", test),
 
+    path('ajax/obtener_clases_de_comision_links/', views.obtener_clases_de_comision_links, name='obtener_clases_de_comision_links'),
 
     path('api/cursos_estadisticas/', views.api_cursos_estadisticas, name='api_cursos_estadisticas'),
     path('api/comisiones_estadisticas/', views.api_comisiones_estadisticas, name='api_comisiones_estadisticas'),

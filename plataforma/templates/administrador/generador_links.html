@@ -68,7 +68,7 @@
         tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Cargando clases...</td></tr>`;
 
         // Petición AJAX para obtener las clases de la comisión seleccionada
-        fetch(`/ajax/obtener_clases_de_comision/?comision_id=${comisionId}`)
+        fetch(`/ajax/obtener_clases_de_comision_links/?comision_id=${comisionId}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('No se pudo obtener el listado de clases.');
