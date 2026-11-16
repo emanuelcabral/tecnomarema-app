@@ -69,6 +69,12 @@
     <div class="card p-4">
         <h1 class="title mb-4">Alta / Edición / Reprogramación de Clase Comisión</h1>
 
+        {% if messages %}
+            {% for m in messages %}
+                <div class="alert alert-{% if m.tags == 'error' %}danger{% else %}{{ m.tags }}{% endif %}" role="alert">{{ m }}</div>
+            {% endfor %}
+        {% endif %}
+
         <form method="post" novalidate>
             {% csrf_token %}
 

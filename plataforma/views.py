@@ -2521,7 +2521,7 @@ def alta_clase_comision_view(request):
                 # clases_movidas = desplazar_clases_posteriores(clase, slots)
                 nueva_fecha_hora, clases_movidas = reprogramar_y_desplazar(clase, slots)
                 if not nueva_fecha_hora:
-                    messages.error(request, "No se pudo calcular nueva fecha.")
+                    messages.error(request, "No se pudo reprogramar: revisá que la clase tenga fecha y horario y que no haya clases con la misma fecha en la comisión.")
                     return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
                 estado_final = 'Reprogramada'
                 fecha_reprogramada = nueva_fecha_hora.date()
