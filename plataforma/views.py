@@ -2270,6 +2270,7 @@ def reprogramar_y_desplazar(clase, slots):
     """
     Mueve `clase` y todas las posteriores `slots` lugares sobre la grilla ORIGINAL.
     Devuelve (nueva_fecha_hora_de_clase, cantidad_de_posteriores_movidas).
+    Si el resultado dejaría dos clases el mismo día, no guarda nada y devuelve (None, 0).
     """
     todas = list(
         ClaseComision.objects.filter(
@@ -2293,6 +2294,11 @@ def reprogramar_y_desplazar(clase, slots):
         _extender_grilla(fechas, destino)
         nuevos[cc.pk] = fechas[destino]
 
+    # Nunca guardar dos clases el mismo día
+    fijas = {datetime.combine(cc.fecha, cc.horario) for cc in todas if cc.pk not in nuevos}
+    if len(set(nuevos.values())) != len(nuevos) or fijas & set(nuevos.values()):
+        return None, 0
+
     # Recién ahora se guarda
     with transaction.atomic():
         nueva_clase = nuevos[clase.pk]
@@ -2305,6 +2311,79 @@ def reprogramar_y_desplazar(clase, slots):
             cc.save(update_fields=['fecha', 'horario'])
 
     return nueva_clase, len(posteriores)
+
+
+def reparar_fechas_repetidas(id_comision, dias=(0, 2), aplicar=False):
+    """
+    Deja cada clase con una fecha posterior a la anterior (orden por número de clase).
+    dias: días de cursada (0=lunes ... 6=domingo). Sin aplicar=True solo muestra qué cambiaría.
+    """
+    from datetime import date
+    extra = {date(2026, 12, 7), date(2026, 12, 8)}
+
+    def valido(d):
+        return d.weekday() in dias and d not in feriados_ar and d not in extra
+
+    clases = list(
+        ClaseComision.objects.filter(comision__id_comision=id_comision, fecha__isnull=False)
+        .select_related('clase').order_by('clase__numero_clase')
+    )
+    anterior, cambios = None, []
+    for cc in clases:
+        nueva = cc.fecha
+        if anterior is not None and nueva <= anterior:
+            nueva = anterior + timedelta(days=1)
+            while not valido(nueva):
+                nueva += timedelta(days=1)
+            cambios.append((cc, cc.fecha, nueva))
+        anterior = nueva
+
+    for cc, vieja, nueva in cambios:
+        print(f"Clase {cc.clase.numero_clase}: {vieja:%d/%m/%Y} -> {nueva:%d/%m/%Y}")
+    if not cambios:
+        print("No hay fechas repetidas.")
+    if aplicar and cambios:
+        with transaction.atomic():
+            for cc, vieja, nueva in cambios:
+                cc.fecha = nueva
+                cc.save(update_fields=['fecha'])
+        print("Aplicado.")
+#!!!------------------hasta aca se agrego lo nuevo por la falla 16/11/2026-----------------
+def reparar_fechas_repetidas(id_comision, dias=(0, 2), aplicar=False):
+    """
+    Deja cada clase con una fecha posterior a la anterior (orden por número de clase).
+    dias: días de cursada (0=lunes ... 6=domingo). Sin aplicar=True solo muestra qué cambiaría.
+    """
+    from datetime import date, timedelta
+    extra = {date(2026, 12, 7), date(2026, 12, 8)}
+
+    def valido(d):
+        return d.weekday() in dias and d not in feriados_ar and d not in extra
+
+    clases = list(
+        ClaseComision.objects.filter(comision__id_comision=id_comision, fecha__isnull=False)
+        .select_related('clase').order_by('clase__numero_clase')
+    )
+    anterior, cambios = None, []
+    for cc in clases:
+        nueva = cc.fecha
+        if anterior is not None and nueva <= anterior:
+            nueva = anterior + timedelta(days=1)
+            while not valido(nueva):
+                nueva += timedelta(days=1)
+            cambios.append((cc, cc.fecha, nueva))
+        anterior = nueva
+
+    for cc, vieja, nueva in cambios:
+        print(f"Clase {cc.clase.numero_clase}: {vieja:%d/%m/%Y} -> {nueva:%d/%m/%Y}")
+    if not cambios:
+        print("No hay fechas repetidas.")
+    if aplicar and cambios:
+        with transaction.atomic():
+            for cc, vieja, nueva in cambios:
+                cc.fecha = nueva
+                cc.save(update_fields=['fecha'])
+        print("Aplicado.")
 #!!!------------------hasta aca se agrego lo nuevo por la falla 16/11/2026-----------------
 def enviar_notificacion_por_reprogramacion(clase_comision, motivo, estado, request=None):
     try:
