@@ -6971,13 +6971,22 @@ def calendario_view(request, comision_id):
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db import transaction , models
-from datetime import timedelta, datetime
+from datetime import date, timedelta, datetime
 import holidays
 
 from .models import Comision, Clase, ClaseComision
 
+# # Feriados Argentina
+# feriados_ar = holidays.AR(years=[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035])
+
 # Feriados Argentina
-feriados_ar = holidays.AR(years=[2025, 2026, 2027, 2028, 2029, 2030, 2031, 2032, 2033, 2034, 2035])
+ANIOS = list(range(2025, 2036))
+feriados_ar = holidays.AR(years=ANIOS)
+
+# Fechas que no se deben contemplar aunque no sean feriados oficiales
+for anio in ANIOS:
+    feriados_ar[date(anio, 12, 24)] = "Nochebuena"
+    feriados_ar[date(anio, 12, 31)] = "Fin de Año"
 
 
 def crear_clases_comision_view(request):
