@@ -2473,6 +2473,11 @@ def alta_clase_comision_view(request):
 def obtener_datos_clase_comision(request):
     comision_id = request.GET.get('comision_id')
     clase_id = request.GET.get('clase_id')
+
+    vacio = {k: '' for k in ['fecha', 'clase_comision_pk', 'hora_inicio', 'hora_fin', 'link', 'video']}
+    if not comision_id or not clase_id or not clase_id.isdigit():
+        return JsonResponse(vacio)
+
     try:
         clase_comision = ClaseComision.objects.get(comision__id_comision=comision_id, clase__id=clase_id)
         data = {
