@@ -2205,60 +2205,107 @@ def obtener_estado_comision(fecha_inicio, fecha_fin):
         return 'en_curso'
     else:
         return 'finalizado'
-
-def calcular_proxima_fecha_clase(clase_comision_actual, slots_a_mover):
-    comision_pk = clase_comision_actual.comision.pk
-    fecha_actual = clase_comision_actual.fecha
-    hora_actual = clase_comision_actual.horario
+# !!!!! comentado porque falla la reprogramacion de mas de 2 clases 16/11/2026
+# def calcular_proxima_fecha_clase(clase_comision_actual, slots_a_mover):
+#     comision_pk = clase_comision_actual.comision.pk
+#     fecha_actual = clase_comision_actual.fecha
+#     hora_actual = clase_comision_actual.horario
     
-    if not fecha_actual or not hora_actual:
-        return None
+#     if not fecha_actual or not hora_actual:
+#         return None
 
-    current_datetime = datetime.combine(fecha_actual, hora_actual)
+#     current_datetime = datetime.combine(fecha_actual, hora_actual)
 
-    slots_qs = ClaseComision.objects.filter(
-        comision_id=comision_pk,
-        fecha__isnull=False
-    ).exclude(pk=clase_comision_actual.pk).order_by('fecha', 'horario')
+#     slots_qs = ClaseComision.objects.filter(
+#         comision_id=comision_pk,
+#         fecha__isnull=False
+#     ).exclude(pk=clase_comision_actual.pk).order_by('fecha', 'horario')
 
-    lista_slots = [datetime.combine(s.fecha, s.horario) for s in slots_qs if s.fecha and s.horario]
+#     lista_slots = [datetime.combine(s.fecha, s.horario) for s in slots_qs if s.fecha and s.horario]
 
-    indice_siguiente = next((i for i, s in enumerate(lista_slots) if s > current_datetime), -1)
+#     indice_siguiente = next((i for i, s in enumerate(lista_slots) if s > current_datetime), -1)
 
-    if indice_siguiente == -1:
-        if not lista_slots:
-            return current_datetime + timedelta(days=7 * slots_a_mover)
-        dias_de_ciclo = (lista_slots[-1] - lista_slots[-2]).days if len(lista_slots) >= 2 else 7
-        return current_datetime + timedelta(days=dias_de_ciclo * slots_a_mover)
+#     if indice_siguiente == -1:
+#         if not lista_slots:
+#             return current_datetime + timedelta(days=7 * slots_a_mover)
+#         dias_de_ciclo = (lista_slots[-1] - lista_slots[-2]).days if len(lista_slots) >= 2 else 7
+#         return current_datetime + timedelta(days=dias_de_ciclo * slots_a_mover)
 
-    indice_destino = indice_siguiente + slots_a_mover - 1
-    if indice_destino < len(lista_slots):
-        return lista_slots[indice_destino]
-    else:
-        ultimo_slot = lista_slots[-1]
-        dias_de_ciclo = (lista_slots[-1] - lista_slots[-2]).days if len(lista_slots) >= 2 else 7
-        slots_extra = indice_destino - len(lista_slots) + 1
-        return ultimo_slot + timedelta(days=dias_de_ciclo * slots_extra)
+#     indice_destino = indice_siguiente + slots_a_mover - 1
+#     if indice_destino < len(lista_slots):
+#         return lista_slots[indice_destino]
+#     else:
+#         ultimo_slot = lista_slots[-1]
+#         dias_de_ciclo = (lista_slots[-1] - lista_slots[-2]).days if len(lista_slots) >= 2 else 7
+#         slots_extra = indice_destino - len(lista_slots) + 1
+#         return ultimo_slot + timedelta(days=dias_de_ciclo * slots_extra)
+
+# !!! comentado por falla reprogramacion de clases de mas de 2 clases 16/11/2026
+# def desplazar_clases_posteriores(clase_reprogramada, slots_diferencia):
+#     comision = clase_reprogramada.comision
+#     clases_posteriores = ClaseComision.objects.filter(
+#         comision=comision,
+#         clase__numero_clase__gt=clase_reprogramada.clase.numero_clase
+#     ).order_by('clase__numero_clase')
+
+#     movidas = 0
+#     for clase_pos in clases_posteriores:
+#         nueva_fecha_hora = calcular_proxima_fecha_clase(clase_pos, slots_diferencia)
+#         if nueva_fecha_hora:
+#             clase_pos.fecha = nueva_fecha_hora.date()
+#             clase_pos.horario = nueva_fecha_hora.time()
+#             clase_pos.save(update_fields=['fecha', 'horario'])
+#             movidas += 1
+#     return movidas
+
+def _extender_grilla(fechas, hasta_indice):
+    """Si hay que mover más allá de la última clase, repite el patrón semanal."""
+    primera = fechas[0]
+    por_semana = sum(1 for f in fechas if f < primera + timedelta(days=7)) or 1
+    while len(fechas) <= hasta_indice:
+        fechas.append(fechas[-por_semana] + timedelta(days=7))
 
 
-def desplazar_clases_posteriores(clase_reprogramada, slots_diferencia):
-    comision = clase_reprogramada.comision
-    clases_posteriores = ClaseComision.objects.filter(
-        comision=comision,
-        clase__numero_clase__gt=clase_reprogramada.clase.numero_clase
-    ).order_by('clase__numero_clase')
+def reprogramar_y_desplazar(clase, slots):
+    """
+    Mueve `clase` y todas las posteriores `slots` lugares sobre la grilla ORIGINAL.
+    Devuelve (nueva_fecha_hora_de_clase, cantidad_de_posteriores_movidas).
+    """
+    todas = list(
+        ClaseComision.objects.filter(
+            comision_id=clase.comision_id, fecha__isnull=False, horario__isnull=False
+        ).select_related('clase').order_by('fecha', 'horario')
+    )
+    pos = {cc.pk: i for i, cc in enumerate(todas)}
+    if clase.pk not in pos:
+        return None, 0
 
-    movidas = 0
-    for clase_pos in clases_posteriores:
-        nueva_fecha_hora = calcular_proxima_fecha_clase(clase_pos, slots_diferencia)
-        if nueva_fecha_hora:
-            clase_pos.fecha = nueva_fecha_hora.date()
-            clase_pos.horario = nueva_fecha_hora.time()
-            clase_pos.save(update_fields=['fecha', 'horario'])
-            movidas += 1
-    return movidas
+    fechas = [datetime.combine(cc.fecha, cc.horario) for cc in todas]
+    posteriores = [
+        cc for cc in todas
+        if cc.pk != clase.pk and cc.clase.numero_clase > clase.clase.numero_clase
+    ]
 
+    # Primero se calcula TODO con la grilla original, sin guardar nada
+    nuevos = {}
+    for cc in [clase] + posteriores:
+        destino = max(pos[cc.pk] + slots, 0)
+        _extender_grilla(fechas, destino)
+        nuevos[cc.pk] = fechas[destino]
 
+    # Recién ahora se guarda
+    with transaction.atomic():
+        nueva_clase = nuevos[clase.pk]
+        clase.fecha = nueva_clase.date()
+        clase.horario = nueva_clase.time()
+        clase.save()
+        for cc in posteriores:
+            cc.fecha = nuevos[cc.pk].date()
+            cc.horario = nuevos[cc.pk].time()
+            cc.save(update_fields=['fecha', 'horario'])
+
+    return nueva_clase, len(posteriores)
+#!!!------------------hasta aca se agrego lo nuevo por la falla 16/11/2026-----------------
 def enviar_notificacion_por_reprogramacion(clase_comision, motivo, estado, request=None):
     try:
         comision = clase_comision.comision
@@ -2383,16 +2430,20 @@ def alta_clase_comision_view(request):
 
             elif accion_reprogramacion and accion_reprogramacion.lstrip('-+').isdigit():
                 slots = int(accion_reprogramacion)
-                nueva_fecha_hora = calcular_proxima_fecha_clase(clase, slots)
+                # nueva_fecha_hora = calcular_proxima_fecha_clase(clase, slots)
+                # if not nueva_fecha_hora:
+                #     messages.error(request, "No se pudo calcular nueva fecha.")
+                #     return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
+
+                # clase.fecha = nueva_fecha_hora.date()
+                # clase.horario = nueva_fecha_hora.time()
+                # clase.save()
+
+                # clases_movidas = desplazar_clases_posteriores(clase, slots)
+                nueva_fecha_hora, clases_movidas = reprogramar_y_desplazar(clase, slots)
                 if not nueva_fecha_hora:
                     messages.error(request, "No se pudo calcular nueva fecha.")
                     return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
-
-                clase.fecha = nueva_fecha_hora.date()
-                clase.horario = nueva_fecha_hora.time()
-                clase.save()
-
-                clases_movidas = desplazar_clases_posteriores(clase, slots)
                 estado_final = 'Reprogramada'
                 fecha_reprogramada = nueva_fecha_hora.date()
 
