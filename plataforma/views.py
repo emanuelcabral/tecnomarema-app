@@ -7546,6 +7546,7 @@ def login_autocompletar(request):
                         'dni': estudiante.dni,
                         'correo': estudiante.correo,
                         'telefono': estudiante.telefono,
+                        'genero': estudiante.genero,
                         # Formateamos la fecha para que el input HTML la entienda (YYYY-MM-DD)
                         'fecha_nacimiento': estudiante.fecha_nacimiento.strftime('%Y-%m-%d') if estudiante.fecha_nacimiento else ''
                     })
