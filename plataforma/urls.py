@@ -427,6 +427,8 @@ path("test/", test),
 
     path("limpieza/comando/", views.limpieza_comando, name="limpieza_comando"),
 
+    path('reparar_fechas/', views.reparar_fechas_view),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 

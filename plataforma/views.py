@@ -8650,3 +8650,23 @@ def limpieza_comando(request):
         return JsonResponse({"ok": False, "message": "Comando no permitido."}, status=400)
     except Exception as e:
         return JsonResponse({"ok": False, "message": str(e)}, status=500) 
+
+##############################################################################################
+#-----------------------------Reparar reprogramacion de clases-------------------------------#
+##############################################################################################
+
+from django.http import HttpResponse
+import io, contextlib
+
+@session_required
+def reparar_fechas_view(request):
+    """TEMPORAL. /reparar_fechas/?id_comision=000008  (agregar &aplicar=1 para guardar)"""
+    dias = tuple(int(x) for x in request.GET.get('dias', '0,2').split(',') if x.strip().isdigit())
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        reparar_fechas_repetidas(
+            request.GET.get('id_comision', ''),
+            dias=dias,
+            aplicar=request.GET.get('aplicar') == '1',
+        )
+    return HttpResponse(buf.getvalue() or "Sin cambios.", content_type='text/plain; charset=utf-8')
