@@ -2258,59 +2258,87 @@ def obtener_estado_comision(fecha_inicio, fecha_fin):
 #             movidas += 1
 #     return movidas
 
-def _extender_grilla(fechas, hasta_indice):
-    """Si hay que mover más allá de la última clase, repite el patrón semanal."""
-    primera = fechas[0]
-    por_semana = sum(1 for f in fechas if f < primera + timedelta(days=7)) or 1
-    while len(fechas) <= hasta_indice:
-        fechas.append(fechas[-por_semana] + timedelta(days=7))
+def _numero_int(cc):
+    """numero_clase como entero (por si en la BD es texto: '10' < '2' al comparar strings)."""
+    try:
+        return int(cc.clase.numero_clase)
+    except (TypeError, ValueError):
+        return 0
+
+
+def _siguiente_slot(grilla, patron, feriados):
+    """Agrega a la grilla el próximo día de cursada (según el patrón semanal) que no sea feriado."""
+    dia = grilla[-1].date()
+    for _ in range(60):
+        dia += timedelta(days=1)
+        if dia.weekday() in patron and dia not in feriados:
+            grilla.append(datetime.combine(dia, patron[dia.weekday()]))
+            return
+    raise ValueError("no se pudo extender el calendario más allá de la última clase")
+
+
+def calcular_movimientos(items, pk_clase, slots, feriados=()):
+    """
+    items: lista de (pk, numero_clase, datetime) de TODAS las clases con fecha y hora de la comisión.
+    Devuelve {pk: nuevo_datetime} para la clase elegida y todas las de número mayor.
+    """
+    por_pk = {pk: (num, dt) for pk, num, dt in items}
+    if pk_clase not in por_pk:
+        raise ValueError("la clase no tiene fecha y horario cargados")
+
+    grilla = sorted({dt for _, _, dt in items})
+    patron = {}
+    for _, _, dt in items:
+        patron.setdefault(dt.weekday(), dt.time())
+
+    num_base = por_pk[pk_clase][0]
+    movidas = sorted([(num, pk, dt) for pk, num, dt in items if num >= num_base])
+    fijas = {dt for pk, num, dt in items if num < num_base}
+
+    nuevos, previo = {}, -1
+    for num, pk, dt in movidas:
+        destino = max(grilla.index(dt) + slots, previo + 1, 0)
+        while True:
+            while len(grilla) <= destino:
+                _siguiente_slot(grilla, patron, feriados)
+            if grilla[destino] in fijas:
+                destino += 1
+            else:
+                break
+        nuevos[pk] = grilla[destino]
+        previo = destino
+    return nuevos
 
 
 def reprogramar_y_desplazar(clase, slots):
     """
-    Mueve `clase` y todas las posteriores `slots` lugares sobre la grilla ORIGINAL.
     Devuelve (nueva_fecha_hora_de_clase, cantidad_de_posteriores_movidas).
-    Si el resultado dejaría dos clases el mismo día, no guarda nada y devuelve (None, 0).
+    Lanza ValueError con el motivo si no se puede; en ese caso no guarda nada.
     """
     todas = list(
         ClaseComision.objects.filter(
             comision_id=clase.comision_id, fecha__isnull=False, horario__isnull=False
-        ).select_related('clase').order_by('fecha', 'horario')
+        ).select_related('clase')
     )
-    pos = {cc.pk: i for i, cc in enumerate(todas)}
-    if clase.pk not in pos:
-        return None, 0
+    items = [(cc.pk, _numero_int(cc), datetime.combine(cc.fecha, cc.horario)) for cc in todas]
+    nuevos = calcular_movimientos(items, clase.pk, slots, feriados_ar)
 
-    fechas = [datetime.combine(cc.fecha, cc.horario) for cc in todas]
-    posteriores = [
-        cc for cc in todas
-        if cc.pk != clase.pk and cc.clase.numero_clase > clase.clase.numero_clase
-    ]
-
-    # Primero se calcula TODO con la grilla original, sin guardar nada
-    nuevos = {}
-    for cc in [clase] + posteriores:
-        destino = max(pos[cc.pk] + slots, 0)
-        _extender_grilla(fechas, destino)
-        nuevos[cc.pk] = fechas[destino]
-
-    # Nunca guardar dos clases el mismo día
-    fijas = {datetime.combine(cc.fecha, cc.horario) for cc in todas if cc.pk not in nuevos}
-    if len(set(nuevos.values())) != len(nuevos) or fijas & set(nuevos.values()):
-        return None, 0
-
-    # Recién ahora se guarda
+    por_pk = {cc.pk: cc for cc in todas}
     with transaction.atomic():
-        nueva_clase = nuevos[clase.pk]
-        clase.fecha = nueva_clase.date()
-        clase.horario = nueva_clase.time()
-        clase.save()
-        for cc in posteriores:
-            cc.fecha = nuevos[cc.pk].date()
-            cc.horario = nuevos[cc.pk].time()
-            cc.save(update_fields=['fecha', 'horario'])
+        for pk, nuevo in nuevos.items():
+            cc = por_pk[pk]
+            duracion = None
+            if cc.hora_fin:
+                duracion = datetime.combine(date.min, cc.hora_fin) - datetime.combine(date.min, cc.horario)
+            cc.fecha = nuevo.date()
+            cc.horario = nuevo.time()
+            campos = ['fecha', 'horario']
+            if duracion is not None and duracion >= timedelta(0):
+                cc.hora_fin = (nuevo + duracion).time()
+                campos.append('hora_fin')
+            cc.save(update_fields=campos)
 
-    return nueva_clase, len(posteriores)
+    return nuevos[clase.pk], len(nuevos) - 1
 
 
 def reparar_fechas_repetidas(id_comision, dias=(0, 2), aplicar=False):
@@ -2509,24 +2537,14 @@ def alta_clase_comision_view(request):
 
             elif accion_reprogramacion and accion_reprogramacion.lstrip('-+').isdigit():
                 slots = int(accion_reprogramacion)
-                # nueva_fecha_hora = calcular_proxima_fecha_clase(clase, slots)
-                # if not nueva_fecha_hora:
-                #     messages.error(request, "No se pudo calcular nueva fecha.")
-                #     return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
-
-                # clase.fecha = nueva_fecha_hora.date()
-                # clase.horario = nueva_fecha_hora.time()
-                # clase.save()
-
-                # clases_movidas = desplazar_clases_posteriores(clase, slots)
-                nueva_fecha_hora, clases_movidas = reprogramar_y_desplazar(clase, slots)
-                if not nueva_fecha_hora:
-                    messages.error(request, "No se pudo reprogramar: revisá que la clase tenga fecha y horario y que no haya clases con la misma fecha en la comisión.")
+                try:
+                    nueva_fecha_hora, clases_movidas = reprogramar_y_desplazar(clase, slots)
+                except ValueError as e:
+                    messages.error(request, f"No se pudo reprogramar: {e}")
                     return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}')
-                estado_final = 'Reprogramada'
-                fecha_reprogramada = nueva_fecha_hora.date()
 
-                messages.success(request, f"Clase reprogramada y {clases_movidas} clases posteriores movidas.")
+                estado_final = 'Reprogramada'                       # <-- CAMBIO
+                fecha_reprogramada = nueva_fecha_hora.date()        # <-- CAMBIO
 
             else:
                 messages.error(request, f"Acción no válida: '{accion_reprogramacion}'")
@@ -2563,10 +2581,17 @@ def alta_clase_comision_view(request):
 
             Thread(target=enviar_correos, daemon=True).start()
 
-            messages.success(request, 
-                f"¡Clase {estado_final.lower()} correctamente! "
-                "Los alumnos están siendo notificados ahora mismo..."
-            )
+            if estado_final == 'Reprogramada':                      # <-- CAMBIO
+                messages.success(request,
+                    f"¡Clase reprogramada correctamente! "
+                    f"({clases_movidas} clases posteriores desplazadas). "
+                    "Los alumnos están siendo notificados ahora mismo..."
+                )
+            else:
+                messages.success(request,
+                    f"¡Clase {estado_final.lower()} correctamente! "
+                    "Los alumnos están siendo notificados ahora mismo..."
+                )
 
             return redirect(f'/alta_clase_comision/?id_comision={comision_redirect_id}&guardado=1')
 
