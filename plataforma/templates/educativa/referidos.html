@@ -438,6 +438,13 @@
             margin-top: 6px;
         }
 
+        .feedback-error {
+            font-size: 0.88rem;
+            color: #ff6b6b;
+            min-height: 20px;
+            margin-top: 6px;
+        }
+
         hr.section-divider {
             border-top: 1px solid #444;
             margin-top: 4rem;
@@ -537,12 +544,18 @@
 
                 <div class="ref-card">
                     <h2 class="ref-card-title"><i class="bi bi-envelope"></i> Invitá por correo electrónico</h2>
-                    <form id="emailInviteForm">
-                        <input id="emailInput" type="email" class="form-control form-control-dark mb-3"
+                    <form method="post" action="{% url 'referidos' %}" id="emailInviteForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="enviar_invitacion">
+                        <input id="emailInput" type="email" name="email_invitado" class="form-control form-control-dark mb-3"
                             placeholder="correo@ejemplo.com" required>
                         <button type="submit" class="btn btn-mint-solid w-100">Enviar invitación</button>
                     </form>
-                    <div id="emailFeedback" class="feedback-text"></div>
+                    {% if mensaje_exito %}
+                        <div class="feedback-text">{{ mensaje_exito }}</div>
+                    {% elif mensaje_error %}
+                        <div class="feedback-error">{{ mensaje_error }}</div>
+                    {% endif %}
                 </div>
             </div>
 
@@ -633,7 +646,7 @@
                     <div class="stat-item">
                         <div>
                             <div class="stat-label">Invitados registrados</div>
-                            <div class="stat-value">{{ total_referidos|default:"12" }} Referidos</div>
+                            <div class="stat-value">{{ total_referidos|default:"0" }} Referidos</div>
                         </div>
                         <i class="bi bi-people stat-icon"></i>
                     </div>
@@ -642,7 +655,7 @@
                     <div class="stat-item">
                         <div>
                             <div class="stat-label">Cursos obtenidos o descuentos ganados</div>
-                            <div class="stat-value">{{ beneficios_ganados|default:"3 Cursos gratis" }}</div>
+                            <div class="stat-value">{{ beneficios_ganados|default:"0 Cursos gratis" }}</div>
                         </div>
                         <i class="bi bi-gift stat-icon"></i>
                     </div>
@@ -673,9 +686,6 @@
             const refInput = document.getElementById('referralLink');
             const copyBtn = document.getElementById('copyLinkBtn');
             const copyFeedback = document.getElementById('copyFeedback');
-            const emailForm = document.getElementById('emailInviteForm');
-            const emailInput = document.getElementById('emailInput');
-            const emailFeedback = document.getElementById('emailFeedback');
 
             const shareUrl = refInput.value.trim();
             const shareTitle = document.getElementById('shareCardTitle').textContent.trim();
@@ -703,12 +713,6 @@
                     document.execCommand('copy');
                     copyFeedback.textContent = 'Enlace listo para copiar.';
                 }
-            });
-
-            emailForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                emailFeedback.textContent = `Invitación preparada para ${emailInput.value.trim()}.`;
-                emailInput.value = '';
             });
         })();
     </script>

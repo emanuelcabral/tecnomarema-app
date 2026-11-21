@@ -1064,3 +1064,28 @@ class ContratoDocente(models.Model):
 
     def __str__(self):
         return f"{self.rol} {self.usuario_id} - comisión {self.comision_id} ({self.estado})"
+
+    #############################################################################################
+    #-----------------------------Referidos-----------------------------------------------------#
+    #############################################################################################
+    from django.db import models
+
+
+class ReferidoInvitacion(models.Model):
+    ESTADOS = [
+        ("enviada", "Enviada"),
+        ("registrado", "Registrado"),
+    ]
+
+    referidor = models.ForeignKey(
+        "PerfilUsuario",
+        on_delete=models.CASCADE,
+        related_name="invitaciones_enviadas",
+    )
+    email_invitado = models.EmailField()
+    estado = models.CharField(max_length=20, choices=ESTADOS, default="enviada")
+    beneficio_otorgado = models.BooleanField(default=False)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.referidor.nombre_usuario} -> {self.email_invitado} ({self.estado})"
