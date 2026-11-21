@@ -8696,3 +8696,28 @@ def reparar_fechas_view(request):
             aplicar=request.GET.get('aplicar') == '1',
         )
     return HttpResponse(buf.getvalue() or "Sin cambios.", content_type='text/plain; charset=utf-8')
+
+####################################################################################################
+#---------------------------------------REFERIDOS--------------------------------------------------#
+####################################################################################################
+
+from django.shortcuts import render
+
+
+def referidos(request):
+    usuario_id = request.session.get("usuario_id")
+    nombre_usuario = request.session.get("nombre_usuario", "Emacabral")
+    usuario = request.session.get("usuario")
+
+    # Reemplazá estos valores con tu consulta real a la base de datos o modelo de referidos
+    total_referidos = 12
+    beneficios_ganados = "3 Cursos gratis"
+
+    context = {
+        "usuario_id": usuario_id,
+        "nombre_usuario": nombre_usuario,
+        "usuario": usuario,
+        "total_referidos": total_referidos,
+        "beneficios_ganados": beneficios_ganados,
+    }
+    return render(request, "referidos.html", context)

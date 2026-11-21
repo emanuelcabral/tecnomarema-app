@@ -429,7 +429,11 @@ path("test/", test),
 
     path('reparar_fechas/', views.reparar_fechas_view),
 
+    path("referidos/", views.referidos, name="referidos"),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
+
+
 
 
 ]
