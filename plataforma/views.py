@@ -8704,20 +8704,20 @@ def reparar_fechas_view(request):
 from django.shortcuts import render
 
 
+@session_required
 def referidos(request):
-    usuario_id = request.session.get("usuario_id")
-    nombre_usuario = request.session.get("nombre_usuario", "Emacabral")
-    usuario = request.session.get("usuario")
+    nombre_usuario_sesion = request.session.get('usuario_logueado')
+    usuario = None
+    if nombre_usuario_sesion:
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
 
-    # Reemplazá estos valores con tu consulta real a la base de datos o modelo de referidos
+    # Reemplazá estos valores con tu cálculo real de referidos si ya tenés un modelo o campo en usuario
     total_referidos = 12
     beneficios_ganados = "3 Cursos gratis"
 
-    context = {
-        "usuario_id": usuario_id,
-        "nombre_usuario": nombre_usuario,
-        "usuario": usuario,
-        "total_referidos": total_referidos,
-        "beneficios_ganados": beneficios_ganados,
-    }
-    return render(request, "educativa/referidos.html", context)
+    return render(request, 'educativa/referidos.html', {
+        'nombre_usuario': nombre_usuario_sesion,
+        'usuario': usuario,
+        'total_referidos': total_referidos,
+        'beneficios_ganados': beneficios_ganados,
+    })
