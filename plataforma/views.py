@@ -8720,4 +8720,4 @@ def referidos(request):
         "total_referidos": total_referidos,
         "beneficios_ganados": beneficios_ganados,
     }
-    return render(request, "referidos.html", context)
+    return render(request, "templates/referidos.html", context)
