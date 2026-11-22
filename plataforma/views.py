@@ -8704,7 +8704,7 @@ def reparar_fechas_view(request):
 from django.conf import settings
 from django.core.mail import send_mail
 from django.shortcuts import render
-
+from .models import PerfilUsuario, ReferidoInvitacion
 
 @session_required
 def referidos(request):
