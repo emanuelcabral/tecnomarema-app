@@ -6,6 +6,9 @@
     <meta charset="UTF-8">
     <title>Referidos | Tecno Marema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="¿Querés aprender tecnología? | TecnoMarema">
+    <meta property="og:description" content="¡Sumate a la plataforma de aprendizaje y capacitate gratis! Registrate con mi enlace para obtener beneficios.">
+    <meta property="og:image" content="{% static 'img/referidos-social.jpeg' %}">
     <link rel="icon" href="{% static 'img/logo/logo-marema96.png' %}" type="image/png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -252,76 +255,34 @@
             color: var(--bg-main);
         }
 
-        /* Tarjeta enriquecida estilo nota para compartir en redes */
-        .note-share-box {
+        /* Vista previa social con imagen */
+        .social-preview-card {
             background-color: var(--bg-main);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 1rem;
         }
 
-        .note-share-cover {
-            background: linear-gradient(135deg, var(--bg-surface-soft) 0%, #0e241a 100%);
+        .social-preview-img {
+            width: 100%;
+            height: 185px;
+            object-fit: cover;
+            display: block;
             border-bottom: 1px solid var(--border-subtle);
-            padding: 1rem 1.1rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
         }
 
-        .note-badge {
-            display: inline-block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--accent-mint);
-            background-color: var(--accent-mint-dim);
-            border: 1px solid var(--border-mint);
-            border-radius: 6px;
-            padding: 2px 8px;
-            margin-bottom: 6px;
+        .social-preview-body {
+            padding: 0.95rem 1.05rem;
         }
 
-        .note-cover-headline {
+        .social-preview-title {
             font-size: 1.05rem;
-            font-weight: 700;
-            color: var(--text-white);
-            margin: 0;
-        }
-
-        .note-cover-icons {
-            display: grid;
-            grid-template-columns: repeat(2, 32px);
-            gap: 6px;
-            flex-shrink: 0;
-        }
-
-        .note-cover-icons span {
-            width: 32px;
-            height: 32px;
-            border-radius: 6px;
-            border: 1px solid var(--border-mint);
-            background-color: var(--bg-card);
-            color: var(--accent-mint);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-        }
-
-        .note-share-body {
-            padding: 0.95rem 1.1rem;
-        }
-
-        .note-share-title {
-            font-size: 1rem;
             font-weight: 700;
             color: var(--text-white);
             margin-bottom: 4px;
         }
 
-        .note-share-link {
+        .social-preview-domain {
             display: block;
             font-size: 0.85rem;
             color: var(--accent-mint);
@@ -329,77 +290,50 @@
             word-break: break-all;
         }
 
-        .note-share-desc {
-            font-size: 0.92rem;
+        .social-preview-desc {
+            font-size: 0.9rem;
             color: var(--text-muted);
             margin-bottom: 0;
         }
 
-        .social-share-bar {
+        /* Estilo unificado para "¿Cómo invitar y ganar?" */
+        .how-step-row {
             display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .btn-social-pill {
-            background-color: var(--bg-main);
-            color: var(--text-white);
-            border: 1px solid var(--border-mint);
-            border-radius: 999px;
-            padding: 5px 12px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 14px;
+            padding: 0.65rem 0.25rem;
         }
 
-        .btn-social-pill:hover {
-            background-color: var(--accent-mint);
-            color: var(--bg-main);
+        .how-step-row + .how-step-row {
+            margin-top: 0.65rem;
         }
 
-        /* Pasos para invitar */
-        .step-card {
-            background-color: var(--bg-main);
-            border: 1px solid var(--border-subtle);
-            border-radius: 8px;
-            padding: 0.9rem 1rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 12px;
-        }
-
-        .step-card + .step-card {
-            margin-top: 0.75rem;
-        }
-
-        .step-num {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            border: 1px solid var(--border-mint);
-            background-color: var(--accent-mint-dim);
+        .how-step-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1.5px solid var(--border-mint);
+            background-color: rgba(0, 230, 118, 0.06);
             color: var(--accent-mint);
-            font-weight: 700;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.25rem;
             flex-shrink: 0;
         }
 
-        .step-card h3 {
-            font-size: 0.98rem;
+        .how-step-row h3 {
+            font-size: 1.02rem;
             font-weight: 700;
             color: var(--text-white);
             margin-bottom: 2px;
         }
 
-        .step-card p {
-            font-size: 0.9rem;
+        .how-step-row p {
+            font-size: 0.92rem;
             color: var(--text-muted);
             margin-bottom: 0;
+            line-height: 1.4;
         }
 
         /* Estadísticas */
@@ -559,79 +493,60 @@
                 </div>
             </div>
 
-            <!-- Columna 2: Compartir en redes con imagen, título, link y descripción -->
+            <!-- Columna 2: Compartir con Vista Previa Social -->
             <div class="col-lg-4">
                 <div class="ref-card">
-                    <h2 class="ref-card-title"><i class="bi bi-share"></i> Compartir en tus Redes</h2>
+                    <h2 class="ref-card-title"><i class="bi bi-share"></i> Compartir con Vista Previa Social</h2>
 
-                    <div class="note-share-box">
-                        <div class="note-share-cover">
-                            <div>
-                                <span class="note-badge">NOTA DE INVITACIÓN</span>
-                                <p class="note-cover-headline">¡Aprendé y sumate a TecnoMarema!</p>
-                            </div>
-                            <div class="note-cover-icons" aria-hidden="true">
-                                <span><i class="bi bi-code-slash"></i></span>
-                                <span><i class="bi bi-terminal"></i></span>
-                                <span><i class="bi bi-cpu"></i></span>
-                                <span><i class="bi bi-lightning-charge"></i></span>
-                            </div>
-                        </div>
-                        <div class="note-share-body">
-                            <h3 id="shareCardTitle" class="note-share-title">¡Potenciá tu Futuro Tecnológico con TecnoMarema!</h3>
-                            <span id="shareCardUrl" class="note-share-link">https://tecnomarema.com/ref?user={{ nombre_usuario|default:'emacabral'|slugify }}</span>
-                            <p id="shareCardDesc" class="note-share-desc">
-                                Sumate a la plataforma de aprendizaje tech y accedé a cursos, tutoriales prácticos y beneficios exclusivos registrándote desde este enlace.
+                    <div class="social-preview-card">
+                        <img
+                            src="{% static 'img/referidos-social.jpeg' %}"
+                            alt="Vista previa social TecnoMarema"
+                            class="social-preview-img"
+                        >
+                        <div class="social-preview-body">
+                            <h3 id="shareCardTitle" class="social-preview-title">¿Querés aprender tecnología?</h3>
+                            <span id="shareCardUrl" class="social-preview-domain">tecnomarema.com</span>
+                            <p id="shareCardDesc" class="social-preview-desc">
+                                ¡Sumate a la plataforma de aprendizaje y capacitate gratis! Registrate con mi enlace para obtener beneficios.
                             </p>
                         </div>
-                    </div>
-
-                    <div class="social-share-bar">
-                        <a id="btnShareWhatsApp" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-whatsapp"></i> WhatsApp
-                        </a>
-                        <a id="btnShareFacebook" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-facebook"></i> Facebook
-                        </a>
-                        <a id="btnShareLinkedIn" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-linkedin"></i> LinkedIn
-                        </a>
-                        <a id="btnShareX" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-twitter-x"></i> X
-                        </a>
-                        <a id="btnShareTelegram" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
-                            <i class="bi bi-telegram"></i> Telegram
-                        </a>
                     </div>
                 </div>
             </div>
 
-            <!-- Columna 3: Pasos para invitar -->
+            <!-- Columna 3: ¿Cómo invitar y ganar? -->
             <div class="col-lg-4">
                 <div class="ref-card">
                     <h2 class="ref-card-title"><i class="bi bi-check2-square"></i> ¿Cómo invitar y ganar?</h2>
 
-                    <div class="step-card">
-                        <div class="step-num">1</div>
+                    <div class="how-step-row">
+                        <div class="how-step-circle">
+                            <i class="bi bi-clipboard"></i>
+                        </div>
                         <div>
-                            <h3>Copiá tu enlace</h3>
-                            <p>Copiá tu enlace personal y único de referido en un clic.</p>
+                            <h3>1. Copiá tu enlace</h3>
+                            <p>Copiá tu enlace personal y único.</p>
                         </div>
                     </div>
 
-                    <div class="step-card">
-                        <div class="step-num">2</div>
+                    <div class="how-step-row">
+                        <div class="how-step-circle">
+                            <i class="bi bi-share"></i>
+                        </div>
                         <div>
-                            <h3>Compartilo en tus redes</h3>
-                            <p>Publicá la nota con imagen, título, enlace y descripción en la red que elijas.</p>
+                            <h3>2. Compartilo</h3>
+                            <p>Compartilo con tus amigos por redes o chat.</p>
                         </div>
                     </div>
 
-                    <div class="step-card">
-                        <div class="step-num">3</div>
+                    <div class="how-step-row">
+                        <div class="how-step-circle">
+                            <i class="bi bi-gift"></i>
+                        </div>
                         <div>
-                            <h3>Recibí beneficios</h3>
-                            <p>Sumá accesos y descuentos cuando tus referidos se registren.</p>
+                            <h3>3. Recibí beneficios</h3>
+                            <p>Ganá accesos y descuentos cuando se registren.</p>
                         </div>
                     </div>
                 </div>
@@ -686,23 +601,7 @@
             const refInput = document.getElementById('referralLink');
             const copyBtn = document.getElementById('copyLinkBtn');
             const copyFeedback = document.getElementById('copyFeedback');
-
             const shareUrl = refInput.value.trim();
-            const shareTitle = document.getElementById('shareCardTitle').textContent.trim();
-            const shareDesc = document.getElementById('shareCardDesc').textContent.trim();
-            const shareSummary = `${shareTitle} — ${shareDesc}`;
-            const fullShareText = `${shareTitle}\n${shareDesc}\n${shareUrl}`;
-
-            document.getElementById('btnShareWhatsApp').href =
-                `https://api.whatsapp.com/send?text=${encodeURIComponent(fullShareText)}`;
-            document.getElementById('btnShareFacebook').href =
-                `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareSummary)}`;
-            document.getElementById('btnShareLinkedIn').href =
-                `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
-            document.getElementById('btnShareX').href =
-                `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareSummary)}&url=${encodeURIComponent(shareUrl)}`;
-            document.getElementById('btnShareTelegram').href =
-                `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareSummary)}`;
 
             copyBtn.addEventListener('click', async () => {
                 try {
