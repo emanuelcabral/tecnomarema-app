@@ -164,23 +164,60 @@
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark px-4 py-3">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'mis_cursos' %}">
-                <span class="white">Tecno</span><span class="green">Marema</span>
-                <img src="{% static 'img/logo/logo-marema96.png' %}" alt="Logo">
-            </a>
-            <div class="ms-auto d-flex align-items-center gap-3">
-                <span class="text-light d-none d-md-inline">
-                    <i class="bi bi-person-circle text-success"></i> {{ nombre_usuario }}
-                </span>
-                <span class="badge-rol">{{ usuario.rol }}</span>
-                <a href="{% url 'mis_cursos' %}" class="btn btn-outline-light btn-sm">
-                    <i class="bi bi-arrow-left"></i> Volver a Mis Cursos
-                </a>
-            </div>
-        </div>
-    </nav>
+<nav class="navbar navbar-expand-lg navbar-dark px-3">
+  <div class="container-fluid">
+    <!-- LOGO -->
+    <a class="navbar-brand" href="{% url 'mis_cursos' %}">
+      <span class="white">Tecno</span><span class="green">Marema</span>
+      <img src="{% static 'img/logo-marema.png' %}" alt="Logo">
+    </a>
+
+    <!-- HAMBURGUESA -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" style="border: none !important;">
+      <i class="bi bi-three-dots-vertical" style="color: #12f693 !important;"></i>
+    </button>
+
+    <!-- MENÚ -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+        {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' or usuario.rol == 'alumno' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'tutoriales' %}">Tutoriales</a></li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+        {% if usuario.rol == 'alumno' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
+        {% endif %}
+        {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'facturacion_docente' %}">Facturación</a></li>
+        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{% url 'faq' %}">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'redes' %}">Redes</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'referidos' %}">Referidos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+        {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' %}
+          <li class="nav-item ms-lg-2">
+            <span class="badge-rol">{{ usuario.rol }}</span>
+          </li>
+        {% endif %}
+        <li class="nav-item">
+          <form action="{% url 'logout' %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-login btn-sm">
+              <i class="bi bi-person-badge"></i>
+              Cerrar sesión
+            </button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="barra-bienvenida">
+  Bienvenido {{ nombre_usuario|capfirst }} a <strong>TecnoMarema 🚀</strong>
+</div>
 
     <div class="container py-5">
 
