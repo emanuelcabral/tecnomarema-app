@@ -658,7 +658,6 @@
                     <div class="stat-item">
                         <div>
                             <div class="stat-label">Correos enviados (se cuentan al enviar)</div>
-                            <!-- <div class="stat-value"><span id="statCorreos">{{ correos_enviados|default:total_referidos|default:"0" }}</span> / 100 Correos</div> -->
                             <div class="stat-value"><span id="statCorreos">{{ correos_enviados|default_if_none:"0" }}</span> / 100 Correos</div>
                             <div class="stat-sub">Requisito adicional: compartir en al menos 3 redes distintas</div>
                         </div>
