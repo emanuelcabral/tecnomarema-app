@@ -8916,7 +8916,7 @@ def referidos(request):
     faltan_redes = max(0, 3 - redes_distintas)
 
     if cupon_habilitado and cupon:
-        estado_cupon = '¡Habilitado! También figura en tu perfil y en la tabla de cupones.'
+        estado_cupon = '¡Habilitado! Recuerda que tienes hasta 2 meses para utilizarlo.'
     else:
         estado_cupon = (
             f'Te faltan {faltan_correos} correos y compartir en {faltan_redes} '
