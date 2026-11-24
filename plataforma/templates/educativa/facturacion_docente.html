@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <title>Mi Facturación - Honorarios Docentes</title>
+    <link rel="icon" href="{% static 'img/logo/logo-marema96.png' %}" type="image/png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #0d0d0d;
+            color: #fff;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* NAVBAR BASE (Misma estética que saldo.html) */
+        .navbar {
+            background-color: #111;
+            position: relative;
+            z-index: 10;
+            border-bottom: 3px solid transparent;
+            font-size: 1.2rem;
+        }
+
+        .navbar::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            width: 100%;
+            background: linear-gradient(90deg, #12f693, #cf30ff, #12f693);
+            background-size: 200% auto;
+            animation: neonGlow 4s linear infinite;
+        }
+
+        @keyframes neonGlow {
+            0% { background-position: 0%; }
+            100% { background-position: 100%; }
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+
+        .navbar-brand span.white { color: #fff; }
+        .navbar-brand span.green { color: #12f693; }
+        .navbar-brand img { height: 30px; margin-left: 10px; }
+
+        .navbar-nav .nav-link {
+            color: #fff !important;
+            transition: 0.3s;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: #12f693 !important;
+        }
+
+        /* TARJETAS Y TABLAS DE FACTURACIÓN */
+        .card-facturacion {
+            background-color: #141414;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            box-shadow: 0 0 18px rgba(18, 246, 147, 0.08);
+            margin-bottom: 2.2rem;
+            overflow: hidden;
+        }
+
+        .card-header-comision {
+            background: linear-gradient(90deg, #181818, #1f1426);
+            border-bottom: 2px solid #12f693;
+            padding: 1.2rem 1.5rem;
+        }
+
+        .badge-rol {
+            background-color: #cf30ff;
+            color: #fff;
+            font-weight: 600;
+            padding: 0.4em 0.8em;
+            border-radius: 6px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .badge-neon {
+            background-color: rgba(18, 246, 147, 0.15);
+            color: #12f693;
+            border: 1px solid #12f693;
+            font-weight: 600;
+        }
+
+        .table-dark-custom {
+            --bs-table-bg: #141414;
+            --bs-table-striped-bg: #1a1a1a;
+            --bs-table-hover-bg: #222222;
+            color: #e0e0e0;
+            margin-bottom: 0;
+        }
+
+        .table-dark-custom thead th {
+            background-color: #1c1c1c;
+            color: #12f693;
+            border-bottom: 1px solid #333;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+
+        .table-dark-custom td {
+            border-color: #262626;
+            vertical-align: middle;
+        }
+
+        .resumen-comision-footer {
+            background-color: #191919;
+            border-top: 1px solid #333;
+            padding: 1rem 1.5rem;
+        }
+
+        .total-general-box {
+            background: linear-gradient(135deg, #111 0%, #1c1224 100%);
+            border: 2px solid #cf30ff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 0 20px rgba(207, 48, 255, 0.25);
+        }
+
+        .btn-neon {
+            background-color: #12f693;
+            color: #000;
+            font-weight: bold;
+            border: none;
+            transition: 0.3s;
+        }
+
+        .btn-neon:hover {
+            background-color: #0cd680;
+            color: #000;
+        }
+
+        .form-select-dark {
+            background-color: #1a1a1a;
+            color: #fff;
+            border: 1px solid #333;
+        }
+
+        .form-select-dark:focus {
+            background-color: #1a1a1a;
+            color: #fff;
+            border-color: #12f693;
+            box-shadow: 0 0 0 0.2rem rgba(18, 246, 147, 0.25);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar navbar-expand-lg navbar-dark px-4 py-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'mis_cursos' %}">
+                <span class="white">Tecno</span><span class="green">Marema</span>
+                <img src="{% static 'img/logo/logo-marema96.png' %}" alt="Logo">
+            </a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <span class="text-light d-none d-md-inline">
+                    <i class="bi bi-person-circle text-success"></i> {{ nombre_usuario }}
+                </span>
+                <span class="badge-rol">{{ usuario.rol }}</span>
+                <a href="{% url 'mis_cursos' %}" class="btn btn-outline-light btn-sm">
+                    <i class="bi bi-arrow-left"></i> Volver a Mis Cursos
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container py-5">
+
+        <!-- ENCABEZADO Y FILTRO DE MES -->
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: #12f693;">
+                    <i class="bi bi-receipt-cutoff me-2"></i>Detalle de Facturación Mensual
+                </h2>
+                <p class="text-secondary mb-0">
+                    Período liquidado: <strong class="text-white">{{ fecha_inicio_mes|date:"d/m/Y" }}</strong> al <strong class="text-white">{{ fecha_fin_mes|date:"d/m/Y" }}</strong>
+                </p>
+            </div>
+
+            <!-- Formulario filtro mes/año -->
+            <form method="get" class="d-flex align-items-center gap-2 bg-dark p-2 rounded border border-secondary">
+                <select name="mes" class="form-select form-select-sm form-select-dark">
+                    {% for num, nombre in meses_nombres %}
+                        <option value="{{ num }}" {% if num == mes_seleccionado %}selected{% endif %}>{{ nombre }}</option>
+                    {% endfor %}
+                </select>
+                <select name="anio" class="form-select form-select-sm form-select-dark">
+                    {% for a in anios_disponibles %}
+                        <option value="{{ a }}" {% if a == anio_seleccionado %}selected{% endif %}>{{ a }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-neon btn-sm px-3">
+                    <i class="bi bi-search"></i> Filtrar
+                </button>
+            </form>
+        </div>
+
+        <!-- LISTADO DE TABLAS POR COMISIÓN -->
+        {% if comisiones_facturacion %}
+            {% for item in comisiones_facturacion %}
+            <div class="card-facturacion">
+                <!-- Cabecera con datos de la comisión -->
+                <div class="card-header-comision">
+                    <div class="row align-items-center gy-2">
+                        <div class="col-lg-7">
+                            <h4 class="mb-1 fw-bold text-white">
+                                {{ item.curso.nombre_curso }}
+                                <span class="badge badge-neon ms-2">Comisión #{{ item.comision.numero_comision }}</span>
+                            </h4>
+                            <div class="text-light small mt-2 d-flex flex-wrap gap-3">
+                                <span>
+                                    <i class="bi bi-calendar-week text-info me-1"></i>
+                                    <strong>Días y Horarios:</strong> {{ item.dias_horarios_texto }}
+                                </span>
+                                <span>
+                                    <i class="bi bi-clock text-warning me-1"></i>
+                                    <strong>Duración por clase:</strong> {{ item.horas_por_clase }} hs
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-lg-5 text-lg-end">
+                            <div class="small text-secondary">Valor Hora ({{ usuario.rol|title }}): <strong class="text-white">${{ item.valor_hora }}</strong></div>
+                            <div class="fs-6 text-light">
+                                Valor por Clase: <span class="fw-bold" style="color: #12f693;">${{ item.valor_por_clase }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla desglose de clases dictadas (presentes) -->
+                <div class="table-responsive">
+                    <table class="table table-dark-custom table-striped table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Clase</th>
+                                <th>Fecha Dictada</th>
+                                <th>Horario</th>
+                                <th class="text-center">Horas</th>
+                                <th class="text-end pe-4">Valor Clase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for clase in item.clases %}
+                            <tr>
+                                <td class="ps-4">
+                                    <span class="badge bg-secondary me-2">Clase {{ clase.numero_clase }}</span>
+                                    <strong>{{ clase.nombre_clase }}</strong>
+                                </td>
+                                <td>{{ clase.fecha_clase|date:"d/m/Y" }}</td>
+                                <td>{{ clase.horario_inicio|time:"H:i" }} - {{ clase.horario_fin|time:"H:i" }} hs</td>
+                                <td class="text-center">{{ clase.horas }} hs</td>
+                                <td class="text-end pe-4 fw-semibold text-white">${{ clase.valor_clase }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pie de comisión con subtotal -->
+                <div class="resumen-comision-footer d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2">
+                    <div class="text-light">
+                        <i class="bi bi-check-circle-fill text-success me-1"></i>
+                        Clases dictadas (presentes en el mes): <strong>{{ item.cantidad_presentes }}</strong>
+                    </div>
+                    <div class="fs-5 fw-bold">
+                        Total Comisión #{{ item.comision.numero_comision }}:
+                        <span style="color: #12f693;" class="ms-2">${{ item.subtotal_comision }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <!-- TOTAL GENERAL A PAGAR EN EL MES -->
+            <div class="total-general-box d-flex flex-column flex-md-row justify-content-between align-items-md-center mt-4">
+                <div>
+                    <h4 class="mb-1 fw-bold text-white">Total General del Mes</h4>
+                    <p class="text-secondary mb-0 small">Sumatoria de todas las comisiones dictadas entre el {{ fecha_inicio_mes|date:"d/m/Y" }} y el {{ fecha_fin_mes|date:"d/m/Y" }}</p>
+                </div>
+                <div class="mt-3 mt-md-0 text-md-end">
+                    <span class="text-uppercase small d-block text-light">Monto Total a Cobrar</span>
+                    <span class="display-6 fw-bold" style="color: #12f693;">${{ total_general }}</span>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- ESTADO VACÍO -->
+            <div class="card-facturacion p-5 text-center">
+                <i class="bi bi-calendar-x display-4 text-secondary mb-3 d-block"></i>
+                <h4 class="text-white">Sin clases registradas en este período</h4>
+                <p class="text-secondary mb-0">
+                    No se encontraron presentes registrados para tu usuario entre el {{ fecha_inicio_mes|date:"d/m/Y" }} y el {{ fecha_fin_mes|date:"d/m/Y" }}.
+                </p>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

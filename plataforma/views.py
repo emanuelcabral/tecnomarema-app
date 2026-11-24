@@ -8933,3 +8933,169 @@ def referidos(request):
         'mensaje_exito': mensaje_exito,
         'mensaje_error': mensaje_error,
     })
+
+    ############################################################################################
+    #---------------------------Facturacion de profes y tutores--------------------------------#
+    ############################################################################################
+
+    import calendar
+from datetime import date
+from decimal import Decimal
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.utils import timezone
+from plataforma.decorators import session_required
+from .models import (
+    PerfilUsuario,
+    AsistenciaClase,
+    HonorarioCurso,
+    ClaseComision,
+)
+
+def _parsear_horas(duracion_str):
+    """Convierte strings como '2hs' o '1.5hs' a Decimal('2.0')."""
+    if not duracion_str:
+        return Decimal('2.0')
+    limpio = str(duracion_str).lower().replace('hs', '').strip()
+    try:
+        return Decimal(limpio)
+    except Exception:
+        return Decimal('2.0')
+
+@session_required
+def facturacion_docente(request):
+    nombre_usuario = request.session.get('usuario_logueado')
+    usuario = get_object_or_404(
+        PerfilUsuario.objects.select_related('id_estudiante'),
+        nombre_usuario=nombre_usuario
+    )
+
+    if usuario.rol not in ['profesor', 'tutor']:
+        messages.error(request, 'Esta sección es exclusiva para profesores y tutores.')
+        return redirect('mis_cursos')
+
+    estudiante = usuario.id_estudiante
+    if not estudiante:
+        return render(request, 'educativa/facturacion_docente.html', {
+            'usuario': usuario,
+            'nombre_usuario': nombre_usuario,
+            'comisiones_facturacion': [],
+            'total_general': Decimal('0.00'),
+        })
+
+    # Filtro de Mes y Año (del 1 al 31 del mes seleccionado)
+    hoy = timezone.localdate()
+    try:
+        mes = int(request.GET.get('mes', hoy.month))
+        anio = int(request.GET.get('anio', hoy.year))
+        if not (1 <= mes <= 12):
+            mes = hoy.month
+    except ValueError:
+        mes = hoy.month
+        anio = hoy.year
+
+    ultimo_dia = calendar.monthrange(anio, mes)[1]
+    fecha_inicio_mes = date(anio, mes, 1)
+    fecha_fin_mes = date(anio, mes, ultimo_dia)
+
+    # Buscar todos los presentes del profe/tutor en ese mes
+    asistencias_mes = (
+        AsistenciaClase.objects.filter(
+            estudiante=estudiante,
+            fecha_clase__range=(fecha_inicio_mes, fecha_fin_mes)
+        )
+        .select_related('comision', 'comision__id_curso', 'clase')
+        .order_by('comision__id_curso__nombre_curso', 'comision__numero_comision', 'fecha_clase', 'clase__numero_clase')
+    )
+
+    # Agrupar asistencias por comisión
+    agrupado = {}
+    for asist in asistencias_mes:
+        com = asist.comision
+        if com.id_comision not in agrupado:
+            agrupado[com.id_comision] = {
+                'comision': com,
+                'curso': com.id_curso,
+                'asistencias': []
+            }
+        agrupado[com.id_comision]['asistencias'].append(asist)
+
+    comisiones_facturacion = []
+    total_general = Decimal('0.00')
+
+    for com_id, data in agrupado.items():
+        com = data['comision']
+        curso = data['curso']
+        asistencias = data['asistencias']
+
+        # 1. Obtener valor hora según rol
+        honorario = HonorarioCurso.objects.filter(curso=curso).first()
+        valor_hora = Decimal('0.00')
+        if honorario:
+            if usuario.rol == 'profesor' and honorario.valor_hora_profesor:
+                valor_hora = honorario.valor_hora_profesor
+            elif usuario.rol == 'tutor' and honorario.valor_hora_tutor:
+                valor_hora = honorario.valor_hora_tutor
+
+        # 2. Horas de clase de la comisión (fallback al curso)
+        duracion_str = com.duracion_clase or curso.duracion
+        horas_por_clase = _parsear_horas(duracion_str)
+
+        # 3. Valor por clase y total comisión
+        valor_por_clase = (valor_hora * horas_por_clase).quantize(Decimal('0.01'))
+        cantidad_presentes = len(asistencias)
+        subtotal_comision = (valor_por_clase * cantidad_presentes).quantize(Decimal('0.01'))
+        total_general += subtotal_comision
+
+        # 4. Días y horarios de la comisión formateados
+        dias_horarios = []
+        for d, h in [(com.dia1, com.horario1), (com.dia2, com.horario2), (com.dia3, com.horario3)]:
+            if d:
+                dias_horarios.append(f"{d} ({h} hs)" if h else d)
+        dias_horarios_texto = " / ".join(dias_horarios) if dias_horarios else "Sin días definidos"
+
+        # 5. Detalle clase por clase
+        clases_detalle = []
+        for a in asistencias:
+            clases_detalle.append({
+                'numero_clase': a.clase.numero_clase,
+                'nombre_clase': a.nombre_clase,
+                'fecha_clase': a.fecha_clase,
+                'horario_inicio': a.horario_inicio,
+                'horario_fin': a.horario_fin,
+                'horas': horas_por_clase,
+                'valor_clase': valor_por_clase,
+            })
+
+        comisiones_facturacion.append({
+            'curso': curso,
+            'comision': com,
+            'dias_horarios_texto': dias_horarios_texto,
+            'horas_por_clase': horas_por_clase,
+            'valor_hora': valor_hora,
+            'valor_por_clase': valor_por_clase,
+            'cantidad_presentes': cantidad_presentes,
+            'subtotal_comision': subtotal_comision,
+            'clases': clases_detalle,
+        })
+
+    meses_nombres = [
+        (1, 'Enero'), (2, 'Febrero'), (3, 'Marzo'), (4, 'Abril'),
+        (5, 'Mayo'), (6, 'Junio'), (7, 'Julio'), (8, 'Agosto'),
+        (9, 'Septiembre'), (10, 'Octubre'), (11, 'Noviembre'), (12, 'Diciembre')
+    ]
+    anios_disponibles = list(range(2025, hoy.year + 2))
+
+    context = {
+        'usuario': usuario,
+        'nombre_usuario': nombre_usuario,
+        'comisiones_facturacion': comisiones_facturacion,
+        'total_general': total_general,
+        'mes_seleccionado': mes,
+        'anio_seleccionado': anio,
+        'meses_nombres': meses_nombres,
+        'anios_disponibles': anios_disponibles,
+        'fecha_inicio_mes': fecha_inicio_mes,
+        'fecha_fin_mes': fecha_fin_mes,
+    }
+    return render(request, 'educativa/facturacion_docente.html', context)

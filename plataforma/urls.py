@@ -431,6 +431,8 @@ path("test/", test),
 
     path("referidos/", views.referidos, name="referidos"),
 
+    path('facturacion_docente/', views.facturacion_docente, name='facturacion_docente'),
+
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps},),
 
 
