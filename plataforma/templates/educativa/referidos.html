@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Referidos | Tecno Marema</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta property="og:title" content="¿Querés aprender tecnología? | TecnoMarema">
+    <meta property="og:title" content="TecnoMarema — ¿Querés aprender tecnología?">
     <meta property="og:description" content="¡Sumate a la plataforma de aprendizaje y capacitate gratis! Registrate con mi enlace para obtener beneficios.">
     <meta property="og:image" content="{% static 'img/referidos-social.jpeg' %}">
     <link rel="icon" href="{% static 'img/logo/logo-marema96.png' %}" type="image/png" />
@@ -255,45 +255,87 @@
             color: var(--bg-main);
         }
 
+        .promo-highlight-box {
+            background-color: var(--accent-mint-dim);
+            border: 1px solid var(--border-mint);
+            border-radius: 8px;
+            padding: 0.75rem 0.9rem;
+            font-size: 0.88rem;
+            color: var(--text-white);
+            margin-bottom: 0.9rem;
+        }
+
+        .promo-highlight-box strong {
+            color: var(--accent-mint);
+        }
+
         /* Vista previa social con imagen */
         .social-preview-card {
             background-color: var(--bg-main);
             border: 1px solid var(--border-subtle);
             border-radius: 8px;
             overflow: hidden;
+            margin-bottom: 0.95rem;
         }
 
         .social-preview-img {
             width: 100%;
-            height: 185px;
+            height: 175px;
             object-fit: cover;
             display: block;
             border-bottom: 1px solid var(--border-subtle);
         }
 
         .social-preview-body {
-            padding: 0.95rem 1.05rem;
+            padding: 0.85rem 1rem;
         }
 
         .social-preview-title {
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text-white);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .social-preview-domain {
             display: block;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             color: var(--accent-mint);
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             word-break: break-all;
         }
 
         .social-preview-desc {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: var(--text-muted);
             margin-bottom: 0;
+        }
+
+        .social-share-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .btn-social-pill {
+            background-color: var(--bg-main);
+            color: var(--text-white);
+            border: 1px solid var(--border-mint);
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 0.84rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-social-pill:hover {
+            background-color: var(--accent-mint);
+            color: var(--bg-main);
         }
 
         /* Estilo unificado para "¿Cómo invitar y ganar?" */
@@ -301,16 +343,16 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 0.65rem 0.25rem;
+            padding: 0.6rem 0.25rem;
         }
 
         .how-step-row + .how-step-row {
-            margin-top: 0.65rem;
+            margin-top: 0.55rem;
         }
 
         .how-step-circle {
-            width: 48px;
-            height: 48px;
+            width: 46px;
+            height: 46px;
             border-radius: 50%;
             border: 1.5px solid var(--border-mint);
             background-color: rgba(0, 230, 118, 0.06);
@@ -318,19 +360,19 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.2rem;
             flex-shrink: 0;
         }
 
         .how-step-row h3 {
-            font-size: 1.02rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--text-white);
             margin-bottom: 2px;
         }
 
         .how-step-row p {
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             color: var(--text-muted);
             margin-bottom: 0;
             line-height: 1.4;
@@ -346,18 +388,25 @@
             align-items: center;
             justify-content: space-between;
             gap: 12px;
+            height: 100%;
         }
 
         .stat-label {
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             color: var(--text-muted);
             margin-bottom: 2px;
         }
 
         .stat-value {
-            font-size: 1.45rem;
+            font-size: 1.35rem;
             font-weight: 700;
             color: var(--text-white);
+        }
+
+        .stat-sub {
+            font-size: 0.82rem;
+            color: var(--accent-mint);
+            margin-top: 2px;
         }
 
         .stat-icon {
@@ -458,7 +507,7 @@
 
     <div class="container ref-container px-3">
         <h1 class="ref-title">Invitá y Sumá Referidos</h1>
-        <p class="ref-subtitle">Compartí tu pasión por la tecnología con amigos y ganá beneficios exclusivos en Tecno Marema</p>
+        <p class="ref-subtitle">Enviá <strong>100 correos</strong> y compartí en <strong>al menos 3 redes sociales distintas</strong> para desbloquear tu <strong>cupón del 50% de descuento</strong>.</p>
 
         <!-- FILA PRINCIPAL DE 3 COLUMNAS EN PÁGINA ÚNICA -->
         <div class="row g-4">
@@ -468,7 +517,7 @@
                     <h2 class="ref-card-title"><i class="bi bi-link-45deg"></i> Tu enlace de referido</h2>
                     <div class="input-group">
                         <input id="referralLink" type="text" class="form-control form-control-dark"
-                            value="https://tecnomarema.com/ref?user={{ nombre_usuario|default:'emacabral'|slugify }}" readonly>
+                            value="https://tecnomarema.com.ar/ref?user={{ nombre_usuario|default:'emacabral'|slugify }}" readonly>
                         <button id="copyLinkBtn" type="button" class="btn btn-mint-outline">
                             <i class="bi bi-clipboard"></i> Copiar enlace
                         </button>
@@ -478,6 +527,9 @@
 
                 <div class="ref-card">
                     <h2 class="ref-card-title"><i class="bi bi-envelope"></i> Invitá por correo electrónico</h2>
+                    <div class="promo-highlight-box">
+                        Cada correo enviado suma al instante. Para obtener el <strong>50% de descuento</strong> necesitás <strong>100 correos enviados</strong> y <strong>compartir en al menos 3 redes distintas</strong>.
+                    </div>
                     <form method="post" action="{% url 'referidos' %}" id="emailInviteForm">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="enviar_invitacion">
@@ -493,25 +545,45 @@
                 </div>
             </div>
 
-            <!-- Columna 2: Compartir con Vista Previa Social -->
+            <!-- Columna 2: Compartir con Vista Previa Social en 1 clic -->
             <div class="col-lg-4">
                 <div class="ref-card">
                     <h2 class="ref-card-title"><i class="bi bi-share"></i> Compartir con Vista Previa Social</h2>
 
                     <div class="social-preview-card">
                         <img
+                            id="sharePreviewImg"
                             src="{% static 'img/referidos-social.jpeg' %}"
-                            alt="Vista previa social TecnoMarema"
+                            alt="TecnoMarema ¿Querés aprender tecnología?"
                             class="social-preview-img"
                         >
                         <div class="social-preview-body">
-                            <h3 id="shareCardTitle" class="social-preview-title">¿Querés aprender tecnología?</h3>
-                            <span id="shareCardUrl" class="social-preview-domain">tecnomarema.com</span>
+                            <h3 id="shareCardTitle" class="social-preview-title">TecnoMarema — ¿Querés aprender tecnología?</h3>
+                            <span id="shareCardUrl" class="social-preview-domain">https://tecnomarema.com.ar/ref?user={{ nombre_usuario|default:'emacabral'|slugify }}</span>
                             <p id="shareCardDesc" class="social-preview-desc">
                                 ¡Sumate a la plataforma de aprendizaje y capacitate gratis! Registrate con mi enlace para obtener beneficios.
                             </p>
                         </div>
                     </div>
+
+                    <div class="social-share-bar" id="socialShareBar">
+                        <a id="btnShareWhatsApp" data-red="whatsapp" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-whatsapp"></i> WhatsApp
+                        </a>
+                        <a id="btnShareFacebook" data-red="facebook" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-facebook"></i> Facebook
+                        </a>
+                        <a id="btnShareLinkedIn" data-red="linkedin" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-linkedin"></i> LinkedIn
+                        </a>
+                        <a id="btnShareX" data-red="x" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-twitter-x"></i> X
+                        </a>
+                        <a id="btnShareTelegram" data-red="telegram" class="btn-social-pill" target="_blank" rel="noopener noreferrer">
+                            <i class="bi bi-telegram"></i> Telegram
+                        </a>
+                    </div>
+                    <div id="shareFeedback" class="feedback-text"></div>
                 </div>
             </div>
 
@@ -522,11 +594,11 @@
 
                     <div class="how-step-row">
                         <div class="how-step-circle">
-                            <i class="bi bi-clipboard"></i>
+                            <i class="bi bi-envelope-paper"></i>
                         </div>
                         <div>
-                            <h3>1. Copiá tu enlace</h3>
-                            <p>Copiá tu enlace personal y único.</p>
+                            <h3>1. Enviá 100 correos</h3>
+                            <p>Cada correo enviado se cuenta al instante hacia tu meta de 100.</p>
                         </div>
                     </div>
 
@@ -535,18 +607,18 @@
                             <i class="bi bi-share"></i>
                         </div>
                         <div>
-                            <h3>2. Compartilo</h3>
-                            <p>Compartilo con tus amigos por redes o chat.</p>
+                            <h3>2. Compartí en 3 redes distintas</h3>
+                            <p>Tocá compartir en al menos 3 redes diferentes con el mismo contenido.</p>
                         </div>
                     </div>
 
                     <div class="how-step-row">
                         <div class="how-step-circle">
-                            <i class="bi bi-gift"></i>
+                            <i class="bi bi-ticket-perforated"></i>
                         </div>
                         <div>
-                            <h3>3. Recibí beneficios</h3>
-                            <p>Ganá accesos y descuentos cuando se registren.</p>
+                            <h3>3. Ganá tu 50% de descuento</h3>
+                            <p>Al cumplir ambos requisitos se genera el código en tu perfil y se habilita en cupones.</p>
                         </div>
                     </div>
                 </div>
@@ -560,19 +632,21 @@
                 <div class="col-md-6">
                     <div class="stat-item">
                         <div>
-                            <div class="stat-label">Invitados registrados</div>
-                            <div class="stat-value">{{ total_referidos|default:"0" }} Referidos</div>
+                            <div class="stat-label">Correos enviados (se cuentan al enviar)</div>
+                            <div class="stat-value"><span id="statCorreos">{{ correos_enviados|default:total_referidos|default:"0" }}</span> / 100 Correos</div>
+                            <div class="stat-sub">Requisito adicional: compartir en al menos 3 redes distintas</div>
                         </div>
-                        <i class="bi bi-people stat-icon"></i>
+                        <i class="bi bi-envelope-check stat-icon"></i>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="stat-item">
                         <div>
-                            <div class="stat-label">Cursos obtenidos o descuentos ganados</div>
-                            <div class="stat-value">{{ beneficios_ganados|default:"0 Cursos gratis" }}</div>
+                            <div class="stat-label">Cupón del 50% de descuento</div>
+                            <div class="stat-value">{{ codigo_cupon|default:"No habilitado aún" }}</div>
+                            <div class="stat-sub">{{ estado_cupon|default:"Se habilita en perfil y tabla de cupones con 100 correos y 3 redes distintas" }}</div>
                         </div>
-                        <i class="bi bi-gift stat-icon"></i>
+                        <i class="bi bi-ticket-perforated stat-icon"></i>
                     </div>
                 </div>
             </div>
@@ -601,7 +675,57 @@
             const refInput = document.getElementById('referralLink');
             const copyBtn = document.getElementById('copyLinkBtn');
             const copyFeedback = document.getElementById('copyFeedback');
+            const shareFeedback = document.getElementById('shareFeedback');
+
             const shareUrl = refInput.value.trim();
+            const shareTitle = document.getElementById('shareCardTitle').textContent.trim();
+            const shareDesc = document.getElementById('shareCardDesc').textContent.trim();
+            const shareImgUrl = document.getElementById('sharePreviewImg').src;
+
+            // Mismo contenido de la imagen + descripción + enlace para mantener identidad en todas las redes
+            const identidadCompartida = `${shareTitle}\n${shareDesc}\n${shareImgUrl}\n${shareUrl}`;
+            const resumenIdentidad = `${shareTitle} — ${shareDesc}`;
+
+            document.getElementById('btnShareWhatsApp').href =
+                `https://api.whatsapp.com/send?text=${encodeURIComponent(identidadCompartida)}`;
+            document.getElementById('btnShareFacebook').href =
+                `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(resumenIdentidad)}`;
+            document.getElementById('btnShareLinkedIn').href =
+                `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
+            document.getElementById('btnShareX').href =
+                `https://twitter.com/intent/tweet?text=${encodeURIComponent(resumenIdentidad)}&url=${encodeURIComponent(shareUrl)}`;
+            document.getElementById('btnShareTelegram').href =
+                `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(resumenIdentidad)}`;
+
+            function getCsrfToken() {
+                const tokenInput = document.querySelector('#emailInviteForm input[name="csrfmiddlewaretoken"]');
+                return tokenInput ? tokenInput.value : '';
+            }
+
+            // Registra internamente en la institución cada clic en una red social (sin mostrar contador al usuario)
+            document.querySelectorAll('.btn-social-pill[data-red]').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    const red = btn.getAttribute('data-red');
+                    shareFeedback.textContent = `Abriendo ${btn.textContent.trim()} para compartir...`;
+
+                    const csrfToken = getCsrfToken();
+                    if (csrfToken) {
+                        const formData = new URLSearchParams();
+                        formData.append('csrfmiddlewaretoken', csrfToken);
+                        formData.append('action', 'registrar_compartido');
+                        formData.append('red', red);
+
+                        fetch("{% url 'referidos' %}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: formData.toString()
+                        }).catch(() => {});
+                    }
+                });
+            });
 
             copyBtn.addEventListener('click', async () => {
                 try {
