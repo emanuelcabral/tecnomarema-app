@@ -8701,11 +8701,15 @@ def reparar_fechas_view(request):
 #---------------------------------------REFERIDOS--------------------------------------------------#
 ####################################################################################################
 
+from datetime import timedelta
+
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db import models
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
+from django.utils import timezone
 
 from .models import (
     CompartidoRedSocial,
@@ -8729,18 +8733,43 @@ def capturar_referido(request):
 
 
 def sincronizar_cupon_general(cupon_ref, usuario):
-    """Crea o habilita el mismo cupón en la tabla general Cupon."""
+    """Crea o habilita el cupón en la tabla general Cupon con uso máximo 1 y vencimiento a 2 meses."""
     if Cupon is None or not cupon_ref:
         return
 
-    campos = {f.name for f in Cupon._meta.get_fields() if hasattr(f, 'attname')}
+    campos_meta = {f.name: f for f in Cupon._meta.get_fields() if hasattr(f, 'attname')}
+    campos = set(campos_meta.keys())
+
+    ahora = timezone.now()
+    vencimiento_dt = ahora + timedelta(days=60)
+    vencimiento_date = vencimiento_dt.date()
+
+    def _valor_vencimiento(nombre_campo):
+        campo = campos_meta.get(nombre_campo)
+        if isinstance(campo, models.DateTimeField):
+            return vencimiento_dt
+        return vencimiento_date
 
     existente = Cupon.objects.filter(codigo=cupon_ref.codigo).first()
     if existente:
+        campos_actualizar = []
         for campo_estado in ('activo', 'habilitado', 'disponible'):
             if campo_estado in campos and getattr(existente, campo_estado) is not True:
                 setattr(existente, campo_estado, True)
-                existente.save(update_fields=[campo_estado])
+                campos_actualizar.append(campo_estado)
+
+        for campo_uso_max in ('uso_maximo', 'usos_maximos', 'max_usos', 'limite_usos'):
+            if campo_uso_max in campos and getattr(existente, campo_uso_max) != 1:
+                setattr(existente, campo_uso_max, 1)
+                campos_actualizar.append(campo_uso_max)
+
+        for campo_venc in ('fecha_vencimiento', 'vencimiento', 'fecha_expiracion', 'expira_en'):
+            if campo_venc in campos and not getattr(existente, campo_venc):
+                setattr(existente, campo_venc, _valor_vencimiento(campo_venc))
+                campos_actualizar.append(campo_venc)
+
+        if campos_actualizar:
+            existente.save(update_fields=campos_actualizar)
         return
 
     datos = {'codigo': cupon_ref.codigo}
@@ -8759,6 +8788,16 @@ def sincronizar_cupon_general(cupon_ref, usuario):
 
     if 'usado' in campos:
         datos['usado'] = False
+
+    for campo_uso_max in ('uso_maximo', 'usos_maximos', 'max_usos', 'limite_usos'):
+        if campo_uso_max in campos:
+            datos[campo_uso_max] = 1
+            break
+
+    for campo_venc in ('fecha_vencimiento', 'vencimiento', 'fecha_expiracion', 'expira_en'):
+        if campo_venc in campos:
+            datos[campo_venc] = _valor_vencimiento(campo_venc)
+            break
 
     if 'usuario' in campos:
         datos['usuario'] = usuario
