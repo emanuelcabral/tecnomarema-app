@@ -7295,9 +7295,9 @@ def enviar_newsletter_en_background(data):
         'codigo_cupon': data['codigo_cupon'],
         'fecha_vencimiento': data['fecha_vencimiento'],
         'link_promocion': data['link_promocion'],
-        'link_discord': "https://discord.gg/REAvwzqD7",
+        'link_discord': "https://discord.com/invite/REAvwzqD7",
         'link_linkedin': "https://www.linkedin.com/company/tecnomarema/",
-        'link_youtube': "https://www.youtube.com/@TecnoMarema",
+        'link_youtube': "https://www.youtube.com/@tecnomarema",
         'link_instagram': "https://www.instagram.com/tecno.marema/",
         'link_facebook': "https://www.facebook.com/tecnomarema.ar/",
     }
@@ -8714,12 +8714,56 @@ from .models import (
     ReferidoEnvioCorreo,
 )
 
+# Importamos el modelo general Cupon si existe en models.py
+try:
+    from .models import Cupon
+except ImportError:
+    Cupon = None
+
 
 def capturar_referido(request):
     referidor_username = request.GET.get('user', '').strip().lower()
     if referidor_username:
         request.session['referido_por'] = referidor_username
     return redirect('inscripcion')
+
+
+def sincronizar_cupon_general(cupon_ref, usuario):
+    """Crea o habilita el mismo cupón en la tabla general Cupon."""
+    if Cupon is None or not cupon_ref:
+        return
+
+    campos = {f.name for f in Cupon._meta.get_fields() if hasattr(f, 'attname')}
+
+    existente = Cupon.objects.filter(codigo=cupon_ref.codigo).first()
+    if existente:
+        for campo_estado in ('activo', 'habilitado', 'disponible'):
+            if campo_estado in campos and getattr(existente, campo_estado) is not True:
+                setattr(existente, campo_estado, True)
+                existente.save(update_fields=[campo_estado])
+        return
+
+    datos = {'codigo': cupon_ref.codigo}
+
+    if 'descuento_porcentaje' in campos:
+        datos['descuento_porcentaje'] = cupon_ref.descuento_porcentaje
+    elif 'descuento' in campos:
+        datos['descuento'] = cupon_ref.descuento_porcentaje
+    elif 'porcentaje' in campos:
+        datos['porcentaje'] = cupon_ref.descuento_porcentaje
+
+    if 'activo' in campos:
+        datos['activo'] = True
+    elif 'habilitado' in campos:
+        datos['habilitado'] = True
+
+    if 'usado' in campos:
+        datos['usado'] = False
+
+    if 'usuario' in campos:
+        datos['usuario'] = usuario
+
+    Cupon.objects.create(**datos)
 
 
 @session_required
@@ -8810,6 +8854,7 @@ def referidos(request):
 
         # Se habilita solo cuando envió 100 correos Y compartió en al menos 3 redes distintas
         if correos_enviados >= 100 and redes_distintas >= 3:
+            # 1. Genera o habilita en CuponReferido
             cupon, created = CuponReferido.objects.get_or_create(
                 usuario=usuario,
                 defaults={
@@ -8821,7 +8866,12 @@ def referidos(request):
             if not created and not cupon.habilitado:
                 cupon.habilitado = True
                 cupon.save(update_fields=['habilitado'])
+
             cupon_habilitado = cupon.habilitado
+
+            # 2. Genera o habilita el mismo cupón en la tabla general Cupon
+            if cupon_habilitado:
+                sincronizar_cupon_general(cupon, usuario)
 
     faltan_correos = max(0, 100 - correos_enviados)
     faltan_redes = max(0, 3 - redes_distintas)
