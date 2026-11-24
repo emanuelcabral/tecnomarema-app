@@ -391,6 +391,11 @@
             height: 100%;
         }
 
+        .stat-item.unlocked {
+            border-color: var(--border-mint);
+            background: linear-gradient(135deg, var(--bg-main) 0%, #0d2318 100%);
+        }
+
         .stat-label {
             font-size: 0.88rem;
             color: var(--text-muted);
@@ -411,6 +416,26 @@
 
         .stat-icon {
             font-size: 1.5rem;
+            color: var(--accent-mint);
+        }
+
+        .coupon-code-box {
+            margin-top: 0.65rem;
+            background-color: var(--accent-mint-dim);
+            border: 1px solid var(--border-mint);
+            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .coupon-code-text {
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
             color: var(--accent-mint);
         }
 
@@ -618,7 +643,7 @@
                         </div>
                         <div>
                             <h3>3. Ganá tu 50% de descuento</h3>
-                            <p>Al cumplir ambos requisitos se genera el código en tu perfil y se habilita en cupones.</p>
+                            <p>Al cumplir ambos requisitos aparece acá tu código y se habilita en tu perfil y cupones.</p>
                         </div>
                     </div>
                 </div>
@@ -640,11 +665,22 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="stat-item">
-                        <div>
+                    <div class="stat-item {% if cupon_habilitado and codigo_cupon %}unlocked{% endif %}">
+                        <div class="w-100">
                             <div class="stat-label">Cupón del 50% de descuento</div>
-                            <div class="stat-value">{{ codigo_cupon|default:"No habilitado aún" }}</div>
-                            <div class="stat-sub">{{ estado_cupon|default:"Se habilita en perfil y tabla de cupones con 100 correos y 3 redes distintas" }}</div>
+                            {% if cupon_habilitado and codigo_cupon %}
+                                <div class="stat-value">¡Desbloqueado! 50% OFF</div>
+                                <div class="coupon-code-box">
+                                    <span id="couponCodeText" class="coupon-code-text">{{ codigo_cupon }}</span>
+                                    <button id="copyCouponBtn" type="button" class="btn btn-mint-outline btn-sm">
+                                        <i class="bi bi-clipboard"></i> Copiar código
+                                    </button>
+                                </div>
+                                <div id="couponCopyFeedback" class="feedback-text"></div>
+                            {% else %}
+                                <div class="stat-value">No habilitado aún</div>
+                            {% endif %}
+                            <div class="stat-sub">{{ estado_cupon|default:"Se habilita acá, en tu perfil y en cupones al cumplir 100 correos y 3 redes distintas" }}</div>
                         </div>
                         <i class="bi bi-ticket-perforated stat-icon"></i>
                     </div>
@@ -737,6 +773,22 @@
                     copyFeedback.textContent = 'Enlace listo para copiar.';
                 }
             });
+
+            const copyCouponBtn = document.getElementById('copyCouponBtn');
+            const couponCodeText = document.getElementById('couponCodeText');
+            const couponCopyFeedback = document.getElementById('couponCopyFeedback');
+
+            if (copyCouponBtn && couponCodeText) {
+                copyCouponBtn.addEventListener('click', async () => {
+                    const code = couponCodeText.textContent.trim();
+                    try {
+                        await navigator.clipboard.writeText(code);
+                        if (couponCopyFeedback) couponCopyFeedback.textContent = 'Código copiado al portapapeles.';
+                    } catch {
+                        if (couponCopyFeedback) couponCopyFeedback.textContent = `Tu código: ${code}`;
+                    }
+                });
+            }
         })();
     </script>
 
@@ -797,21 +849,9 @@
             e.preventDefault();
         }
     });
-
-    // Opcional: CSS adicional para reforzar no selección
-    document.body.style.userSelect = 'none';
-    document.body.style.webkitUserSelect = 'none';
-    document.body.style.mozUserSelect = 'none';
-    document.body.style.msUserSelect = 'none';
 </script>
 
 <style>
-    body, * {
-        -webkit-user-select: none !important;
-        -moz-user-select: none !important;
-        -ms-user-select: none !important;
-        user-select: none !important;
-    }
     img {
         -webkit-user-drag: none;
         user-drag: none;

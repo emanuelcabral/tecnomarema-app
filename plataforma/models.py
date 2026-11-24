@@ -1089,3 +1089,69 @@ class ReferidoInvitacion(models.Model):
 
     def __str__(self):
         return f"{self.referidor.nombre_usuario} -> {self.email_invitado} ({self.estado})"
+
+
+
+import uuid
+
+
+class ReferidoEnvioCorreo(models.Model):
+    usuario = models.ForeignKey(
+        'PerfilUsuario',
+        on_delete=models.CASCADE,
+        related_name='correos_referidos_enviados',
+    )
+    email_invitado = models.EmailField()
+    enviado_en = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'email_invitado')
+
+    def __str__(self):
+        return f"{self.usuario.nombre_usuario} -> {self.email_invitado}"
+
+
+class CompartidoRedSocial(models.Model):
+    REDES_CHOICES = [
+        ('whatsapp', 'WhatsApp'),
+        ('facebook', 'Facebook'),
+        ('linkedin', 'LinkedIn'),
+        ('x', 'X'),
+        ('telegram', 'Telegram'),
+    ]
+
+    usuario = models.ForeignKey(
+        'PerfilUsuario',
+        on_delete=models.CASCADE,
+        related_name='compartidos_redes_referidos',
+    )
+    red = models.CharField(max_length=20, choices=REDES_CHOICES)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario.nombre_usuario} compartió en {self.red}"
+
+
+class CuponReferido(models.Model):
+    usuario = models.OneToOneField(
+        'PerfilUsuario',
+        on_delete=models.CASCADE,
+        related_name='cupon_referido_50',
+    )
+    codigo = models.CharField(max_length=24, unique=True)
+    descuento_porcentaje = models.PositiveIntegerField(default=50)
+    habilitado = models.BooleanField(default=True)
+    usado = models.BooleanField(default=False)
+    creado_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.usuario.nombre_usuario} - {self.codigo} ({self.descuento_porcentaje}%)"
+
+    @classmethod
+    def generar_codigo_unico(cls, usuario):
+        base = ''.join(ch for ch in usuario.nombre_usuario.upper() if ch.isalnum())[:6] or 'USER'
+        while True:
+            sufijo = uuid.uuid4().hex[:5].upper()
+            codigo = f"TM50-{base}-{sufijo}"
+            if not cls.objects.filter(codigo=codigo).exists():
+                return codigo

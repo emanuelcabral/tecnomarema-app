@@ -8781,3 +8781,135 @@ def referidos(request):
         'mensaje_exito': mensaje_exito,
         'mensaje_error': mensaje_error,
     })
+
+
+    from django.conf import settings
+from django.core.mail import send_mail
+from django.http import JsonResponse
+from django.shortcuts import redirect, render
+
+from .models import (
+    CompartidoRedSocial,
+    CuponReferido,
+    PerfilUsuario,
+    ReferidoEnvioCorreo,
+)
+
+
+def capturar_referido(request):
+    referidor_username = request.GET.get('user', '').strip().lower()
+    if referidor_username:
+        request.session['referido_por'] = referidor_username
+    return redirect('inscripcion')
+
+
+@session_required
+def referidos(request):
+    nombre_usuario_sesion = request.session.get('usuario_logueado')
+    usuario = None
+    if nombre_usuario_sesion:
+        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
+
+    mensaje_exito = None
+    mensaje_error = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+
+        # 1) Registro interno de clic en red social (uso institucional, no visible para el alumno)
+        if action == 'registrar_compartido':
+            red = request.POST.get('red', '').strip().lower()
+            redes_validas = {'whatsapp', 'facebook', 'linkedin', 'x', 'telegram'}
+            if usuario and red in redes_validas:
+                CompartidoRedSocial.objects.create(usuario=usuario, red=red)
+            return JsonResponse({'ok': True})
+
+        # 2) Envío de invitación por correo (se cuenta ni bien se envía)
+        if action == 'enviar_invitacion':
+            email_invitado = request.POST.get('email_invitado', '').strip().lower()
+
+            if not email_invitado:
+                mensaje_error = 'Ingresá un correo electrónico válido.'
+            elif usuario and email_invitado == usuario.correo.lower():
+                mensaje_error = 'No podés invitarte a vos mismo con tu propio correo.'
+            else:
+                enlace_referido = request.build_absolute_uri(
+                    f'/ref/?user={nombre_usuario_sesion}'
+                )
+                asunto = f'{nombre_usuario_sesion} te invitó a TecnoMarema'
+                cuerpo = (
+                    f'¡Hola!\n\n'
+                    f'{nombre_usuario_sesion} te invitó a sumarte a TecnoMarema, '
+                    f'la plataforma de aprendizaje tech con cursos y tutoriales prácticos.\n\n'
+                    f'Registrate desde este enlace: {enlace_referido}\n'
+                )
+
+                try:
+                    send_mail(
+                        subject=asunto,
+                        message=cuerpo,
+                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@tecnomarema.com'),
+                        recipient_list=[email_invitado],
+                        fail_silently=False,
+                    )
+
+                    if usuario:
+                        ReferidoEnvioCorreo.objects.get_or_create(
+                            usuario=usuario,
+                            email_invitado=email_invitado,
+                        )
+
+                    mensaje_exito = f'¡Invitación enviada a {email_invitado} y sumada a tu contador!'
+                except Exception:
+                    mensaje_error = 'No se pudo enviar el correo en este momento. Revisá la configuración SMTP.'
+
+    correos_enviados = 0
+    redes_distintas = 0
+    cupon = None
+    cupon_habilitado = False
+
+    if usuario:
+        correos_enviados = ReferidoEnvioCorreo.objects.filter(usuario=usuario).count()
+        redes_distintas = (
+            CompartidoRedSocial.objects.filter(usuario=usuario)
+            .values('red')
+            .distinct()
+            .count()
+        )
+
+        # Se habilita solo cuando envió 100 correos Y compartió en al menos 3 redes distintas
+        if correos_enviados >= 100 and redes_distintas >= 3:
+            cupon, created = CuponReferido.objects.get_or_create(
+                usuario=usuario,
+                defaults={
+                    'codigo': CuponReferido.generar_codigo_unico(usuario),
+                    'descuento_porcentaje': 50,
+                    'habilitado': True,
+                },
+            )
+            if not created and not cupon.habilitado:
+                cupon.habilitado = True
+                cupon.save(update_fields=['habilitado'])
+            cupon_habilitado = cupon.habilitado
+
+    faltan_correos = max(0, 100 - correos_enviados)
+    faltan_redes = max(0, 3 - redes_distintas)
+
+    if cupon_habilitado and cupon:
+        estado_cupon = '¡Habilitado! También figura en tu perfil y en la tabla de cupones.'
+    else:
+        estado_cupon = (
+            f'Te faltan {faltan_correos} correos y compartir en {faltan_redes} '
+            f'{"red distinta" if faltan_redes == 1 else "redes distintas"}.'
+        )
+
+    return render(request, 'educativa/referidos.html', {
+        'nombre_usuario': nombre_usuario_sesion,
+        'usuario': usuario,
+        'correos_enviados': correos_enviados,
+        'cupon_habilitado': cupon_habilitado,
+        'codigo_cupon': cupon.codigo if cupon_habilitado and cupon else None,
+        'estado_cupon': estado_cupon,
+        'mensaje_exito': mensaje_exito,
+        'mensaje_error': mensaje_error,
+    })
