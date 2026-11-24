@@ -8703,90 +8703,9 @@ def reparar_fechas_view(request):
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.shortcuts import render
-from .models import PerfilUsuario, ReferidoInvitacion
-
-@session_required
-def referidos(request):
-    nombre_usuario_sesion = request.session.get('usuario_logueado')
-    usuario = None
-    if nombre_usuario_sesion:
-        usuario = PerfilUsuario.objects.filter(nombre_usuario=nombre_usuario_sesion).first()
-
-    mensaje_exito = None
-    mensaje_error = None
-
-    if request.method == 'POST' and request.POST.get('action') == 'enviar_invitacion':
-        email_invitado = request.POST.get('email_invitado', '').strip().lower()
-
-        if not email_invitado:
-            mensaje_error = 'Ingresá un correo electrónico válido.'
-        elif usuario and email_invitado == getattr(usuario, 'email', '').lower():
-            mensaje_error = 'No podés invitarte a vos mismo con tu propio correo.'
-        else:
-            enlace_referido = request.build_absolute_uri(f'/ref/?user={nombre_usuario_sesion}')
-            asunto = f'{nombre_usuario_sesion} te invitó a TecnoMarema'
-            cuerpo = (
-                f'¡Hola!\n\n'
-                f'{nombre_usuario_sesion} te invitó a sumarte a TecnoMarema, '
-                f'la plataforma de aprendizaje tech con cursos y tutoriales prácticos.\n\n'
-                f'Registrate desde este enlace: {enlace_referido}\n'
-            )
-
-            try:
-                send_mail(
-                    subject=asunto,
-                    message=cuerpo,
-                    from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@tecnomarema.com'),
-                    recipient_list=[email_invitado],
-                    fail_silently=False,
-                )
-
-                if usuario:
-                    ReferidoInvitacion.objects.get_or_create(
-                        referidor=usuario,
-                        email_invitado=email_invitado,
-                        defaults={'estado': 'enviada'},
-                    )
-
-                mensaje_exito = f'¡Invitación enviada por correo a {email_invitado}!'
-            except Exception:
-                mensaje_error = 'No se pudo enviar el correo en este momento. Revisá la configuración SMTP.'
-
-    # Estadísticas reales (ajustá los filtros según tus campos reales en ReferidoInvitacion / PerfilUsuario)
-    total_referidos = 0
-    beneficios_count = 0
-
-    if usuario:
-        total_referidos = ReferidoInvitacion.objects.filter(
-            referidor=usuario,
-            estado='registrado',
-        ).count()
-        beneficios_count = ReferidoInvitacion.objects.filter(
-            referidor=usuario,
-            beneficio_otorgado=True,
-        ).count()
-
-    beneficios_ganados = (
-        f'{beneficios_count} Curso gratis'
-        if beneficios_count == 1
-        else f'{beneficios_count} Cursos gratis'
-    )
-
-    return render(request, 'educativa/referidos.html', {
-        'nombre_usuario': nombre_usuario_sesion,
-        'usuario': usuario,
-        'total_referidos': total_referidos,
-        'beneficios_ganados': beneficios_ganados,
-        'mensaje_exito': mensaje_exito,
-        'mensaje_error': mensaje_error,
-    })
-
-
-    from django.conf import settings
-from django.core.mail import send_mail
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 
 from .models import (
     CompartidoRedSocial,
@@ -8836,20 +8755,32 @@ def referidos(request):
                 enlace_referido = request.build_absolute_uri(
                     f'/ref/?user={nombre_usuario_sesion}'
                 )
-                asunto = f'{nombre_usuario_sesion} te invitó a TecnoMarema'
-                cuerpo = (
+                asunto = f'{nombre_usuario_sesion} te invitó a sumarte a TecnoMarema 🚀'
+                cuerpo_texto = (
                     f'¡Hola!\n\n'
                     f'{nombre_usuario_sesion} te invitó a sumarte a TecnoMarema, '
                     f'la plataforma de aprendizaje tech con cursos y tutoriales prácticos.\n\n'
                     f'Registrate desde este enlace: {enlace_referido}\n'
                 )
+                html_contenido = render_to_string(
+                    'registration/email_invitacion_referido.html',
+                    {
+                        'referidor': nombre_usuario_sesion,
+                        'enlace_referido': enlace_referido,
+                    },
+                )
 
                 try:
                     send_mail(
                         subject=asunto,
-                        message=cuerpo,
-                        from_email=getattr(settings, 'DEFAULT_FROM_EMAIL', 'no-reply@tecnomarema.com'),
+                        message=cuerpo_texto,
+                        from_email=getattr(
+                            settings,
+                            'DEFAULT_FROM_EMAIL',
+                            'no-reply@tecnomarema.com.ar',
+                        ),
                         recipient_list=[email_invitado],
+                        html_message=html_contenido,
                         fail_silently=False,
                     )
 
