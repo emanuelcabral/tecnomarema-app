@@ -504,6 +504,9 @@
           <li class="nav-item"><a class="nav-link" href="{% url 'mis_cursos' %}">Mis cursos</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'cursos' %}">Cursos</a></li>
           <li class="nav-item"><a class="nav-link" href="{% url 'perfil' %}">Mi perfil</a></li>
+          {% if usuario.rol == 'profesor' or usuario.rol == 'tutor' %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'facturacion_docente' %}">Facturación</a></li>
+          {% endif %}
           {% if usuario.rol == 'alumno' %}
           <li class="nav-item"><a class="nav-link" href="{% url 'saldo' %}">Saldo</a></li>
           {% endif %}
